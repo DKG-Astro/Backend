@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="ff5636e0-402f-4a63-8653-94f411351cbb" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/constant/WorkflowName.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ActionDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/RoleDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/StateDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/TransitionDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/UserDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/UserRoleDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/WorkflowDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/WorkflowTransitionDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ActionMaster.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/RoleMaster.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/StateMaster.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/TransitionMaster.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/UserMaster.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/UserRoleMaster.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/WorkflowMaster.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/WorkflowTransition.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/ActionMasterRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/RoleMasterRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/StateMasterRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/TransitionMasterRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/UserMasterRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/UserRoleMasterRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/WorkflowMasterRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/WorkflowTransitionRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/WorkflowService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+        <option value="Interface" />
+        <option value="Enum" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="2r1uCPsI5XA2NjEhHaKnSJ6mpbq" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.astro.repository" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ff5636e0-402f-4a63-8653-94f411351cbb" name="Default Changelist" comment="" />
+      <created>1735738775164</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1735738775164</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
