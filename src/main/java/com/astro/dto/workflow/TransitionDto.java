@@ -9,11 +9,11 @@ public class TransitionDto {
 
     private Integer transitionId;
     private String transitionName;
+    private Integer workflowId;
     private Integer currentRoleId;
     private Integer nextRoleId;
     private Integer previousRoleId;
-    private String tranConditionKey;
-    private String tranConditionValue;
+    private Integer conditionId;
     private Integer transitionOrder;
     private Integer transitionSubOrder;
     private String createdBy;

@@ -6,17 +6,23 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "WORKFLOW_MASTER")
+@Table(name = "TRANSITION_CONDITION_MASTER")
 @Data
-public class WorkflowMaster {
+public class TransitionConditionMaster {
 
     @Id
     @GeneratedValue
+    @Column(name = "CONDITIONID")
+    private Integer conditionId;
+
     @Column(name = "WORKFLOWID")
     private Integer workflowId;
 
-    @Column(name = "WORKFLOWNAME")
-    private String workflowName;
+    @Column(name = "CONDITIONKEY")
+    private String conditionKey;
+
+    @Column(name = "CONDITIONVALUE")
+    private String conditionValue;
 
     @Column(name = "CREATEDBY")
     private String createdBy;

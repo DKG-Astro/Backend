@@ -1,6 +1,5 @@
 package com.astro.util;
 
-import com.astro.dto.LoanDetailsDto;
 import org.apache.tomcat.util.http.fileupload.FileItem;
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
 import org.springframework.mock.web.MockMultipartFile;
@@ -68,18 +67,6 @@ public class CommonUtils {
         return null;
     }
 
-    public static CsrDetails fillLoanStageFlagValue(LoanDetailsDto loanDetailsDto, CsrDetails csrDetails) {
-        if (loanDetailsDto.getLoanStageFlag() != null) {
-            String loanStageFlag = csrDetails.getLoanStageFlag();
-            if (loanStageFlag == null) {
-                loanStageFlag = loanDetailsDto.getLoanStageFlag();
-            } else if (!loanStageFlag.contains(loanDetailsDto.getLoanStageFlag())) {
-                loanStageFlag += "," + loanDetailsDto.getLoanStageFlag();
-            }
-            csrDetails.setLoanStageFlag(loanStageFlag);
-        }
-        return csrDetails;
-    }
 
     public static Integer getYearsByDate(String date) {
         Date parse = null;

@@ -1,17 +1,14 @@
 package com.astro.controller;
 
-import com.astro.dto.LoginDto;
-import com.astro.service.UserService;
+
+import com.astro.service.WorkflowService;
 import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -19,6 +16,15 @@ import java.util.Map;
 public class WorkflowController {
 
     @Autowired
+    WorkflowService workflowService;
+
+    @GetMapping("/getWorkflowByName")
+    public ResponseEntity<Object> getAllUserDetails(@RequestParam String workflowName) {
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.workflowByWorkflowName(workflowName)), HttpStatus.OK);
+
+    }
+
+   /* @Autowired
     private UserService userService;
 
     @PostMapping("/userDetails")
@@ -109,5 +115,5 @@ public class WorkflowController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(userService.getAllUserDetails()), HttpStatus.OK);
 
     }
-
+*/
 }

@@ -5,33 +5,34 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ff5636e0-402f-4a63-8653-94f411351cbb" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/constant/WorkflowName.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ActionDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/RoleDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/StateDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/TransitionDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/UserDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/UserRoleDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/WorkflowDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/WorkflowTransitionDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ActionMaster.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/RoleMaster.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/StateMaster.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/TransitionMaster.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/UserMaster.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/UserRoleMaster.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/WorkflowMaster.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/WorkflowTransition.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/ActionMasterRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/RoleMasterRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/StateMasterRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/TransitionMasterRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/UserMasterRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/UserRoleMasterRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/WorkflowMasterRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/WorkflowTransitionRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/WorkflowService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/TransitionConditionDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/TransitionConditionMaster.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/TransitionConditionMasterRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/constant/AppConstant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/constant/AppConstant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/controller/WorkflowController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/controller/WorkflowController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/TransitionDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/TransitionDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/WorkflowTransitionDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/WorkflowTransitionDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ActionMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ActionMaster.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/RoleMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/RoleMaster.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/StateMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/StateMaster.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/TransitionMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/TransitionMaster.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/UserMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/UserMaster.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/UserRoleMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/UserRoleMaster.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/WorkflowMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/WorkflowMaster.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/WorkflowTransition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/WorkflowTransition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/CsrDetailsRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/RoleMasterRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/RoleMasterRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/TransitionMasterRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/TransitionMasterRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/WorkflowTransitionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/WorkflowTransitionRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/WorkflowService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/WorkflowService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/util/CommonUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/util/CommonUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/DDL-script.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/DDL-script.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,9 +42,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
-        <option value="Interface" />
         <option value="Enum" />
+        <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -65,6 +66,26 @@
       <recent name="com.astro.repository" />
     </key>
   </component>
+  <component name="RunManager">
+    <configuration name="BackendServiceApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.astro.BackendServiceApplication" />
+      <module name="backend-service" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.astro.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.BackendServiceApplication" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -74,6 +95,21 @@
       <option name="presentableId" value="Default" />
       <updated>1735738775164</updated>
     </task>
+    <task id="LOCAL-00001" summary="initial code change">
+      <created>1735749322180</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1735749322180</updated>
+    </task>
+    <task id="LOCAL-00002" summary="initial code change">
+      <created>1735749403327</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1735749403331</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -86,5 +122,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="initial code change" />
+    <option name="LAST_COMMIT_MESSAGE" value="initial code change" />
   </component>
 </project>

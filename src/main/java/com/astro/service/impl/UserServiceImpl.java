@@ -1,11 +1,28 @@
 package com.astro.service.impl;
 
+import com.astro.constant.AppConstant;
+import com.astro.entity.UserMaster;
+import com.astro.exception.ErrorDetails;
+import com.astro.exception.InvalidInputException;
+import com.astro.repository.UserMasterRepository;
 import com.astro.service.UserService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+    @Autowired
+    UserMasterRepository userMasterRepository;
+
+    @Override
+    public void validateUser(Integer userId) {
+       UserMaster userMaster = userMasterRepository.findById(userId).orElseThrow(() -> new InvalidInputException(new ErrorDetails(AppConstant.USER_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+               AppConstant.ERROR_TYPE_VALIDATION, "User not found.")));
+    }
 
     /*private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 

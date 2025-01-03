@@ -3,10 +3,7 @@ package com.astro.entity;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -15,11 +12,15 @@ import java.util.Date;
 public class TransitionMaster {
 
     @Id
+    @GeneratedValue
     @Column(name = "TRANSITIONID")
     private Integer transitionId;
 
     @Column(name = "TRANSITIONNAME")
     private String transitionName;
+
+    @Column(name = "WORKFLOWID")
+    private Integer workflowId;
 
     @Column(name = "CURRENTROLEID")
     private Integer currentRoleId;
@@ -30,11 +31,8 @@ public class TransitionMaster {
     @Column(name = "PREVIOUSROLEID")
     private Integer previousRoleId;
 
-    @Column(name = "TRANCONDITIONKEY")
-    private String tranConditionKey;
-
-    @Column(name = "TRANCONDITIONVALUE")
-    private String tranConditionValue;
+    @Column(name = "CONDITIONID")
+    private Integer conditionId;
 
     @Column(name = "TRANSITIONORDER")
     private Integer transitionOrder;

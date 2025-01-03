@@ -1,6 +1,8 @@
 package com.astro.service;
 
 public interface UserService {
+
+    public void validateUser(Integer userId);
     /*public UserDetailDto getUserDetails(LoginDto loginDto);
     public UserDetailDto updatePassword(LoginDto loginDto);
     public UserDetailDto registerUser(RegistrationDto registrationDto);

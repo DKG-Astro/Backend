@@ -2,10 +2,7 @@ package com.astro.entity;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -14,6 +11,7 @@ import java.util.Date;
 public class WorkflowTransition {
 
     @Id
+    @GeneratedValue
     @Column(name = "WORKFLOWTRANSITIONID")
     private Integer workflowTransitionId;
 
@@ -37,6 +35,9 @@ public class WorkflowTransition {
 
     @Column(name = "STATUS")
     private String status;
+
+    @Column(name = "NEXTACTION")
+    private String nextAction;
 
     @Column(name = "TRANSITIONORDER")
     private Integer transitionOrder;
