@@ -2,7 +2,7 @@ package com.astro.constant;
 
 public enum WorkflowName {
 
-    INDENT("IndentWorkflow", "INDENT");
+    INDENT("IndentWorkflow", "INDENT WORKFLOW");
 
     private final String key;
     private final String value;

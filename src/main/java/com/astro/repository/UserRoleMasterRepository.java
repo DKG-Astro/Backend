@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRoleMasterRepository extends JpaRepository<UserRoleMaster, Integer> {
+    UserRoleMaster findByRoleIdAndUserId(Integer roleId, Integer actionBy);
 }

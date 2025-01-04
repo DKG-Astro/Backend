@@ -14,4 +14,5 @@ public interface WorkflowService {
     public WorkflowTransitionDto initiateWorkflow(Integer requestId, String workflowName, Integer createdBy);
     public List<WorkflowTransitionDto> workflowTransitionHistory(Integer workflowId, Integer createdBy, Integer requestId, String roleName);
     public TransitionDto nextTransition(Integer workflowId, String currentRole, String tranConditionKey, String tranConditionValue);
+    public WorkflowTransitionDto performTransitionAction(Integer workflowTransitionId, Integer actionBy, String action);
 }

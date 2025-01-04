@@ -12,7 +12,7 @@ import java.util.Date;
 public class TransitionMaster {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "TRANSITIONID")
     private Integer transitionId;
 

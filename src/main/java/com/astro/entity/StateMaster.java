@@ -11,7 +11,7 @@ import java.util.Date;
 public class StateMaster {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "STATEID")
     private Integer stateId;
 

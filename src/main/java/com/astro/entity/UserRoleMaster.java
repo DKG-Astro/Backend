@@ -11,7 +11,7 @@ import java.util.Date;
 public class UserRoleMaster {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "userRoleId")
     private Integer userRoleId;
 

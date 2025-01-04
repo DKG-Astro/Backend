@@ -11,7 +11,7 @@ import java.util.Date;
 public class ActionMaster {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ACTIONID")
     private Integer actionId;
 

@@ -11,7 +11,7 @@ import java.util.Date;
 public class WorkflowMaster {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "WORKFLOWID")
     private Integer workflowId;
 

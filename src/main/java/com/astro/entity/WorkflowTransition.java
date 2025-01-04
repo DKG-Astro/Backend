@@ -11,7 +11,7 @@ import java.util.Date;
 public class WorkflowTransition {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "WORKFLOWTRANSITIONID")
     private Integer workflowTransitionId;
 

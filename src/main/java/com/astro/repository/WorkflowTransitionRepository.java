@@ -11,4 +11,5 @@ public interface WorkflowTransitionRepository extends JpaRepository<WorkflowTran
     List<WorkflowTransition> findByWorkflowId(Integer workflowId);
     WorkflowTransition findByWorkflowIdAndTransitionOrder(Integer workflowId, Integer order);
     List<WorkflowTransition> findByWorkflowIdOrCreatedByOrRequestIdOrTransitionId(Integer workflowId, Integer createdBy, Integer requestId, Integer nextTransitionId);
+    WorkflowTransition findByWorkflowIdAndCreatedByAndRequestId(Integer workflowId, Integer createdBy, Integer requestId);
 }

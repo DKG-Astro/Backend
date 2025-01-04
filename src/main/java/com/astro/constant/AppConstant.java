@@ -6,6 +6,9 @@ public class AppConstant {
     // action Type
     public static final String CREATED_TYPE = "Created";
     public static final String PENDING_TYPE = "Pending";
+    public static final String APPROVE_TYPE = "Approved";
+    public static final String REJECT_TYPE = "Rejected";
+    public static final String CHANGE_REQUEST_TYPE = "Change requested";
 
     // Error Type Codes
     public static final int ERROR_TYPE_CODE_DB = 1;
@@ -23,6 +26,10 @@ public class AppConstant {
     public static final int USER_INVALID_INPUT = 1002;
     public static final int USER_NOT_FOUND = 1003;
     public static final int TRANSITION_NOT_FOUND = 1004;
+    public static final int WORKFLOW_ALREADY_EXISTS = 1005;
+    public static final int INVALID_WORKFLOW_TRANSITION = 1006;
+    public static final int UNAUTHORIZED_ACTION = 1007;
+    public static final int INVALID_TRANSITION_ACTION = 1008;
 
 
     //Folder Path

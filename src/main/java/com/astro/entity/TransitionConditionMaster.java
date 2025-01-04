@@ -11,7 +11,7 @@ import java.util.Date;
 public class TransitionConditionMaster {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CONDITIONID")
     private Integer conditionId;
 

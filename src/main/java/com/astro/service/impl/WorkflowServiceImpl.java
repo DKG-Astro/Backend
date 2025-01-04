@@ -42,6 +42,9 @@ public class WorkflowServiceImpl implements WorkflowService {
     @Autowired
     TransitionConditionMasterRepository transitionConditionMasterRepository;
 
+    @Autowired
+    UserRoleMasterRepository userRoleMasterRepository;
+
     @Override
     public WorkflowDto workflowByWorkflowName(String workflowName) {
         WorkflowDto workflowDto = null;
@@ -176,6 +179,8 @@ public class WorkflowServiceImpl implements WorkflowService {
                 throw new InvalidInputException(new ErrorDetails(AppConstant.TRANSITION_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                         AppConstant.ERROR_TYPE_VALIDATION, "Transition not found."));
             }
+            validateWorkflowTransition(requestId, createdBy, workflowDto.getWorkflowId());
+
             WorkflowTransition workflowTransition = createWorkflowTransition(requestId, workflowDto, transitionDto, createdBy);
             workflowTransitionRepository.save(workflowTransition);
             workflowTransitionDto = mapWorkflowTransitionDto(workflowTransition);
@@ -186,6 +191,14 @@ public class WorkflowServiceImpl implements WorkflowService {
 
         }
         return workflowTransitionDto;
+    }
+
+    private void validateWorkflowTransition(Integer requestId, Integer createdBy, Integer workflowId) {
+        WorkflowTransition workflowTransition = workflowTransitionRepository.findByWorkflowIdAndCreatedByAndRequestId(workflowId, createdBy, requestId);
+        if(Objects.nonNull(workflowTransition)){
+            throw new InvalidInputException(new ErrorDetails(AppConstant.WORKFLOW_ALREADY_EXISTS, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION, "Workflow with same request id and created by already exists."));
+        }
     }
 
     @Override
@@ -223,8 +236,19 @@ public class WorkflowServiceImpl implements WorkflowService {
         workflowTransitionDto.setTransitionSubOrder(workflowTransition.getTransitionSubOrder());
         workflowTransitionDto.setCreatedDate(workflowTransition.getCreatedDate());
         workflowTransitionDto.setModifiedBy(workflowTransition.getModifiedBy());
-
+        workflowTransitionDto.setNextAction(workflowTransition.getNextAction());
+        workflowTransitionDto.setCreatedRole(roleNameById(workflowTransition.getCreatedBy()));
+        workflowTransitionDto.setModifiedRole(roleNameById(workflowTransition.getModifiedBy()));
+        TransitionMaster transitionMaster = transitionById(workflowTransition.getTransitionId());
+        if(Objects.nonNull(transitionMaster)) {
+            workflowTransitionDto.setNextActionId(transitionMaster.getNextRoleId());
+            workflowTransitionDto.setNextActionRole(roleNameById(transitionMaster.getNextRoleId()));
+        }
         return workflowTransitionDto;
+    }
+
+    private TransitionMaster transitionById(Integer transitionId) {
+        return transitionMasterRepository.findById(transitionId).orElse(null);
     }
 
     private WorkflowTransition createWorkflowTransition(Integer requestId, WorkflowDto workflowDto, TransitionDto transitionDto, Integer createdBy) {
@@ -271,5 +295,50 @@ public class WorkflowServiceImpl implements WorkflowService {
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid input."));
         }
         return transitionDto;
+    }
+
+    @Override
+    public WorkflowTransitionDto performTransitionAction(Integer workflowTransitionId, Integer actionBy, String action) {
+        userService.validateUser(actionBy);
+        WorkflowTransition workflowTransition = workflowTransitionRepository.findById(workflowTransitionId).orElse(null);
+        if(Objects.isNull(workflowTransition)){
+            throw new InvalidInputException(new ErrorDetails(AppConstant.INVALID_WORKFLOW_TRANSITION, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION, "Workflow transition not found."));
+        }
+        TransitionMaster currentTransition = transitionMasterRepository.findById(workflowTransition.getTransitionId()).orElse(null);
+        validateUserRole(actionBy, currentTransition.getNextRoleId());
+
+        if(AppConstant.APPROVE_TYPE.equalsIgnoreCase(action)){
+            approveTransition(workflowTransition, currentTransition, actionBy);
+        }else if(AppConstant.REJECT_TYPE.equalsIgnoreCase(action)){
+            rejectTransition(workflowTransition, currentTransition, actionBy);
+        }else if(AppConstant.CHANGE_REQUEST_TYPE.equalsIgnoreCase(action)){
+            requestChangeTransition(workflowTransition, currentTransition, actionBy);
+        }else{
+            throw new InvalidInputException(new ErrorDetails(AppConstant.INVALID_TRANSITION_ACTION, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION, "Invalid transition action."));
+        }
+
+        return null;
+    }
+
+    private void requestChangeTransition(WorkflowTransition workflowTransition, TransitionMaster currentTransition, Integer actionBy) {
+    }
+
+    private void rejectTransition(WorkflowTransition workflowTransition, TransitionMaster currentTransition, Integer actionBy) {
+    }
+
+    private void approveTransition(WorkflowTransition workflowTransition, TransitionMaster currentTransition, Integer actionBy) {
+        
+    }
+
+    private void validateUserRole(Integer actionBy, Integer roleId) {
+        if(Objects.nonNull(roleId)) {
+            UserRoleMaster userRoleMaster = userRoleMasterRepository.findByRoleIdAndUserId(roleId, actionBy);
+            if(Objects.isNull(userRoleMaster)){
+                throw new InvalidInputException(new ErrorDetails(AppConstant.UNAUTHORIZED_ACTION, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                        AppConstant.ERROR_TYPE_VALIDATION, "Unauthorized user."));
+            }
+        }
     }
 }

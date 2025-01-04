@@ -40,7 +40,7 @@ public class WorkflowController {
     }
 
     @GetMapping("/workflowTransitionHistory")
-    public ResponseEntity<Object> workflowTransitionHistory(@RequestParam Integer workflowId, @RequestParam Integer createdBy, @RequestParam Integer requestId, @RequestParam String roleName)  {
+    public ResponseEntity<Object> workflowTransitionHistory(@RequestParam Integer workflowId, @RequestParam(required = false) Integer createdBy, @RequestParam(required = false) Integer requestId, @RequestParam(required = false) String roleName)  {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.workflowTransitionHistory(workflowId, createdBy, requestId, roleName)), HttpStatus.OK);
     }
 
@@ -48,6 +48,12 @@ public class WorkflowController {
     public ResponseEntity<Object> nextTransition(@RequestParam Integer workflowId, @RequestParam String currentRole, @RequestParam(required = false) String tranConditionKey, @RequestParam(required = false) String tranConditionValue)  {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.nextTransition(workflowId, currentRole, tranConditionKey, tranConditionValue)), HttpStatus.OK);
     }
+
+    @PostMapping("/performTransitionAction")
+    public ResponseEntity<Object> performTransitionAction(@RequestParam Integer workflowTransitionId, @RequestParam Integer actionBy, @RequestParam String action)  {
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.performTransitionAction(workflowTransitionId, actionBy, action)), HttpStatus.OK);
+    }
+
 
    /* @Autowired
     private UserService userService;
