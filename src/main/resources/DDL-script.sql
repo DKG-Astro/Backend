@@ -44,6 +44,7 @@ CREATE TABLE `astrodatabase`.`state_master` (
   `previousRoleId` INT NULL,
   `conditionId` INT NULL,
   `transitionOrder` INT NOT NULL,
+  `transitionSubOrder` INT NOT NULL,
   `createdDate` DATETIME NULL,
   `createdBy` VARCHAR(45) NULL,
   PRIMARY KEY (`transitionId`));

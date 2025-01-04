@@ -11,4 +11,5 @@ public interface TransitionMasterRepository extends JpaRepository<TransitionMast
     TransitionMaster findByWorkflowIdAndTransitionOrder(Integer workflowId, Integer order);
     List<TransitionMaster> findByWorkflowId(Integer workflowId);
     TransitionMaster findByWorkflowIdAndNextRoleId(Integer workflowId, Integer roleId);
+    TransitionMaster findByWorkflowIdAndTransitionOrderAndTransitionSubOrder(Integer workflowId, Integer order, Integer subOrder);
 }
