@@ -5,22 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ff5636e0-402f-4a63-8653-94f411351cbb" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/TransitionActionReqDto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/constant/AppConstant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/constant/AppConstant.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/constant/WorkflowName.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/constant/WorkflowName.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/controller/WorkflowController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/controller/WorkflowController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/WorkflowTransitionDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/WorkflowTransitionDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ActionMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ActionMaster.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/RoleMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/RoleMaster.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/StateMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/StateMaster.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/TransitionConditionMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/TransitionConditionMaster.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/TransitionMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/TransitionMaster.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/UserMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/UserMaster.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/UserRoleMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/UserRoleMaster.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/WorkflowMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/WorkflowMaster.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/WorkflowTransition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/WorkflowTransition.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/UserRoleMasterRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/UserRoleMasterRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/WorkflowTransitionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/WorkflowTransitionRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/WorkflowService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/WorkflowService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" afterDir="false" />
     </list>
@@ -113,7 +104,14 @@
       <option name="project" value="LOCAL" />
       <updated>1735983857970</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="action related code">
+      <created>1736006571452</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1736006571452</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -131,19 +129,20 @@
     <MESSAGE value="initial code change" />
     <MESSAGE value="second commit" />
     <MESSAGE value="third commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="third commit" />
+    <MESSAGE value="action related code" />
+    <option name="LAST_COMMIT_MESSAGE" value="action related code" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java</url>
-          <line>277</line>
+          <line>274</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java</url>
-          <line>282</line>
+          <line>279</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>

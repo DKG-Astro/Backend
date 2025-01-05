@@ -39,6 +39,12 @@ public class WorkflowTransition {
     @Column(name = "NEXTACTION")
     private String nextAction;
 
+    @Column(name = "ACTION")
+    private String action;
+
+    @Column(name = "REMARKS")
+    private String remarks;
+
     @Column(name = "TRANSITIONORDER")
     private Integer transitionOrder;
 

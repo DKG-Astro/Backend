@@ -19,6 +19,8 @@ public class WorkflowTransitionDto {
     private String modifiedRole;
     private String status;
     private String nextAction;
+    private String action;
+    private String remarks;
     private Integer nextActionId;
     private String nextActionRole;
     private Integer transitionOrder;

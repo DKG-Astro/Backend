@@ -12,7 +12,7 @@ public class UserRoleMaster {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "userRoleId")
+    @Column(name = "USERROLEID")
     private Integer userRoleId;
 
     @Column(name = "ROLEID")

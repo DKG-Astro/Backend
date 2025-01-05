@@ -1,15 +1,13 @@
 package com.astro.controller;
 
 
+import com.astro.dto.workflow.TransitionActionReqDto;
 import com.astro.service.WorkflowService;
 import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -50,8 +48,8 @@ public class WorkflowController {
     }
 
     @PostMapping("/performTransitionAction")
-    public ResponseEntity<Object> performTransitionAction(@RequestParam Integer workflowTransitionId, @RequestParam Integer actionBy, @RequestParam String action)  {
-        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.performTransitionAction(workflowTransitionId, actionBy, action)), HttpStatus.OK);
+    public ResponseEntity<Object> performTransitionAction(@RequestBody TransitionActionReqDto transitionActionReqDto)  {
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.performTransitionAction(transitionActionReqDto)), HttpStatus.OK);
     }
 
 
