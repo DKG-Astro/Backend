@@ -42,6 +42,12 @@ public class WorkflowTransition {
     @Column(name = "ACTION")
     private String action;
 
+    @Column(name = "CURRENTROLE")
+    private String currentRole;
+
+    @Column(name = "NEXTROLE")
+    private String nextRole;
+
     @Column(name = "REMARKS")
     private String remarks;
 

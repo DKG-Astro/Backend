@@ -202,14 +202,12 @@ public class WorkflowServiceImpl implements WorkflowService {
     public List<WorkflowTransitionDto> workflowTransitionHistory(Integer workflowId, Integer createdBy, Integer requestId, String roleName) {
 
         List<WorkflowTransitionDto> workflowTransitionDtoList = new ArrayList<>();
-
-        Integer nextTransitionId = null;
-        RoleMaster roleMaster = roleMasterRepository.findByRoleName(roleName);
-        if(Objects.nonNull(roleMaster)){
-            TransitionMaster transitionMaster = transitionMasterRepository.findByWorkflowIdAndNextRoleId(workflowId, roleMaster.getRoleId());
-            nextTransitionId = transitionMaster.getTransitionId();
+        List<WorkflowTransition> workflowTransitionList = null;
+        if(Objects.nonNull(roleName)){
+            workflowTransitionList = workflowTransitionRepository.findByWorkflowIdAndCurrentRole(workflowId, roleName);
+        }else {
+            workflowTransitionList = workflowTransitionRepository.findByWorkflowIdOrCreatedByOrRequestId(workflowId, createdBy, requestId);
         }
-        List<WorkflowTransition> workflowTransitionList = workflowTransitionRepository.findByWorkflowIdOrCreatedByOrRequestIdOrTransitionId(workflowId, createdBy, requestId, nextTransitionId);
         if(Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()){
             workflowTransitionDtoList = workflowTransitionList.stream().map(e -> {
                 return mapWorkflowTransitionDto(e);
@@ -236,6 +234,8 @@ public class WorkflowServiceImpl implements WorkflowService {
         workflowTransitionDto.setNextAction(workflowTransition.getNextAction());
         workflowTransitionDto.setCreatedRole(roleNameById(workflowTransition.getCreatedBy()));
         workflowTransitionDto.setModifiedRole(roleNameById(workflowTransition.getModifiedBy()));
+        workflowTransitionDto.setCurrentRole(workflowTransition.getCurrentRole());
+        workflowTransitionDto.setNextRole(workflowTransition.getNextRole());
         TransitionMaster transitionMaster = transitionById(workflowTransition.getTransitionId());
         if(Objects.nonNull(transitionMaster)) {
             workflowTransitionDto.setNextActionId(transitionMaster.getNextRoleId());
@@ -262,6 +262,8 @@ public class WorkflowServiceImpl implements WorkflowService {
         workflowTransition.setModificationDate(null);
         workflowTransition.setRequestId(requestId);
         workflowTransition.setWorkflowName(workflowDto.getWorkflowName());
+        workflowTransition.setCurrentRole(transitionDto.getCurrentRoleName());
+        workflowTransition.setNextRole(transitionDto.getNextRoleName());
 
         return workflowTransition;
     }
@@ -355,6 +357,8 @@ public class WorkflowServiceImpl implements WorkflowService {
             nextWorkflowTransition.setRequestId(currentWorkflowTransition.getRequestId());
             nextWorkflowTransition.setCreatedBy(currentWorkflowTransition.getCreatedBy());
             nextWorkflowTransition.setCreatedDate(currentWorkflowTransition.getCreatedDate());
+            nextWorkflowTransition.setCurrentRole(nextTransition.getCurrentRoleName());
+            nextWorkflowTransition.setNextRole(nextTransition.getNextRoleName());
 
             workflowTransitionRepository.save(nextWorkflowTransition);
         }
