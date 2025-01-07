@@ -44,7 +44,7 @@ public class GRIController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteGoodsReceiptInspection(@PathVariable Long id) {
         service.deleteGoodsReceiptInspection(id);
-        return ResponseEntity.ok("Goods Return deleted successfully!");
+        return ResponseEntity.ok("GoodsReceiptInspection deleted successfully!");
     }
 
 

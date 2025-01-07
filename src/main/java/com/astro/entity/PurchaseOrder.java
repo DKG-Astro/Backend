@@ -51,7 +51,7 @@ public class PurchaseOrder {
     private String consigneeAddress;
 
     private String additionalTermsAndConditions;
-
+    private String updatedBy;
     private LocalDateTime createdDate = LocalDateTime.now();
     private LocalDateTime updatedDate = LocalDateTime.now();
 

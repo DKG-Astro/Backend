@@ -24,13 +24,13 @@ public class GprnController {
         return ResponseEntity.ok(savedGprn);
     }
     @GetMapping
-    public ResponseEntity<List<Gprn>> getAllGoodsReturns() {
+    public ResponseEntity<List<Gprn>> getAllGprn() {
         List<Gprn> gprns=gprnService.getAllGprn();
         return ResponseEntity.ok(gprns);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Gprn> getGoodsReturnById(@PathVariable Long id) {
+    public ResponseEntity<Gprn> getGprnById(@PathVariable Long id) {
         Gprn gprn = gprnService.getGprnById(id);
         return ResponseEntity.ok(gprn);
     }
@@ -38,14 +38,14 @@ public class GprnController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Gprn> updateGoodsReturn(
+    public ResponseEntity<Gprn> updateGprnById(
             @PathVariable Long id, @RequestBody GprnRequestDto gprnRequestDto) {
         Gprn gprn =gprnService.updateGprn(id,gprnRequestDto);
         return ResponseEntity.ok(gprn);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteGoodsReturn(@PathVariable Long id) {
+    public ResponseEntity<String> deleteGprn(@PathVariable Long id) {
         gprnService.deleteGprn(id);
         return ResponseEntity.ok("Goods Return deleted successfully!");
     }

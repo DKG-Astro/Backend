@@ -99,9 +99,11 @@ CREATE TABLE purchase_order (
     warranty VARCHAR(255),
     consignee_address VARCHAR(500),
     additional_terms_and_conditions TEXT,
+    updated_by varchar(200),
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
 
 --Inventory Modules
 CREATE TABLE GPRN (
@@ -134,9 +136,11 @@ CREATE TABLE GPRN (
     serial_no VARCHAR(255),
     warranty TEXT,
     note TEXT,
-    photograph_path TEXT
+    photograph_path TEXT ,
+    updated_by VARCHAR(255),
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
 CREATE TABLE goods_inspection (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     goods_inspection_no VARCHAR(50) NOT NULL,
@@ -145,9 +149,11 @@ CREATE TABLE goods_inspection (
     upload_installation_report text, -- For storing PDF files
     accepted_quantity INT NOT NULL,
     rejected_quantity INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_by varchar(200),
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
 
 CREATE TABLE goods_return (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -156,44 +162,94 @@ CREATE TABLE goods_return (
     return_quantity INT NOT NULL,
     type_of_return VARCHAR(100) NOT NULL,
     reason_of_return TEXT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_by varchar(200),
+    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 
 CREATE TABLE goods_receipt_inspection (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    receipt_inspection_no VARCHAR(255) NOT NULL UNIQUE,
+    receipt_inspection_no VARCHAR(255) ,
     installation_date DATE,
     commissioning_date DATE,
-    asset_code VARCHAR(255) NOT NULL UNIQUE,
+    asset_code VARCHAR(255) ,
     additional_material_description TEXT,
-    locator VARCHAR(255) NOT NULL,
+    locator VARCHAR(255) ,
     print_label_option BOOLEAN DEFAULT FALSE,
     depreciation_rate DECIMAL(5, 2),
-											-- add the book value atribute
+									-- add the book value atribute
     attach_component_popup TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_by varchar(200),
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE asset (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    asset_code VARCHAR(255) NOT NULL UNIQUE,
-    material_code VARCHAR(255) NOT NULL UNIQUE,
-    description TEXT NOT NULL,
-    uom VARCHAR(50) NOT NULL,
+    asset_code VARCHAR(255) ,
+    material_code VARCHAR(255),
+    description TEXT ,
+    uom VARCHAR(50) ,
     make_no VARCHAR(100),
     model_no VARCHAR(100),
     serial_no VARCHAR(100),
     component_name VARCHAR(255),
     component_code VARCHAR(255),
     quantity INT,
-    locator VARCHAR(255) NOT NULL,
+    locator VARCHAR(255) ,
     transaction_history TEXT,
-    current_condition VARCHAR(50) NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    current_condition VARCHAR(50) ,
+    updated_by varchar(200),
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE tender_request (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title_of_tender VARCHAR(255) NOT NULL,
+    opening_date DATE,
+    closing_date DATE,
+    indent_id VARCHAR(255),
+    indent_materials varchar(200),
+    mode_of_procurement VARCHAR(255),
+    bid_type VARCHAR(255),
+    last_date_of_submission DATE,
+    applicable_taxes TEXT,
+    consignes_and_billinng_address TEXT,
+    inco_terms VARCHAR(255),
+    payment_terms varchar(255),
+    ld_clause varchar(255),
+    applicable_performance varchar(255),
+    bid_security_declaration BOOLEAN,
+    mll_status_declaration BOOLEAN,
+    upload_tender_documents BLOB,
+    single_and_multiple_vendors VARCHAR(255),
+    upload_general_terms_and_conditions BLOB,
+    upload_specific_terms_and_conditions BLOB,
+    pre_bid_disscussions TEXT,
+     updated_by VARCHAR(255),
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE contigency_purchase (
+    Contigency_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    vendors_name VARCHAR(255),
+    vendors_invoice_no VARCHAR(255),
+    Date DATE,
+    material_code VARCHAR(255),
+    material_description VARCHAR(255),
+    quantity DECIMAL(15, 2),
+    unit_price DECIMAL(15, 2),
+    remarks_for_purchase VARCHAR(255),
+    amount_to_be_paid DECIMAL(15, 2),
+    upload_copy_of_invoice BLOB,
+    predifined_purchase_statement VARCHAR(255),
+    project_detail VARCHAR(255),
+    update_by VARCHAR(255),
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 

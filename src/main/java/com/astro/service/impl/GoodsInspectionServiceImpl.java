@@ -30,6 +30,7 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
         goodsInspection.setUploadInstallationReport(goodsInspectionDTO.getUploadInstallationReport());
         goodsInspection.setAcceptedQuantity(goodsInspectionDTO.getAcceptedQuantity());
         goodsInspection.setRejectedQuantity(goodsInspectionDTO.getRejectedQuantity());
+        goodsInspection.setUpdatedBy(goodsInspectionDTO.getUpdatedBy());
         GoodsInspection saved = repository.save(goodsInspection);
         return saved;
     }
@@ -45,6 +46,7 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
         existing.setUploadInstallationReport(goodsInspectionDTO.getUploadInstallationReport());
         existing.setAcceptedQuantity(goodsInspectionDTO.getAcceptedQuantity());
         existing.setRejectedQuantity(goodsInspectionDTO.getRejectedQuantity());
+        existing.setUpdatedBy(goodsInspectionDTO.getUpdatedBy());
         GoodsInspection updated = repository.save(existing);
         return updated;
     }

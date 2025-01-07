@@ -20,4 +20,5 @@ public class AssetDTO {
     private String transactionHistory;
     private String currentCondition;
 
+    private String updatedBy;
 }

@@ -10,5 +10,6 @@ public class GoodsInspectionDto {
     private String uploadInstallationReport;
     private int acceptedQuantity;
     private int rejectedQuantity;
+    private String updatedBy;
 
 }

@@ -51,7 +51,7 @@ public class AssetController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteAsset(@PathVariable Long id) {
         assetService.deleteAsset(id);
-        return ResponseEntity.ok("Goods Return deleted successfully!");
+        return ResponseEntity.ok("Asset deleted successfully!");
     }
 
 

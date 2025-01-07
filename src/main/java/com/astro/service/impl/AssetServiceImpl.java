@@ -32,7 +32,7 @@ public class AssetServiceImpl implements AssetService {
         asset.setLocator(assetDTO.getLocator());
         asset.setTransactionHistory(assetDTO.getTransactionHistory());
         asset.setCurrentCondition(assetDTO.getCurrentCondition());
-
+        asset.setUpdatedBy(assetDTO.getUpdatedBy());
         return assetRepository.save(asset);
     }
 
@@ -52,7 +52,7 @@ public class AssetServiceImpl implements AssetService {
         asset.setLocator(assetDTO.getLocator());
         asset.setTransactionHistory(assetDTO.getTransactionHistory());
         asset.setCurrentCondition(assetDTO.getCurrentCondition());
-
+        asset.setUpdatedBy(assetDTO.getUpdatedBy());
         return assetRepository.save(asset);
     }
 

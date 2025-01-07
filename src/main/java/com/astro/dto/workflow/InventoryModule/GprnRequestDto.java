@@ -32,5 +32,6 @@ public class GprnRequestDto {
     private String warranty;
     private String note;
     private String photographPath;
+    private String updatedBy;
 
 }

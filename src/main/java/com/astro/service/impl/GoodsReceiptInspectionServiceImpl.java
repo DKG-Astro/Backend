@@ -30,6 +30,7 @@ public class GoodsReceiptInspectionServiceImpl implements GoodsReceiptInspection
         entity.setPrintLabelOption(dto.isPrintLabelOption());
         entity.setDepreciationRate(dto.getDepreciationRate());
         entity.setAttachComponentPopup(dto.getAttachComponentPopup());
+        entity.setUpdatedBy(dto.getUpdatedBy());
         return GRIrepository.save(entity);
     }
 
@@ -46,6 +47,7 @@ public class GoodsReceiptInspectionServiceImpl implements GoodsReceiptInspection
         entity.setLocator(dto.getLocator());
         entity.setPrintLabelOption(dto.isPrintLabelOption());
         entity.setDepreciationRate(dto.getDepreciationRate());
+        entity.setUpdatedBy(dto.getUpdatedBy());
         entity.setAttachComponentPopup(dto.getAttachComponentPopup());
         return GRIrepository.save(entity);
     }

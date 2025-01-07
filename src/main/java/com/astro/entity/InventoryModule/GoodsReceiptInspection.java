@@ -15,7 +15,7 @@ public class GoodsReceiptInspection {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "receipt_inspection_no", nullable = false, unique = true)
+    @Column(name = "receipt_inspection_no")
     private String receiptInspectionNo;
 
     @Column(name = "installation_date")
@@ -24,19 +24,19 @@ public class GoodsReceiptInspection {
     @Column(name = "commissioning_date")
     private LocalDate commissioningDate;
 
-    @Column(name = "asset_code", nullable = false, unique = true)
+    @Column(name = "asset_code")
     private String assetCode;
 
     @Column(name = "additional_material_description")
     private String additionalMaterialDescription;
 
-    @Column(name = "locator", nullable = false)
+    @Column(name = "locator")
     private String locator;
 
     @Column(name = "print_label_option", columnDefinition = "BOOLEAN DEFAULT false")
     private boolean printLabelOption;
 
-    @Column(name = "depreciation_rate", precision = 5, scale = 2)
+    @Column(name = "depreciation_rate")
     private double depreciationRate;
 
 
@@ -45,9 +45,10 @@ public class GoodsReceiptInspection {
     @Column(name = "attach_component_popup")
     private String attachComponentPopup;
 
-    @Column(name = "created_at", nullable = false)
+    private String updatedBy;
+
     private LocalDateTime createdDate = LocalDateTime.now();
-    @Column(name = "updated_at", nullable = false)
+
     private LocalDateTime updatedDate = LocalDateTime.now();
 
 

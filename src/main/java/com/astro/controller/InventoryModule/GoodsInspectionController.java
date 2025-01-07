@@ -51,6 +51,6 @@ public class GoodsInspectionController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteGoodsInspection(@PathVariable Long id) {
         goodsInspectionService.deleteGoodsInspection(id);
-        return ResponseEntity.ok("Purchase Order deleted successfully."+" " +id);
+        return ResponseEntity.ok("GoodsInspection deleted successfully."+" " +id);
     }
 }

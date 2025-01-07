@@ -15,6 +15,7 @@ public class GoodsReceiptInspectionDto {
     private double depreciationRate;
    // private double bookValue; //calculated automatically
     private String attachComponentPopup;
+    private String updatedBy;
 
 
 }

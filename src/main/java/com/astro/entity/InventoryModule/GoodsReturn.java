@@ -14,24 +14,25 @@ public class GoodsReturn {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "goods_return_note_no", nullable = false)
+    @Column(name = "goods_return_note_no")
     private String goodsReturnNoteNo;
 
-    @Column(name = "rejected_quantity", nullable = false)
+    @Column(name = "rejected_quantity")
     private Integer rejectedQuantity;
 
-    @Column(name = "return_quantity", nullable = false)
+    @Column(name = "return_quantity")
     private Integer returnQuantity;
 
-    @Column(name = "type_of_return", nullable = false)
+    @Column(name = "type_of_return")
     private String typeOfReturn;
 
-    @Column(name = "reason_of_return", nullable = false)
+    @Column(name = "reason_of_return")
     private String reasonOfReturn;
 
-    @Column(name = "created_at", nullable = false)
+    private String updatedBy;
+
     private LocalDateTime createdDate = LocalDateTime.now();
-    @Column(name = "updated_at", nullable = false)
+
     private LocalDateTime updatedDate = LocalDateTime.now();
 
 }

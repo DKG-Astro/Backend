@@ -21,5 +21,6 @@ public class PurchaseOrderDto {
     private String warranty;
     private String consigneeAddress;
     private String additionalTermsAndConditions;
+    private String updatedBy;
 
 }

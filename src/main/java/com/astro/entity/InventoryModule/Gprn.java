@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -91,5 +92,12 @@ public class Gprn {
     private String note;
 
     private String photographPath;
+
+
+    private String updatedBy;
+    @Column(name = "created_date", nullable = false)
+    private LocalDateTime createdDate = LocalDateTime.now();
+    @Column(name = "updated_date", nullable = false)
+    private LocalDateTime updatedDate = LocalDateTime.now();
 
 }

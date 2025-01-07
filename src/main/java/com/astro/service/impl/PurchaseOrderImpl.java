@@ -36,6 +36,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setWarranty(poDto.getWarranty());
         purchaseOrder.setConsigneeAddress(poDto.getConsigneeAddress());
         purchaseOrder.setAdditionalTermsAndConditions(poDto.getAdditionalTermsAndConditions());
+        purchaseOrder.setUpdatedBy(poDto.getUpdatedBy());
         return poRepository.save(purchaseOrder);
     }
 
@@ -60,12 +61,13 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         existingPO.setWarranty(poDto.getWarranty());
         existingPO.setConsigneeAddress(poDto.getConsigneeAddress());
         existingPO.setAdditionalTermsAndConditions(poDto.getAdditionalTermsAndConditions());
-
+        existingPO.setUpdatedBy(poDto.getUpdatedBy());
         return poRepository.save(existingPO);
     }
 
     @Override
     public List<PurchaseOrder> getAllPurchaseOrders() {
+
         return poRepository.findAll();
     }
 

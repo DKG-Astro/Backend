@@ -55,12 +55,13 @@ public class GprnServiceImpl implements GprnService {
         gprn.setWarranty(gprnRequestDto.getWarranty());
         gprn.setNote(gprnRequestDto.getNote());
         gprn.setPhotographPath(gprnRequestDto.getPhotographPath());
-        // Save GPRN
-        Gprn savedGprn = gprnRepository.save(gprn);
+        gprn.setUpdatedBy(gprnRequestDto.getUpdatedBy());
+
+        gprnRepository.save(gprn);
 
 
 
-        return savedGprn;
+        return gprn;
     }
 
     @Override
@@ -99,6 +100,7 @@ public class GprnServiceImpl implements GprnService {
         existing.setWarranty(gprnRequestDto.getWarranty());
         existing.setNote(gprnRequestDto.getNote());
         existing.setPhotographPath(gprnRequestDto.getPhotographPath());
+        existing.setUpdatedBy(gprnRequestDto.getUpdatedBy());
 
         return gprnRepository.save(existing);
     }

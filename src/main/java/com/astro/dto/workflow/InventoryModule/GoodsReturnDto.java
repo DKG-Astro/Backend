@@ -10,4 +10,5 @@ public class GoodsReturnDto {
     private Integer returnQuantity;
     private String typeOfReturn;
     private String reasonOfReturn;
+    private String updatedBy;
 }
