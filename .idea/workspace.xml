@@ -5,15 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ff5636e0-402f-4a63-8653-94f411351cbb" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/TransitionActionReqDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/constant/AppConstant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/constant/AppConstant.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/controller/WorkflowController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/controller/WorkflowController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/WorkflowTransitionDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/WorkflowTransitionDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/UserRoleMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/UserRoleMaster.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/WorkflowTransition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/WorkflowTransition.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/WorkflowService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/WorkflowService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/util/CommonUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/util/CommonUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/DDL-script.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/DDL-script.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,22 +29,46 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="2r1uCPsI5XA2NjEhHaKnSJ6mpbq" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.BackendServiceApplication.executor": "Run",
+    "JUnit.All in backend-service.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/UDAY CHOWDARY/Desktop/Backend/target/generated-sources",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.annotationProcessors"
+  }
+}]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\UDAY CHOWDARY\Desktop\Backend\target\generated-sources" />
+      <recent name="C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller" />
+      <recent name="C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow" />
+    </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.astro.service.impl" />
+      <recent name="com.astro.service" />
       <recent name="com.astro.repository" />
+      <recent name="com.astro.entity" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.BackendServiceApplication">
     <configuration name="BackendServiceApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.astro.BackendServiceApplication" />
       <module name="backend-service" />
@@ -61,9 +82,18 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="All in backend-service" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="backend-service" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Application.BackendServiceApplication" />
+        <item itemvalue="JUnit.All in backend-service" />
       </list>
     </recent_temporary>
   </component>
@@ -131,21 +161,5 @@
     <MESSAGE value="third commit" />
     <MESSAGE value="action related code" />
     <option name="LAST_COMMIT_MESSAGE" value="action related code" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java</url>
-          <line>274</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java</url>
-          <line>279</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
