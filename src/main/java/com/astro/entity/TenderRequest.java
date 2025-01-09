@@ -40,7 +40,7 @@ public class TenderRequest {
     private String preBidDisscussions;
     @Column(name = "updated_by")
     private String updatedBy;
-
+    private String createdBy;
     @Column(name = "created_date", nullable = false)
     private LocalDateTime createdDate = LocalDateTime.now();
     @Column(name = "updated_date", nullable = false)

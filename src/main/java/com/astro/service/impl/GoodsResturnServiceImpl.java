@@ -24,7 +24,7 @@ public class GoodsResturnServiceImpl implements GoodsReturnService {
         goodsReturn.setTypeOfReturn(goodsReturnDto.getTypeOfReturn());
         goodsReturn.setReasonOfReturn(goodsReturnDto.getReasonOfReturn());
         goodsReturn.setUpdatedBy(goodsReturnDto.getUpdatedBy());
-
+        goodsReturn.setCreatedBy(goodsReturnDto.getCreatedBy());
         return repository.save(goodsReturn);
     }
 
@@ -39,6 +39,7 @@ public class GoodsResturnServiceImpl implements GoodsReturnService {
         existing.setTypeOfReturn(goodsReturnDto.getTypeOfReturn());
         existing.setReasonOfReturn(goodsReturnDto.getReasonOfReturn());
         existing.setUpdatedBy(goodsReturnDto.getUpdatedBy());
+        existing.setCreatedBy(goodsReturnDto.getCreatedBy());
         return repository.save(existing);
     }
 

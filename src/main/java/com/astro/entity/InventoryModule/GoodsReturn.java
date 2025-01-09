@@ -30,6 +30,7 @@ public class GoodsReturn {
     private String reasonOfReturn;
 
     private String updatedBy;
+    private String createdBy;
 
     private LocalDateTime createdDate = LocalDateTime.now();
 

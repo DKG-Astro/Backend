@@ -47,7 +47,7 @@ public class GprnController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteGprn(@PathVariable Long id) {
         gprnService.deleteGprn(id);
-        return ResponseEntity.ok("Goods Return deleted successfully!");
+        return ResponseEntity.ok("Gprn deleted successfully!");
     }
 
 

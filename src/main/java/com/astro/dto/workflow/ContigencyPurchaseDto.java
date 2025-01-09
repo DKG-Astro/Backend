@@ -25,4 +25,6 @@ public class ContigencyPurchaseDto {
     private String predifinedPurchaseStatement;
     private String projectDetail;
     private String updatedBy;
+
+    private String createdBy;
 }

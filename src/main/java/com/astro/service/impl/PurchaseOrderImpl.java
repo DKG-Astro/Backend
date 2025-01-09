@@ -1,84 +1,186 @@
 package com.astro.service.impl;
 
-//import com.astro.dto.purchaseOrder.PurchaseOrderDto;
-import com.astro.dto.workflow.purchaseOrder.PurchaseOrderDto;
+
+
+import com.astro.dto.workflow.purchaseOrder.PurchaseOrderAttributesResponseDTO;
+
+import com.astro.dto.workflow.purchaseOrder.PurchaseOrderRequestDTO;
+import com.astro.dto.workflow.purchaseOrder.PurchaseOrderResponseDTO;
+import com.astro.entity.IndentCreation;
 import com.astro.entity.PurchaseOrder;
-import com.astro.repository.PurchaseOrderRepo;
+import com.astro.entity.PurchaseOrderAttributes;
+import com.astro.repository.PurchaseOrderAttributesRepository;
+
+import com.astro.repository.PurchaseOrderRepository;
+
 import com.astro.service.PurchaseOrderService;
-import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PurchaseOrderImpl implements PurchaseOrderService {
 
+    @Autowired
+    private PurchaseOrderRepository purchaseOrderRepository;
 
     @Autowired
-    private PurchaseOrderRepo poRepository;
-    @Override
-    public PurchaseOrder createPurchaseOrder(PurchaseOrderDto poDto) {
+    private PurchaseOrderAttributesRepository purchaseOrderAttributesRepository;
+
+    public PurchaseOrderResponseDTO createPurchaseOrder(PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
         PurchaseOrder purchaseOrder = new PurchaseOrder();
-        purchaseOrder.setTenderRequests(poDto.getTenderRequests());
-        purchaseOrder.setCorrespondingIndents(poDto.getCorrespondingIndents());
-        purchaseOrder.setMaterialDescription(poDto.getMaterialDescription());
-        purchaseOrder.setQuantity(poDto.getQuantity());
-        purchaseOrder.setUnitRate(poDto.getUnitRate());
-        purchaseOrder.setCurrency(poDto.getCurrency());
-        purchaseOrder.setExchangeRate(poDto.getExchangeRate());
-        purchaseOrder.setGstPercentage(poDto.getGstPercentage());
-        purchaseOrder.setDutiesPercentage(poDto.getDutiesPercentage());
-        purchaseOrder.setFreightCharges(poDto.getFreightCharges());
-        // Convert the delivery period string to a date
-        String deliveryPeriod = poDto.getDeliveryPeriod();  // Assuming it's a string like "01/02/2025"
-        purchaseOrder.setDeliveryPeriod(CommonUtils.convertStringToDateObject(deliveryPeriod));
-        purchaseOrder.setWarranty(poDto.getWarranty());
-        purchaseOrder.setConsigneeAddress(poDto.getConsigneeAddress());
-        purchaseOrder.setAdditionalTermsAndConditions(poDto.getAdditionalTermsAndConditions());
-        purchaseOrder.setUpdatedBy(poDto.getUpdatedBy());
-        return poRepository.save(purchaseOrder);
+        purchaseOrder.setTenderId(purchaseOrderRequestDTO.getTenderId());
+        purchaseOrder.setIndentId(purchaseOrderRequestDTO.getIndentId());
+        purchaseOrder.setWarranty(purchaseOrderRequestDTO.getWarranty());
+        purchaseOrder.setConsignesAddress(purchaseOrderRequestDTO.getConsignesAddress());
+        purchaseOrder.setBillingAddress(purchaseOrderRequestDTO.getBillingAddress());
+        purchaseOrder.setDeliveryPeriod(purchaseOrderRequestDTO.getDeliveryPeriod());
+        purchaseOrder.setIfLdClauseApplicable(purchaseOrderRequestDTO.getIfLdClauseApplicable());
+        purchaseOrder.setIncoterms(purchaseOrderRequestDTO.getIncoterms());
+        purchaseOrder.setPaymentterms(purchaseOrderRequestDTO.getPaymentterms());
+        purchaseOrder.setVendorName(purchaseOrderRequestDTO.getVendorName());
+        purchaseOrder.setVendorAddress(purchaseOrderRequestDTO.getVendorAddress());
+        purchaseOrder.setApplicablePbgToBeSubmitted(purchaseOrderRequestDTO.getApplicablePbgToBeSubmitted());
+        purchaseOrder.setTransposterAndFreightForWarderDetails(purchaseOrderRequestDTO.getTransposterAndFreightForWarderDetails());
+        purchaseOrder.setVendorAccountNumber(purchaseOrderRequestDTO.getVendorAccountNumber());
+        purchaseOrder.setVendorsZfscCode(purchaseOrderRequestDTO.getVendorsZfscCode());
+        purchaseOrder.setVendorAccountName(purchaseOrderRequestDTO.getVendorAccountName());
+        purchaseOrder.setCreatedBy(purchaseOrderRequestDTO.getCreatedBy());
+        purchaseOrder.setUpdatedBy(purchaseOrderRequestDTO.getUpdatedBy());
+        List<PurchaseOrderAttributes> purchaseOrderAttributes = purchaseOrderRequestDTO.getPurchaseOrderAttributes().stream()
+                .map(dto -> {
+                    PurchaseOrderAttributes attribute = new PurchaseOrderAttributes();
+                    attribute.setMaterialCode(dto.getMaterialCode());
+                    attribute.setMaterialDescription(dto.getMaterialDescription());
+                    attribute.setQuantity(dto.getQuantity());
+                    attribute.setRate(dto.getRate());
+                    attribute.setCurrency(dto.getCurrency());
+                    attribute.setExchangeRate(dto.getExchangeRate());
+                    attribute.setGst(dto.getGst());
+                    attribute.setDuties(dto.getDuties());
+                    attribute.setFreightCharge(dto.getFreightCharge());
+                    attribute.setBudgetCode(dto.getBudgetCode());
+                    attribute.setPurchaseOrder(purchaseOrder);  // Associate with PurchaseOrder
+                    return attribute;
+                })
+                .collect(Collectors.toList());
+
+        purchaseOrder.setPurchaseOrderAttributes(purchaseOrderAttributes);
+        purchaseOrderRepository.save(purchaseOrder);
+
+        return mapToResponseDTO(purchaseOrder);
     }
 
-    @Override
-    public PurchaseOrder updatePurchaseOrder(Long id, PurchaseOrderDto poDto) {
-        PurchaseOrder existingPO = poRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Purchase Order not found with id: " + id));
+    public PurchaseOrderResponseDTO updatePurchaseOrder(Long poId, PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
+        PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(poId).orElseThrow(() -> new RuntimeException("Purchase Order not found"));
 
-        // Update the fields
-        existingPO.setTenderRequests(poDto.getTenderRequests());
-        existingPO.setCorrespondingIndents(poDto.getCorrespondingIndents());
-        existingPO.setMaterialDescription(poDto.getMaterialDescription());
-        existingPO.setQuantity(poDto.getQuantity());
-        existingPO.setUnitRate(poDto.getUnitRate());
-        existingPO.setCurrency(poDto.getCurrency());
-        existingPO.setExchangeRate(poDto.getExchangeRate());
-        existingPO.setGstPercentage(poDto.getGstPercentage());
-        existingPO.setDutiesPercentage(poDto.getDutiesPercentage());
-        existingPO.setFreightCharges(poDto.getFreightCharges());
-        String deliveryPeriod = poDto.getDeliveryPeriod();
-        existingPO.setDeliveryPeriod(CommonUtils.convertStringToDateObject(deliveryPeriod));
-        existingPO.setWarranty(poDto.getWarranty());
-        existingPO.setConsigneeAddress(poDto.getConsigneeAddress());
-        existingPO.setAdditionalTermsAndConditions(poDto.getAdditionalTermsAndConditions());
-        existingPO.setUpdatedBy(poDto.getUpdatedBy());
-        return poRepository.save(existingPO);
+        purchaseOrder.setTenderId(purchaseOrderRequestDTO.getTenderId());
+        purchaseOrder.setIndentId(purchaseOrderRequestDTO.getIndentId());
+        purchaseOrder.setWarranty(purchaseOrderRequestDTO.getWarranty());
+        purchaseOrder.setConsignesAddress(purchaseOrderRequestDTO.getConsignesAddress());
+        purchaseOrder.setBillingAddress(purchaseOrderRequestDTO.getBillingAddress());
+        purchaseOrder.setDeliveryPeriod(purchaseOrderRequestDTO.getDeliveryPeriod());
+        purchaseOrder.setIfLdClauseApplicable(purchaseOrderRequestDTO.getIfLdClauseApplicable());
+        purchaseOrder.setIncoterms(purchaseOrderRequestDTO.getIncoterms());
+        purchaseOrder.setPaymentterms(purchaseOrderRequestDTO.getPaymentterms());
+        purchaseOrder.setVendorName(purchaseOrderRequestDTO.getVendorName());
+        purchaseOrder.setVendorAddress(purchaseOrderRequestDTO.getVendorAddress());
+        purchaseOrder.setApplicablePbgToBeSubmitted(purchaseOrderRequestDTO.getApplicablePbgToBeSubmitted());
+        purchaseOrder.setTransposterAndFreightForWarderDetails(purchaseOrderRequestDTO.getTransposterAndFreightForWarderDetails());
+        purchaseOrder.setVendorAccountNumber(purchaseOrderRequestDTO.getVendorAccountNumber());
+        purchaseOrder.setVendorsZfscCode(purchaseOrderRequestDTO.getVendorsZfscCode());
+        purchaseOrder.setVendorAccountName(purchaseOrderRequestDTO.getVendorAccountName());
+        purchaseOrder.setUpdatedBy(purchaseOrderRequestDTO.getUpdatedBy());
+        purchaseOrder.setCreatedBy(purchaseOrder.getCreatedBy());
+        List<PurchaseOrderAttributes> purchaseOrderAttributes = purchaseOrderRequestDTO.getPurchaseOrderAttributes().stream()
+                .map(dto -> {
+                    PurchaseOrderAttributes attribute = new PurchaseOrderAttributes();
+                    attribute.setMaterialCode(dto.getMaterialCode());
+                    attribute.setMaterialDescription(dto.getMaterialDescription());
+                    attribute.setQuantity(dto.getQuantity());
+                    attribute.setRate(dto.getRate());
+                    attribute.setCurrency(dto.getCurrency());
+                    attribute.setExchangeRate(dto.getExchangeRate());
+                    attribute.setGst(dto.getGst());
+                    attribute.setDuties(dto.getDuties());
+                    attribute.setFreightCharge(dto.getFreightCharge());
+                    attribute.setBudgetCode(dto.getBudgetCode());
+                    attribute.setPurchaseOrder(purchaseOrder);  // Associate with PurchaseOrder
+                    return attribute;
+                })
+                .collect(Collectors.toList());
+
+        purchaseOrder.setPurchaseOrderAttributes(purchaseOrderAttributes);
+        purchaseOrderRepository.save(purchaseOrder);
+
+        return mapToResponseDTO(purchaseOrder);
     }
 
-    @Override
-    public List<PurchaseOrder> getAllPurchaseOrders() {
-
-        return poRepository.findAll();
+    public PurchaseOrderResponseDTO getPurchaseOrderById(Long poId) {
+        PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(poId)
+                .orElseThrow(() -> new RuntimeException("Purchase Order not found"));
+        return mapToResponseDTO(purchaseOrder);  // Return the mapped response DTO
     }
 
-    @Override
-    public PurchaseOrder getPurchaseOrderById(Long poId) {
-        return poRepository.findById(poId).orElseThrow(() -> new RuntimeException("PO not found!"));
-    }
 
     @Override
+public List<PurchaseOrderResponseDTO> getAllPurchaseOrders() {
+    List<PurchaseOrder> purchaseOrders = purchaseOrderRepository.findAll();
+    return purchaseOrders.stream().map(this::mapToResponseDTO).collect(Collectors.toList());  // Map each PurchaseOrder to its DTO
+}
+
+
     public void deletePurchaseOrder(Long poId) {
-
-        poRepository.deleteById(poId);
+        purchaseOrderRepository.deleteById(poId);
     }
+
+    private PurchaseOrderResponseDTO mapToResponseDTO(PurchaseOrder purchaseOrder) {
+        PurchaseOrderResponseDTO responseDTO = new PurchaseOrderResponseDTO();
+        responseDTO.setPoId(purchaseOrder.getPoId());
+        responseDTO.setTenderId(purchaseOrder.getTenderId());
+        responseDTO.setIndentId(purchaseOrder.getIndentId());
+        responseDTO.setWarranty(purchaseOrder.getWarranty());
+        responseDTO.setConsignesAddress(purchaseOrder.getConsignesAddress());
+        responseDTO.setBillingAddress(purchaseOrder.getBillingAddress());
+        responseDTO.setDeliveryPeriod(purchaseOrder.getDeliveryPeriod());
+        responseDTO.setIfLdClauseApplicable(purchaseOrder.getIfLdClauseApplicable());
+        responseDTO.setIncoterms(purchaseOrder.getIncoterms());
+        responseDTO.setPaymentterms(purchaseOrder.getPaymentterms());
+        responseDTO.setVendorName(purchaseOrder.getVendorName());
+        responseDTO.setVendorAddress(purchaseOrder.getVendorAddress());
+        responseDTO.setApplicablePbgToBeSubmitted(purchaseOrder.getApplicablePbgToBeSubmitted());
+        responseDTO.setTransposterAndFreightForWarderDetails(purchaseOrder.getTransposterAndFreightForWarderDetails());
+        responseDTO.setVendorAccountNumber(purchaseOrder.getVendorAccountNumber());
+        responseDTO.setVendorsZfscCode(purchaseOrder.getVendorsZfscCode());
+        responseDTO.setVendorAccountName(purchaseOrder.getVendorAccountName());
+        responseDTO.setCreatedBy(purchaseOrder.getCreatedBy());
+        responseDTO.setUpdatedBy(purchaseOrder.getUpdatedBy());
+        responseDTO.setCreatedDate(purchaseOrder.getCreatedDate());
+        responseDTO.setUpdatedDate(purchaseOrder.getUpdatedDate());
+
+        responseDTO.setPurchaseOrderAttributes(purchaseOrder.getPurchaseOrderAttributes().stream()
+                .map(attribute -> {
+                    PurchaseOrderAttributesResponseDTO attributeDTO = new PurchaseOrderAttributesResponseDTO();
+                    attributeDTO.setId(attribute.getId());
+                    attributeDTO.setMaterialCode(attribute.getMaterialCode());
+                    attributeDTO.setMaterialDescription(attribute.getMaterialDescription());
+                    attributeDTO.setQuantity(attribute.getQuantity());
+                    attributeDTO.setRate(attribute.getRate());
+                    attributeDTO.setCurrency(attribute.getCurrency());
+                    attributeDTO.setExchangeRate(attribute.getExchangeRate());
+                    attributeDTO.setGst(attribute.getGst());
+                    attributeDTO.setDuties(attribute.getDuties());
+                    attributeDTO.setFreightCharge(attribute.getFreightCharge());
+                    attributeDTO.setBudgetCode(attribute.getBudgetCode());
+                    return attributeDTO;
+                })
+                .collect(Collectors.toList()));
+
+        return responseDTO;
+    }
+
+
 }

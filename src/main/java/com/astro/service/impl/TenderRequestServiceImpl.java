@@ -46,7 +46,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         tenderRequest.setUploadSpecificTermsAndConditions(tenderRequestDto.getUploadSpecificTermsAndConditions());
         tenderRequest.setPreBidDisscussions(tenderRequestDto.getPreBidDisscussions());
         tenderRequest.setUpdatedBy(tenderRequestDto.getUpdatedBy());
-
+        tenderRequest.setCreatedBy(tenderRequestDto.getCreatedBy());
 
         TRrepo.save(tenderRequest);
 
@@ -84,6 +84,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         existingTR.setUploadSpecificTermsAndConditions(tenderRequestDto.getUploadSpecificTermsAndConditions());
         existingTR.setPreBidDisscussions(tenderRequestDto.getPreBidDisscussions());
         existingTR.setUpdatedBy(tenderRequestDto.getUpdatedBy());
+        existingTR.setCreatedBy(tenderRequestDto.getCreatedBy());
          TRrepo.save(existingTR);
 
         return existingTR;

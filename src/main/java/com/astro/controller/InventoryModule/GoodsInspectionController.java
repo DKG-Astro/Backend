@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/goods-inspections")
+@RequestMapping("/api/goods-inspections")
 public class GoodsInspectionController {
 
     @Autowired
@@ -32,7 +32,7 @@ public class GoodsInspectionController {
         return ResponseEntity.ok(inspections);
     }
 
-    // Get a single Goods Inspection by ID
+
     @GetMapping("/{id}")
     public ResponseEntity<GoodsInspection> getGoodsInspectionById(@PathVariable Long id) {
         GoodsInspection inspection = goodsInspectionService.getGoodsInspectionById(id);

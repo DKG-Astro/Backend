@@ -33,7 +33,7 @@ public class GoodsInspection {
 
     @Column(name = "rejected_quantity", nullable = false)
     private int rejectedQuantity;
-
+    private String createdBy;
     private String updatedBy;
 
     private LocalDateTime createdDate = LocalDateTime.now();

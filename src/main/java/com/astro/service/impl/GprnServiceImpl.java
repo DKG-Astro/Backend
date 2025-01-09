@@ -37,9 +37,10 @@ public class GprnServiceImpl implements GprnService {
         gprn.setExpectedSupplyDate(CommonUtils.convertStringToDateObject(ExpectedSupplyDate));
         gprn.setConsigneeDetail(gprnRequestDto.getConsigneeDetail());
         gprn.setReceivedBy(gprnRequestDto.getReceivedBy());
-
-
-
+        gprn.setWarranty(gprnRequestDto.getWarranty());
+        gprn.setProject(gprnRequestDto.getProject());
+         gprn.setVendorEmail(gprnRequestDto.getVendorEmail());
+         gprn.setVendorContactNo(gprnRequestDto.getVendorContactNo());
         // Save Material Details
         gprn.setMaterialCode(gprnRequestDto.getMaterialCode());
         gprn.setDescription(gprnRequestDto.getDescription());
@@ -48,14 +49,15 @@ public class GprnServiceImpl implements GprnService {
         gprn.setQuantityDelivered(gprnRequestDto.getQuantityDelivered());
         gprn.setReceivedQuantity(gprnRequestDto.getReceivedQuantity());
         gprn.setUnitPrice(gprnRequestDto.getUnitPrice());
-          //  material.setNetPrice(materialDto.getNetPrice());
+        gprn.setNetPrice(gprnRequestDto.getNetPrice());
         gprn.setMakeNo(gprnRequestDto.getMakeNo());
         gprn.setModelNo(gprnRequestDto.getModelNo());
         gprn.setSerialNo(gprnRequestDto.getSerialNo());
-        gprn.setWarranty(gprnRequestDto.getWarranty());
+        gprn.setWarrantyYears(gprnRequestDto.getWarrantyYears());
         gprn.setNote(gprnRequestDto.getNote());
         gprn.setPhotographPath(gprnRequestDto.getPhotographPath());
         gprn.setUpdatedBy(gprnRequestDto.getUpdatedBy());
+        gprn.setCreatedBy(gprnRequestDto.getCreatedBy());
 
         gprnRepository.save(gprn);
 
@@ -82,7 +84,8 @@ public class GprnServiceImpl implements GprnService {
         existing.setExpectedSupplyDate(CommonUtils.convertStringToDateObject(ExpectedSupplyDate));
         existing.setConsigneeDetail(gprnRequestDto.getConsigneeDetail());
         existing.setReceivedBy(gprnRequestDto.getReceivedBy());
-
+        existing.setWarranty(gprnRequestDto.getWarranty());
+        existing.setWarrantyYears(gprnRequestDto.getWarrantyYears());
 
 
         // Save Material Details
@@ -94,14 +97,15 @@ public class GprnServiceImpl implements GprnService {
         existing.setReceivedQuantity(gprnRequestDto.getReceivedQuantity());
         existing.setUnitPrice(gprnRequestDto.getUnitPrice());
         //  material.setNetPrice(materialDto.getNetPrice());
+        existing.setNetPrice(gprnRequestDto.getNetPrice());
         existing.setMakeNo(gprnRequestDto.getMakeNo());
         existing.setModelNo(gprnRequestDto.getModelNo());
         existing.setSerialNo(gprnRequestDto.getSerialNo());
-        existing.setWarranty(gprnRequestDto.getWarranty());
+
         existing.setNote(gprnRequestDto.getNote());
         existing.setPhotographPath(gprnRequestDto.getPhotographPath());
         existing.setUpdatedBy(gprnRequestDto.getUpdatedBy());
-
+        existing.setCreatedBy(gprnRequestDto.getCreatedBy());
         return gprnRepository.save(existing);
     }
 

@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "purchase_order")
@@ -17,40 +18,31 @@ public class PurchaseOrder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long poId;
 
-    @Column(nullable = false)
-    private String tenderRequests; // Comma-separated tender requests
+    private String tenderId;
+    private String indentId;
 
-    @Column(nullable = false)
-    private String correspondingIndents; // Comma-separated indent IDs
+    private BigDecimal warranty;
+    private String consignesAddress;
+    private String billingAddress;
 
-    @Column(nullable = false)
-    private String materialDescription;
+    private BigDecimal deliveryPeriod;
+    private  Boolean ifLdClauseApplicable;
+    private String incoterms;
+    @Column(name = "paymentterms")
+    private String paymentterms;
+    private String vendorName;
+    private String vendorAddress;
+    private String applicablePbgToBeSubmitted;
+    @Column(name = "transposter_and_freight_for_warder_details ")
+    private String transposterAndFreightForWarderDetails;
+    private String vendorAccountNumber;
+    private String vendorsZfscCode;
+    private String vendorAccountName;
 
-    @Column(nullable = false)
-    private Integer quantity;
-
-    @Column(nullable = false)
-    private BigDecimal unitRate;
-
-    @Column(nullable = false)
-    private String currency;
-
-    private BigDecimal exchangeRate;
-
-    @Column(nullable = false)
-    private BigDecimal gstPercentage;
-    @Column(nullable = false)
-    private BigDecimal dutiesPercentage;
-
-    private BigDecimal freightCharges;
-
-    private LocalDate deliveryPeriod;
-
-    private String warranty;
-
-    private String consigneeAddress;
-
-    private String additionalTermsAndConditions;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "purchase_order_id")
+    private List<PurchaseOrderAttributes> purchaseOrderAttributes;
+    private String createdBy;
     private String updatedBy;
     private LocalDateTime createdDate = LocalDateTime.now();
     private LocalDateTime updatedDate = LocalDateTime.now();

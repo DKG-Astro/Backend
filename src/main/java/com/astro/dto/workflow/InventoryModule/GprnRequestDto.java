@@ -2,6 +2,7 @@ package com.astro.dto.workflow.InventoryModule;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -13,6 +14,8 @@ public class GprnRequestDto {
     private String deliveryChallanDate;
     private String vendorId;
     private String vendorName;
+    private String vendorEmail;
+    private Long vendorContactNo;
     private String fieldStation;
     private String indentorName;
     private String expectedSupplyDate;
@@ -25,13 +28,17 @@ public class GprnRequestDto {
     private Integer quantityDelivered;
     private Integer receivedQuantity;
     private Double unitPrice;
-    private Double netPrice;
+    private BigDecimal netPrice;
     private String makeNo;
     private String modelNo;
     private String serialNo;
     private String warranty;
+    private Integer warrantyYears;
+    private String project;
+
     private String note;
     private String photographPath;
     private String updatedBy;
+    private String createdBy;
 
 }

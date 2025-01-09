@@ -21,4 +21,5 @@ public class AssetDTO {
     private String currentCondition;
 
     private String updatedBy;
+    private String createdBy;
 }

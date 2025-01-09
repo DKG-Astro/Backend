@@ -34,7 +34,7 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
         contigencyPurchase.setPredifinedPurchaseStatement(contigencyPurchaseDto.getPredifinedPurchaseStatement());
         contigencyPurchase.setProjectDetail(contigencyPurchaseDto.getProjectDetail());
         contigencyPurchase.setUpdateBy(contigencyPurchaseDto.getUpdatedBy());
-
+        contigencyPurchase.setCreatedBy(contigencyPurchaseDto.getCreatedBy());
         CPrepo.save(contigencyPurchase);
 
         return contigencyPurchase;
@@ -59,6 +59,7 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
         existingCP.setPredifinedPurchaseStatement(contigencyPurchaseDto.getPredifinedPurchaseStatement());
         existingCP.setProjectDetail(contigencyPurchaseDto.getProjectDetail());
         existingCP.setUpdateBy(contigencyPurchaseDto.getUpdatedBy());
+        existingCP.setCreatedBy(contigencyPurchaseDto.getCreatedBy());
    CPrepo.save(existingCP);
 
         return existingCP;

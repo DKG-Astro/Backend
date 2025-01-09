@@ -83,28 +83,6 @@ CREATE TABLE `astrodatabase`.`state_master` (
 
 
 
-CREATE TABLE purchase_order (
-    po_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    tender_requests VARCHAR(255) NOT NULL,
-    corresponding_indents VARCHAR(255) NOT NULL,
-    material_description VARCHAR(255) NOT NULL,
-    quantity INT NOT NULL,
-    unit_rate DECIMAL(15, 2) NOT NULL,
-    currency VARCHAR(50) NOT NULL,
-    exchange_rate DECIMAL(15, 4),
-    gst_percentage DECIMAL(5, 2) NOT NULL,
-    duties_percentage DECIMAL(5, 2) NOT NULL,
-    freight_charges DECIMAL(15, 2),
-    delivery_period VARCHAR(100),
-    warranty VARCHAR(255),
-    consignee_address VARCHAR(500),
-    additional_terms_and_conditions TEXT,
-    updated_by varchar(200),
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-
 --Inventory Modules
 CREATE TABLE GPRN (
     gprn_no BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -137,6 +115,7 @@ CREATE TABLE GPRN (
     warranty TEXT,
     note TEXT,
     photograph_path TEXT ,
+    created_by VARCHAR(255),
     updated_by VARCHAR(255),
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -149,6 +128,7 @@ CREATE TABLE goods_inspection (
     upload_installation_report text, -- For storing PDF files
     accepted_quantity INT NOT NULL,
     rejected_quantity INT NOT NULL,
+    created_by VARCHAR(255),
     updated_by varchar(200),
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -163,6 +143,7 @@ CREATE TABLE goods_return (
     type_of_return VARCHAR(100) NOT NULL,
     reason_of_return TEXT NOT NULL,
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_by varchar(200),
     updated_by varchar(200),
     updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -181,6 +162,7 @@ CREATE TABLE goods_receipt_inspection (
 									-- add the book value atribute
     attach_component_popup TEXT,
     updated_by varchar(200),
+    created_by varchar(200),
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -201,6 +183,7 @@ CREATE TABLE asset (
     transaction_history TEXT,
     current_condition VARCHAR(50) ,
     updated_by varchar(200),
+    created_by varchar(200),
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -228,6 +211,7 @@ CREATE TABLE tender_request (
     upload_general_terms_and_conditions BLOB,
     upload_specific_terms_and_conditions BLOB,
     pre_bid_disscussions TEXT,
+    created_by varchar(200),
      updated_by VARCHAR(255),
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -247,10 +231,96 @@ CREATE TABLE contigency_purchase (
     upload_copy_of_invoice BLOB,
     predifined_purchase_statement VARCHAR(255),
     project_detail VARCHAR(255),
+    created_by varchar(255),
     update_by VARCHAR(255),
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+
+CREATE TABLE indent_creation (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    indentor_name VARCHAR(255) NOT NULL,
+    indentor_id VARCHAR(255) NOT NULL,
+    indentor_mobile_no VARCHAR(20),
+    indentor_email_address VARCHAR(255),
+    consignes_location VARCHAR(255),
+    uploading_prior_approvals VARCHAR(255),
+    project_name VARCHAR(255),
+    upload_tender_documents BLOB,
+    is_pre_bit_meeting_required BOOLEAN,
+    pre_bid_meeting_date DATE,
+    pre_bid_meeting_venue VARCHAR(255),
+    is_it_a_rate_contract_indent BOOLEAN,
+    estimated_rate DECIMAL(10, 2),
+    period_of_contract DECIMAL(10, 2),
+    single_and_multiple_job VARCHAR(50),
+    upload_goi_or_rfp BLOB,
+    upload_pac_or_brand_pac BLOB,
+    created_by VARCHAR(255),
+    updated_by VARCHAR(255),
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+select *from  material_details
+CREATE TABLE material_details (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    material_code VARCHAR(255) NOT NULL,
+    material_description TEXT,
+    quantity DECIMAL(10, 2),
+    unit_price DECIMAL(10, 2),
+    uom VARCHAR(50),
+    total_price DECIMAL(10, 2),
+    budget_code VARCHAR(255),
+    material_category VARCHAR(255),
+    material_sub_category VARCHAR(255),
+    material_and_job VARCHAR(255),
+    indent_creation_id BIGINT,
+    FOREIGN KEY (indent_creation_id) REFERENCES indent_creation(id) ON DELETE CASCADE
+);
+
+CREATE TABLE purchase_order (
+    po_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    tender_id VARCHAR(255),
+    indent_id VARCHAR(255),
+    warranty DECIMAL(10, 2),
+    consignes_address VARCHAR(255),
+    billing_address VARCHAR(255),
+    delivery_period DECIMAL(10, 2),
+    if_ld_clause_applicable BOOLEAN,
+    incoterms VARCHAR(255),
+    paymentterms VARCHAR(255),
+    vendor_name VARCHAR(255),
+    vendor_address VARCHAR(255),
+    applicable_pbg_to_be_submitted VARCHAR(255),
+    transposter_and_freight_for_warder_details VARCHAR(255),
+    vendor_account_number VARCHAR(255),
+    vendors_zfsc_code VARCHAR(255),
+    vendor_account_name VARCHAR(255),
+    created_by VARCHAR(255),
+    updated_by VARCHAR(255),
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE purchase_order_attributes (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    material_code VARCHAR(255),
+    material_description VARCHAR(255),
+    quantity DECIMAL(10, 2),
+    rate DECIMAL(10, 2),
+    currency VARCHAR(255),
+    exchange_rate DECIMAL(10, 2),
+    gst DECIMAL(10, 2),
+    duties DECIMAL(10, 2),
+    freight_charge DECIMAL(10, 2),
+    budget_code VARCHAR(255),
+    purchase_order_id BIGINT,
+    FOREIGN KEY (purchase_order_id) REFERENCES purchase_order(po_id)
+);
+
+
+
 
 
 

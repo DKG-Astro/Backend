@@ -31,6 +31,7 @@ public class ContigencyPurchase {
     private String predifinedPurchaseStatement;
     private String projectDetail;
     private String updateBy;
+    private String createdBy;
 
     private LocalDateTime createdDate = LocalDateTime.now();
 

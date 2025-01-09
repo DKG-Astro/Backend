@@ -93,6 +93,7 @@ public class Gprn {
 
     private String photographPath;
 
+    private String createdBy;
 
     private String updatedBy;
     @Column(name = "created_date", nullable = false)

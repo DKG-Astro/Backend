@@ -33,6 +33,7 @@ public class AssetServiceImpl implements AssetService {
         asset.setTransactionHistory(assetDTO.getTransactionHistory());
         asset.setCurrentCondition(assetDTO.getCurrentCondition());
         asset.setUpdatedBy(assetDTO.getUpdatedBy());
+        asset.setCreatedBy(assetDTO.getCreatedBy());
         return assetRepository.save(asset);
     }
 
@@ -53,6 +54,7 @@ public class AssetServiceImpl implements AssetService {
         asset.setTransactionHistory(assetDTO.getTransactionHistory());
         asset.setCurrentCondition(assetDTO.getCurrentCondition());
         asset.setUpdatedBy(assetDTO.getUpdatedBy());
+        asset.setCreatedBy(assetDTO.getCreatedBy());
         return assetRepository.save(asset);
     }
 

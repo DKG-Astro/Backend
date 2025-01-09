@@ -36,6 +36,7 @@ public class TenderRequestDto {
     private byte[] uploadSpecificTermsAndConditions;
     private String preBidDisscussions;
     private String updatedBy;
+    private String createdBy;
 
 
 }

@@ -47,6 +47,8 @@ public class GoodsReceiptInspection {
 
     private String updatedBy;
 
+    private String createdBy;
+
     private LocalDateTime createdDate = LocalDateTime.now();
 
     private LocalDateTime updatedDate = LocalDateTime.now();

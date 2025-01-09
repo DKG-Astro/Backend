@@ -16,6 +16,7 @@ public class GoodsReceiptInspectionDto {
    // private double bookValue; //calculated automatically
     private String attachComponentPopup;
     private String updatedBy;
+    private String createdBy;
 
 
 }

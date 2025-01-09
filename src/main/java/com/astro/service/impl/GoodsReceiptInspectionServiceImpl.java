@@ -31,6 +31,7 @@ public class GoodsReceiptInspectionServiceImpl implements GoodsReceiptInspection
         entity.setDepreciationRate(dto.getDepreciationRate());
         entity.setAttachComponentPopup(dto.getAttachComponentPopup());
         entity.setUpdatedBy(dto.getUpdatedBy());
+        entity.setCreatedBy(dto.getCreatedBy());
         return GRIrepository.save(entity);
     }
 
@@ -49,6 +50,7 @@ public class GoodsReceiptInspectionServiceImpl implements GoodsReceiptInspection
         entity.setDepreciationRate(dto.getDepreciationRate());
         entity.setUpdatedBy(dto.getUpdatedBy());
         entity.setAttachComponentPopup(dto.getAttachComponentPopup());
+        entity.setCreatedBy(dto.getCreatedBy());
         return GRIrepository.save(entity);
     }
 

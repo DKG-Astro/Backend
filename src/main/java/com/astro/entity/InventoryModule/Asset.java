@@ -41,6 +41,8 @@ public class Asset {
     private String currentCondition;
 
     private String updatedBy;
+    private String createdBy;
+
 
     private LocalDateTime createdDate = LocalDateTime.now();
 

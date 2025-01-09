@@ -11,5 +11,6 @@ public class GoodsInspectionDto {
     private int acceptedQuantity;
     private int rejectedQuantity;
     private String updatedBy;
+    private String createdBy;
 
 }
