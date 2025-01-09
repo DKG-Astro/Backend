@@ -9,6 +9,7 @@ import com.astro.dto.workflow.purchaseOrder.PurchaseOrderResponseDTO;
 import com.astro.entity.IndentCreation;
 import com.astro.entity.PurchaseOrder;
 import com.astro.entity.PurchaseOrderAttributes;
+import com.astro.entity.ServiceOrder;
 import com.astro.repository.PurchaseOrderAttributesRepository;
 
 import com.astro.repository.PurchaseOrderRepository;
@@ -134,7 +135,7 @@ public List<PurchaseOrderResponseDTO> getAllPurchaseOrders() {
 
 
     public void deletePurchaseOrder(Long poId) {
-        purchaseOrderRepository.deleteById(poId);
+      purchaseOrderRepository.deleteById(poId);
     }
 
     private PurchaseOrderResponseDTO mapToResponseDTO(PurchaseOrder purchaseOrder) {
