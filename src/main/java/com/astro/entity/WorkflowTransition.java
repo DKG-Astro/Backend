@@ -54,6 +54,9 @@ public class WorkflowTransition {
     @Column(name = "TRANSITIONORDER")
     private Integer transitionOrder;
 
+    @Column(name = "WORKFLOWSEQUENCE")
+    private Integer workflowSequence;
+
     @Column(name = "TRANSITIONSUBORDER")
     private Integer transitionSubOrder;
 

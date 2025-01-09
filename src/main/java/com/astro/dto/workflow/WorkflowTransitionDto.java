@@ -27,6 +27,7 @@ public class WorkflowTransitionDto {
     private Integer transitionSubOrder;
     private String currentRole;
     private String nextRole;
+    private Integer workflowSequence;
     private Date modificationDate;
     private Date createdDate;
 }

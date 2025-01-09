@@ -38,8 +38,13 @@ public class WorkflowController {
     }
 
     @GetMapping("/workflowTransitionHistory")
-    public ResponseEntity<Object> workflowTransitionHistory(@RequestParam Integer workflowId, @RequestParam(required = false) Integer createdBy, @RequestParam(required = false) Integer requestId, @RequestParam(required = false) String roleName)  {
-        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.workflowTransitionHistory(workflowId, createdBy, requestId, roleName)), HttpStatus.OK);
+    public ResponseEntity<Object> workflowTransitionHistory(@RequestParam Integer requestId)  {
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.workflowTransitionHistory(requestId)), HttpStatus.OK);
+    }
+
+    @GetMapping("/pendingWorkflowTransition")
+    public ResponseEntity<Object> pendingWorkflowTransition(@RequestParam String roleName)  {
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.allPendingWorkflowTransition(roleName)), HttpStatus.OK);
     }
 
     @GetMapping("/nextTransition")

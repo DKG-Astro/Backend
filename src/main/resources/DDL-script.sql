@@ -68,6 +68,7 @@ CREATE TABLE `astrodatabase`.`state_master` (
   `nextAction` VARCHAR(100) NULL,
   `transitionOrder` INT NOT NULL,
   `transitionSubOrder` INT NOT NULL,
+  `workflowSequence` INT NOT NULL,
   `createdDate` DATETIME NULL,
   `modificationDate` DATETIME NULL,
   PRIMARY KEY (`workflowTransitionId`));
