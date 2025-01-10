@@ -358,6 +358,51 @@ CREATE TABLE service_order_material (
 );
 
 
+CREATE TABLE work_order (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    tender_id VARCHAR(255),
+    consignes_address VARCHAR(255),
+    billing_address VARCHAR(255),
+    job_completion_period DECIMAL(10, 2),
+    if_ld_clause_applicable BOOLEAN,
+    inco_terms VARCHAR(255),
+    payment_terms VARCHAR(255),
+    vendor_name VARCHAR(255),
+    vendor_address VARCHAR(255),
+    applicable_pbg_to_be_submitted VARCHAR(255),
+    vendors_account_no VARCHAR(255),
+    vendors_zrsc_code VARCHAR(255),
+    vendors_account_name VARCHAR(255),
+    created_by varchar(200),
+    updated_by varchar(200),
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE work_order_material (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    work_code VARCHAR(255),
+    work_description VARCHAR(255),
+    quantity DECIMAL(10, 2),
+    rate DECIMAL(10, 2),
+    exchange_rate DECIMAL(10, 2),
+    currency VARCHAR(50),
+    gst DECIMAL(10, 2),
+    duties DECIMAL(10, 2),
+    budget_code VARCHAR(255),
+    work_order_id BIGINT,
+    FOREIGN KEY (work_order_id) REFERENCES work_order(id) ON DELETE CASCADE
+);
+
+
+
+
+
+
+
+
+
+
 
 
 

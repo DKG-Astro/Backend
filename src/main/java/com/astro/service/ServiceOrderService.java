@@ -1,7 +1,7 @@
 package com.astro.service;
 
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.SreviceOrderDto.ServiceOrderRequestDTO;
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.SreviceOrderDto.ServiceOrderResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderRequestDTO;
+import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderResponseDTO;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package com.astro.service.impl;
 
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.TenderRequestDto;
+import com.astro.dto.workflow.ProcurementDtos.TenderRequestDto;
 import com.astro.entity.ProcurementModule.TenderRequest;
 import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.service.TenderRequestService;

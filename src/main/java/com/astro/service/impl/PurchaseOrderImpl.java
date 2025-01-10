@@ -2,10 +2,10 @@ package com.astro.service.impl;
 
 
 
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.purchaseOrder.PurchaseOrderAttributesResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderAttributesResponseDTO;
 
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.purchaseOrder.PurchaseOrderRequestDTO;
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.purchaseOrder.PurchaseOrderResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderRequestDTO;
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderResponseDTO;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;

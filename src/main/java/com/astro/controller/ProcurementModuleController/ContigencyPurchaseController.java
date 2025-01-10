@@ -1,6 +1,6 @@
 package com.astro.controller.ProcurementModuleController;
 
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.ContigencyPurchaseDto;
+import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseDto;
 import com.astro.entity.ProcurementModule.ContigencyPurchase;
 import com.astro.service.ContigencyPurchaseService;
 import org.springframework.beans.factory.annotation.Autowired;

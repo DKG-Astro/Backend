@@ -1,6 +1,6 @@
 package com.astro.controller.ProcurementModuleController;
 
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.TenderRequestDto;
+import com.astro.dto.workflow.ProcurementDtos.TenderRequestDto;
 import com.astro.entity.ProcurementModule.TenderRequest;
 import com.astro.service.TenderRequestService;
 import org.springframework.beans.factory.annotation.Autowired;

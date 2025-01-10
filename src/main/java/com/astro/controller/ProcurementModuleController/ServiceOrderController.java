@@ -1,8 +1,8 @@
 package com.astro.controller.ProcurementModuleController;
 
 
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.SreviceOrderDto.ServiceOrderRequestDTO;
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.SreviceOrderDto.ServiceOrderResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderRequestDTO;
+import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderResponseDTO;
 import com.astro.service.ServiceOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

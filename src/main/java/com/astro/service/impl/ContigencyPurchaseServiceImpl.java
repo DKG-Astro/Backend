@@ -1,6 +1,6 @@
 package com.astro.service.impl;
 
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.ContigencyPurchaseDto;
+import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseDto;
 import com.astro.entity.ProcurementModule.ContigencyPurchase;
 import com.astro.repository.ProcurementModule.ContigencyPurchaseRepository;
 import com.astro.service.ContigencyPurchaseService;

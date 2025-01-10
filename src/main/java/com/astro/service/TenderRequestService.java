@@ -1,7 +1,7 @@
 package com.astro.service;
 
 
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.TenderRequestDto;
+import com.astro.dto.workflow.ProcurementDtos.TenderRequestDto;
 import com.astro.entity.ProcurementModule.TenderRequest;
 
 import java.util.List;

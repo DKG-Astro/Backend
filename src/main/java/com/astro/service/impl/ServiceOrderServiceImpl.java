@@ -1,8 +1,8 @@
 package com.astro.service.impl;
 
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.SreviceOrderDto.ServiceOrderMaterialResponseDTO;
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.SreviceOrderDto.ServiceOrderRequestDTO;
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.SreviceOrderDto.ServiceOrderResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderMaterialResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderRequestDTO;
+import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderResponseDTO;
 
 import com.astro.entity.ProcurementModule.ServiceOrder;
 import com.astro.entity.ProcurementModule.ServiceOrderMaterial;
