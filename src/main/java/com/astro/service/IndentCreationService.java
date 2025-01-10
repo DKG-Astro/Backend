@@ -1,8 +1,7 @@
 package com.astro.service;
 
-import com.astro.dto.workflow.IndentDto.IndentCreationRequestDTO;
-import com.astro.dto.workflow.IndentDto.IndentCreationResponseDTO;
-import com.astro.entity.IndentCreation;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationRequestDTO;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 
 import java.util.List;
 

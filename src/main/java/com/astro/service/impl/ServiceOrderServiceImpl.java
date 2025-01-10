@@ -1,13 +1,13 @@
 package com.astro.service.impl;
 
-import com.astro.dto.workflow.SreviceOrderDto.ServiceOrderMaterialResponseDTO;
-import com.astro.dto.workflow.SreviceOrderDto.ServiceOrderRequestDTO;
-import com.astro.dto.workflow.SreviceOrderDto.ServiceOrderResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.SreviceOrderDto.ServiceOrderMaterialResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.SreviceOrderDto.ServiceOrderRequestDTO;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.SreviceOrderDto.ServiceOrderResponseDTO;
 
-import com.astro.entity.ServiceOrder;
-import com.astro.entity.ServiceOrderMaterial;
-import com.astro.repository.ServiceOrderRepository.ServiceOrderMaterialRepository;
-import com.astro.repository.ServiceOrderRepository.ServiceOrderRepository;
+import com.astro.entity.ProcurementModule.ServiceOrder;
+import com.astro.entity.ProcurementModule.ServiceOrderMaterial;
+import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrderMaterialRepository;
+import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrderRepository;
 import com.astro.service.ServiceOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

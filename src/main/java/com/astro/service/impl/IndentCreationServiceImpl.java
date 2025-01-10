@@ -1,12 +1,12 @@
 package com.astro.service.impl;
 
-import com.astro.dto.workflow.IndentDto.IndentCreationRequestDTO;
-import com.astro.dto.workflow.IndentDto.IndentCreationResponseDTO;
-import com.astro.dto.workflow.IndentDto.MaterialDetailsResponseDTO;
-import com.astro.entity.IndentCreation;
-import com.astro.entity.MaterialDetails;
-import com.astro.repository.IndentCreation.IndentCreationRepository;
-import com.astro.repository.IndentCreation.MaterialDetailsRepository;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationRequestDTO;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsResponseDTO;
+import com.astro.entity.ProcurementModule.IndentCreation;
+import com.astro.entity.ProcurementModule.MaterialDetails;
+import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
+import com.astro.repository.ProcurementModule.IndentCreation.MaterialDetailsRepository;
 import com.astro.service.IndentCreationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

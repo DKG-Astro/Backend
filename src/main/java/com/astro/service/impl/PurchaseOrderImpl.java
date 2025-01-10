@@ -2,23 +2,20 @@ package com.astro.service.impl;
 
 
 
-import com.astro.dto.workflow.purchaseOrder.PurchaseOrderAttributesResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.purchaseOrder.PurchaseOrderAttributesResponseDTO;
 
-import com.astro.dto.workflow.purchaseOrder.PurchaseOrderRequestDTO;
-import com.astro.dto.workflow.purchaseOrder.PurchaseOrderResponseDTO;
-import com.astro.entity.IndentCreation;
-import com.astro.entity.PurchaseOrder;
-import com.astro.entity.PurchaseOrderAttributes;
-import com.astro.entity.ServiceOrder;
-import com.astro.repository.PurchaseOrderAttributesRepository;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.purchaseOrder.PurchaseOrderRequestDTO;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.purchaseOrder.PurchaseOrderResponseDTO;
+import com.astro.entity.ProcurementModule.PurchaseOrder;
+import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
+import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;
 
-import com.astro.repository.PurchaseOrderRepository;
+import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderRepository;
 
 import com.astro.service.PurchaseOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 

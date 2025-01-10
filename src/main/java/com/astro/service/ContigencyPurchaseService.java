@@ -1,9 +1,7 @@
 package com.astro.service;
 
-import com.astro.dto.workflow.ContigencyPurchaseDto;
-import com.astro.dto.workflow.TenderRequestDto;
-import com.astro.entity.ContigencyPurchase;
-import com.astro.entity.TenderRequest;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.ContigencyPurchaseDto;
+import com.astro.entity.ProcurementModule.ContigencyPurchase;
 
 import java.util.List;
 

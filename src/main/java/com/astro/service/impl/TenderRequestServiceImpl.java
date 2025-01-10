@@ -1,9 +1,8 @@
 package com.astro.service.impl;
 
-import com.astro.dto.workflow.TenderRequestDto;
-import com.astro.entity.PurchaseOrder;
-import com.astro.entity.TenderRequest;
-import com.astro.repository.TenderRequestRepository;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.TenderRequestDto;
+import com.astro.entity.ProcurementModule.TenderRequest;
+import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.service.TenderRequestService;
 import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;

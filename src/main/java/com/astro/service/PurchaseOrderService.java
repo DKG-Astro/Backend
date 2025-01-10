@@ -2,9 +2,8 @@ package com.astro.service;
 
 
 
-import com.astro.dto.workflow.purchaseOrder.PurchaseOrderRequestDTO;
-import com.astro.dto.workflow.purchaseOrder.PurchaseOrderResponseDTO;
-import com.astro.entity.PurchaseOrder;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.purchaseOrder.PurchaseOrderRequestDTO;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.purchaseOrder.PurchaseOrderResponseDTO;
 
 import java.util.List;
 
