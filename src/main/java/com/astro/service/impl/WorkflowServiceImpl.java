@@ -228,7 +228,7 @@ public class WorkflowServiceImpl implements WorkflowService {
     public List<WorkflowTransitionDto> allPendingWorkflowTransition(String roleName) {
         List<WorkflowTransitionDto> workflowTransitionDtoList = new ArrayList<>();
 
-        List<WorkflowTransition> workflowTransitionList  = workflowTransitionRepository.findByNextActionAndnextRole(AppConstant.PENDING_TYPE, roleName);
+        List<WorkflowTransition> workflowTransitionList  = workflowTransitionRepository.findByNextActionAndNextRole(AppConstant.PENDING_TYPE, roleName);
         if(Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()){
             workflowTransitionDtoList = workflowTransitionList.stream().sorted(Comparator.comparing(WorkflowTransition::getRequestId).thenComparing(WorkflowTransition::getCreatedDate)).map(e ->{
                 return mapWorkflowTransitionDto(e);
@@ -307,7 +307,7 @@ public class WorkflowServiceImpl implements WorkflowService {
                         transitionDto = filteredList.get(0);
                     }
                 }else{
-                    List<TransitionDto> filteredList = transitionDtoList.stream().filter(e -> e.getCurrentRoleName().equalsIgnoreCase(currentRole)).collect(Collectors.toList());
+                    List<TransitionDto> filteredList = transitionDtoList.stream().filter(e -> Objects.isNull(e.getConditionKey()) && Objects.isNull(e.getConditionValue()) && e.getCurrentRoleName().equalsIgnoreCase(currentRole)).collect(Collectors.toList());
                     if (Objects.nonNull(filteredList) && !filteredList.isEmpty()) {
                         transitionDto = filteredList.get(0);
                     }
@@ -327,7 +327,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         WorkflowTransition workflowTransition = workflowTransitionRepository.findByWorkflowTransitionIdAndRequestId(transitionActionReqDto.getWorkflowTransitionId(), transitionActionReqDto.getRequestId());
         if(Objects.isNull(workflowTransition)){
             throw new InvalidInputException(new ErrorDetails(AppConstant.INVALID_WORKFLOW_TRANSITION, AppConstant.ERROR_TYPE_CODE_VALIDATION,
-                    AppConstant.ERROR_TYPE_VALIDATION, "Workflow transition not found."));
+                    AppConstant.ERROR_TYPE_VALIDATION, "Workflow transition not found.With given workflow transition id and request id."));
         }
         TransitionMaster currentTransition = transitionMasterRepository.findById(workflowTransition.getTransitionId()).orElse(null);
         validateUserRole(transitionActionReqDto.getActionBy(), currentTransition.getNextRoleId());
@@ -372,6 +372,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         nextWorkflowTransition.setCreatedBy(currentWorkflowTransition.getCreatedBy());
         nextWorkflowTransition.setTransitionSubOrder(currentWorkflowTransition.getTransitionSubOrder());
         nextWorkflowTransition.setModifiedBy(transitionActionReqDto.getActionBy());
+        nextWorkflowTransition.setRequestId(currentWorkflowTransition.getRequestId());
         nextWorkflowTransition.setModificationDate(new Date());
         nextWorkflowTransition.setStatus(AppConstant.CANCELED_TYPE);
         nextWorkflowTransition.setAction(transitionActionReqDto.getAction());
@@ -393,6 +394,10 @@ public class WorkflowServiceImpl implements WorkflowService {
     }
 
     private void approveTransition(WorkflowTransition currentWorkflowTransition, TransitionMaster currentTransition, TransitionActionReqDto transitionActionReqDto) {
+        if(AppConstant.COMPLETED_TYPE.equalsIgnoreCase(currentWorkflowTransition.getStatus()) || AppConstant.CANCELED_TYPE.equalsIgnoreCase(currentWorkflowTransition.getStatus())){
+            throw new BusinessException(new ErrorDetails(AppConstant.INVALID_ACTION, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION, "Workflow already completed."));
+        }
         if(Objects.isNull(currentTransition.getNextRoleId())){
             currentWorkflowTransition.setNextAction(AppConstant.COMPLETED_TYPE);
             workflowTransitionRepository.save(currentWorkflowTransition);
@@ -431,12 +436,18 @@ public class WorkflowServiceImpl implements WorkflowService {
             nextWorkflowTransition.setTransitionOrder(nextTransition.getTransitionOrder());
             nextWorkflowTransition.setTransitionSubOrder(nextTransition.getTransitionSubOrder());
             nextWorkflowTransition.setWorkflowName(nextTransition.getWorkflowName());
-            nextWorkflowTransition.setStatus(AppConstant.IN_PROGRESS_TYPE);
+            if(Objects.isNull(nextTransition.getNextRoleId())){
+                nextWorkflowTransition.setStatus(AppConstant.COMPLETED_TYPE);
+                nextWorkflowTransition.setNextAction(null);
+            }else{
+                nextWorkflowTransition.setStatus(AppConstant.IN_PROGRESS_TYPE);
+                nextWorkflowTransition.setNextAction(AppConstant.PENDING_TYPE);
+            }
+
             nextWorkflowTransition.setAction(transitionActionReqDto.getAction());
             nextWorkflowTransition.setRemarks(transitionActionReqDto.getRemarks());
             nextWorkflowTransition.setModifiedBy(transitionActionReqDto.getActionBy());
             nextWorkflowTransition.setModificationDate(new Date());
-            nextWorkflowTransition.setNextAction(AppConstant.PENDING_TYPE);
             nextWorkflowTransition.setRequestId(currentWorkflowTransition.getRequestId());
             nextWorkflowTransition.setCreatedBy(currentWorkflowTransition.getCreatedBy());
             nextWorkflowTransition.setCreatedDate(currentWorkflowTransition.getCreatedDate());

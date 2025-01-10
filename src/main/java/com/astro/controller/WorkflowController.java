@@ -47,6 +47,16 @@ public class WorkflowController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.allPendingWorkflowTransition(roleName)), HttpStatus.OK);
     }
 
+    @GetMapping("/allPendingWorkflowTransition")
+    public ResponseEntity<Object> allPendingWorkflowTransition(@RequestParam String roleName)  {
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.allPendingWorkflowTransition(roleName)), HttpStatus.OK);
+    }
+
+    @GetMapping("/allWorkflowTransition")
+    public ResponseEntity<Object> allWorkflowTransition(@RequestParam String roleName)  {
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.allWorkflowTransition(roleName)), HttpStatus.OK);
+    }
+
     @GetMapping("/nextTransition")
     public ResponseEntity<Object> nextTransition(@RequestParam Integer workflowId, @RequestParam String currentRole, @RequestParam(required = false) String tranConditionKey, @RequestParam(required = false) String tranConditionValue)  {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.nextTransition(workflowId, currentRole, tranConditionKey, tranConditionValue)), HttpStatus.OK);
