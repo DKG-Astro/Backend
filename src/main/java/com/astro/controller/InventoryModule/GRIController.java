@@ -1,9 +1,12 @@
 package com.astro.controller.InventoryModule;
 
-import com.astro.dto.workflow.InventoryModule.GoodsReceiptInspectionDto;
+import com.astro.dto.workflow.InventoryModule.GoodsReceiptInspectionRequestDto;
+import com.astro.dto.workflow.InventoryModule.GoodsReceiptInspectionResponseDto;
 import com.astro.entity.InventoryModule.GoodsReceiptInspection;
 import com.astro.service.GoodsReceiptInspectionService;
+import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,27 +21,27 @@ public class GRIController {
     private GoodsReceiptInspectionService service;
 
     @PostMapping
-    public ResponseEntity<GoodsReceiptInspection> createGoodsReceiptInspection(@RequestBody GoodsReceiptInspectionDto dto) {
-        GoodsReceiptInspection created = service.createGoodsReceiptInspection(dto);
-        return ResponseEntity.ok(created);
+    public ResponseEntity<Object> createGoodsReceiptInspection(@RequestBody GoodsReceiptInspectionRequestDto dto) {
+        GoodsReceiptInspectionResponseDto created = service.createGoodsReceiptInspection(dto);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(created), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<GoodsReceiptInspection> updateGoodsReceiptInspection(@PathVariable Long id, @RequestBody GoodsReceiptInspectionDto dto) {
-        GoodsReceiptInspection updated = service.updateGoodsReceiptInspection(id, dto);
-        return ResponseEntity.ok(updated);
+    public ResponseEntity<Object> updateGoodsReceiptInspection(@PathVariable Long id, @RequestBody GoodsReceiptInspectionRequestDto dto) {
+        GoodsReceiptInspectionResponseDto updated = service.updateGoodsReceiptInspection(id, dto);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(updated), HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<List<GoodsReceiptInspection>> getAllGoodsReceiptInspections() {
-        List<GoodsReceiptInspection> gri = service.getAllGoodsReceiptInspections();
-        return ResponseEntity.ok(gri);
+    public ResponseEntity<Object> getAllGoodsReceiptInspections() {
+        List<GoodsReceiptInspectionResponseDto> gri = service.getAllGoodsReceiptInspections();
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(gri), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GoodsReceiptInspection> getGoodsReceiptInspectionById(@PathVariable Long id) {
-        GoodsReceiptInspection gri = service.getGoodsReceiptInspectionById(id);
-        return ResponseEntity.ok(gri);
+    public ResponseEntity<Object> getGoodsReceiptInspectionById(@PathVariable Long id) {
+        GoodsReceiptInspectionResponseDto gri = service.getGoodsReceiptInspectionById(id);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(gri), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

@@ -1,9 +1,12 @@
 package com.astro.controller.ProcurementModuleController;
 
-import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseDto;
+import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseRequestDto;
+import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseResponseDto;
 import com.astro.entity.ProcurementModule.ContigencyPurchase;
 import com.astro.service.ContigencyPurchaseService;
+import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,32 +19,35 @@ public class ContigencyPurchaseController {
     @Autowired
     private ContigencyPurchaseService CPservice;
     @PostMapping
-    public ResponseEntity<ContigencyPurchase> createTenderRequest(@RequestBody ContigencyPurchaseDto contigencyPurchaseDto) {
-        ContigencyPurchase created = CPservice.createTenderRequest(contigencyPurchaseDto);
-        return ResponseEntity.ok(created);
+    public ResponseEntity<Object> createTenderRequest(@RequestBody ContigencyPurchaseRequestDto contigencyPurchaseDto) {
+        ContigencyPurchaseResponseDto created = CPservice.createContigencyPurchase(contigencyPurchaseDto);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(created), HttpStatus.OK);
     }
 
     @PutMapping("/{ContigencyId}")
-    public ResponseEntity<ContigencyPurchase> updateTenderRequest(@PathVariable Long ContigencyId, @RequestBody ContigencyPurchaseDto contigencyPurchaseDto) {
-        ContigencyPurchase updated = CPservice.updateTenderRequest(ContigencyId, contigencyPurchaseDto);
-        return ResponseEntity.ok(updated);
+    public ResponseEntity<Object> updateContigencyPurchase(@PathVariable Long ContigencyId, @RequestBody ContigencyPurchaseRequestDto contigencyPurchaseDto) {
+        ContigencyPurchaseResponseDto updated = CPservice.updateContigencyPurchase(ContigencyId, contigencyPurchaseDto);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(updated), HttpStatus.OK);
     }
 
     @GetMapping
-    public List<ContigencyPurchase> getAllTenderRequests() {
+    public ResponseEntity<Object> getAllContigencyPurchase() {
 
-        return CPservice.getAllTenderRequests();
+     List<ContigencyPurchaseResponseDto> contigencyPurchase= CPservice.getAllContigencyPurchase();
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(contigencyPurchase), HttpStatus.OK);
+
     }
 
     @GetMapping("/{ContigencyId}")
-    public ContigencyPurchase getTenderRequestById(@PathVariable Long ContigencyId) {
+    public ResponseEntity<Object> getContigencyPurchaseById(@PathVariable Long ContigencyId) {
 
-        return CPservice.getTenderRequestById(ContigencyId);
+       ContigencyPurchaseResponseDto contigencyPurchase= CPservice.getContigencyPurchaseById(ContigencyId);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(contigencyPurchase), HttpStatus.OK);
     }
 
     @DeleteMapping("/{ContigencyId}")
-    public ResponseEntity<String> deleteTenderRequest(@PathVariable Long ContigencyId) {
-        CPservice.deleteTenderRequest(ContigencyId);
+    public ResponseEntity<String> deleteContigencyPurchase(@PathVariable Long ContigencyId) {
+        CPservice.deleteContigencyPurchase(ContigencyId);
         return ResponseEntity.ok("Contigency Purchase deleted successfully. Id:"+" " +ContigencyId);
     }
 

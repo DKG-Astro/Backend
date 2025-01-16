@@ -1,13 +1,19 @@
 package com.astro.service.impl;
 
-import com.astro.dto.workflow.InventoryModule.GoodsInspectionDto;
+import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.InventoryModule.GoodsInspectionRequestDto;
+import com.astro.dto.workflow.InventoryModule.GoodsInspectionResponseDto;
+import com.astro.entity.InventoryModule.Asset;
 import com.astro.entity.InventoryModule.GoodsInspection;
+import com.astro.exception.BusinessException;
+import com.astro.exception.ErrorDetails;
 import com.astro.repository.InventoryModule.GoodsInspectionRepository;
 import com.astro.service.GoodsInspectionService;
 import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,7 +26,7 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
 
 
     @Override
-    public GoodsInspection createGoodsInspection(GoodsInspectionDto goodsInspectionDTO) {
+    public GoodsInspectionResponseDto createGoodsInspection(GoodsInspectionRequestDto goodsInspectionDTO) {
          GoodsInspection goodsInspection = new GoodsInspection();
          goodsInspection.setGoodsInspectionNo(goodsInspectionDTO.getGoodsInspectionNo());
         String InstallationDate=goodsInspectionDTO.getInstallationDate();
@@ -33,12 +39,37 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
         goodsInspection.setUpdatedBy(goodsInspectionDTO.getUpdatedBy());
         goodsInspection.setCreatedBy(goodsInspectionDTO.getCreatedBy());
         GoodsInspection saved = repository.save(goodsInspection);
-        return saved;
+        return mapToResponseDTO(saved);
+    }
+
+    private GoodsInspectionResponseDto mapToResponseDTO(GoodsInspection saved) {
+        GoodsInspectionResponseDto  goodsInspectionResponseDto = new GoodsInspectionResponseDto();
+       goodsInspectionResponseDto.setId(saved.getId());
+        goodsInspectionResponseDto.setGoodsInspectionNo(saved.getGoodsInspectionNo());
+      LocalDate InstallationDate=saved.getInstallationDate();
+        goodsInspectionResponseDto.setInstallationDate(CommonUtils.convertDateToString(InstallationDate));
+       LocalDate CommissioningDate= saved.getCommissioningDate();
+        goodsInspectionResponseDto.setCommissioningDate(CommonUtils.convertDateToString(CommissioningDate));
+        goodsInspectionResponseDto.setUploadInstallationReport(saved.getUploadInstallationReport());
+        goodsInspectionResponseDto.setAcceptedQuantity(saved.getAcceptedQuantity());
+        goodsInspectionResponseDto.setRejectedQuantity(saved.getRejectedQuantity());
+        goodsInspectionResponseDto.setUpdatedBy(saved.getUpdatedBy());
+        goodsInspectionResponseDto.setCreatedBy(saved.getCreatedBy());
+        goodsInspectionResponseDto.setCreatedDate(saved.getCreatedDate());
+        goodsInspectionResponseDto.setUpdatedDate(saved.getUpdatedDate());
+        return goodsInspectionResponseDto;
     }
 
     @Override
-    public GoodsInspection updateGoodsInspection(Long id, GoodsInspectionDto goodsInspectionDTO) {
-        GoodsInspection existing = repository.findById(id).orElseThrow(() -> new RuntimeException("Goods Inspection not found"));
+    public GoodsInspectionResponseDto updateGoodsInspection(Long id, GoodsInspectionRequestDto goodsInspectionDTO) {
+        GoodsInspection existing = repository.findById(id)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "Goods Inspection not found for the provided asset ID.")
+                ));
         existing.setGoodsInspectionNo(goodsInspectionDTO.getGoodsInspectionNo());
         String InstallationDate=goodsInspectionDTO.getInstallationDate();
         existing.setInstallationDate(CommonUtils.convertStringToDateObject(InstallationDate));
@@ -50,21 +81,53 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
         existing.setUpdatedBy(goodsInspectionDTO.getUpdatedBy());
         existing.setCreatedBy(goodsInspectionDTO.getCreatedBy());
         GoodsInspection updated = repository.save(existing);
-        return updated;
+        return mapToResponseDTO(updated);
     }
 
     @Override
-    public List<GoodsInspection> getAllGoodsInspections() {
-        return repository.findAll();
+    public List<GoodsInspectionResponseDto> getAllGoodsInspections() {
+
+        List<GoodsInspection> asset = repository.findAll();
+        return asset.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
     }
 
     @Override
-    public GoodsInspection getGoodsInspectionById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new RuntimeException("PO not found!"));
+    public GoodsInspectionResponseDto getGoodsInspectionById(Long id) {
+       GoodsInspection inspection = repository.findById(id)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Goods Inspection not found for the provided asset ID.")
+                ));
+        return mapToResponseDTO(inspection);
     }
     @Override
     public void deleteGoodsInspection(Long id) {
-        repository.deleteById(id);
+
+     GoodsInspection inspection =repository.findById(id)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                " Goods Inspection not found for the provided ID."
+                        )
+                ));
+        try {
+           repository.delete(inspection);
+        } catch (Exception ex) {
+            throw new BusinessException(
+                    new ErrorDetails(
+                            AppConstant.INTER_SERVER_ERROR,
+                            AppConstant.ERROR_TYPE_CODE_INTERNAL,
+                            AppConstant.ERROR_TYPE_ERROR,
+                            "An error occurred while deleting the  Goods Inspection."
+                    ),
+                    ex
+            );
+        }
     }
 
 

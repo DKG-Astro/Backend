@@ -6,7 +6,9 @@ import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderRequest
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderResponseDTO;
 
 import com.astro.service.PurchaseOrderService;
+import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,9 +24,9 @@ public class PurchaseOrderController {
 
     // Create a new PO
     @PostMapping
-    public ResponseEntity<PurchaseOrderResponseDTO> createPurchaseOrder(@RequestBody @Valid PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
+    public ResponseEntity<Object> createPurchaseOrder(@RequestBody @Valid PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
         PurchaseOrderResponseDTO createdPO = poService.createPurchaseOrder(purchaseOrderRequestDTO);
-        return ResponseEntity.ok(createdPO);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(createdPO), HttpStatus.OK);
     }
 
 
@@ -32,17 +34,17 @@ public class PurchaseOrderController {
 
 
     @PutMapping("/{poId}")
-    public ResponseEntity< PurchaseOrderResponseDTO> updatePurchaseOrder(
+    public ResponseEntity<Object> updatePurchaseOrder(
             @PathVariable Long poId,
             @RequestBody @Valid PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
         PurchaseOrderResponseDTO  updatedPO = poService.updatePurchaseOrder(poId, purchaseOrderRequestDTO);
-        return ResponseEntity.ok(updatedPO);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(updatedPO), HttpStatus.OK);
     }
   // Get all POs
     @GetMapping
-    public ResponseEntity<List<PurchaseOrderResponseDTO>> getAllPurchaseOrders() {
+    public ResponseEntity<Object> getAllPurchaseOrders() {
         List<PurchaseOrderResponseDTO> poList = poService.getAllPurchaseOrders();
-        return ResponseEntity.ok(poList);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(poList), HttpStatus.OK);
     }
 
 
@@ -50,9 +52,9 @@ public class PurchaseOrderController {
 
     // Get a PO by ID
     @GetMapping("/{id}")
-    public ResponseEntity<PurchaseOrderResponseDTO> getPurchaseOrderById(@PathVariable Long id) {
+    public ResponseEntity<Object> getPurchaseOrderById(@PathVariable Long id) {
         PurchaseOrderResponseDTO  po = poService.getPurchaseOrderById(id);
-        return ResponseEntity.ok(po);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(po), HttpStatus.OK);
     }
 
     // Delete a PO by ID

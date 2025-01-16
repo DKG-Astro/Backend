@@ -1,14 +1,22 @@
 package com.astro.service.impl;
 
+import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.ProcurementDtos.TenderRequestDto;
+import com.astro.dto.workflow.ProcurementDtos.TenderResponseDto;
+import com.astro.entity.ProcurementModule.ServiceOrder;
 import com.astro.entity.ProcurementModule.TenderRequest;
+import com.astro.exception.BusinessException;
+import com.astro.exception.ErrorDetails;
 import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.service.TenderRequestService;
 import com.astro.util.CommonUtils;
+import com.ctc.wstx.shaded.msv_core.verifier.jarv.TheFactoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TenderRequestServiceImpl implements TenderRequestService {
@@ -16,7 +24,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     @Autowired
     private TenderRequestRepository TRrepo;
     @Override
-    public TenderRequest createTenderRequest(TenderRequestDto tenderRequestDto) {
+    public TenderResponseDto createTenderRequest(TenderRequestDto tenderRequestDto) {
 
         TenderRequest tenderRequest = new TenderRequest();
 
@@ -49,15 +57,20 @@ public class TenderRequestServiceImpl implements TenderRequestService {
 
         TRrepo.save(tenderRequest);
 
-        return tenderRequest;
+        return mapToResponseDTO(tenderRequest);
     }
 
+
     @Override
-    public TenderRequest updateTenderRequest(Long id, TenderRequestDto tenderRequestDto) {
+    public TenderResponseDto updateTenderRequest(Long id, TenderRequestDto tenderRequestDto) {
         TenderRequest existingTR = TRrepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tender Request not found with id: " + id));
-
-
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "Tender request not found for the provided asset ID.")
+                ));
         existingTR.setTitleOfTender(tenderRequestDto.getTitleOfTender());
         String openingDate = tenderRequestDto.getOpeningDate();
         existingTR.setOpeningDate(CommonUtils.convertStringToDateObject(openingDate));
@@ -86,23 +99,94 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         existingTR.setCreatedBy(tenderRequestDto.getCreatedBy());
          TRrepo.save(existingTR);
 
-        return existingTR;
+        return mapToResponseDTO(existingTR);
     }
 
     @Override
-    public TenderRequest getTenderRequestById(Long id) {
-        return TRrepo.findById(id).orElseThrow(() -> new RuntimeException("Teender Request not found!"));
+    public TenderResponseDto getTenderRequestById(Long id) {
+        TenderRequest tenderRequest =TRrepo.findById(id)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Tender not found for the provided asset ID.")
+                ));
+        return mapToResponseDTO(tenderRequest);
     }
 
     @Override
-    public List<TenderRequest> getAllTenderRequests() {
+    public List<TenderResponseDto> getAllTenderRequests() {
 
-        return TRrepo.findAll();
+        List<TenderRequest> tenderRequests = TRrepo.findAll();
+        return tenderRequests.stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public void deleteTenderRequest(Long id) {
 
-        TRrepo.deleteById(id);
+        TenderRequest tenderRequest=TRrepo.findById(id)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "tender not found for the provided ID."
+                        )
+                ));
+        try {
+           TRrepo.delete(tenderRequest);
+        } catch (Exception ex) {
+            throw new BusinessException(
+                    new ErrorDetails(
+                            AppConstant.INTER_SERVER_ERROR,
+                            AppConstant.ERROR_TYPE_CODE_INTERNAL,
+                            AppConstant.ERROR_TYPE_ERROR,
+                            "An error occurred while deleting the tender."
+                    ),
+                    ex
+            );
+        }
     }
+
+    private TenderResponseDto mapToResponseDTO(TenderRequest tenderRequest) {
+
+        TenderResponseDto tenderResponseDto = new TenderResponseDto();
+        tenderResponseDto.setId(tenderRequest.getId());
+        tenderResponseDto.setTitleOfTender(tenderRequest.getTitleOfTender());
+        LocalDate openingDate = tenderRequest.getOpeningDate();
+        tenderResponseDto.setOpeningDate(CommonUtils.convertDateToString(openingDate));
+        LocalDate closeingDate = tenderRequest.getClosingDate();
+        tenderResponseDto.setClosingDate(CommonUtils.convertDateToString(closeingDate));
+        tenderResponseDto.setIndentId(tenderRequest.getIndentId());
+        tenderResponseDto.setIndentMaterials(tenderRequest.getIndentMaterials());
+        tenderResponseDto.setModeOfProcurement(tenderRequest.getModeOfProcurement());
+        tenderResponseDto.setBidType(tenderRequest.getBidType());
+        LocalDate LastDateOfSubmission = tenderRequest.getLastDateOfSubmission();
+        tenderResponseDto.setLastDateOfSubmission(CommonUtils.convertDateToString(LastDateOfSubmission));
+        tenderResponseDto.setApplicableTaxes(tenderRequest.getApplicableTaxes());
+        tenderResponseDto.setConsignesAndBillinngAddress(tenderRequest.getConsignesAndBillinngAddress());
+        tenderResponseDto.setIncoTerms(tenderRequest.getIncoTerms());
+        tenderResponseDto.setPaymentTerms(tenderRequest.getPaymentTerms());
+        tenderResponseDto.setLdClause(tenderRequest.getLdClause());
+        tenderResponseDto.setApplicablePerformance(tenderRequest.getApplicablePerformance());
+        tenderResponseDto.setBidSecurityDeclaration(tenderRequest.getBidSecurityDeclaration());
+        tenderResponseDto.setMllStatusDeclaration(tenderRequest.getMllStatusDeclaration());
+        tenderResponseDto.setUploadTenderDocuments(tenderRequest.getUploadTenderDocuments());
+        tenderResponseDto.setSingleAndMultipleVendors(tenderRequest.getSingleAndMultipleVendors());
+        tenderResponseDto.setUploadGeneralTermsAndConditions(tenderRequest.getUploadGeneralTermsAndConditions());
+        tenderResponseDto.setUploadSpecificTermsAndConditions(tenderRequest.getUploadSpecificTermsAndConditions());
+        tenderResponseDto.setPreBidDisscussions(tenderRequest.getPreBidDisscussions());
+        tenderResponseDto.setUpdatedBy(tenderRequest.getUpdatedBy());
+        tenderResponseDto.setCreatedBy(tenderRequest.getCreatedBy());
+        tenderResponseDto.setCreatedDate(tenderRequest.getCreatedDate());
+        tenderResponseDto.setUpdatedDate(tenderRequest.getUpdatedDate());
+        return tenderResponseDto;
+
+
+
+    }
+
 }

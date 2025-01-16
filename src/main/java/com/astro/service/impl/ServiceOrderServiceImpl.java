@@ -1,11 +1,15 @@
 package com.astro.service.impl;
 
+import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderMaterialResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderResponseDTO;
 
+import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.ServiceOrder;
 import com.astro.entity.ProcurementModule.ServiceOrderMaterial;
+import com.astro.exception.BusinessException;
+import com.astro.exception.ErrorDetails;
 import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrderMaterialRepository;
 import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrderRepository;
 import com.astro.service.ServiceOrderService;
@@ -63,8 +67,13 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
     }
     public ServiceOrderResponseDTO updateServiceOrder(Long id, ServiceOrderRequestDTO serviceOrderRequestDTO) {
         ServiceOrder existingServiceOrder = serviceOrderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("ServiceOrder not found with id: " + id));
-
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "Service order not found for the provided asset ID.")
+                ));
         existingServiceOrder.setTenderId(serviceOrderRequestDTO.getTenderId());
         existingServiceOrder.setConsignesAddress(serviceOrderRequestDTO.getConsignesAddress());
         existingServiceOrder.setBillingAddress(serviceOrderRequestDTO.getBillingAddress());
@@ -114,12 +123,41 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
 
     public ServiceOrderResponseDTO getServiceOrderById(Long id) {
         ServiceOrder serviceOrder = serviceOrderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("ServiceOrder not found with id: " + id));
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "service order not found for the provided asset ID.")
+                ));
         return mapToResponseDTO(serviceOrder);
     }
 
     public void deleteServiceOrder(Long id) {
-         serviceOrderRepository.deleteById(id);
+
+        ServiceOrder serviceOrder=serviceOrderRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "service order not found for the provided ID."
+                        )
+                ));
+        try {
+            serviceOrderRepository.delete(serviceOrder);
+        } catch (Exception ex) {
+            throw new BusinessException(
+                    new ErrorDetails(
+                            AppConstant.INTER_SERVER_ERROR,
+                            AppConstant.ERROR_TYPE_CODE_INTERNAL,
+                            AppConstant.ERROR_TYPE_ERROR,
+                            "An error occurred while deleting the  so."
+                    ),
+                    ex
+            );
+        }
+
     }
 
 

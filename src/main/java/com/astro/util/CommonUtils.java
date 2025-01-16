@@ -129,4 +129,12 @@ public class CommonUtils {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         return LocalDate.parse(dateString, formatter);
     }
+
+    public static String convertDateToString(LocalDate date) {
+        if (date != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            return date.format(formatter);
+        }
+        return null;  // Handle null case if necessary
+    }
 }

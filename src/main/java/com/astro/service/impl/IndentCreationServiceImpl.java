@@ -1,10 +1,14 @@
 package com.astro.service.impl;
 
+import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsResponseDTO;
+import com.astro.entity.InventoryModule.Gprn;
 import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.entity.ProcurementModule.MaterialDetails;
+import com.astro.exception.BusinessException;
+import com.astro.exception.ErrorDetails;
 import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
 import com.astro.repository.ProcurementModule.IndentCreation.MaterialDetailsRepository;
 import com.astro.service.IndentCreationService;
@@ -70,7 +74,13 @@ public class IndentCreationServiceImpl implements IndentCreationService {
 
     public IndentCreationResponseDTO updateIndent(Long indentId, IndentCreationRequestDTO indentRequestDTO) {
         IndentCreation indentCreation = indentCreationRepository.findById(indentId)
-                .orElseThrow(() -> new RuntimeException("Indent not found with id: " + indentId));
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "indent not found for the provided asset ID.")
+                ));
 
         indentCreation.setIndentorName(indentRequestDTO.getIndentorName());
         indentCreation.setIndentorId(indentRequestDTO.getIndentorId());
@@ -122,8 +132,14 @@ public class IndentCreationServiceImpl implements IndentCreationService {
 
     public IndentCreationResponseDTO getIndentById(Long indentId) {
             IndentCreation indentCreation = indentCreationRepository.findById(indentId)
-                    .orElseThrow(() -> new RuntimeException("Indent not found!"));
-            return mapToResponseDTO(indentCreation);
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Indent not found for the provided asset ID.")
+                ));
+        return mapToResponseDTO(indentCreation);
         }
 
         // Get All Indents
@@ -173,6 +189,28 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         }
     @Override
     public void deleteIndent(Long id) {
-        indentCreationRepository.deleteById(id);
+
+       IndentCreation  gprn=indentCreationRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Indent not found for the provided ID."
+                        )
+                ));
+        try {
+            indentCreationRepository.delete(gprn);
+        } catch (Exception ex) {
+            throw new BusinessException(
+                    new ErrorDetails(
+                            AppConstant.INTER_SERVER_ERROR,
+                            AppConstant.ERROR_TYPE_CODE_INTERNAL,
+                            AppConstant.ERROR_TYPE_ERROR,
+                            "An error occurred while deleting the  Indent."
+                    ),
+                    ex
+            );
+        }
     }
     }

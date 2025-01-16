@@ -2,12 +2,16 @@ package com.astro.service.impl;
 
 
 
+import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderAttributesResponseDTO;
 
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderResponseDTO;
+import com.astro.entity.InventoryModule.Gprn;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
+import com.astro.exception.BusinessException;
+import com.astro.exception.ErrorDetails;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;
 
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderRepository;
@@ -73,7 +77,14 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
     }
 
     public PurchaseOrderResponseDTO updatePurchaseOrder(Long poId, PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
-        PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(poId).orElseThrow(() -> new RuntimeException("Purchase Order not found"));
+        PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(poId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "Purchase order not found for the provided asset ID.")
+                ));
 
         purchaseOrder.setTenderId(purchaseOrderRequestDTO.getTenderId());
         purchaseOrder.setIndentId(purchaseOrderRequestDTO.getIndentId());
@@ -119,8 +130,14 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
 
     public PurchaseOrderResponseDTO getPurchaseOrderById(Long poId) {
         PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(poId)
-                .orElseThrow(() -> new RuntimeException("Purchase Order not found"));
-        return mapToResponseDTO(purchaseOrder);  // Return the mapped response DTO
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Purchase order not found for the provided asset ID.")
+                ));
+        return mapToResponseDTO(purchaseOrder);
     }
 
 
@@ -132,7 +149,30 @@ public List<PurchaseOrderResponseDTO> getAllPurchaseOrders() {
 
 
     public void deletePurchaseOrder(Long poId) {
-      purchaseOrderRepository.deleteById(poId);
+
+        PurchaseOrder purchaseOrder=purchaseOrderRepository.findById(poId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Purchase order not found for the provided ID."
+                        )
+                ));
+        try {
+            purchaseOrderRepository.delete(purchaseOrder);
+        } catch (Exception ex) {
+            throw new BusinessException(
+                    new ErrorDetails(
+                            AppConstant.INTER_SERVER_ERROR,
+                            AppConstant.ERROR_TYPE_CODE_INTERNAL,
+                            AppConstant.ERROR_TYPE_ERROR,
+                            "An error occurred while deleting the  po."
+                    ),
+                    ex
+            );
+        }
+
     }
 
     private PurchaseOrderResponseDTO mapToResponseDTO(PurchaseOrder purchaseOrder) {

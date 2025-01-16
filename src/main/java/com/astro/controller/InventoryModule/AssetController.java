@@ -1,10 +1,12 @@
 package com.astro.controller.InventoryModule;
 
-import com.astro.dto.workflow.InventoryModule.AssetDTO;
+import com.astro.dto.workflow.InventoryModule.AssetRequestDTO;
+import com.astro.dto.workflow.InventoryModule.AssetResponseDto;
 import com.astro.entity.InventoryModule.Asset;
-import com.astro.entity.InventoryModule.GoodsReceiptInspection;
 import com.astro.service.AssetService;
+import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,31 +22,31 @@ public class AssetController {
 
     // Create new asset
     @PostMapping
-    public ResponseEntity<Asset> createAsset(@RequestBody AssetDTO assetDTO) {
-       Asset asset = assetService.createAsset(assetDTO);
-        return ResponseEntity.ok(asset);
+    public ResponseEntity<Object> createAsset(@RequestBody AssetRequestDTO assetDTO) {
+       AssetResponseDto asset = assetService.createAsset(assetDTO);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(asset), HttpStatus.OK);
     }
 
     // Update asset
     @PutMapping("/{id}")
-    public ResponseEntity<Asset> updateAsset(@PathVariable Long id, @RequestBody AssetDTO assetDTO) {
-       Asset asset = assetService.updateAsset(id, assetDTO);
-        return ResponseEntity.ok(asset);
+    public ResponseEntity<Object> updateAsset(@PathVariable Long id, @RequestBody AssetRequestDTO assetDTO) {
+       AssetResponseDto asset = assetService.updateAsset(id, assetDTO);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(asset), HttpStatus.OK);
 
     }
 
     // Get all assets
     @GetMapping
-    public ResponseEntity<List<Asset>> getAllAssets() {
-        List<Asset> assets= assetService.getAllAssets();
-        return ResponseEntity.ok(assets);
+    public ResponseEntity<Object> getAllAssets() {
+        List<AssetResponseDto> assets= assetService.getAllAssets();
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(assets), HttpStatus.OK);
     }
 
     // Get asset by id
     @GetMapping("/{id}")
-    public ResponseEntity<Asset> getAssetById(@PathVariable Long id) {
-        Asset asset = assetService.getAssetById(id);
-        return ResponseEntity.ok(asset);
+    public ResponseEntity<Object> getAssetById(@PathVariable Long id) {
+        AssetResponseDto asset = assetService.getAssetById(id);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(asset), HttpStatus.OK);
     }
 
     // Delete asset

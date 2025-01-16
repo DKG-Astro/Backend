@@ -1,11 +1,7 @@
 package com.astro.service;
 
-import com.astro.dto.workflow.InventoryModule.GoodsReceiptInspectionDto;
 import com.astro.dto.workflow.InventoryModule.GprnRequestDto;
-import com.astro.entity.InventoryModule.GoodsReceiptInspection;
-import com.astro.entity.InventoryModule.Gprn;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.astro.dto.workflow.InventoryModule.GprnResponseDto;
 
 import java.util.List;
 
@@ -13,12 +9,12 @@ import java.util.List;
 public interface GprnService {
 
 
-    public Gprn createGprnWithMaterialDetails(GprnRequestDto gprnRequestDto);
+    public GprnResponseDto createGprnWithMaterialDetails(GprnRequestDto gprnRequestDto);
 
 
-    Gprn updateGprn(Long id, GprnRequestDto gprnRequestDto);
-    List<Gprn> getAllGprn();
-    Gprn getGprnById(Long id);
+    GprnResponseDto updateGprn(Long id, GprnRequestDto gprnRequestDto);
+    List<GprnResponseDto> getAllGprn();
+    GprnResponseDto getGprnById(Long id);
     void deleteGprn(Long id);
 
 

@@ -1,11 +1,12 @@
 package com.astro.controller.InventoryModule;
 
-import com.astro.dto.workflow.InventoryModule.GoodsReturnDto;
 import com.astro.dto.workflow.InventoryModule.GprnRequestDto;
-import com.astro.entity.InventoryModule.GoodsReturn;
+import com.astro.dto.workflow.InventoryModule.GprnResponseDto;
 import com.astro.entity.InventoryModule.Gprn;
 import com.astro.service.GprnService;
+import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,29 +20,29 @@ public class GprnController {
     private GprnService gprnService;
 
     @PostMapping
-    public ResponseEntity<Gprn> createGprn(@RequestBody GprnRequestDto gprnRequestDto) {
-        Gprn savedGprn = gprnService.createGprnWithMaterialDetails(gprnRequestDto);
-        return ResponseEntity.ok(savedGprn);
+    public ResponseEntity<Object> createGprn(@RequestBody GprnRequestDto gprnRequestDto) {
+        GprnResponseDto savedGprn = gprnService.createGprnWithMaterialDetails(gprnRequestDto);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(savedGprn), HttpStatus.OK);
     }
     @GetMapping
-    public ResponseEntity<List<Gprn>> getAllGprn() {
-        List<Gprn> gprns=gprnService.getAllGprn();
-        return ResponseEntity.ok(gprns);
+    public ResponseEntity<Object> getAllGprn() {
+        List<GprnResponseDto> gprns=gprnService.getAllGprn();
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(gprns), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Gprn> getGprnById(@PathVariable Long id) {
-        Gprn gprn = gprnService.getGprnById(id);
-        return ResponseEntity.ok(gprn);
+    public ResponseEntity<Object> getGprnById(@PathVariable Long id) {
+        GprnResponseDto gprn = gprnService.getGprnById(id);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(gprn), HttpStatus.OK);
     }
 
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Gprn> updateGprnById(
+    public ResponseEntity<Object> updateGprnById(
             @PathVariable Long id, @RequestBody GprnRequestDto gprnRequestDto) {
-        Gprn gprn =gprnService.updateGprn(id,gprnRequestDto);
-        return ResponseEntity.ok(gprn);
+        GprnResponseDto gprn =gprnService.updateGprn(id,gprnRequestDto);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(gprn), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

@@ -30,7 +30,8 @@ public class ContigencyPurchase {
     private byte[] uploadCopyOfInvoice;
     private String predifinedPurchaseStatement;
     private String projectDetail;
-    private String updateBy;
+
+    private String updatedBy;
     private String createdBy;
 
     private LocalDateTime createdDate = LocalDateTime.now();

@@ -6,10 +6,9 @@ import lombok.Data;
 
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Data
-public class ContigencyPurchaseDto {
+public class ContigencyPurchaseRequestDto {
 
     private String vendorsName;
     private String vendorsInvoiceNo;

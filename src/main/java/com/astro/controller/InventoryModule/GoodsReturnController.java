@@ -1,9 +1,12 @@
 package com.astro.controller.InventoryModule;
 
-import com.astro.dto.workflow.InventoryModule.GoodsReturnDto;
+import com.astro.dto.workflow.InventoryModule.GoodsReturnRequestDto;
+import com.astro.dto.workflow.InventoryModule.GoodsReturnResponseDto;
 import com.astro.entity.InventoryModule.GoodsReturn;
 import com.astro.service.GoodsReturnService;
+import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,27 +21,27 @@ public class GoodsReturnController {
 
 
     @PostMapping
-    public ResponseEntity<GoodsReturn> createGoodsReturn(@RequestBody GoodsReturnDto goodsReturnDto) {
-       GoodsReturn goodsReturn= service.createGoodsReturn(goodsReturnDto);
-        return ResponseEntity.ok(goodsReturn);
+    public ResponseEntity<Object> createGoodsReturn(@RequestBody GoodsReturnRequestDto goodsReturnDto) {
+       GoodsReturnResponseDto goodsReturn= service.createGoodsReturn(goodsReturnDto);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(goodsReturn), HttpStatus.OK);
     }
     @GetMapping
-    public ResponseEntity<List<GoodsReturn>> getAllGoodsReturns() {
-        List<GoodsReturn> goodsReturn=service.getAllGoodsReturns();
-        return ResponseEntity.ok(goodsReturn);
+    public ResponseEntity<Object> getAllGoodsReturns() {
+        List<GoodsReturnResponseDto> goodsReturn=service.getAllGoodsReturns();
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(goodsReturn), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GoodsReturn> getGoodsReturnById(@PathVariable Long id) {
-        GoodsReturn goodsReturn =service.getGoodsReturnById(id);
-        return ResponseEntity.ok(goodsReturn);
+    public ResponseEntity<Object> getGoodsReturnById(@PathVariable Long id) {
+        GoodsReturnResponseDto goodsReturn =service.getGoodsReturnById(id);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(goodsReturn), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<GoodsReturn> updateGoodsReturn(
-            @PathVariable Long id, @RequestBody GoodsReturnDto goodsReturnDto) {
-        GoodsReturn goodsReturn =service.updateGoodsReturn(id, goodsReturnDto);
-        return ResponseEntity.ok(goodsReturn);
+    public ResponseEntity<Object> updateGoodsReturn(
+            @PathVariable Long id, @RequestBody GoodsReturnRequestDto goodsReturnDto) {
+        GoodsReturnResponseDto goodsReturn =service.updateGoodsReturn(id, goodsReturnDto);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(goodsReturn), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
