@@ -232,7 +232,7 @@ CREATE TABLE contigency_purchase (
     predifined_purchase_statement VARCHAR(255),
     project_detail VARCHAR(255),
     created_by varchar(255),
-    update_by VARCHAR(255),
+    updated_by VARCHAR(255),
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

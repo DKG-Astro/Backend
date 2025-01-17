@@ -56,7 +56,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             material.setQuantity(materialRequest.getQuantity());
             material.setUnitPrice(materialRequest.getUnitPrice());
             material.setUom(materialRequest.getUom());
-            material.setTotalPrice(materialRequest.getTotalPrize());
+            material.setTotalPrice(materialRequest.getTotalPrice());
             material.setBudgetCode(materialRequest.getBudgetCode());
             material.setMaterialCategory(materialRequest.getMaterialCategory());
             material.setMaterialSubCategory(materialRequest.getMaterialSubCategory());
@@ -114,7 +114,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             material.setQuantity(materialRequest.getQuantity());
             material.setUnitPrice(materialRequest.getUnitPrice());
             material.setUom(materialRequest.getUom());
-            material.setTotalPrice(materialRequest.getTotalPrize());
+            material.setTotalPrice(materialRequest.getTotalPrice());
             material.setBudgetCode(materialRequest.getBudgetCode());
             material.setMaterialCategory(materialRequest.getMaterialCategory());
             material.setMaterialSubCategory(materialRequest.getMaterialSubCategory());
