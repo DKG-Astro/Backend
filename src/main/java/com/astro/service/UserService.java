@@ -1,8 +1,13 @@
 package com.astro.service;
 
+import com.astro.dto.workflow.UserDto;
+import com.astro.dto.workflow.UserRoleDto;
+
 public interface UserService {
 
     public void validateUser(Integer userId);
+
+    UserRoleDto login(UserDto userDto);
     /*public UserDetailDto getUserDetails(LoginDto loginDto);
     public UserDetailDto updatePassword(LoginDto loginDto);
     public UserDetailDto registerUser(RegistrationDto registrationDto);

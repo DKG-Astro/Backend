@@ -1,6 +1,8 @@
 CREATE TABLE `astrodatabase`.`user_master` (
   `userId` INT NOT NULL AUTO_INCREMENT,
+  `password` VARCHAR(100) NOT NULL,
   `userName` VARCHAR(100) NULL,
+  `email` VARCHAR(255) NULL,
   `mobileNumber` VARCHAR(10) NULL,
   `createdDate` DATETIME NULL,
   `createdBy` VARCHAR(45) NULL,
@@ -17,6 +19,8 @@ CREATE TABLE `astrodatabase`.`user_role_master` (
   `userRoleId` INT NOT NULL AUTO_INCREMENT,
   `userId` INT NOT NULL,
   `roleId` INT NOT NULL,
+  `readPermission` boolean NOT NULL,
+  `writePermission` boolean NOT NULL,
   `createdDate` DATETIME NULL,
   `createdBy` VARCHAR(45) NULL,
   PRIMARY KEY (`userRoleId`));

@@ -8,6 +8,7 @@ import java.util.Date;
 public class UserDto {
 
     private Integer userId;
+    private String password;
     private String userName;
     private String mobileNumber;
     private String createdBy;
