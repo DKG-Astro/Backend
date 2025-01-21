@@ -15,11 +15,17 @@ public class UserRoleMaster {
     @Column(name = "USERROLEID")
     private Integer userRoleId;
 
+    @Column(name = "USERID")
+    private Integer userId;
+
     @Column(name = "ROLEID")
     private Integer roleId;
 
-    @Column(name = "USERID")
-    private Integer userId;
+    @Column(name = "READPERMISSION")
+    private Boolean readPermission;
+
+    @Column(name = "WRITEPERMISSION")
+    private Boolean writePermission;
 
     @Column(name = "CREATEDBY")
     private String createdBy;

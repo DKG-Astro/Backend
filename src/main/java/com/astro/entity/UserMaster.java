@@ -18,6 +18,12 @@ public class UserMaster {
     @Column(name = "USERNAME")
     private String userName;
 
+    @Column(name = "PASSWORD")
+    private String password;
+
+    @Column(name = "EMAIL")
+    private String email;
+
     @Column(name = "MOBILENUMBER")
     private String mobileNumber;
 

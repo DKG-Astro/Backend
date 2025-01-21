@@ -3,6 +3,7 @@ package com.astro.service.impl;
 import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.*;
 import com.astro.entity.*;
+import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.*;
@@ -12,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -199,19 +197,40 @@ public class WorkflowServiceImpl implements WorkflowService {
     }
 
     @Override
-    public List<WorkflowTransitionDto> workflowTransitionHistory(Integer workflowId, Integer createdBy, Integer requestId, String roleName) {
+    public List<WorkflowTransitionDto> workflowTransitionHistory(Integer requestId) {
 
         List<WorkflowTransitionDto> workflowTransitionDtoList = new ArrayList<>();
-
-        Integer nextTransitionId = null;
-        RoleMaster roleMaster = roleMasterRepository.findByRoleName(roleName);
-        if(Objects.nonNull(roleMaster)){
-            TransitionMaster transitionMaster = transitionMasterRepository.findByWorkflowIdAndNextRoleId(workflowId, roleMaster.getRoleId());
-            nextTransitionId = transitionMaster.getTransitionId();
+        List<WorkflowTransition> workflowTransitionList = null;
+        workflowTransitionList = workflowTransitionRepository.findByRequestId(requestId);
+        if(Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()) {
+            workflowTransitionDtoList = workflowTransitionList.stream().sorted(Comparator.comparing(WorkflowTransition::getWorkflowSequence).reversed()).map(e -> {
+                return mapWorkflowTransitionDto(e);
+            }).collect(Collectors.toList());
         }
-        List<WorkflowTransition> workflowTransitionList = workflowTransitionRepository.findByWorkflowIdOrCreatedByOrRequestIdOrTransitionId(workflowId, createdBy, requestId, nextTransitionId);
+
+        return workflowTransitionDtoList;
+    }
+
+    @Override
+    public List<WorkflowTransitionDto> allWorkflowTransition(String roleName) {
+        List<WorkflowTransitionDto> workflowTransitionDtoList = new ArrayList<>();
+
+        List<WorkflowTransition> workflowTransitionList  = workflowTransitionRepository.findByNextRole(roleName);
         if(Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()){
-            workflowTransitionDtoList = workflowTransitionList.stream().map(e -> {
+            workflowTransitionDtoList = workflowTransitionList.stream().sorted(Comparator.comparing(WorkflowTransition::getRequestId).thenComparing(WorkflowTransition::getCreatedDate)).map(e ->{
+                return mapWorkflowTransitionDto(e);
+            }).collect(Collectors.toList());
+        }
+        return workflowTransitionDtoList;
+    }
+
+    @Override
+    public List<WorkflowTransitionDto> allPendingWorkflowTransition(String roleName) {
+        List<WorkflowTransitionDto> workflowTransitionDtoList = new ArrayList<>();
+
+        List<WorkflowTransition> workflowTransitionList  = workflowTransitionRepository.findByNextActionAndNextRole(AppConstant.PENDING_TYPE, roleName);
+        if(Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()){
+            workflowTransitionDtoList = workflowTransitionList.stream().sorted(Comparator.comparing(WorkflowTransition::getRequestId).thenComparing(WorkflowTransition::getCreatedDate)).map(e ->{
                 return mapWorkflowTransitionDto(e);
             }).collect(Collectors.toList());
         }
@@ -236,6 +255,9 @@ public class WorkflowServiceImpl implements WorkflowService {
         workflowTransitionDto.setNextAction(workflowTransition.getNextAction());
         workflowTransitionDto.setCreatedRole(roleNameById(workflowTransition.getCreatedBy()));
         workflowTransitionDto.setModifiedRole(roleNameById(workflowTransition.getModifiedBy()));
+        workflowTransitionDto.setCurrentRole(workflowTransition.getCurrentRole());
+        workflowTransitionDto.setNextRole(workflowTransition.getNextRole());
+        workflowTransitionDto.setWorkflowSequence(workflowTransition.getWorkflowSequence());
         TransitionMaster transitionMaster = transitionById(workflowTransition.getTransitionId());
         if(Objects.nonNull(transitionMaster)) {
             workflowTransitionDto.setNextActionId(transitionMaster.getNextRoleId());
@@ -255,6 +277,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         workflowTransition.setTransitionOrder(transitionDto.getTransitionOrder());
         workflowTransition.setTransitionSubOrder(transitionDto.getTransitionSubOrder());
         workflowTransition.setStatus(AppConstant.CREATED_TYPE);
+        workflowTransition.setAction(AppConstant.CREATED_TYPE);
         workflowTransition.setNextAction(AppConstant.PENDING_TYPE);
         workflowTransition.setCreatedDate(new Date());
         workflowTransition.setCreatedBy(createdBy);
@@ -262,6 +285,9 @@ public class WorkflowServiceImpl implements WorkflowService {
         workflowTransition.setModificationDate(null);
         workflowTransition.setRequestId(requestId);
         workflowTransition.setWorkflowName(workflowDto.getWorkflowName());
+        workflowTransition.setCurrentRole(transitionDto.getCurrentRoleName());
+        workflowTransition.setNextRole(transitionDto.getNextRoleName());
+        workflowTransition.setWorkflowSequence(1);
 
         return workflowTransition;
     }
@@ -281,7 +307,7 @@ public class WorkflowServiceImpl implements WorkflowService {
                         transitionDto = filteredList.get(0);
                     }
                 }else{
-                    List<TransitionDto> filteredList = transitionDtoList.stream().filter(e -> e.getCurrentRoleName().equalsIgnoreCase(currentRole)).collect(Collectors.toList());
+                    List<TransitionDto> filteredList = transitionDtoList.stream().filter(e -> Objects.isNull(e.getConditionKey()) && Objects.isNull(e.getConditionValue()) && e.getCurrentRoleName().equalsIgnoreCase(currentRole)).collect(Collectors.toList());
                     if (Objects.nonNull(filteredList) && !filteredList.isEmpty()) {
                         transitionDto = filteredList.get(0);
                     }
@@ -298,10 +324,10 @@ public class WorkflowServiceImpl implements WorkflowService {
     @Transactional
     public WorkflowTransitionDto performTransitionAction(TransitionActionReqDto transitionActionReqDto) {
         userService.validateUser(transitionActionReqDto.getActionBy());
-        WorkflowTransition workflowTransition = workflowTransitionRepository.findById(transitionActionReqDto.getWorkflowTransitionId()).orElse(null);
+        WorkflowTransition workflowTransition = workflowTransitionRepository.findByWorkflowTransitionIdAndRequestId(transitionActionReqDto.getWorkflowTransitionId(), transitionActionReqDto.getRequestId());
         if(Objects.isNull(workflowTransition)){
             throw new InvalidInputException(new ErrorDetails(AppConstant.INVALID_WORKFLOW_TRANSITION, AppConstant.ERROR_TYPE_CODE_VALIDATION,
-                    AppConstant.ERROR_TYPE_VALIDATION, "Workflow transition not found."));
+                    AppConstant.ERROR_TYPE_VALIDATION, "Workflow transition not found.With given workflow transition id and request id."));
         }
         TransitionMaster currentTransition = transitionMasterRepository.findById(workflowTransition.getTransitionId()).orElse(null);
         validateUserRole(transitionActionReqDto.getActionBy(), currentTransition.getNextRoleId());
@@ -324,37 +350,110 @@ public class WorkflowServiceImpl implements WorkflowService {
     private void requestChangeTransition(WorkflowTransition workflowTransition, TransitionMaster currentTransition, TransitionActionReqDto transitionActionReqDto) {
     }
 
-    private void rejectTransition(WorkflowTransition workflowTransition, TransitionMaster currentTransition, TransitionActionReqDto transitionActionReqDto) {
+    private void rejectTransition(WorkflowTransition currentWorkflowTransition, TransitionMaster currentTransition, TransitionActionReqDto transitionActionReqDto) {
+        if(AppConstant.COMPLETED_TYPE.equalsIgnoreCase(currentWorkflowTransition.getStatus())){
+            throw new BusinessException(new ErrorDetails(AppConstant.INVALID_ACTION, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION, "Workflow already completed."));
+        }
+        if(AppConstant.REJECT_TYPE.equalsIgnoreCase(currentWorkflowTransition.getAction())){
+            throw new BusinessException(new ErrorDetails(AppConstant.INVALID_ACTION, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION, "Workflow already rejected."));
+        }
+        //update currentWorkflowTransition and save
+        currentWorkflowTransition.setNextAction(AppConstant.COMPLETED_TYPE);
+        workflowTransitionRepository.save(currentWorkflowTransition);
+
+        WorkflowTransition nextWorkflowTransition = new WorkflowTransition();
+        nextWorkflowTransition.setWorkflowId(currentWorkflowTransition.getWorkflowId());
+        nextWorkflowTransition.setTransitionId(currentWorkflowTransition.getTransitionId());
+        nextWorkflowTransition.setTransitionOrder(currentWorkflowTransition.getTransitionOrder());
+        nextWorkflowTransition.setWorkflowName(currentWorkflowTransition.getWorkflowName());
+        nextWorkflowTransition.setCreatedDate(currentWorkflowTransition.getCreatedDate());
+        nextWorkflowTransition.setCreatedBy(currentWorkflowTransition.getCreatedBy());
+        nextWorkflowTransition.setTransitionSubOrder(currentWorkflowTransition.getTransitionSubOrder());
+        nextWorkflowTransition.setModifiedBy(transitionActionReqDto.getActionBy());
+        nextWorkflowTransition.setRequestId(currentWorkflowTransition.getRequestId());
+        nextWorkflowTransition.setModificationDate(new Date());
+        nextWorkflowTransition.setStatus(AppConstant.CANCELED_TYPE);
+        nextWorkflowTransition.setAction(transitionActionReqDto.getAction());
+        nextWorkflowTransition.setNextAction(null);
+        nextWorkflowTransition.setRemarks(transitionActionReqDto.getRemarks());
+        nextWorkflowTransition.setCurrentRole(currentWorkflowTransition.getNextRole());
+        nextWorkflowTransition.setWorkflowSequence(currentWorkflowTransition.getWorkflowSequence()  + 1);
+
+        workflowTransitionRepository.save(nextWorkflowTransition);
+    }
+
+    private WorkflowTransition getPrevWorkflowTransition(WorkflowTransition workflowTransition) {
+        List<WorkflowTransition> workflowTransitionList = workflowTransitionRepository.findByRequestId(workflowTransition.getRequestId());
+        if(workflowTransitionList.size() == 1){
+             return workflowTransitionList.get(0);
+        }else{
+            return workflowTransitionList.stream().sorted(Comparator.comparing(WorkflowTransition::getWorkflowTransitionId).reversed()).skip(1).findFirst().get();
+        }
     }
 
     private void approveTransition(WorkflowTransition currentWorkflowTransition, TransitionMaster currentTransition, TransitionActionReqDto transitionActionReqDto) {
+        if(AppConstant.COMPLETED_TYPE.equalsIgnoreCase(currentWorkflowTransition.getStatus()) || AppConstant.CANCELED_TYPE.equalsIgnoreCase(currentWorkflowTransition.getStatus())){
+            throw new BusinessException(new ErrorDetails(AppConstant.INVALID_ACTION, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION, "Workflow already completed."));
+        }
         if(Objects.isNull(currentTransition.getNextRoleId())){
-            currentWorkflowTransition.setModifiedBy(transitionActionReqDto.getActionBy());
-            currentWorkflowTransition.setModificationDate(new Date());
-            currentWorkflowTransition.setNextAction(null);
-            currentWorkflowTransition.setStatus(AppConstant.COMPLETED_TYPE);
+            currentWorkflowTransition.setNextAction(AppConstant.COMPLETED_TYPE);
             workflowTransitionRepository.save(currentWorkflowTransition);
+
+            WorkflowTransition nextWorkflowTransition = new WorkflowTransition();
+            nextWorkflowTransition.setWorkflowId(currentWorkflowTransition.getWorkflowId());
+            nextWorkflowTransition.setTransitionId(currentWorkflowTransition.getTransitionId());
+            nextWorkflowTransition.setTransitionOrder(currentWorkflowTransition.getTransitionOrder());
+            nextWorkflowTransition.setWorkflowName(currentWorkflowTransition.getWorkflowName());
+            nextWorkflowTransition.setCreatedDate(currentWorkflowTransition.getCreatedDate());
+            nextWorkflowTransition.setCreatedBy(currentWorkflowTransition.getCreatedBy());
+            nextWorkflowTransition.setTransitionSubOrder(currentWorkflowTransition.getTransitionSubOrder());
+            nextWorkflowTransition.setModifiedBy(transitionActionReqDto.getActionBy());
+            nextWorkflowTransition.setModificationDate(new Date());
+            nextWorkflowTransition.setStatus(AppConstant.COMPLETED_TYPE);
+            nextWorkflowTransition.setAction(transitionActionReqDto.getAction());
+            nextWorkflowTransition.setNextAction(null);
+            nextWorkflowTransition.setRemarks(transitionActionReqDto.getRemarks());
+            nextWorkflowTransition.setCurrentRole(currentWorkflowTransition.getNextRole());
+            nextWorkflowTransition.setWorkflowSequence(currentWorkflowTransition.getWorkflowSequence()  + 1);
+
+            workflowTransitionRepository.save(nextWorkflowTransition);
         }else{
            TransitionDto nextTransition =  nextTransition(currentTransition.getWorkflowId(), transitionActionReqDto.getUserRole(), transitionActionReqDto.getTranConditionKey(), transitionActionReqDto.getTranConditionValue());
             if(Objects.isNull(nextTransition)){
                 throw new InvalidInputException(new ErrorDetails(AppConstant.NEXT_TRANSITION_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                         AppConstant.ERROR_TYPE_VALIDATION, "Error occurred at approval. No next transition found."));
             }
+            //update currentWorkflowTransition nextSatus and save
+            currentWorkflowTransition.setNextAction(AppConstant.COMPLETED_TYPE);
+            workflowTransitionRepository.save(currentWorkflowTransition);
+
             WorkflowTransition nextWorkflowTransition = new WorkflowTransition();
             nextWorkflowTransition.setWorkflowId(nextTransition.getWorkflowId());
             nextWorkflowTransition.setTransitionId(nextTransition.getTransitionId());
             nextWorkflowTransition.setTransitionOrder(nextTransition.getTransitionOrder());
             nextWorkflowTransition.setTransitionSubOrder(nextTransition.getTransitionSubOrder());
             nextWorkflowTransition.setWorkflowName(nextTransition.getWorkflowName());
-            nextWorkflowTransition.setStatus(AppConstant.IN_PROGRESS_TYPE);
+            if(Objects.isNull(nextTransition.getNextRoleId())){
+                nextWorkflowTransition.setStatus(AppConstant.COMPLETED_TYPE);
+                nextWorkflowTransition.setNextAction(null);
+            }else{
+                nextWorkflowTransition.setStatus(AppConstant.IN_PROGRESS_TYPE);
+                nextWorkflowTransition.setNextAction(AppConstant.PENDING_TYPE);
+            }
+
             nextWorkflowTransition.setAction(transitionActionReqDto.getAction());
             nextWorkflowTransition.setRemarks(transitionActionReqDto.getRemarks());
             nextWorkflowTransition.setModifiedBy(transitionActionReqDto.getActionBy());
             nextWorkflowTransition.setModificationDate(new Date());
-            nextWorkflowTransition.setNextAction(AppConstant.PENDING_TYPE);
             nextWorkflowTransition.setRequestId(currentWorkflowTransition.getRequestId());
             nextWorkflowTransition.setCreatedBy(currentWorkflowTransition.getCreatedBy());
             nextWorkflowTransition.setCreatedDate(currentWorkflowTransition.getCreatedDate());
+            nextWorkflowTransition.setCurrentRole(nextTransition.getCurrentRoleName());
+            nextWorkflowTransition.setNextRole(nextTransition.getNextRoleName());
+            nextWorkflowTransition.setWorkflowSequence(currentWorkflowTransition.getWorkflowSequence()  + 1);
 
             workflowTransitionRepository.save(nextWorkflowTransition);
         }

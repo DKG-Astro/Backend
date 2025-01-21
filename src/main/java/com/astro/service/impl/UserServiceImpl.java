@@ -1,15 +1,21 @@
 package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
+import com.astro.controller.UserController;
+import com.astro.dto.workflow.UserDto;
+import com.astro.dto.workflow.UserRoleDto;
 import com.astro.entity.UserMaster;
+import com.astro.entity.UserRoleMaster;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.UserMasterRepository;
+import com.astro.repository.UserRoleMasterRepository;
 import com.astro.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -18,10 +24,42 @@ public class UserServiceImpl implements UserService {
     @Autowired
     UserMasterRepository userMasterRepository;
 
+    @Autowired
+    UserRoleMasterRepository userRoleMasterRepository;
+
     @Override
     public void validateUser(Integer userId) {
        UserMaster userMaster = userMasterRepository.findById(userId).orElseThrow(() -> new InvalidInputException(new ErrorDetails(AppConstant.USER_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                AppConstant.ERROR_TYPE_VALIDATION, "User not found.")));
+    }
+
+    @Override
+    public UserRoleDto login(UserDto userDto) {
+        UserRoleDto userRoleDto = null;
+
+        if(Objects.nonNull(userDto.getUserId()) && Objects.nonNull(userDto.getPassword())){
+
+            UserMaster userMaster = userMasterRepository.findByUserIdAndPassword(userDto.getUserId(), userDto.getPassword());
+            if(Objects.isNull(userMaster)){
+                throw new InvalidInputException(new ErrorDetails(AppConstant.USER_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                        AppConstant.ERROR_TYPE_VALIDATION, "User not found."));
+            }
+
+            UserRoleMaster userRoleMaster = userRoleMasterRepository.findByUserId(userMaster.getUserId());
+            userRoleDto = new UserRoleDto();
+            userRoleDto.setUserId(userRoleMaster.getUserId());
+            userRoleDto.setUserRoleId(userRoleMaster.getUserRoleId());
+            userRoleDto.setRoleId(userRoleMaster.getRoleId());
+            userRoleDto.setCreatedDate(userRoleMaster.getCreatedDate());
+            userRoleDto.setCreatedBy(userRoleMaster.getCreatedBy());
+            userRoleDto.setReadPermission(userRoleMaster.getReadPermission());
+            userRoleDto.setWritePermission(userRoleMaster.getWritePermission());
+        }else{
+            throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION, "Invalid input."));
+        }
+
+        return userRoleDto;
     }
 
     /*private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
