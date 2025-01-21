@@ -1,173 +1,237 @@
 package com.astro.service.impl;
 
+
 import com.astro.constant.AppConstant;
-import com.astro.dto.workflow.InventoryModule.GprnRequestDto;
-import com.astro.dto.workflow.InventoryModule.GprnResponseDto;
-import com.astro.entity.InventoryModule.GoodsReturn;
+import com.astro.dto.workflow.InventoryModule.GprnDto.GprnMaterialsResponseDto;
+
+import com.astro.dto.workflow.InventoryModule.GprnDto.GprnRequestDto;
+import com.astro.dto.workflow.InventoryModule.GprnDto.GprnResponseDto;
+
 import com.astro.entity.InventoryModule.Gprn;
+import com.astro.entity.InventoryModule.GprnMaterials;
+
+
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
-import com.astro.repository.InventoryModule.GprnRepository;
+import com.astro.repository.InventoryModule.GprnRepository.GprnMaterialsRepository;
+import com.astro.repository.InventoryModule.GprnRepository.GprnRepository;
 import com.astro.service.GprnService;
 import com.astro.util.CommonUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+
 import java.util.List;
 import java.util.stream.Collectors;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @Service
 public class GprnServiceImpl implements GprnService {
 
     @Autowired
     private GprnRepository gprnRepository;
 
+    @Autowired
+    private GprnMaterialsRepository gprnMaterialsRepository;
+    private static final Logger log = LoggerFactory.getLogger(GprnServiceImpl.class);
 
     @Transactional
     public GprnResponseDto createGprnWithMaterialDetails(GprnRequestDto gprnRequestDto) {
+
         // Map GprnRequestDto to Gprn entity
         Gprn gprn = new Gprn();
         gprn.setPoNo(gprnRequestDto.getPoNo());
-        String Date = gprnRequestDto.getDate();
-        gprn.setDate(CommonUtils.convertStringToDateObject(Date));
+        gprn.setDate(CommonUtils.convertStringToDateObject(gprnRequestDto.getDate()));
         gprn.setDeliveryChallanNo(gprnRequestDto.getDeliveryChallanNo());
-        String DeliveryChallanDate = gprnRequestDto.getDeliveryChallanDate();
-        gprn.setDeliveryChallanDate(CommonUtils.convertStringToDateObject(DeliveryChallanDate));
+        gprn.setDeliveryChallanDate(CommonUtils.convertStringToDateObject(gprnRequestDto.getDeliveryChallanDate()));
         gprn.setVendorId(gprnRequestDto.getVendorId());
         gprn.setVendorName(gprnRequestDto.getVendorName());
-        gprn.setFieldStation(gprnRequestDto.getFieldStation());
-        gprn.setIndentorName(gprnRequestDto.getIndentorName());
-        String ExpectedSupplyDate = gprnRequestDto.getExpectedSupplyDate();
-        gprn.setExpectedSupplyDate(CommonUtils.convertStringToDateObject(ExpectedSupplyDate));
-        gprn.setConsigneeDetail(gprnRequestDto.getConsigneeDetail());
-        gprn.setReceivedBy(gprnRequestDto.getReceivedBy());
-        gprn.setWarranty(gprnRequestDto.getWarranty());
-        gprn.setProject(gprnRequestDto.getProject());
         gprn.setVendorEmail(gprnRequestDto.getVendorEmail());
         gprn.setVendorContactNo(gprnRequestDto.getVendorContactNo());
-        // Save Material Details
-        gprn.setMaterialCode(gprnRequestDto.getMaterialCode());
-        gprn.setDescription(gprnRequestDto.getDescription());
-        gprn.setUom(gprnRequestDto.getUom());
-        gprn.setOrderedQuantity(gprnRequestDto.getOrderedQuantity());
-        gprn.setQuantityDelivered(gprnRequestDto.getQuantityDelivered());
-        gprn.setReceivedQuantity(gprnRequestDto.getReceivedQuantity());
-        gprn.setUnitPrice(gprnRequestDto.getUnitPrice());
-        BigDecimal receivedQuantity = gprnRequestDto.getReceivedQuantity() != null
-                ? BigDecimal.valueOf(gprnRequestDto.getReceivedQuantity())
-                : BigDecimal.ZERO;
-        BigDecimal unitPrice = gprnRequestDto.getUnitPrice() != null
-                ? BigDecimal.valueOf(gprnRequestDto.getUnitPrice())
-                : BigDecimal.ZERO;
-        gprn.setNetPrice(receivedQuantity.multiply(unitPrice));
-       // gprn.setNetPrice(gprnRequestDto.getNetPrice());
-        gprn.setMakeNo(gprnRequestDto.getMakeNo());
-        gprn.setModelNo(gprnRequestDto.getModelNo());
-        gprn.setSerialNo(gprnRequestDto.getSerialNo());
+        gprn.setFieldStation(gprnRequestDto.getFieldStation());
+        gprn.setIndentorName(gprnRequestDto.getIndentorName());
+        gprn.setExpectedSupplyDate(CommonUtils.convertStringToDateObject(gprnRequestDto.getExpectedSupplyDate()));
+        gprn.setConsigneeDetail(gprnRequestDto.getConsigneeDetail());
+        gprn.setReceivedBy(gprnRequestDto.getReceivedBy());
+        gprn.setProject(gprnRequestDto.getProject());
         gprn.setWarrantyYears(gprnRequestDto.getWarrantyYears());
-        gprn.setNote(gprnRequestDto.getNote());
-        gprn.setPhotographPath(gprnRequestDto.getPhotographPath());
-        gprn.setUpdatedBy(gprnRequestDto.getUpdatedBy());
+
+        // Initialize quantities and provisionalReceiptCertificate
+        gprn.setReceivedQty(gprnRequestDto.getReceivedQty());
+        gprn.setPendingQty(gprnRequestDto.getPendingQty());
+        gprn.setAcceptedQty(gprnRequestDto.getAcceptedQty());
+        gprn.setProvisionalReceiptCertificate(gprnRequestDto.getProvisionalReceiptCertificate());
+        gprnRepository.save(gprn);
+        // Save MaterialDetails entities and link them to the Gprn
+        List<GprnMaterials> gprnMaterials = gprnRequestDto.getGprnMaterials().stream().map(materialRequest -> {
+            GprnMaterials gprnMaterial = new GprnMaterials();
+            gprnMaterial.setDescription(materialRequest.getDescription());
+            gprnMaterial.setUom(materialRequest.getUom());
+            gprnMaterial.setOrderedQuantity(materialRequest.getOrderedQuantity());
+            gprnMaterial.setQuantityDelivered(materialRequest.getQuantityDelivered());
+            gprnMaterial.setReceivedQuantity(materialRequest.getReceivedQuantity());
+            gprnMaterial.setUnitPrice(materialRequest.getUnitPrice());
+
+            // Compute netPrice based on receivedQuantity and unitPrice
+            BigDecimal receivedQuantity = materialRequest.getReceivedQuantity() != null
+                    ? BigDecimal.valueOf(materialRequest.getReceivedQuantity())
+                    : BigDecimal.ZERO;
+            BigDecimal unitPrice = materialRequest.getUnitPrice() != null
+                    ? BigDecimal.valueOf(materialRequest.getUnitPrice())
+                    : BigDecimal.ZERO;
+            gprnMaterial.setNetPrice(receivedQuantity.multiply(unitPrice));
+
+            gprnMaterial.setMakeNo(materialRequest.getMakeNo());
+            gprnMaterial.setModelNo(materialRequest.getModelNo());
+            gprnMaterial.setSerialNo(materialRequest.getSerialNo());
+            gprnMaterial.setWarranty(materialRequest.getWarranty());
+            gprnMaterial.setNote(materialRequest.getNote());
+            gprnMaterial.setPhotographPath(materialRequest.getPhotographPath());
+            gprnMaterial.setGprn(gprn);
+            return gprnMaterial;
+        }).collect(Collectors.toList());
+
+
+
+
+        // Save all material details
+        gprnMaterialsRepository.saveAll(gprnMaterials);
+
+
+        gprn.setGprnMaterials(gprnMaterials);
+        // Link the materials to the GPRN entity
+
+        // Set created and updated information
+       gprn.setUpdatedBy(gprnRequestDto.getUpdatedBy());
         gprn.setCreatedBy(gprnRequestDto.getCreatedBy());
 
-        gprnRepository.save(gprn);
+
 
 
         return mapToResponseDTO(gprn);
     }
 
+    @Transactional
+    public GprnResponseDto updateGprn(Long gprnId, GprnRequestDto gprnRequestDto) {
 
-    @Override
-    public GprnResponseDto updateGprn(Long id, GprnRequestDto gprnRequestDto) {
-        Gprn existing = gprnRepository.findById(id)
+        Gprn gprn = gprnRepository.findById(gprnId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_VALIDATION,
-                                "Gprn not found for the provided asset ID.")
+                                "GPRN not found for the provided asset ID.")
                 ));
-        existing.setPoNo(gprnRequestDto.getPoNo());
-        String Date = gprnRequestDto.getDate();
-        existing.setDate(CommonUtils.convertStringToDateObject(Date));
-        existing.setDeliveryChallanNo(gprnRequestDto.getDeliveryChallanNo());
-        String DeliveryChallanDate = gprnRequestDto.getDeliveryChallanDate();
-        existing.setDeliveryChallanDate(CommonUtils.convertStringToDateObject(DeliveryChallanDate));
-        existing.setVendorId(gprnRequestDto.getVendorId());
-        existing.setVendorName(gprnRequestDto.getVendorName());
-        existing.setFieldStation(gprnRequestDto.getFieldStation());
-        existing.setIndentorName(gprnRequestDto.getIndentorName());
-        String ExpectedSupplyDate = gprnRequestDto.getExpectedSupplyDate();
-        existing.setExpectedSupplyDate(CommonUtils.convertStringToDateObject(ExpectedSupplyDate));
-        existing.setConsigneeDetail(gprnRequestDto.getConsigneeDetail());
-        existing.setReceivedBy(gprnRequestDto.getReceivedBy());
-        existing.setWarranty(gprnRequestDto.getWarranty());
-        existing.setWarrantyYears(gprnRequestDto.getWarrantyYears());
 
+        // Update Gprn details
+        gprn.setPoNo(gprnRequestDto.getPoNo());
+        gprn.setDate(CommonUtils.convertStringToDateObject(gprnRequestDto.getDate()));
+        gprn.setDeliveryChallanNo(gprnRequestDto.getDeliveryChallanNo());
+        gprn.setDeliveryChallanDate(CommonUtils.convertStringToDateObject(gprnRequestDto.getDeliveryChallanDate()));
+        gprn.setVendorId(gprnRequestDto.getVendorId());
+        gprn.setVendorName(gprnRequestDto.getVendorName());
+        gprn.setVendorEmail(gprnRequestDto.getVendorEmail());
+        gprn.setVendorContactNo(gprnRequestDto.getVendorContactNo());
+        gprn.setFieldStation(gprnRequestDto.getFieldStation());
+        gprn.setIndentorName(gprnRequestDto.getIndentorName());
+        gprn.setExpectedSupplyDate(CommonUtils.convertStringToDateObject(gprnRequestDto.getExpectedSupplyDate()));
+        gprn.setConsigneeDetail(gprnRequestDto.getConsigneeDetail());
+        gprn.setReceivedBy(gprnRequestDto.getReceivedBy());
+        gprn.setProject(gprnRequestDto.getProject());
+        gprn.setWarrantyYears(gprnRequestDto.getWarrantyYears());
 
-        // Save Material Details
-        existing.setMaterialCode(gprnRequestDto.getMaterialCode());
-        existing.setDescription(gprnRequestDto.getDescription());
-        existing.setUom(gprnRequestDto.getUom());
-        existing.setOrderedQuantity(gprnRequestDto.getOrderedQuantity());
-        existing.setQuantityDelivered(gprnRequestDto.getQuantityDelivered());
-        existing.setReceivedQuantity(gprnRequestDto.getReceivedQuantity());
-        existing.setUnitPrice(gprnRequestDto.getUnitPrice());
-        //  material.setNetPrice(materialDto.getNetPrice());
-        BigDecimal receivedQuantity = gprnRequestDto.getReceivedQuantity() != null
-                ? BigDecimal.valueOf(gprnRequestDto.getReceivedQuantity())
-                : BigDecimal.ZERO;
-        BigDecimal unitPrice = gprnRequestDto.getUnitPrice() != null
-                ? BigDecimal.valueOf(gprnRequestDto.getUnitPrice())
-                : BigDecimal.ZERO;
-        existing.setNetPrice(receivedQuantity.multiply(unitPrice));
-       // existing.setNetPrice(gprnRequestDto.getNetPrice());
-        existing.setMakeNo(gprnRequestDto.getMakeNo());
-        existing.setModelNo(gprnRequestDto.getModelNo());
-        existing.setSerialNo(gprnRequestDto.getSerialNo());
+        // Initialize quantities and provisionalReceiptCertificate
+        gprn.setReceivedQty(gprnRequestDto.getReceivedQty());
+        gprn.setPendingQty(gprnRequestDto.getPendingQty());
+        gprn.setAcceptedQty(gprnRequestDto.getAcceptedQty());
+        gprn.setProvisionalReceiptCertificate(gprnRequestDto.getProvisionalReceiptCertificate());
+        gprnRepository.save(gprn);
 
-        existing.setNote(gprnRequestDto.getNote());
-        existing.setPhotographPath(gprnRequestDto.getPhotographPath());
-        existing.setUpdatedBy(gprnRequestDto.getUpdatedBy());
-        existing.setCreatedBy(gprnRequestDto.getCreatedBy());
-        gprnRepository.save(existing);
-        return mapToResponseDTO(existing);
+        // Get existing material details
+        List<GprnMaterials> existingMaterialDetails = gprn.getGprnMaterials();
+
+        // Clear out the existing materials (so they can be replaced)
+        existingMaterialDetails.clear();
+
+        // Map the new materials and add them to the Gprn entity
+        List<GprnMaterials> updatedMaterialDetails = gprnRequestDto.getGprnMaterials().stream()
+                .map(materialRequestDto -> {
+                    GprnMaterials gprnMaterial = new GprnMaterials();
+
+                    // Manually map fields from GprnMaterialsRequestDto to GprnMaterials entity
+                    gprnMaterial.setDescription(materialRequestDto.getDescription());
+                    gprnMaterial.setUom(materialRequestDto.getUom());
+                    gprnMaterial.setOrderedQuantity(materialRequestDto.getOrderedQuantity());
+                    gprnMaterial.setQuantityDelivered(materialRequestDto.getQuantityDelivered());
+                    gprnMaterial.setReceivedQuantity(materialRequestDto.getReceivedQuantity());
+                    gprnMaterial.setUnitPrice(materialRequestDto.getUnitPrice());
+
+                    // Compute netPrice based on receivedQuantity and unitPrice
+                    BigDecimal receivedQuantity = materialRequestDto.getReceivedQuantity() != null
+                            ? BigDecimal.valueOf(materialRequestDto.getReceivedQuantity())
+                            : BigDecimal.ZERO;
+                    BigDecimal unitPrice = materialRequestDto.getUnitPrice() != null
+                            ? BigDecimal.valueOf(materialRequestDto.getUnitPrice())
+                            : BigDecimal.ZERO;
+                    gprnMaterial.setNetPrice(receivedQuantity.multiply(unitPrice));
+
+                    gprnMaterial.setMakeNo(materialRequestDto.getMakeNo());
+                    gprnMaterial.setModelNo(materialRequestDto.getModelNo());
+                    gprnMaterial.setSerialNo(materialRequestDto.getSerialNo());
+                    gprnMaterial.setWarranty(materialRequestDto.getWarranty());
+                    gprnMaterial.setNote(materialRequestDto.getNote());
+                    gprnMaterial.setPhotographPath(materialRequestDto.getPhotographPath());
+                    gprnMaterial.setGprn(gprn); // Ensure the Gprn reference is set
+
+                    return gprnMaterial;
+                })
+                .collect(Collectors.toList());
+
+        // Add new materials to the Gprn entity
+        existingMaterialDetails.addAll(updatedMaterialDetails);
+
+        // Save all material details
+        gprnMaterialsRepository.saveAll(updatedMaterialDetails);  // Save all material details
+
+        // Save the Gprn entity with the updated materials
+        gprn.setGprnMaterials(existingMaterialDetails);
+        gprnRepository.save(gprn);
+
+        return mapToResponseDTO(gprn);
     }
 
     @Override
     public List<GprnResponseDto> getAllGprn() {
-
-
-        List<Gprn> gprns = gprnRepository.findAll();
-        return gprns.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
+        List<Gprn> gprn = gprnRepository.findAll();
+        return gprn.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
     }
 
     @Override
-    public GprnResponseDto getGprnById(Long id) {
-        Gprn gprn= gprnRepository.findById(id)
+    public GprnResponseDto getGprnById(Long gprnId) {
+        Gprn gprn = gprnRepository.findById(gprnId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_RESOURCE,
-                                "Gprn not found for the provided asset ID.")
+                                "Gprn not found for the provided gprn ID.")
                 ));
         return mapToResponseDTO(gprn);
     }
 
     @Override
-    public void deleteGprn(Long id) {
+    public void deleteGprn(Long gprnId) {
 
-       Gprn  gprn=gprnRepository.findById(id)
+        Gprn  gprn= gprnRepository.findById(gprnId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_RESOURCE,
-                                "Gprn not found for the provided ID."
+                                "Gprn not found for the provided gprnId."
                         )
                 ));
         try {
@@ -178,54 +242,79 @@ public class GprnServiceImpl implements GprnService {
                             AppConstant.INTER_SERVER_ERROR,
                             AppConstant.ERROR_TYPE_CODE_INTERNAL,
                             AppConstant.ERROR_TYPE_ERROR,
-                            "An error occurred while deleting the  gprn."
+                            "An error occurred while deleting the gprn."
                     ),
                     ex
             );
         }
+    }
 
-}
 
     private GprnResponseDto mapToResponseDTO(Gprn gprn) {
-        GprnResponseDto  gprnResponseDto = new GprnResponseDto();
+        GprnResponseDto gprnResponseDto = new GprnResponseDto();
         gprnResponseDto.setGprnNo(gprn.getGprnNo());
         gprnResponseDto.setPoNo(gprn.getPoNo());
-        LocalDate Date = gprn.getDate();
-        gprnResponseDto.setDate(CommonUtils.convertDateToString(Date));
+        gprnResponseDto.setDate(CommonUtils.convertDateToString(gprn.getDate()));
         gprnResponseDto.setDeliveryChallanNo(gprn.getDeliveryChallanNo());
-        LocalDate DeliveryChallanDate = gprn.getDeliveryChallanDate();
-        gprnResponseDto.setDeliveryChallanDate(CommonUtils.convertDateToString(DeliveryChallanDate));
+        gprnResponseDto.setDeliveryChallanDate(CommonUtils.convertDateToString(gprn.getDeliveryChallanDate()));
         gprnResponseDto.setVendorId(gprn.getVendorId());
         gprnResponseDto.setVendorName(gprn.getVendorName());
         gprnResponseDto.setFieldStation(gprn.getFieldStation());
         gprnResponseDto.setIndentorName(gprn.getIndentorName());
-        LocalDate ExpectedSupplyDate= gprn.getExpectedSupplyDate();
-        gprnResponseDto.setExpectedSupplyDate(CommonUtils.convertDateToString(ExpectedSupplyDate));
+        gprnResponseDto.setExpectedSupplyDate(CommonUtils.convertDateToString(gprn.getExpectedSupplyDate()));
         gprnResponseDto.setConsigneeDetail(gprn.getConsigneeDetail());
         gprnResponseDto.setReceivedBy(gprn.getReceivedBy());
-        gprnResponseDto.setWarranty(gprn.getWarranty());
+        gprnResponseDto.setWarrantyYears(gprn.getWarrantyYears());
         gprnResponseDto.setProject(gprn.getProject());
         gprnResponseDto.setVendorEmail(gprn.getVendorEmail());
         gprnResponseDto.setVendorContactNo(gprn.getVendorContactNo());
-        // Save Material Details
-        gprnResponseDto.setMaterialCode(gprn.getMaterialCode());
-        gprnResponseDto.setDescription(gprn.getDescription());
-        gprnResponseDto.setUom(gprn.getUom());
-        gprnResponseDto.setOrderedQuantity(gprn.getOrderedQuantity());
-        gprnResponseDto.setQuantityDelivered(gprn.getQuantityDelivered());
-        gprnResponseDto.setReceivedQuantity(gprn.getReceivedQuantity());
-        gprnResponseDto.setUnitPrice(gprn.getUnitPrice());
-        gprnResponseDto.setNetPrice(gprn.getNetPrice());
-        gprnResponseDto.setMakeNo(gprn.getMakeNo());
-        gprnResponseDto.setModelNo(gprn.getModelNo());
-        gprnResponseDto.setSerialNo(gprn.getSerialNo());
-        gprnResponseDto.setWarrantyYears(gprn.getWarrantyYears());
-        gprnResponseDto.setNote(gprn.getNote());
-        gprnResponseDto.setPhotographPath(gprn.getPhotographPath());
-        gprnResponseDto.setUpdatedBy(gprn.getUpdatedBy());
-        gprnResponseDto.setCreatedBy(gprn.getCreatedBy());
+
+        // Ensure quantities are mapped correctly
+        gprnResponseDto.setReceivedQty(gprn.getReceivedQty());
+        gprnResponseDto.setPendingQty(gprn.getPendingQty());
+        gprnResponseDto.setAcceptedQty(gprn.getAcceptedQty());
+        gprnResponseDto.setProvisionalReceiptCertificate(gprn.getProvisionalReceiptCertificate());
         gprnResponseDto.setCreatedDate(gprn.getCreatedDate());
         gprnResponseDto.setUpdatedDate(gprn.getUpdatedDate());
+        // Map material details
+        List<GprnMaterialsResponseDto> gprnMaterialsResponsetDtos = gprn.getGprnMaterials().stream().map(material -> {
+            GprnMaterialsResponseDto gprnMaterialsResponsetDto = new GprnMaterialsResponseDto();
+            gprnMaterialsResponsetDto.setMaterialCode(material.getMaterialCode());
+            gprnMaterialsResponsetDto.setDescription(material.getDescription());
+            gprnMaterialsResponsetDto.setUom(material.getUom());
+            gprnMaterialsResponsetDto.setOrderedQuantity(material.getOrderedQuantity());
+            gprnMaterialsResponsetDto.setQuantityDelivered(material.getQuantityDelivered());
+            gprnMaterialsResponsetDto.setReceivedQuantity(material.getReceivedQuantity());
+            gprnMaterialsResponsetDto.setUnitPrice(material.getUnitPrice());
+            gprnMaterialsResponsetDto.setNetPrice(material.getNetPrice());
+            gprnMaterialsResponsetDto.setMakeNo(material.getMakeNo());
+            gprnMaterialsResponsetDto.setModelNo(material.getModelNo());
+            gprnMaterialsResponsetDto.setSerialNo(material.getSerialNo());
+            gprnMaterialsResponsetDto.setWarranty(material.getWarranty());
+            gprnMaterialsResponsetDto.setNote(material.getNote());
+            gprnMaterialsResponsetDto.setPhotographPath(material.getPhotographPath());
+            return gprnMaterialsResponsetDto;
+        }).collect(Collectors.toList());
+
+        gprnResponseDto.setGprnMaterialsResponsetDtos(gprnMaterialsResponsetDtos);
         return gprnResponseDto;
     }
+/*
+    // Get all GPRNs
+    public List<GprnResponseDto> getAllGprn() {
+        List<Gprn> gprns = gprnRepository.findAll();
+        return gprns.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
+    }
+
+    // Get GPRN by ID
+  c {
+        Optional<Gprn> gprnOptional = gprnRepository.findById(gprnId);
+        if (!gprnOptional.isPresent()) {
+            throw new BusinessException("GPRN with id " + gprnId + " not found.");
+        }
+        return mapToResponseDTO(gprnOptional.get());
+    }
+
+ */
 }
+

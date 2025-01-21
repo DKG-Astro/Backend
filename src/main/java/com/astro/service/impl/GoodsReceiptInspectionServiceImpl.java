@@ -38,6 +38,7 @@ public class GoodsReceiptInspectionServiceImpl implements GoodsReceiptInspection
         entity.setPrintLabelOption(dto.isPrintLabelOption());
         entity.setDepreciationRate(dto.getDepreciationRate());
         entity.setAttachComponentPopup(dto.getAttachComponentPopup());
+        entity.setBookValue(dto.getBookValue());
         entity.setUpdatedBy(dto.getUpdatedBy());
         entity.setCreatedBy(dto.getCreatedBy());
          GRIrepository.save(entity);
@@ -66,6 +67,7 @@ public class GoodsReceiptInspectionServiceImpl implements GoodsReceiptInspection
         entity.setLocator(dto.getLocator());
         entity.setPrintLabelOption(dto.isPrintLabelOption());
         entity.setDepreciationRate(dto.getDepreciationRate());
+        entity.setBookValue(dto.getBookValue());
         entity.setUpdatedBy(dto.getUpdatedBy());
         entity.setAttachComponentPopup(dto.getAttachComponentPopup());
         entity.setCreatedBy(dto.getCreatedBy());
@@ -135,7 +137,7 @@ public class GoodsReceiptInspectionServiceImpl implements GoodsReceiptInspection
         goodsReceiptInspectionResponseDto.setAttachComponentPopup(entity.getAttachComponentPopup());
         goodsReceiptInspectionResponseDto.setUpdatedBy(entity.getUpdatedBy());
         goodsReceiptInspectionResponseDto.setCreatedBy(entity.getCreatedBy());
-
+        goodsReceiptInspectionResponseDto.setBookValue(entity.getBookValue());
         goodsReceiptInspectionResponseDto.setCreatedDate(entity.getCreatedDate());
         goodsReceiptInspectionResponseDto.setUpdatedDate(entity.getUpdatedDate());
         return goodsReceiptInspectionResponseDto;

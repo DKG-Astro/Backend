@@ -1,10 +1,14 @@
 package com.astro.controller.InventoryModule;
 
-import com.astro.dto.workflow.InventoryModule.GprnRequestDto;
-import com.astro.dto.workflow.InventoryModule.GprnResponseDto;
-import com.astro.entity.InventoryModule.Gprn;
+import com.astro.dto.workflow.InventoryModule.GprnDto.GprnRequestDto;
+import com.astro.dto.workflow.InventoryModule.GprnDto.GprnResponseDto;
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderResponseDTO;
 import com.astro.service.GprnService;
+import com.astro.service.PurchaseOrderService;
+import com.astro.service.impl.GprnServiceImpl;
 import com.astro.util.ResponseBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,36 +23,47 @@ public class GprnController {
     @Autowired
     private GprnService gprnService;
 
+    @Autowired
+    private PurchaseOrderService poService;
+    private static final Logger log = LoggerFactory.getLogger(GprnServiceImpl.class);
     @PostMapping
     public ResponseEntity<Object> createGprn(@RequestBody GprnRequestDto gprnRequestDto) {
         GprnResponseDto savedGprn = gprnService.createGprnWithMaterialDetails(gprnRequestDto);
+      //  log.info("Received GPRN Request: {}", gprnRequestDto);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(savedGprn), HttpStatus.OK);
     }
+
+    @PutMapping("/{gprnId}")
+    public ResponseEntity<Object> updateGprnById(
+            @PathVariable Long gprnId, @RequestBody GprnRequestDto gprnRequestDto) {
+        GprnResponseDto gprn =gprnService.updateGprn(gprnId,gprnRequestDto);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(gprn), HttpStatus.OK);
+    }
+
+
     @GetMapping
     public ResponseEntity<Object> getAllGprn() {
         List<GprnResponseDto> gprns=gprnService.getAllGprn();
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(gprns), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getGprnById(@PathVariable Long id) {
-        GprnResponseDto gprn = gprnService.getGprnById(id);
+    @GetMapping("/{gprnId}")
+    public ResponseEntity<Object> getGprnById(@PathVariable Long gprnId) {
+        GprnResponseDto gprn = gprnService.getGprnById(gprnId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(gprn), HttpStatus.OK);
     }
 
-
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateGprnById(
-            @PathVariable Long id, @RequestBody GprnRequestDto gprnRequestDto) {
-        GprnResponseDto gprn =gprnService.updateGprn(id,gprnRequestDto);
-        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(gprn), HttpStatus.OK);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteGprn(@PathVariable Long id) {
-        gprnService.deleteGprn(id);
+    @DeleteMapping("/{gprnId}")
+    public ResponseEntity<String> deleteGprn(@PathVariable Long gprnId) {
+        gprnService.deleteGprn(gprnId);
         return ResponseEntity.ok("Gprn deleted successfully!");
+    }
+
+
+    @GetMapping("/purchase-orders/{id}")
+    public ResponseEntity<Object> fetchPurchaseOrderDetails(@PathVariable Long id) {
+        PurchaseOrderResponseDTO po = poService.getPurchaseOrderById(id);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(po), HttpStatus.OK);
     }
 
 

@@ -13,7 +13,7 @@ public class GoodsReceiptInspectionRequestDto {
     private String locator;
     private boolean printLabelOption;
     private double depreciationRate;
-   // private double bookValue; //calculated automatically
+    private double bookValue; //calculated automatically
     private String attachComponentPopup;
     private String updatedBy;
     private String createdBy;

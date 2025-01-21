@@ -28,7 +28,6 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
     @Override
     public GoodsInspectionResponseDto createGoodsInspection(GoodsInspectionRequestDto goodsInspectionDTO) {
          GoodsInspection goodsInspection = new GoodsInspection();
-         goodsInspection.setGoodsInspectionNo(goodsInspectionDTO.getGoodsInspectionNo());
         String InstallationDate=goodsInspectionDTO.getInstallationDate();
         goodsInspection.setInstallationDate(CommonUtils.convertStringToDateObject(InstallationDate));
         String CommissioningDate= goodsInspectionDTO.getCommissioningDate();
@@ -36,6 +35,11 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
         goodsInspection.setUploadInstallationReport(goodsInspectionDTO.getUploadInstallationReport());
         goodsInspection.setAcceptedQuantity(goodsInspectionDTO.getAcceptedQuantity());
         goodsInspection.setRejectedQuantity(goodsInspectionDTO.getRejectedQuantity());
+        goodsInspection.setGoodsReturnPermamentOrReplacement(goodsInspectionDTO.getGoodsReturnPermamentOrReplacement());
+        goodsInspection.setGoodsReturnFullOrPartial(goodsInspectionDTO.getGoodsReturnFullOrPartial());
+        goodsInspection.setGoodsReturnReason(goodsInspectionDTO.getGoodsReturnReason());
+        goodsInspection.setMaterialRejectionAdviceSent(goodsInspectionDTO.getMaterialRejectionAdviceSent());
+        goodsInspection.setPoAmendmentNotified(goodsInspectionDTO.getPoAmendmentNotified());
         goodsInspection.setUpdatedBy(goodsInspectionDTO.getUpdatedBy());
         goodsInspection.setCreatedBy(goodsInspectionDTO.getCreatedBy());
         GoodsInspection saved = repository.save(goodsInspection);
@@ -44,7 +48,7 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
 
     private GoodsInspectionResponseDto mapToResponseDTO(GoodsInspection saved) {
         GoodsInspectionResponseDto  goodsInspectionResponseDto = new GoodsInspectionResponseDto();
-       goodsInspectionResponseDto.setId(saved.getId());
+
         goodsInspectionResponseDto.setGoodsInspectionNo(saved.getGoodsInspectionNo());
       LocalDate InstallationDate=saved.getInstallationDate();
         goodsInspectionResponseDto.setInstallationDate(CommonUtils.convertDateToString(InstallationDate));
@@ -53,6 +57,11 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
         goodsInspectionResponseDto.setUploadInstallationReport(saved.getUploadInstallationReport());
         goodsInspectionResponseDto.setAcceptedQuantity(saved.getAcceptedQuantity());
         goodsInspectionResponseDto.setRejectedQuantity(saved.getRejectedQuantity());
+        goodsInspectionResponseDto.setGoodsReturnPermamentOrReplacement(saved.getGoodsReturnPermamentOrReplacement());
+        goodsInspectionResponseDto.setGoodsReturnFullOrPartial(saved.getGoodsReturnFullOrPartial());
+        goodsInspectionResponseDto.setGoodsReturnReason(saved.getGoodsReturnReason());
+        goodsInspectionResponseDto.setMaterialRejectionAdviceSent(saved.getMaterialRejectionAdviceSent());
+        goodsInspectionResponseDto.setPoAmendmentNotified(saved.getPoAmendmentNotified());
         goodsInspectionResponseDto.setUpdatedBy(saved.getUpdatedBy());
         goodsInspectionResponseDto.setCreatedBy(saved.getCreatedBy());
         goodsInspectionResponseDto.setCreatedDate(saved.getCreatedDate());
@@ -61,16 +70,16 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
     }
 
     @Override
-    public GoodsInspectionResponseDto updateGoodsInspection(Long id, GoodsInspectionRequestDto goodsInspectionDTO) {
-        GoodsInspection existing = repository.findById(id)
+    public GoodsInspectionResponseDto updateGoodsInspection(Long goodsInspectionNo, GoodsInspectionRequestDto goodsInspectionDTO) {
+        GoodsInspection existing = repository.findById(goodsInspectionNo)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_VALIDATION,
-                                "Goods Inspection not found for the provided asset ID.")
+                                "Goods Inspection not found for the provided goodsInspectionNo.")
                 ));
-        existing.setGoodsInspectionNo(goodsInspectionDTO.getGoodsInspectionNo());
+
         String InstallationDate=goodsInspectionDTO.getInstallationDate();
         existing.setInstallationDate(CommonUtils.convertStringToDateObject(InstallationDate));
         String CommissioningDate= goodsInspectionDTO.getCommissioningDate();
@@ -78,6 +87,11 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
         existing.setUploadInstallationReport(goodsInspectionDTO.getUploadInstallationReport());
         existing.setAcceptedQuantity(goodsInspectionDTO.getAcceptedQuantity());
         existing.setRejectedQuantity(goodsInspectionDTO.getRejectedQuantity());
+        existing.setGoodsReturnPermamentOrReplacement(goodsInspectionDTO.getGoodsReturnPermamentOrReplacement());
+        existing.setGoodsReturnFullOrPartial(goodsInspectionDTO.getGoodsReturnFullOrPartial());
+        existing.setGoodsReturnReason(goodsInspectionDTO.getGoodsReturnReason());
+        existing.setPoAmendmentNotified(goodsInspectionDTO.getPoAmendmentNotified());
+        existing.setMaterialRejectionAdviceSent(goodsInspectionDTO.getMaterialRejectionAdviceSent());
         existing.setUpdatedBy(goodsInspectionDTO.getUpdatedBy());
         existing.setCreatedBy(goodsInspectionDTO.getCreatedBy());
         GoodsInspection updated = repository.save(existing);
@@ -87,26 +101,26 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
     @Override
     public List<GoodsInspectionResponseDto> getAllGoodsInspections() {
 
-        List<GoodsInspection> asset = repository.findAll();
-        return asset.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
+        List<GoodsInspection> goodsInspections = repository.findAll();
+        return goodsInspections.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
     }
 
     @Override
-    public GoodsInspectionResponseDto getGoodsInspectionById(Long id) {
-       GoodsInspection inspection = repository.findById(id)
+    public GoodsInspectionResponseDto getGoodsInspectionById(Long goodsInspectionNo) {
+       GoodsInspection inspection = repository.findById(goodsInspectionNo)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_RESOURCE,
-                                "Goods Inspection not found for the provided asset ID.")
+                                "Goods Inspection not found for the provided goodsInspectionNo.")
                 ));
         return mapToResponseDTO(inspection);
     }
     @Override
-    public void deleteGoodsInspection(Long id) {
+    public void deleteGoodsInspection(Long goodsInspectionNo) {
 
-     GoodsInspection inspection =repository.findById(id)
+     GoodsInspection inspection =repository.findById(goodsInspectionNo)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,

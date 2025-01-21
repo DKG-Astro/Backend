@@ -2,8 +2,10 @@ package com.astro.controller.InventoryModule;
 
 import com.astro.dto.workflow.InventoryModule.GoodsInspectionRequestDto;
 import com.astro.dto.workflow.InventoryModule.GoodsInspectionResponseDto;
+import com.astro.dto.workflow.InventoryModule.GprnDto.GprnResponseDto;
 import com.astro.entity.InventoryModule.GoodsInspection;
 import com.astro.service.GoodsInspectionService;
+import com.astro.service.GprnService;
 import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,8 @@ public class GoodsInspectionController {
     @Autowired
     private GoodsInspectionService goodsInspectionService;
 
+    @Autowired
+    private GprnService gprnService;
 
 
     // Create a new Goods Inspection
@@ -35,24 +39,32 @@ public class GoodsInspectionController {
     }
 
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getGoodsInspectionById(@PathVariable Long id) {
-        GoodsInspectionResponseDto inspection = goodsInspectionService.getGoodsInspectionById(id);
+
+    @GetMapping("/{goodsInspectionNo}")
+    public ResponseEntity<Object> getGoodsInspectionById(@PathVariable Long goodsInspectionNo) {
+        GoodsInspectionResponseDto inspection = goodsInspectionService.getGoodsInspectionById(goodsInspectionNo);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(inspection), HttpStatus.OK);
     }
 
 
     // Update an existing Goods Inspection by ID
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateGoodsInspection(@PathVariable Long id, @RequestBody GoodsInspectionRequestDto goodsInspectionDto) {
-        GoodsInspectionResponseDto updatedInspection = goodsInspectionService.updateGoodsInspection(id, goodsInspectionDto);
+    @PutMapping("/{goodsInspectionNo}")
+    public ResponseEntity<Object> updateGoodsInspection(@PathVariable Long goodsInspectionNo, @RequestBody GoodsInspectionRequestDto goodsInspectionDto) {
+        GoodsInspectionResponseDto updatedInspection = goodsInspectionService.updateGoodsInspection(goodsInspectionNo, goodsInspectionDto);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(updatedInspection), HttpStatus.OK);
     }
 
     // Delete a Goods Inspection by ID
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteGoodsInspection(@PathVariable Long id) {
-        goodsInspectionService.deleteGoodsInspection(id);
-        return ResponseEntity.ok("GoodsInspection deleted successfully."+" " +id);
+    @DeleteMapping("/{goodsInspectionNo}")
+    public ResponseEntity<String> deleteGoodsInspection(@PathVariable Long goodsInspectionNo) {
+        goodsInspectionService.deleteGoodsInspection(goodsInspectionNo);
+        return ResponseEntity.ok("GoodsInspection deleted successfully."+" " +goodsInspectionNo);
     }
+    //fetch all details from the gprn
+    @GetMapping("/gprn/{gprnId}")
+    public ResponseEntity<Object> fetchGprDetails(@PathVariable Long gprnId) {
+        GprnResponseDto gprnDetails = gprnService.getGprnById(gprnId);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(gprnDetails), HttpStatus.OK);
+    }
+
 }

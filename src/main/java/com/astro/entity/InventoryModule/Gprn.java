@@ -3,9 +3,9 @@ package com.astro.entity.InventoryModule;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -55,43 +55,22 @@ public class Gprn {
 
     private String project;
 
+    private String receivedQty;
+
+    private String pendingQty;
+    private String acceptedQty;
+
+    @Lob
+    private byte[] provisionalReceiptCertificate;
+
+
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "gprn_id")  // Updated to reflect the new column name in the GprnMaterials table
+    private List<GprnMaterials> gprnMaterials;
+
     @Column(nullable = false)
     private String receivedBy;
-//meterial data
-    @Column(nullable = false)
-    private String materialCode;
-
-    @Column(nullable = false)
-    private String description;
-
-    @Column(nullable = false)
-    private String uom;
-
-    @Column(nullable = false)
-    private Integer orderedQuantity;
-
-    private Integer quantityDelivered;
-
-    @Column(nullable = false)
-    private Integer receivedQuantity;
-
-    @Column(nullable = false)
-    private Double unitPrice;
-
-    @Column(name = "net_price", insertable = false, updatable = false)
-    private BigDecimal netPrice;
-
-    private String makeNo;
-
-    private String modelNo;
-
-    private String serialNo;
-
-    private String warranty;
-
-    private String note;
-
-    private String photographPath;
 
     private String createdBy;
 

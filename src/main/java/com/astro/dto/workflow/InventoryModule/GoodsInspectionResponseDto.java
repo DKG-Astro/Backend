@@ -10,9 +10,8 @@ import java.time.LocalDateTime;
 @Data
 public class GoodsInspectionResponseDto {
 
-    private Long id;
 
-    private String goodsInspectionNo;
+    private Long goodsInspectionNo;
 
 
     private String installationDate;
@@ -24,6 +23,14 @@ public class GoodsInspectionResponseDto {
     private int acceptedQuantity;
 
     private int rejectedQuantity;
+    private String goodsReturnPermamentOrReplacement;
+    private String goodsReturnFullOrPartial;
+    private String goodsReturnReason;
+
+    private Boolean materialRejectionAdviceSent;
+
+
+    private Boolean poAmendmentNotified;
     private String createdBy;
     private String updatedBy;
 

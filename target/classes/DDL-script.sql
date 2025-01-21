@@ -84,55 +84,71 @@ CREATE TABLE `astrodatabase`.`state_master` (
 
 
 --Inventory Modules
-CREATE TABLE GPRN (
-    gprn_no BIGINT PRIMARY KEY AUTO_INCREMENT,
-    po_no VARCHAR(50) NOT NULL,
-    date VARCHAR(20) NOT NULL,
-    delivery_challan_no VARCHAR(50) NOT NULL,
-    delivery_challan_date VARCHAR(20) NOT NULL,
-    vendor_id VARCHAR(50) NOT NULL,
+CREATE TABLE gprn (
+    gprn_no BIGINT AUTO_INCREMENT PRIMARY KEY,
+    po_no VARCHAR(255) NOT NULL,
+    date DATE NOT NULL,
+    delivery_challan_no VARCHAR(255) NOT NULL,
+    delivery_challan_date DATE NOT NULL,
+    vendor_id VARCHAR(255) NOT NULL,
     vendor_name VARCHAR(255) NOT NULL,
     vendor_email VARCHAR(255),
     vendor_contact_no BIGINT,
     field_station VARCHAR(255) NOT NULL,
     indentor_name VARCHAR(255) NOT NULL,
-    expected_supply_date VARCHAR(20) NOT NULL,
-    consignee_detail TEXT NOT NULL,
+    expected_supply_date DATE NOT NULL,
+    consignee_detail VARCHAR(255) NOT NULL,
     warranty_years INT,
     project VARCHAR(255),
+    received_qty VARCHAR(255),
+    pending_qty VARCHAR(255),
+    accepted_qty VARCHAR(255),
+    provisional_receipt_certificate LONGBLOB,
     received_by VARCHAR(255) NOT NULL,
-	material_code VARCHAR(50) NOT NULL,
-    description TEXT NOT NULL,
-    uom VARCHAR(50) NOT NULL,
-    ordered_quantity INT NOT NULL,
+    created_by VARCHAR(255),
+    updated_by VARCHAR(255),
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+);
+CREATE TABLE gprn_materials (
+    material_code BIGINT AUTO_INCREMENT PRIMARY KEY,
+    description VARCHAR(255),
+    uom VARCHAR(50),
+    ordered_quantity INT,
     quantity_delivered INT,
-    received_quantity INT NOT NULL,
-    unit_price DECIMAL(15, 2) NOT NULL,
-    net_price DECIMAL(15, 2) GENERATED ALWAYS AS (received_quantity * unit_price) STORED, -- Auto-calculated net price
+    received_quantity INT,
+    unit_price DOUBLE,
+    net_price DECIMAL(19, 4),
     make_no VARCHAR(255),
     model_no VARCHAR(255),
     serial_no VARCHAR(255),
-    warranty TEXT,
+    warranty VARCHAR(255),
     note TEXT,
-    photograph_path TEXT ,
-    created_by VARCHAR(255),
-    updated_by VARCHAR(255),
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    photograph_path VARCHAR(255),
+    gprn_id BIGINT,
+    FOREIGN KEY (gprn_id) REFERENCES gprn(gprn_no) ON DELETE CASCADE
 );
+
+
+
 CREATE TABLE goods_inspection (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    goods_inspection_no VARCHAR(50) NOT NULL,
+    goods_inspection_no BigInt AUTO_INCREMENT PRIMARY KEY,
+	gpr_id BIGINT, -- Foreign key to Good Provisional Receipt entity
     installation_date varchar(20),
     commissioning_date varchar(20),
     upload_installation_report text, -- For storing PDF files
     accepted_quantity INT NOT NULL,
     rejected_quantity INT NOT NULL,
+	goods_return_permament_or_replacement VARCHAR(255),
+    goods_return_full_or_partial VARCHAR(255),
+    goods_return_reason VARCHAR(255),
     created_by VARCHAR(255),
     updated_by varchar(200),
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+
 
 
 CREATE TABLE goods_return (
@@ -148,25 +164,23 @@ CREATE TABLE goods_return (
     updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-
 CREATE TABLE goods_receipt_inspection (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    receipt_inspection_no VARCHAR(255) ,
+    receipt_inspection_no VARCHAR(255),
     installation_date DATE,
     commissioning_date DATE,
-    asset_code VARCHAR(255) ,
+    asset_code VARCHAR(255),
     additional_material_description TEXT,
-    locator VARCHAR(255) ,
+    locator VARCHAR(255),
     print_label_option BOOLEAN DEFAULT FALSE,
-    depreciation_rate DECIMAL(5, 2),
-									-- add the book value atribute
-    attach_component_popup TEXT,
-    updated_by varchar(200),
-    created_by varchar(200),
+    depreciation_rate DOUBLE,
+    book_value DOUBLE,
+    attach_component_popup VARCHAR(255),
+    updated_by VARCHAR(255),
+    created_by VARCHAR(255),
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
 CREATE TABLE asset (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     asset_code VARCHAR(255) ,

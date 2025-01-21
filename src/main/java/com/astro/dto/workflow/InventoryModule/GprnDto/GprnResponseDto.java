@@ -1,28 +1,26 @@
-package com.astro.dto.workflow.InventoryModule;
+package com.astro.dto.workflow.InventoryModule.GprnDto;
 
+import com.astro.util.Base64ToByteArrayConverter;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 
-import javax.persistence.Column;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 @Data
 public class GprnResponseDto {
 
     private Long gprnNo;
 
-
     private String poNo;
-
 
     private String date;
 
     private String deliveryChallanNo;
 
-
     private String deliveryChallanDate;
-
 
     private String vendorId;
 
@@ -44,40 +42,14 @@ public class GprnResponseDto {
 
     private String project;
 
+    private String receivedQty;
+
+    private String pendingQty;
+    private String acceptedQty;
+    @JsonDeserialize(converter = Base64ToByteArrayConverter.class)
+    private byte[] provisionalReceiptCertificate;
 
     private String receivedBy;
-
-    private String materialCode;
-
-
-    private String description;
-
-
-    private String uom;
-
-
-    private Integer orderedQuantity;
-
-    private Integer quantityDelivered;
-
-    private Integer receivedQuantity;
-
-    private Double unitPrice;
-
-
-    private BigDecimal netPrice;
-
-    private String makeNo;
-
-    private String modelNo;
-
-    private String serialNo;
-
-    private String warranty;
-
-    private String note;
-
-    private String photographPath;
 
     private String createdBy;
 
@@ -87,4 +59,6 @@ public class GprnResponseDto {
 
     private LocalDateTime updatedDate;
 
+
+    private List<GprnMaterialsResponseDto> gprnMaterialsResponsetDtos =Collections.emptyList();
 }

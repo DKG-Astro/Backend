@@ -3,6 +3,8 @@ package com.astro.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -17,14 +19,17 @@ public class UserMaster {
 
     @Column(name = "USERNAME")
     private String userName;
+    private String password;
 
     @Column(name = "MOBILENUMBER")
     private String mobileNumber;
+
+
 
     @Column(name = "CREATEDBY")
     private String createdBy;
 
     @Column(name = "CREATEDDATE")
-    private Date createdDate;
+    private LocalDateTime createdDate = LocalDateTime.now();
 
 }

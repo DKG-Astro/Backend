@@ -1,6 +1,6 @@
 package com.astro.entity.ProcurementModule;
 
-//import jakarta.persistence.*;
+
 import lombok.Data;
 
 import javax.persistence.*;

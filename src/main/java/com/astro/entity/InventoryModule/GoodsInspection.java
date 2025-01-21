@@ -13,10 +13,11 @@ public class GoodsInspection {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "goods_inspection_no")
+    private Long goodsInspectionNo;
 
-    @Column(name = "goods_inspection_no", nullable = false)
-    private String goodsInspectionNo;
+    @Column(name = "gpr_id")
+    private Long gprId; // Foreign key to Good Provisional Receipt entity
 
     @Column(name = "installation_date")
     private LocalDate installationDate;
@@ -33,6 +34,20 @@ public class GoodsInspection {
 
     @Column(name = "rejected_quantity", nullable = false)
     private int rejectedQuantity;
+
+    @Column(name="goods_return_permament_or_replacement")
+    private String goodsReturnPermamentOrReplacement;
+    @Column(name="goods_return_full_or_partial")
+    private String goodsReturnFullOrPartial;
+    @Column(name="goods_return_reason")
+    private String goodsReturnReason;
+
+    @Column(name = "material_rejection_advice_sent")
+    private Boolean materialRejectionAdviceSent = false;
+
+    @Column(name = "po_amendment_notified")
+    private Boolean poAmendmentNotified = false;
+
     private String createdBy;
     private String updatedBy;
 

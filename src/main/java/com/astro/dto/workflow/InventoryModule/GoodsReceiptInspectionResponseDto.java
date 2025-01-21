@@ -22,7 +22,7 @@ public class GoodsReceiptInspectionResponseDto {
     private String additionalMaterialDescription;
 
     private String locator;
-
+    private double bookValue;
 
     private boolean printLabelOption;
 
