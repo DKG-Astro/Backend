@@ -71,9 +71,9 @@ public class Gprn {
 
     @Column(nullable = false)
     private String receivedBy;
-
+    @Column(name = "created_by")
     private String createdBy;
-
+    @Column(name = "updated_by")
     private String updatedBy;
     @Column(name = "created_date", nullable = false)
     private LocalDateTime createdDate = LocalDateTime.now();

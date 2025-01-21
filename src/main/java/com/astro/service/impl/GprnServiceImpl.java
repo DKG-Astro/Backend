@@ -64,6 +64,8 @@ public class GprnServiceImpl implements GprnService {
         gprn.setPendingQty(gprnRequestDto.getPendingQty());
         gprn.setAcceptedQty(gprnRequestDto.getAcceptedQty());
         gprn.setProvisionalReceiptCertificate(gprnRequestDto.getProvisionalReceiptCertificate());
+        gprn.setUpdatedBy(gprnRequestDto.getUpdatedBy());
+        gprn.setCreatedBy(gprnRequestDto.getCreatedBy());
         gprnRepository.save(gprn);
         // Save MaterialDetails entities and link them to the Gprn
         List<GprnMaterials> gprnMaterials = gprnRequestDto.getGprnMaterials().stream().map(materialRequest -> {
@@ -102,11 +104,8 @@ public class GprnServiceImpl implements GprnService {
 
 
         gprn.setGprnMaterials(gprnMaterials);
-        // Link the materials to the GPRN entity
 
-        // Set created and updated information
-       gprn.setUpdatedBy(gprnRequestDto.getUpdatedBy());
-        gprn.setCreatedBy(gprnRequestDto.getCreatedBy());
+
 
 
 
@@ -142,6 +141,8 @@ public class GprnServiceImpl implements GprnService {
         gprn.setReceivedBy(gprnRequestDto.getReceivedBy());
         gprn.setProject(gprnRequestDto.getProject());
         gprn.setWarrantyYears(gprnRequestDto.getWarrantyYears());
+        gprn.setUpdatedBy(gprnRequestDto.getUpdatedBy());
+        gprn.setCreatedBy(gprnRequestDto.getCreatedBy());
 
         // Initialize quantities and provisionalReceiptCertificate
         gprn.setReceivedQty(gprnRequestDto.getReceivedQty());
@@ -268,7 +269,8 @@ public class GprnServiceImpl implements GprnService {
         gprnResponseDto.setProject(gprn.getProject());
         gprnResponseDto.setVendorEmail(gprn.getVendorEmail());
         gprnResponseDto.setVendorContactNo(gprn.getVendorContactNo());
-
+        gprnResponseDto.setCreatedBy(gprn.getCreatedBy());
+        gprnResponseDto.setUpdatedBy(gprn.getUpdatedBy());
         // Ensure quantities are mapped correctly
         gprnResponseDto.setReceivedQty(gprn.getReceivedQty());
         gprnResponseDto.setPendingQty(gprn.getPendingQty());
@@ -299,22 +301,6 @@ public class GprnServiceImpl implements GprnService {
         gprnResponseDto.setGprnMaterialsResponsetDtos(gprnMaterialsResponsetDtos);
         return gprnResponseDto;
     }
-/*
-    // Get all GPRNs
-    public List<GprnResponseDto> getAllGprn() {
-        List<Gprn> gprns = gprnRepository.findAll();
-        return gprns.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
-    }
 
-    // Get GPRN by ID
-  c {
-        Optional<Gprn> gprnOptional = gprnRepository.findById(gprnId);
-        if (!gprnOptional.isPresent()) {
-            throw new BusinessException("GPRN with id " + gprnId + " not found.");
-        }
-        return mapToResponseDTO(gprnOptional.get());
-    }
-
- */
 }
 

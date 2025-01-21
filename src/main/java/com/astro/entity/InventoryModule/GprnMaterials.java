@@ -32,7 +32,7 @@ public class GprnMaterials {
 
     private Double unitPrice;
 
-    @Column(name = "net_price", insertable = false, updatable = false)
+    @Column(name = "net_price")
     private BigDecimal netPrice;
 
     private String makeNo;

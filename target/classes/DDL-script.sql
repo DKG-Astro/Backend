@@ -142,12 +142,13 @@ CREATE TABLE goods_inspection (
 	goods_return_permament_or_replacement VARCHAR(255),
     goods_return_full_or_partial VARCHAR(255),
     goods_return_reason VARCHAR(255),
+    material_rejection_advice_sent boolean,
+    po_amendment_notified boolean,
     created_by VARCHAR(255),
     updated_by varchar(200),
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
 
 
 
