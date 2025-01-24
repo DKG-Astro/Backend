@@ -11,10 +11,10 @@ public interface WorkOrderService {
     public WorkOrderResponseDTO createWorkOrder(WorkOrderRequestDTO workOrderRequestDTO);
 
 
-    public WorkOrderResponseDTO updateWorkOrder(Long id, WorkOrderRequestDTO WorkOrderRequestDTO);
+    public WorkOrderResponseDTO updateWorkOrder(String woId, WorkOrderRequestDTO WorkOrderRequestDTO);
     public List<WorkOrderResponseDTO> getAllWorkOrders();
-    public WorkOrderResponseDTO getWorkOrderById(Long id);
-    public void deleteWorkOrder(Long id);
+    public WorkOrderResponseDTO getWorkOrderById(String woId);
+    public void deleteWorkOrder(String woId);
 
 
 }

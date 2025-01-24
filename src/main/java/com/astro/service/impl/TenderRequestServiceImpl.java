@@ -1,12 +1,14 @@
 package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderMaterialRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.TenderRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.TenderResponseDto;
 import com.astro.entity.ProcurementModule.ServiceOrder;
 import com.astro.entity.ProcurementModule.TenderRequest;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
+import com.astro.exception.InvalidInputException;
 import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.service.TenderRequestService;
 import com.astro.util.CommonUtils;
@@ -26,8 +28,16 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     @Override
     public TenderResponseDto createTenderRequest(TenderRequestDto tenderRequestDto) {
 
+        // Check if the indentorId already exists
+        if (TRrepo.existsById(tenderRequestDto.getTenderId())) {
+            ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Tender Request ID", "SO ID " + tenderRequestDto.getTenderId() + " already exists.");
+            throw new InvalidInputException(errorDetails);
+        }
+
+
         TenderRequest tenderRequest = new TenderRequest();
 
+        tenderRequest.setTenderId(tenderRequestDto.getTenderId());
         tenderRequest.setTitleOfTender(tenderRequestDto.getTitleOfTender());
         String openingDate = tenderRequestDto.getOpeningDate();
         tenderRequest.setOpeningDate(CommonUtils.convertStringToDateObject(openingDate));
@@ -62,8 +72,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
 
 
     @Override
-    public TenderResponseDto updateTenderRequest(Long id, TenderRequestDto tenderRequestDto) {
-        TenderRequest existingTR = TRrepo.findById(id)
+    public TenderResponseDto updateTenderRequest(String tenderId, TenderRequestDto tenderRequestDto) {
+        TenderRequest existingTR = TRrepo.findById(tenderId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -103,8 +113,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     }
 
     @Override
-    public TenderResponseDto getTenderRequestById(Long id) {
-        TenderRequest tenderRequest =TRrepo.findById(id)
+    public TenderResponseDto getTenderRequestById(String tenderId) {
+        TenderRequest tenderRequest =TRrepo.findById(tenderId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -125,9 +135,9 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     }
 
     @Override
-    public void deleteTenderRequest(Long id) {
+    public void deleteTenderRequest(String tenderId) {
 
-        TenderRequest tenderRequest=TRrepo.findById(id)
+        TenderRequest tenderRequest=TRrepo.findById(tenderId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -154,7 +164,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     private TenderResponseDto mapToResponseDTO(TenderRequest tenderRequest) {
 
         TenderResponseDto tenderResponseDto = new TenderResponseDto();
-        tenderResponseDto.setId(tenderRequest.getId());
+
+        tenderResponseDto.setTenderId(tenderRequest.getTenderId());
         tenderResponseDto.setTitleOfTender(tenderRequest.getTitleOfTender());
         LocalDate openingDate = tenderRequest.getOpeningDate();
         tenderResponseDto.setOpeningDate(CommonUtils.convertDateToString(openingDate));

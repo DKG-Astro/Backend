@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class WorkOrderResponseDTO{
 
-    private Long id;
+    private String woId;
     private String tenderId;
     private String consignesAddress;
     private String billingAddress;

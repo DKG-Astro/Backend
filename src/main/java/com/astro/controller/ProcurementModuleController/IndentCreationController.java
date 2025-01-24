@@ -26,17 +26,17 @@ public class IndentCreationController {
     }
 
     // Update Indent
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateIndent(@PathVariable Long id,
+    @PutMapping("/{indentorId}")
+    public ResponseEntity<Object> updateIndent(@PathVariable String indentorId,
                                                                   @RequestBody IndentCreationRequestDTO indentRequestDTO) {
-        IndentCreationResponseDTO responseDTO = indentCreationService.updateIndent(id, indentRequestDTO);
+        IndentCreationResponseDTO responseDTO = indentCreationService.updateIndent(indentorId, indentRequestDTO);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 
     // Get Indent by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getIndentById(@PathVariable Long id) {
-        IndentCreationResponseDTO responseDTO = indentCreationService.getIndentById(id);
+    @GetMapping("/{indentorId}")
+    public ResponseEntity<Object> getIndentById(@PathVariable String indentorId) {
+        IndentCreationResponseDTO responseDTO = indentCreationService.getIndentById(indentorId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 
@@ -47,10 +47,10 @@ public class IndentCreationController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTOs), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteIndent(@PathVariable Long id) {
-        indentCreationService.deleteIndent(id);
-        return ResponseEntity.ok("indent  deleted successfully. Id:"+" " +id);
+    @DeleteMapping("/{indentorId}")
+    public ResponseEntity<String> deleteIndent(@PathVariable String indentorId) {
+        indentCreationService.deleteIndent(indentorId);
+        return ResponseEntity.ok("indent  deleted successfully. Id:"+" " +indentorId);
     }
 
 

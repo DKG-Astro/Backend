@@ -13,15 +13,17 @@ import java.util.List;
 
 public class IndentCreation {
 
+      //  @Id
+      //  @GeneratedValue(strategy = GenerationType.IDENTITY)
+      //  private Long id;
+
         @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+        @Column(name = "indentor_id", nullable = false, unique = true)
+        private String indentorId;
 
         @Column(name = "indentor_name")
         private String indentorName;
 
-        @Column(name = "indentor_id")
-        private String indentorId;
 
         @Column(name = "indentor_mobile_no")
         private String indentorMobileNo;
@@ -71,10 +73,12 @@ public class IndentCreation {
         @Column(name = "upload_pac_or_brand_pac")
         private byte[] uploadPACOrBrandPAC;
 
-        @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-        @JoinColumn(name = "indent_creation_id")
-        private List<MaterialDetails> materialDetails;
+       // @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+        //@JoinColumn(name = "indent_creation_id")
+      //  private List<MaterialDetails> materialDetails;
 
+        @OneToMany(mappedBy = "indentCreation", cascade = CascadeType.ALL, orphanRemoval = true)
+        private List<MaterialDetails> materialDetails;
 
         @Column(name = "created_by")
         private String createdBy;

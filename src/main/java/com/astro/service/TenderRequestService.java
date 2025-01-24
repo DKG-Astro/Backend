@@ -11,10 +11,10 @@ public interface TenderRequestService {
 
 
     public TenderResponseDto createTenderRequest(TenderRequestDto tenderRequestDto);
-    public TenderResponseDto updateTenderRequest(Long id, TenderRequestDto tenderRequestDto);
-    public TenderResponseDto getTenderRequestById(Long id);
+    public TenderResponseDto updateTenderRequest(String tenderId, TenderRequestDto tenderRequestDto);
+    public TenderResponseDto getTenderRequestById(String tenderId);
     public List<TenderResponseDto> getAllTenderRequests();
-    public void deleteTenderRequest(Long id);
+    public void deleteTenderRequest(String tenderId);
 
 
 }

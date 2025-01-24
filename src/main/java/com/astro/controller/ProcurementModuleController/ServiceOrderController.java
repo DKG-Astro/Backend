@@ -25,10 +25,10 @@ public class ServiceOrderController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateServiceOrder(@PathVariable Long id,
+    @PutMapping("/{soId}")
+    public ResponseEntity<Object> updateServiceOrder(@PathVariable String soId,
                                                                   @RequestBody ServiceOrderRequestDTO requestDTO) {
-        ServiceOrderResponseDTO responseDTO = serviceOrder.updateServiceOrder(id, requestDTO);
+        ServiceOrderResponseDTO responseDTO = serviceOrder.updateServiceOrder(soId, requestDTO);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
     @GetMapping
@@ -37,16 +37,16 @@ public class ServiceOrderController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTOList), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getServiceOrderById(@PathVariable Long id) {
-        ServiceOrderResponseDTO responseDTO = serviceOrder.getServiceOrderById(id);
+    @GetMapping("/{soId}")
+    public ResponseEntity<Object> getServiceOrderById(@PathVariable String soId) {
+        ServiceOrderResponseDTO responseDTO = serviceOrder.getServiceOrderById(soId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteServiceOrder(@PathVariable Long id) {
-        serviceOrder.deleteServiceOrder(id);
-        return ResponseEntity.ok("Service Order deleted successfully. Id:"+" " +id);
+    @DeleteMapping("/{soId}")
+    public ResponseEntity<String> deleteServiceOrder(@PathVariable String soId) {
+        serviceOrder.deleteServiceOrder(soId);
+        return ResponseEntity.ok("Service Order deleted successfully. Id:"+" " +soId);
     }
 
 

@@ -1,14 +1,17 @@
 package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.MaterialMasterRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsResponseDTO;
 import com.astro.entity.InventoryModule.Gprn;
 import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.entity.ProcurementModule.MaterialDetails;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
+import com.astro.exception.InvalidInputException;
 import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
 import com.astro.repository.ProcurementModule.IndentCreation.MaterialDetailsRepository;
 import com.astro.service.IndentCreationService;
@@ -28,8 +31,23 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         private MaterialDetailsRepository materialDetailsRepository;
 
     public IndentCreationResponseDTO createIndent(IndentCreationRequestDTO indentRequestDTO) {
-        // Save IndentCreation entity
+        // Check if the indentorId already exists
+        if (indentCreationRepository.existsById(indentRequestDTO.getIndentorId())) {
+            ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Indentor ID", "Indentor ID " + indentRequestDTO.getIndentorId() + " already exists.");
+            throw new InvalidInputException(errorDetails);
+        }
+
+        // Iterate over materialDetails and check if materialCode already exists
+        for (MaterialDetailsRequestDTO materialRequest : indentRequestDTO.getMaterialDetails()) {
+            if (materialDetailsRepository.existsById(materialRequest.getMaterialCode())) {
+                ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Material Code",
+                        "Material Code " + materialRequest.getMaterialCode() + " already exists.");
+                throw new InvalidInputException(errorDetails);
+            }
+        }
+
         IndentCreation indentCreation = new IndentCreation();
+
         indentCreation.setIndentorName(indentRequestDTO.getIndentorName());
         indentCreation.setIndentorId(indentRequestDTO.getIndentorId());
         indentCreation.setIndentorMobileNo(indentRequestDTO.getIndentorMobileNo());
@@ -50,6 +68,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
 
         // Save MaterialDetails entities and link them to the indentCreation
         List<MaterialDetails> materialDetailsList = indentRequestDTO.getMaterialDetails().stream().map(materialRequest -> {
+
             MaterialDetails material = new MaterialDetails();
             material.setMaterialCode(materialRequest.getMaterialCode());
             material.setMaterialDescription(materialRequest.getMaterialDescription());
@@ -72,8 +91,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         return mapToResponseDTO(indentCreation);
     }
 
-    public IndentCreationResponseDTO updateIndent(Long indentId, IndentCreationRequestDTO indentRequestDTO) {
-        IndentCreation indentCreation = indentCreationRepository.findById(indentId)
+    public IndentCreationResponseDTO updateIndent(String indentorId, IndentCreationRequestDTO indentRequestDTO) {
+        IndentCreation indentCreation = indentCreationRepository.findById(indentorId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -130,8 +149,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
     }
 
 
-    public IndentCreationResponseDTO getIndentById(Long indentId) {
-            IndentCreation indentCreation = indentCreationRepository.findById(indentId)
+    public IndentCreationResponseDTO getIndentById(String indentorId) {
+            IndentCreation indentCreation = indentCreationRepository.findById(indentorId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -150,7 +169,6 @@ public class IndentCreationServiceImpl implements IndentCreationService {
 
         private IndentCreationResponseDTO mapToResponseDTO(IndentCreation indentCreation) {
             IndentCreationResponseDTO response = new IndentCreationResponseDTO();
-            response.setId(indentCreation.getId());
             response.setIndentorName(indentCreation.getIndentorName());
             response.setIndentorId(indentCreation.getIndentorId());
             response.setIndentorMobileNo(indentCreation.getIndentorMobileNo());
@@ -188,9 +206,9 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             return response;
         }
     @Override
-    public void deleteIndent(Long id) {
+    public void deleteIndent(String indentorId) {
 
-       IndentCreation  gprn=indentCreationRepository.findById(id)
+       IndentCreation  gprn=indentCreationRepository.findById(indentorId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,

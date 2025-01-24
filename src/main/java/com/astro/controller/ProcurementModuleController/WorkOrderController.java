@@ -24,10 +24,10 @@ public class WorkOrderController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateWorkOrder(@PathVariable Long id,
+    @PutMapping("/{woId}")
+    public ResponseEntity<Object> updateWorkOrder(@PathVariable String woId,
                                                                       @RequestBody WorkOrderRequestDTO requestDTO) {
-        WorkOrderResponseDTO response = workOrder.updateWorkOrder(id, requestDTO);
+        WorkOrderResponseDTO response = workOrder.updateWorkOrder(woId, requestDTO);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
     @GetMapping
@@ -36,16 +36,16 @@ public class WorkOrderController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getWorkOrderById(@PathVariable Long id) {
-        WorkOrderResponseDTO responseDTO = workOrder.getWorkOrderById(id);
+    @GetMapping("/{woId}")
+    public ResponseEntity<Object> getWorkOrderById(@PathVariable String woId) {
+        WorkOrderResponseDTO responseDTO = workOrder.getWorkOrderById(woId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteWorkOrder(@PathVariable Long id) {
-        workOrder.deleteWorkOrder(id);
-        return ResponseEntity.ok("Work Order deleted successfully. Id:"+" " +id);
+    @DeleteMapping("/{woId}")
+    public ResponseEntity<String> deleteWorkOrder(@PathVariable String woId) {
+        workOrder.deleteWorkOrder(woId);
+        return ResponseEntity.ok("Work Order deleted successfully. Id:"+" " +woId);
     }
 
 

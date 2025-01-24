@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 public class PurchaseOrderRequestDTO{
 
-
+        private String poId;
         private String tenderId;
         private String indentId;
         private BigDecimal warranty;
@@ -16,12 +16,12 @@ public class PurchaseOrderRequestDTO{
         private String billingAddress;
         private BigDecimal deliveryPeriod;
         private Boolean ifLdClauseApplicable;
-        private String incoterms;
-        private String paymentterms;
+        private String incoTerms;
+        private String paymentTerms;
         private String vendorName;
         private String vendorAddress;
         private String applicablePbgToBeSubmitted;
-        private String transposterAndFreightForWarderDetails;
+        private String transporterAndFreightForWarderDetails;
         private String vendorAccountNumber;
         private String vendorsZfscCode;
         private String vendorAccountName;

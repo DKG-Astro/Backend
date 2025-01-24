@@ -9,6 +9,7 @@ import java.util.List;
 @Data
 public class WorkOrderRequestDTO {
 
+     private String woId;
      private String tenderId;
      private String consignesAddress;
      private String billingAddress;

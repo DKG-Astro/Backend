@@ -66,9 +66,9 @@ public class GRIController {
     }
 
 
-    @GetMapping("/purchase-orders/{id}")
-    public ResponseEntity<Object> fetchPurchaseOrderDetails(@PathVariable Long id) {
-        PurchaseOrderResponseDTO po = poService.getPurchaseOrderById(id);
+    @GetMapping("/purchase-orders/{poId}")
+    public ResponseEntity<Object> fetchPurchaseOrderDetails(@PathVariable String poId) {
+        PurchaseOrderResponseDTO po = poService.getPurchaseOrderById(poId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(po), HttpStatus.OK);
     }
 

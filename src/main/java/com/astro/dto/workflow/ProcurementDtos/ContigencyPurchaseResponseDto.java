@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 public class ContigencyPurchaseResponseDto {
 
-    private Long ContigencyId;
+    private String contigencyId;
 
     private String vendorsName;
     private String vendorsInvoiceNo;

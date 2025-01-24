@@ -35,7 +35,7 @@ public class PurchaseOrderController {
 
     @PutMapping("/{poId}")
     public ResponseEntity<Object> updatePurchaseOrder(
-            @PathVariable Long poId,
+            @PathVariable String poId,
             @RequestBody @Valid PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
         PurchaseOrderResponseDTO  updatedPO = poService.updatePurchaseOrder(poId, purchaseOrderRequestDTO);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(updatedPO), HttpStatus.OK);
@@ -51,15 +51,15 @@ public class PurchaseOrderController {
 
 
     // Get a PO by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getPurchaseOrderById(@PathVariable Long id) {
-        PurchaseOrderResponseDTO  po = poService.getPurchaseOrderById(id);
+    @GetMapping("/{poId}")
+    public ResponseEntity<Object> getPurchaseOrderById(@PathVariable String poId) {
+        PurchaseOrderResponseDTO  po = poService.getPurchaseOrderById(poId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(po), HttpStatus.OK);
     }
 
     // Delete a PO by ID
     @DeleteMapping("/{poId}")
-    public ResponseEntity<String> deletePurchaseOrder(@PathVariable Long poId) {
+    public ResponseEntity<String> deletePurchaseOrder(@PathVariable String poId) {
         poService.deletePurchaseOrder(poId);
         return ResponseEntity.ok("Purchase Order deleted successfully."+" " +poId);
     }

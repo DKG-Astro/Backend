@@ -45,7 +45,7 @@ public class GoodsResturnServiceImpl implements GoodsReturnService {
                                 AppConstant.ERROR_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_VALIDATION,
-                                "Goods return not found for the provided asset ID.")
+                                "Goods return not found for the provided goods return ID.")
                 ));
         existing.setGoodsReturnNoteNo(goodsReturnDto.getGoodsReturnNoteNo());
         existing.setRejectedQuantity(goodsReturnDto.getRejectedQuantity());

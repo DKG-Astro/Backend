@@ -10,7 +10,6 @@ import java.util.List;
 public class IndentCreationResponseDTO {
 
 
-    private Long id;
     private String indentorName;
     private String indentorId;
     private String indentorMobileNo;

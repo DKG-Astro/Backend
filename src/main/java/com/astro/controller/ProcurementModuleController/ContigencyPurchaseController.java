@@ -24,9 +24,9 @@ public class ContigencyPurchaseController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(created), HttpStatus.OK);
     }
 
-    @PutMapping("/{ContigencyId}")
-    public ResponseEntity<Object> updateContigencyPurchase(@PathVariable Long ContigencyId, @RequestBody ContigencyPurchaseRequestDto contigencyPurchaseDto) {
-        ContigencyPurchaseResponseDto updated = CPservice.updateContigencyPurchase(ContigencyId, contigencyPurchaseDto);
+    @PutMapping("/{contigencyId}")
+    public ResponseEntity<Object> updateContigencyPurchase(@PathVariable String contigencyId, @RequestBody ContigencyPurchaseRequestDto contigencyPurchaseDto) {
+        ContigencyPurchaseResponseDto updated = CPservice.updateContigencyPurchase(contigencyId, contigencyPurchaseDto);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(updated), HttpStatus.OK);
     }
 
@@ -38,17 +38,17 @@ public class ContigencyPurchaseController {
 
     }
 
-    @GetMapping("/{ContigencyId}")
-    public ResponseEntity<Object> getContigencyPurchaseById(@PathVariable Long ContigencyId) {
+    @GetMapping("/{contigencyId}")
+    public ResponseEntity<Object> getContigencyPurchaseById(@PathVariable String contigencyId) {
 
-       ContigencyPurchaseResponseDto contigencyPurchase= CPservice.getContigencyPurchaseById(ContigencyId);
+       ContigencyPurchaseResponseDto contigencyPurchase= CPservice.getContigencyPurchaseById(contigencyId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(contigencyPurchase), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{ContigencyId}")
-    public ResponseEntity<String> deleteContigencyPurchase(@PathVariable Long ContigencyId) {
-        CPservice.deleteContigencyPurchase(ContigencyId);
-        return ResponseEntity.ok("Contigency Purchase deleted successfully. Id:"+" " +ContigencyId);
+    @DeleteMapping("/{contigencyId}")
+    public ResponseEntity<String> deleteContigencyPurchase(@PathVariable String contigencyId) {
+        CPservice.deleteContigencyPurchase(contigencyId);
+        return ResponseEntity.ok("Contigency Purchase deleted successfully. Id:"+" " +contigencyId);
     }
 
 

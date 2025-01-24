@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 @Data
 public class ContigencyPurchaseRequestDto {
 
+    private String contigencyId;
     private String vendorsName;
     private String vendorsInvoiceNo;
     private String Date;

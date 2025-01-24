@@ -1,15 +1,18 @@
 package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderMaterialRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderMaterialResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderResponseDTO;
 
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderAttributesDTO;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.ServiceOrder;
 import com.astro.entity.ProcurementModule.ServiceOrderMaterial;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
+import com.astro.exception.InvalidInputException;
 import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrderMaterialRepository;
 import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrderRepository;
 import com.astro.service.ServiceOrderService;
@@ -28,7 +31,23 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
     @Autowired
     private ServiceOrderMaterialRepository serviceOrderMaterialRepository;
     public ServiceOrderResponseDTO createServiceOrder(ServiceOrderRequestDTO serviceOrderRequestDTO) {
+        // Check if the indentorId already exists
+        if (serviceOrderRepository.existsById(serviceOrderRequestDTO.getSoId())) {
+            ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Service Order ID", "SO ID " + serviceOrderRequestDTO.getSoId() + " already exists.");
+            throw new InvalidInputException(errorDetails);
+        }
+
+        // Iterate over materialDetails and check if materialCode already exists
+        for (ServiceOrderMaterialRequestDTO materialRequest : serviceOrderRequestDTO.getMaterials()) {
+            if (serviceOrderMaterialRepository.existsById(materialRequest.getMaterialCode())) {
+                ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Material Code",
+                        "Material Code " + materialRequest.getMaterialCode() + " already exists.");
+                throw new InvalidInputException(errorDetails);
+            }
+        }
+
         ServiceOrder serviceOrder = new ServiceOrder();
+        serviceOrder.setSoId(serviceOrderRequestDTO.getSoId());
         serviceOrder.setTenderId(serviceOrderRequestDTO.getTenderId());
         serviceOrder.setConsignesAddress(serviceOrderRequestDTO.getConsignesAddress());
         serviceOrder.setBillingAddress(serviceOrderRequestDTO.getBillingAddress());
@@ -65,14 +84,14 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
 
         return mapToResponseDTO(serviceOrder);
     }
-    public ServiceOrderResponseDTO updateServiceOrder(Long id, ServiceOrderRequestDTO serviceOrderRequestDTO) {
-        ServiceOrder existingServiceOrder = serviceOrderRepository.findById(id)
+    public ServiceOrderResponseDTO updateServiceOrder(String soId, ServiceOrderRequestDTO serviceOrderRequestDTO) {
+        ServiceOrder existingServiceOrder = serviceOrderRepository.findById(soId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_VALIDATION,
-                                "Service order not found for the provided asset ID.")
+                                "Service order not found for the provided SO ID.")
                 ));
         existingServiceOrder.setTenderId(serviceOrderRequestDTO.getTenderId());
         existingServiceOrder.setConsignesAddress(serviceOrderRequestDTO.getConsignesAddress());
@@ -121,21 +140,21 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
                 .collect(Collectors.toList());
     }
 
-    public ServiceOrderResponseDTO getServiceOrderById(Long id) {
-        ServiceOrder serviceOrder = serviceOrderRepository.findById(id)
+    public ServiceOrderResponseDTO getServiceOrderById(String soId) {
+        ServiceOrder serviceOrder = serviceOrderRepository.findById(soId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_RESOURCE,
-                                "service order not found for the provided asset ID.")
+                                "service order not found for the provided soId.")
                 ));
         return mapToResponseDTO(serviceOrder);
     }
 
-    public void deleteServiceOrder(Long id) {
+    public void deleteServiceOrder(String soId) {
 
-        ServiceOrder serviceOrder=serviceOrderRepository.findById(id)
+        ServiceOrder serviceOrder=serviceOrderRepository.findById(soId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -163,7 +182,7 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
 
     private ServiceOrderResponseDTO mapToResponseDTO(ServiceOrder ServiceOrder) {
         ServiceOrderResponseDTO response = new ServiceOrderResponseDTO();
-        response.setId(ServiceOrder.getId());
+        response.setSoId(ServiceOrder.getSoId());
         response.setTenderId(ServiceOrder.getTenderId());
         response.setConsignesAddress(ServiceOrder.getConsignesAddress());
         response.setBillingAddress(ServiceOrder.getBillingAddress());
@@ -184,7 +203,6 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         response.setMaterials(ServiceOrder.getMaterials().stream()
                 .map(dto -> {
                     ServiceOrderMaterialResponseDTO material = new ServiceOrderMaterialResponseDTO();
-                    material.setId(dto.getId());
                     material.setMaterialCode(dto.getMaterialCode());
                     material.setMaterialDescription(dto.getMaterialDescription());
                     material.setQuantity(dto.getQuantity());

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 public class TenderResponseDto {
 
-    private Long id;
+    private String tenderId;
     private String titleOfTender;
     private String  openingDate;
     private String closingDate;

@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ContigencyPurchaseRepository extends JpaRepository<ContigencyPurchase,Long> {
+public interface ContigencyPurchaseRepository extends JpaRepository<ContigencyPurchase,String> {
 
 
 

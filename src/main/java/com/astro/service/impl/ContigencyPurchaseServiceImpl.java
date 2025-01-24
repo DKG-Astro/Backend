@@ -8,6 +8,7 @@ import com.astro.entity.InventoryModule.Gprn;
 import com.astro.entity.ProcurementModule.ContigencyPurchase;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
+import com.astro.exception.InvalidInputException;
 import com.astro.repository.ProcurementModule.ContigencyPurchaseRepository;
 import com.astro.service.ContigencyPurchaseService;
 import com.astro.util.CommonUtils;
@@ -25,8 +26,16 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
 
     @Override
     public ContigencyPurchaseResponseDto createContigencyPurchase(ContigencyPurchaseRequestDto contigencyPurchaseDto) {
+
+        // Check if the indentorId already exists
+        if (CPrepo.existsById(contigencyPurchaseDto.getContigencyId())) {
+            ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Contigency Purchase ID", "CP ID " + contigencyPurchaseDto.getContigencyId() + " already exists.");
+            throw new InvalidInputException(errorDetails);
+        }
+
         ContigencyPurchase contigencyPurchase= new ContigencyPurchase();
 
+        contigencyPurchase.setContigencyId(contigencyPurchaseDto.getContigencyId());
         contigencyPurchase.setVendorsName(contigencyPurchaseDto.getVendorsName());
         contigencyPurchase.setVendorsInvoiceNo(contigencyPurchaseDto.getVendorsInvoiceNo());
         String Date = contigencyPurchaseDto.getDate();
@@ -50,14 +59,14 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
 
 
     @Override
-    public ContigencyPurchaseResponseDto updateContigencyPurchase(Long ContigencyId, ContigencyPurchaseRequestDto contigencyPurchaseDto) {
-        ContigencyPurchase existingCP = CPrepo.findById(ContigencyId)
+    public ContigencyPurchaseResponseDto updateContigencyPurchase(String contigencyId, ContigencyPurchaseRequestDto contigencyPurchaseDto) {
+        ContigencyPurchase existingCP = CPrepo.findById(contigencyId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_VALIDATION,
-                                " ContigencyPurchase not found for the provided asset ID.")
+                                " ContigencyPurchase not found for the provided contigency purchase ID.")
                 ));
         existingCP.setVendorsName(contigencyPurchaseDto.getVendorsName());
         existingCP.setVendorsInvoiceNo(contigencyPurchaseDto.getVendorsInvoiceNo());
@@ -80,14 +89,14 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
     }
 
     @Override
-    public ContigencyPurchaseResponseDto getContigencyPurchaseById(Long ContigencyId) {
-        ContigencyPurchase contigencyPurchase = CPrepo.findById(ContigencyId)
+    public ContigencyPurchaseResponseDto getContigencyPurchaseById(String contigencyId) {
+        ContigencyPurchase contigencyPurchase = CPrepo.findById(contigencyId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_RESOURCE,
-                                "Contigency Purchase not found for the provided asset ID.")
+                                "Contigency Purchase not found for the provided contigency purchase ID.")
                 ));
         return mapToResponseDTO(contigencyPurchase);
     }
@@ -99,9 +108,9 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
     }
 
     @Override
-    public void deleteContigencyPurchase(Long ContigencyId) {
+    public void deleteContigencyPurchase(String contigencyId) {
 
-      ContigencyPurchase contigencyPurchase=CPrepo.findById(ContigencyId)
+      ContigencyPurchase contigencyPurchase=CPrepo.findById(contigencyId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,

@@ -10,9 +10,9 @@ public interface ContigencyPurchaseService {
 
 
     public ContigencyPurchaseResponseDto createContigencyPurchase(ContigencyPurchaseRequestDto contigencyPurchaseDto);
-    public ContigencyPurchaseResponseDto updateContigencyPurchase(Long ContigencyId, ContigencyPurchaseRequestDto contigencyPurchaseDto);
-    public ContigencyPurchaseResponseDto getContigencyPurchaseById(Long ContigencyId);
+    public ContigencyPurchaseResponseDto updateContigencyPurchase(String contigencyId, ContigencyPurchaseRequestDto contigencyPurchaseDto);
+    public ContigencyPurchaseResponseDto getContigencyPurchaseById(String contigencyId);
     public List<ContigencyPurchaseResponseDto> getAllContigencyPurchase();
-    public void deleteContigencyPurchase(Long ContigencyId);
+    public void deleteContigencyPurchase(String contigencyId);
 
 }

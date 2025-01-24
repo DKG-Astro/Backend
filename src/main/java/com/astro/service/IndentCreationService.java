@@ -10,9 +10,9 @@ public interface IndentCreationService {
 
     public IndentCreationResponseDTO createIndent(IndentCreationRequestDTO indentRequestDTO) ;
 
-   public IndentCreationResponseDTO updateIndent(Long indentId, IndentCreationRequestDTO indentRequestDTO);
-    public IndentCreationResponseDTO getIndentById(Long indentId);
+   public IndentCreationResponseDTO updateIndent(String indentorId, IndentCreationRequestDTO indentRequestDTO);
+    public IndentCreationResponseDTO getIndentById(String indentorId);
     public List<IndentCreationResponseDTO> getAllIndents();
 
-  void deleteIndent(Long id);
+  void deleteIndent(String indentorId);
 }

@@ -4,6 +4,8 @@ package com.astro.service.impl;
 
 
 import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsRequestDTO;
+import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.WorkOrderMaterialRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.WorkOrderMaterialResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.WorkOrderRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.WorkOrderResponseDTO;
@@ -12,6 +14,7 @@ import com.astro.entity.ProcurementModule.WorkOrder;
 import com.astro.entity.ProcurementModule.WorkOrderMaterial;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
+import com.astro.exception.InvalidInputException;
 import com.astro.repository.ProcurementModule.WorkOrder.WorkOrderMaterialRepository;
 import com.astro.repository.ProcurementModule.WorkOrder.WorkOrderRepository;
 import com.astro.service.WorkOrderService;
@@ -29,7 +32,23 @@ public class WorkOrderImpl implements WorkOrderService {
     @Autowired
     private WorkOrderMaterialRepository workOrderMaterialRepository;
     public WorkOrderResponseDTO createWorkOrder(WorkOrderRequestDTO workOrderRequestDTO) {
+
+        // Check if the indentorId already exists
+        if (workOrderRepository.existsById(workOrderRequestDTO.getWoId())) {
+            ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate work order ID", "work order ID " + workOrderRequestDTO.getWoId() + " already exists.");
+            throw new InvalidInputException(errorDetails);
+        }
+
+        // Iterate over materialDetails and check if materialCode already exists
+        for (WorkOrderMaterialRequestDTO materialRequest : workOrderRequestDTO.getMaterials()) {
+            if (workOrderMaterialRepository.existsById(materialRequest.getWorkCode())) {
+                ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Material Code",
+                        "Material Code " + materialRequest.getWorkCode() + " already exists.");
+                throw new InvalidInputException(errorDetails);
+            }
+        }
         WorkOrder workOrder = new WorkOrder();
+        workOrder.setWoId(workOrderRequestDTO.getWoId());
         workOrder.setTenderId(workOrderRequestDTO.getTenderId());
         workOrder.setConsignesAddress(workOrderRequestDTO.getConsignesAddress());
         workOrder.setBillingAddress(workOrderRequestDTO.getBillingAddress());
@@ -65,8 +84,8 @@ public class WorkOrderImpl implements WorkOrderService {
 
         return mapToResponseDTO(workOrder);
     }
-    public WorkOrderResponseDTO updateWorkOrder(Long id, WorkOrderRequestDTO workOrderRequestDTO) {
-        WorkOrder existingWorkOrder = workOrderRepository.findById(id)
+    public WorkOrderResponseDTO updateWorkOrder(String woId, WorkOrderRequestDTO workOrderRequestDTO) {
+        WorkOrder existingWorkOrder = workOrderRepository.findById(woId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -121,8 +140,8 @@ public class WorkOrderImpl implements WorkOrderService {
                 .collect(Collectors.toList());
     }
 
-    public WorkOrderResponseDTO getWorkOrderById(Long id) {
-        WorkOrder workOrder = workOrderRepository.findById(id)
+    public WorkOrderResponseDTO getWorkOrderById(String woId) {
+        WorkOrder workOrder = workOrderRepository.findById(woId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -133,9 +152,9 @@ public class WorkOrderImpl implements WorkOrderService {
         return mapToResponseDTO(workOrder);
     }
 
-    public void deleteWorkOrder(Long id) {
+    public void deleteWorkOrder(String woId) {
 
-      WorkOrder workOrder=workOrderRepository.findById(id)
+      WorkOrder workOrder=workOrderRepository.findById(woId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -162,7 +181,7 @@ public class WorkOrderImpl implements WorkOrderService {
 
     private WorkOrderResponseDTO mapToResponseDTO(WorkOrder workOrder) {
         WorkOrderResponseDTO response = new WorkOrderResponseDTO();
-        response.setId(workOrder.getId());
+       response.setWoId(workOrder.getWoId());
         response.setTenderId(workOrder.getTenderId());
         response.setConsignesAddress(workOrder.getConsignesAddress());
         response.setBillingAddress(workOrder.getBillingAddress());
@@ -183,7 +202,7 @@ public class WorkOrderImpl implements WorkOrderService {
         response.setMaterials(workOrder.getMaterials().stream()
                 .map(dto -> {
                     WorkOrderMaterialResponseDTO material = new WorkOrderMaterialResponseDTO();
-                    material.setId(dto.getId());
+
                     material.setWorkCode(dto.getWorkCode());
                     material.setWorkDescription(dto.getWorkDescription());
                     material.setQuantity(dto.getQuantity());
