@@ -13,9 +13,6 @@ import java.util.List;
 
 public class IndentCreation {
 
-      //  @Id
-      //  @GeneratedValue(strategy = GenerationType.IDENTITY)
-      //  private Long id;
 
         @Id
         @Column(name = "indentor_id", nullable = false, unique = true)
@@ -73,9 +70,7 @@ public class IndentCreation {
         @Column(name = "upload_pac_or_brand_pac")
         private byte[] uploadPACOrBrandPAC;
 
-       // @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-        //@JoinColumn(name = "indent_creation_id")
-      //  private List<MaterialDetails> materialDetails;
+
 
         @OneToMany(mappedBy = "indentCreation", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<MaterialDetails> materialDetails;

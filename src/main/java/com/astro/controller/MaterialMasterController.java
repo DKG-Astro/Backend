@@ -48,7 +48,7 @@ public class MaterialMasterController {
     @DeleteMapping("/{materialCode}")
     public ResponseEntity<String> deleteMaterialMaster(@PathVariable String materialCode) {
        materialMasterService.deleteMaterialMaster(materialCode);
-        return ResponseEntity.ok("Work Order deleted successfully. materialCode:"+" " +materialCode);
+        return ResponseEntity.ok("material master deleted successfully. materialCode:"+" " +materialCode);
     }
 
 }

@@ -400,6 +400,59 @@ CREATE TABLE work_order_material (
     work_order_id VARCHAR(255),
     FOREIGN KEY (work_order_id) REFERENCES work_order(wo_id) ON DELETE CASCADE
 );
+CREATE TABLE project_master (
+    project_code VARCHAR(255) PRIMARY KEY,
+    project_name_description VARCHAR(255),
+    financial_year VARCHAR(20),
+    allocated_amount DECIMAL(15, 2),
+    department_division VARCHAR(255),
+    budget_type VARCHAR(255),
+    start_date DATE,
+    end_date DATE,
+    remarks_notes TEXT,
+    project_head VARCHAR(255),
+    created_by VARCHAR(255),
+    updated_by VARCHAR(255),
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+drop table job_master
+CREATE TABLE job_master (
+    job_code VARCHAR(255) PRIMARY KEY,
+    category VARCHAR(255),
+    job_description TEXT,
+    asset_id VARCHAR(255),
+    uom VARCHAR(50),
+    value DECIMAL(15, 2),
+	created_by VARCHAR(255),
+    updated_by VARCHAR(255),
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+select *from uom_master
+CREATE TABLE uom_master (
+    uom_code VARCHAR(50) PRIMARY KEY,
+    uom_name VARCHAR(255),
+    created_by VARCHAR(255),
+    updated_by VARCHAR(255),
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE location_master (
+    location_code VARCHAR(10) PRIMARY KEY,
+    location_name VARCHAR(255),
+    address TEXT,
+    created_by VARCHAR(255),
+    updated_by VARCHAR(255),
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
+
+
 
 
 

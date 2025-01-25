@@ -46,9 +46,7 @@ public class MaterialDetails {
     @Column(name = "material_and_job")
     private String materialAndJob;
 
-   // @ManyToOne
-   // @JoinColumn(name = "indent_creation_id", referencedColumnName = "id")
-   // private IndentCreation indentCreation;
+
     @ManyToOne
     @JoinColumn(name = "indent_creation_id", nullable = false)
     private IndentCreation indentCreation;
