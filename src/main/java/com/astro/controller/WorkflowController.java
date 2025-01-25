@@ -33,12 +33,12 @@ public class WorkflowController {
     }
 
     @PostMapping("/initiateWorkflow")
-    public ResponseEntity<Object> initiateWorkflow(@RequestParam Integer requestId, @RequestParam String workflowName,@RequestParam Integer createdBy)  {
+    public ResponseEntity<Object> initiateWorkflow(@RequestParam String requestId, @RequestParam String workflowName,@RequestParam Integer createdBy)  {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.initiateWorkflow(requestId, workflowName, createdBy)), HttpStatus.OK);
     }
 
     @GetMapping("/workflowTransitionHistory")
-    public ResponseEntity<Object> workflowTransitionHistory(@RequestParam Integer requestId)  {
+    public ResponseEntity<Object> workflowTransitionHistory(@RequestParam String requestId)  {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.workflowTransitionHistory(requestId)), HttpStatus.OK);
     }
 
@@ -58,7 +58,7 @@ public class WorkflowController {
     }
 
     @GetMapping("/nextTransition")
-    public ResponseEntity<Object> nextTransition(@RequestParam Integer workflowId, @RequestParam String workflowName, @RequestParam String currentRole, @RequestParam Integer requestId)  {
+    public ResponseEntity<Object> nextTransition(@RequestParam Integer workflowId, @RequestParam String workflowName, @RequestParam String currentRole, @RequestParam String requestId)  {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.nextTransition(workflowId, workflowName, currentRole, requestId)), HttpStatus.OK);
     }
 

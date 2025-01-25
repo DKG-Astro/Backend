@@ -65,7 +65,7 @@ CREATE TABLE `astrodatabase`.`state_master` (
   `workflowId` INT NOT NULL,
   `workflowName` VARCHAR(255) NOT NULL,
   `transitionId` INT NOT NULL,
-  `requestId` INT NOT NULL,
+  `requestId` VARCHAR(255) NOT NULL,
   `createdBy` INT NOT NULL,
   `modifiedBy` INT NULL,
   `status` VARCHAR(255) NOT NULL,

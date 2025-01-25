@@ -19,7 +19,6 @@ public class UserMaster {
 
     @Column(name = "USERNAME")
     private String userName;
-    private String password;
 
     @Column(name = "PASSWORD")
     private String password;
@@ -29,8 +28,6 @@ public class UserMaster {
 
     @Column(name = "MOBILENUMBER")
     private String mobileNumber;
-
-
 
     @Column(name = "CREATEDBY")
     private String createdBy;

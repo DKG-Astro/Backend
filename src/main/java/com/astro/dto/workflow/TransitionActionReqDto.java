@@ -6,7 +6,7 @@ import lombok.Data;
 public class TransitionActionReqDto {
 
     private Integer workflowTransitionId;
-    private Integer requestId;
+    private String requestId;
     private Integer actionBy;
     private String action;
     private String userRole;

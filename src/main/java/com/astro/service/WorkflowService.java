@@ -12,10 +12,10 @@ public interface WorkflowService {
     public WorkflowDto workflowByWorkflowName(String workflowName);
     public List<TransitionDto> transitionsByWorkflowId(Integer workflowId);
     public TransitionDto transitionsByWorkflowIdAndOrder(Integer workflowId, Integer order, Integer subOrder);
-    public WorkflowTransitionDto initiateWorkflow(Integer requestId, String workflowName, Integer createdBy);
-    public List<WorkflowTransitionDto> workflowTransitionHistory(Integer requestId);
+    public WorkflowTransitionDto initiateWorkflow(String requestId, String workflowName, Integer createdBy);
+    public List<WorkflowTransitionDto> workflowTransitionHistory(String requestId);
     public List<WorkflowTransitionDto> allWorkflowTransition(String roleName);
     public List<WorkflowTransitionDto> allPendingWorkflowTransition(String roleName);
-    public TransitionDto nextTransition(Integer workflowId, String workflowName, String currentRole, Integer requestId);
+    public TransitionDto nextTransition(Integer workflowId, String workflowName, String currentRole, String requestId);
     public WorkflowTransitionDto performTransitionAction(TransitionActionReqDto transitionActionReqDto);
 }

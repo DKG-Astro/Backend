@@ -1,20 +1,23 @@
 package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
-import com.astro.constant.WorkflowName;
 import com.astro.dto.workflow.*;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 import com.astro.entity.*;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.*;
+import com.astro.service.IndentCreationService;
 import com.astro.service.UserService;
 import com.astro.service.WorkflowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,6 +43,9 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     @Autowired
     UserRoleMasterRepository userRoleMasterRepository;
+
+    @Autowired
+    IndentCreationService indentCreationService;
 
     @Override
     public WorkflowDto workflowByWorkflowName(String workflowName) {
@@ -165,7 +171,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     @Override
     @Transactional
-    public WorkflowTransitionDto initiateWorkflow(Integer requestId, String workflowName, Integer createdBy) {
+    public WorkflowTransitionDto initiateWorkflow(String requestId, String workflowName, Integer createdBy) {
         WorkflowTransitionDto workflowTransitionDto = null;
         if(Objects.nonNull(requestId) && Objects.nonNull(workflowName) && Objects.nonNull(createdBy)){
             userService.validateUser(createdBy);
@@ -189,7 +195,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         return workflowTransitionDto;
     }
 
-    private void validateWorkflowTransition(Integer requestId, Integer createdBy, Integer workflowId) {
+    private void validateWorkflowTransition(String requestId, Integer createdBy, Integer workflowId) {
         WorkflowTransition workflowTransition = workflowTransitionRepository.findByWorkflowIdAndCreatedByAndRequestId(workflowId, createdBy, requestId);
         if(Objects.nonNull(workflowTransition)){
             throw new InvalidInputException(new ErrorDetails(AppConstant.WORKFLOW_ALREADY_EXISTS, AppConstant.ERROR_TYPE_CODE_VALIDATION,
@@ -198,7 +204,7 @@ public class WorkflowServiceImpl implements WorkflowService {
     }
 
     @Override
-    public List<WorkflowTransitionDto> workflowTransitionHistory(Integer requestId) {
+    public List<WorkflowTransitionDto> workflowTransitionHistory(String requestId) {
 
         List<WorkflowTransitionDto> workflowTransitionDtoList = new ArrayList<>();
         List<WorkflowTransition> workflowTransitionList = null;
@@ -271,7 +277,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         return transitionMasterRepository.findById(transitionId).orElse(null);
     }
 
-    private WorkflowTransition createWorkflowTransition(Integer requestId, WorkflowDto workflowDto, TransitionDto transitionDto, Integer createdBy) {
+    private WorkflowTransition createWorkflowTransition(String requestId, WorkflowDto workflowDto, TransitionDto transitionDto, Integer createdBy) {
         WorkflowTransition workflowTransition = new WorkflowTransition();
         workflowTransition.setTransitionId(transitionDto.getTransitionId());
         workflowTransition.setWorkflowId(workflowDto.getWorkflowId());
@@ -294,7 +300,7 @@ public class WorkflowServiceImpl implements WorkflowService {
     }
 
     @Override
-    public TransitionDto nextTransition(Integer workflowId, String workflowName, String currentRole, Integer requestId) {
+    public TransitionDto nextTransition(Integer workflowId, String workflowName, String currentRole, String requestId) {
         TransitionDto transitionDto = null;
 
         if(Objects.nonNull(workflowId) && Objects.nonNull(currentRole)){
@@ -457,12 +463,12 @@ public class WorkflowServiceImpl implements WorkflowService {
         }
     }
 
-    private TransitionDto nextTransitionDto(List<TransitionDto> nextTransitionDtoList, String workflowName, Integer requestId) {
+    private TransitionDto nextTransitionDto(List<TransitionDto> nextTransitionDtoList, String workflowName, String requestId) {
         TransitionDto transitionDto = null;
-        List<Integer> conditionIdList = nextTransitionDtoList.stream().map(e -> e.getConditionId()).collect(Collectors.toList());
+        List<Integer> conditionIdList = nextTransitionDtoList.stream().filter(f -> Objects.nonNull(f.getConditionId())).map(e -> e.getConditionId()).collect(Collectors.toList());
 
         //for without any condition move and have only one next move
-        if (Objects.isNull(conditionIdList) && nextTransitionDtoList.size() == 1) {
+        if (conditionIdList.isEmpty() && nextTransitionDtoList.size() == 1) {
             return nextTransitionDtoList.get(0);
         } else {
             List<TransitionConditionMaster> transitionConditionMasterList = transitionConditionMasterRepository.findAllById(conditionIdList);
@@ -470,25 +476,40 @@ public class WorkflowServiceImpl implements WorkflowService {
             switch (workflowName.toUpperCase()) {
                 case "INDENT WORKFLOW":
                     //get indent data here
-
-                    nextTransitionDtoList.stream().forEach(e -> {
-                        Integer conditionId = e.getConditionId();
+                    IndentCreationResponseDTO indentCreationResponseDTO = indentCreationService.getIndentById(requestId);
+                    for(TransitionDto dto : nextTransitionDtoList){
+                        Integer conditionId = dto.getConditionId();
                         if (Objects.nonNull(conditionId)) {
-                            TransitionConditionMaster transitionConditionMaster = transitionConditionMasterList.stream().filter(f -> f.getConditionId().equals(e.getConditionId())).findFirst().get();
+                            TransitionConditionMaster transitionConditionMaster = transitionConditionMasterList.stream().filter(f -> f.getConditionId().equals(dto.getConditionId())).findFirst().get();
                             String conditionKey = transitionConditionMaster.getConditionKey();
                             String conditionValue = transitionConditionMaster.getConditionValue();
-
-
+                            Object dataValue = null;
+                            boolean conditionCheckFlag = Boolean.FALSE;
+                            if(conditionKey.equalsIgnoreCase("ProjectName")){
+                                dataValue =  indentCreationResponseDTO.getProjectName();
+                                conditionCheckFlag = Objects.nonNull(dataValue);
+                            }else if(conditionKey.equalsIgnoreCase("MaterialCategory")){
+                                dataValue =  indentCreationResponseDTO.getMaterialCategory();
+                                conditionCheckFlag = ((String) dataValue).equalsIgnoreCase(conditionValue);
+                            }else if(conditionKey.equalsIgnoreCase("ConsignesLocation")){
+                                dataValue =  indentCreationResponseDTO.getConsignesLocation();
+                                conditionCheckFlag = ((String) dataValue).equalsIgnoreCase(conditionValue);
+                            }else if(conditionKey.equalsIgnoreCase("TotalPriceOfAllMaterials")){
+                                dataValue =  indentCreationResponseDTO.getTotalPriceOfAllMaterials();
+                                conditionCheckFlag = ((BigDecimal) dataValue).doubleValue() <= Double.valueOf(conditionValue);
+                            }
+                            if(conditionCheckFlag){
+                                transitionDto = dto;
+                                break;
+                            }
                         }
-
-                    });
-                {
+                    }
                     break;
                     //add more case here
-                }
 
             }
         }
         return transitionDto;
     }
+
 }

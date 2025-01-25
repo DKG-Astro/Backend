@@ -11,7 +11,6 @@ public class UserDto {
     private Integer userId;
     private String password;
     private String userName;
-    private String password;
     private String mobileNumber;
     private String createdBy;
     private LocalDateTime createdDate;

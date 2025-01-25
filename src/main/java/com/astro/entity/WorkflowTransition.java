@@ -25,7 +25,7 @@ public class WorkflowTransition {
     private Integer transitionId;
 
     @Column(name = "REQUESTID")
-    private Integer requestId;
+    private String requestId;
 
     @Column(name = "CREATEDBY")
     private Integer createdBy;

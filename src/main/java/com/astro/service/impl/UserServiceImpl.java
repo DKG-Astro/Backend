@@ -1,10 +1,8 @@
 package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
-import com.astro.controller.UserController;
 import com.astro.dto.workflow.UserDto;
 import com.astro.dto.workflow.UserRoleDto;
-import com.astro.dto.workflow.UserDto;
 
 import com.astro.dto.workflow.userRequestDto;
 import com.astro.entity.UserMaster;
