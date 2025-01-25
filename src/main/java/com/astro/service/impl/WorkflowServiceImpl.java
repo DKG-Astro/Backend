@@ -1,6 +1,7 @@
 package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
+import com.astro.constant.WorkflowName;
 import com.astro.dto.workflow.*;
 import com.astro.entity.*;
 import com.astro.exception.BusinessException;
@@ -293,26 +294,12 @@ public class WorkflowServiceImpl implements WorkflowService {
     }
 
     @Override
-    public TransitionDto nextTransition(Integer workflowId, String currentRole, String tranConditionKey, String tranConditionValue) {
+    public TransitionDto nextTransition(Integer workflowId, String workflowName, String currentRole, Integer requestId) {
         TransitionDto transitionDto = null;
 
         if(Objects.nonNull(workflowId) && Objects.nonNull(currentRole)){
-            List<TransitionDto> transitionDtoList = transitionsByWorkflowId(workflowId);
-            if(Objects.nonNull(transitionDtoList) && !transitionDtoList.isEmpty()){
-
-                if(Objects.nonNull(tranConditionValue) && Objects.nonNull(tranConditionKey)) {
-                    List<TransitionDto> filteredList = transitionDtoList.stream().filter(e -> e.getCurrentRoleName().equalsIgnoreCase(currentRole) && tranConditionKey.equalsIgnoreCase(e.getConditionKey()) &&
-                            tranConditionValue.equalsIgnoreCase(e.getConditionValue())).collect(Collectors.toList());
-                    if (Objects.nonNull(filteredList) && !filteredList.isEmpty()) {
-                        transitionDto = filteredList.get(0);
-                    }
-                }else{
-                    List<TransitionDto> filteredList = transitionDtoList.stream().filter(e -> Objects.isNull(e.getConditionKey()) && Objects.isNull(e.getConditionValue()) && e.getCurrentRoleName().equalsIgnoreCase(currentRole)).collect(Collectors.toList());
-                    if (Objects.nonNull(filteredList) && !filteredList.isEmpty()) {
-                        transitionDto = filteredList.get(0);
-                    }
-                }
-            }
+            List<TransitionDto> nextTransitionDtoList = transitionsByWorkflowId(workflowId).stream().filter(e -> currentRole.equalsIgnoreCase(e.getCurrentRoleName())).sorted(Comparator.comparing(s -> s.getTransitionSubOrder())).collect(Collectors.toList());
+            transitionDto = nextTransitionDto(nextTransitionDtoList, workflowName, requestId);
         }else{
             throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid input."));
@@ -421,7 +408,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 
             workflowTransitionRepository.save(nextWorkflowTransition);
         }else{
-           TransitionDto nextTransition =  nextTransition(currentTransition.getWorkflowId(), transitionActionReqDto.getUserRole(), transitionActionReqDto.getTranConditionKey(), transitionActionReqDto.getTranConditionValue());
+           TransitionDto nextTransition =  nextTransition(currentTransition.getWorkflowId(), currentWorkflowTransition.getWorkflowName() ,transitionActionReqDto.getUserRole(), currentWorkflowTransition.getRequestId());
             if(Objects.isNull(nextTransition)){
                 throw new InvalidInputException(new ErrorDetails(AppConstant.NEXT_TRANSITION_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                         AppConstant.ERROR_TYPE_VALIDATION, "Error occurred at approval. No next transition found."));
@@ -468,5 +455,40 @@ public class WorkflowServiceImpl implements WorkflowService {
                         AppConstant.ERROR_TYPE_VALIDATION, "Unauthorized user."));
             }
         }
+    }
+
+    private TransitionDto nextTransitionDto(List<TransitionDto> nextTransitionDtoList, String workflowName, Integer requestId) {
+        TransitionDto transitionDto = null;
+        List<Integer> conditionIdList = nextTransitionDtoList.stream().map(e -> e.getConditionId()).collect(Collectors.toList());
+
+        //for without any condition move and have only one next move
+        if (Objects.isNull(conditionIdList) && nextTransitionDtoList.size() == 1) {
+            return nextTransitionDtoList.get(0);
+        } else {
+            List<TransitionConditionMaster> transitionConditionMasterList = transitionConditionMasterRepository.findAllById(conditionIdList);
+
+            switch (workflowName.toUpperCase()) {
+                case "INDENT WORKFLOW":
+                    //get indent data here
+
+                    nextTransitionDtoList.stream().forEach(e -> {
+                        Integer conditionId = e.getConditionId();
+                        if (Objects.nonNull(conditionId)) {
+                            TransitionConditionMaster transitionConditionMaster = transitionConditionMasterList.stream().filter(f -> f.getConditionId().equals(e.getConditionId())).findFirst().get();
+                            String conditionKey = transitionConditionMaster.getConditionKey();
+                            String conditionValue = transitionConditionMaster.getConditionValue();
+
+
+                        }
+
+                    });
+                {
+                    break;
+                    //add more case here
+                }
+
+            }
+        }
+        return transitionDto;
     }
 }

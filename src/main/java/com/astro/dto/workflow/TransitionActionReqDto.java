@@ -10,7 +10,5 @@ public class TransitionActionReqDto {
     private Integer actionBy;
     private String action;
     private String userRole;
-    private String tranConditionKey;
-    private String tranConditionValue;
     private String remarks;
 }
