@@ -15,9 +15,12 @@ import com.astro.exception.InvalidInputException;
 import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
 import com.astro.repository.ProcurementModule.IndentCreation.MaterialDetailsRepository;
 import com.astro.service.IndentCreationService;
+import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,11 +41,18 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         }
 
         // Iterate over materialDetails and check if materialCode already exists
+        String materialCategory = null;
         for (MaterialDetailsRequestDTO materialRequest : indentRequestDTO.getMaterialDetails()) {
             if (materialDetailsRepository.existsById(materialRequest.getMaterialCode())) {
                 ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Material Code",
                         "Material Code " + materialRequest.getMaterialCode() + " already exists.");
                 throw new InvalidInputException(errorDetails);
+            }
+            if (materialCategory == null) {
+                materialCategory = materialRequest.getMaterialCategory();
+            } else if (!materialCategory.equals(materialRequest.getMaterialCategory())) {
+                throw new InvalidInputException(new ErrorDetails(400, 2, "Inconsistent Material Category",
+                        "All materials must have the same material category."));
             }
         }
 
@@ -56,7 +66,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setUploadingPriorApprovals(indentRequestDTO.getUploadingPriorApprovals());
         indentCreation.setProjectName(indentRequestDTO.getProjectName());
         indentCreation.setIsPreBitMeetingRequired(indentRequestDTO.getIsPreBidMeetingRequired());
-        indentCreation.setPreBidMeetingDate(indentRequestDTO.getPreBidMeetingDate());
+        String Date = indentRequestDTO.getPreBidMeetingDate();
+        indentCreation.setPreBidMeetingDate(CommonUtils.convertStringToDateObject(Date));
         indentCreation.setPreBidMeetingVenue(indentRequestDTO.getPreBidMeetingVenue());
         indentCreation.setIsItARateContractIndent(indentRequestDTO.getIsItARateContractIndent());
         indentCreation.setEstimatedRate(indentRequestDTO.getEstimatedRate());
@@ -102,14 +113,15 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                 ));
 
         indentCreation.setIndentorName(indentRequestDTO.getIndentorName());
-        indentCreation.setIndentorId(indentRequestDTO.getIndentorId());
+       // indentCreation.setIndentorId(indentRequestDTO.getIndentorId());
         indentCreation.setIndentorMobileNo(indentRequestDTO.getIndentorMobileNo());
         indentCreation.setIndentorEmailAddress(indentRequestDTO.getIndentorEmailAddress());
         indentCreation.setConsignesLocation(indentRequestDTO.getConsignesLocation());
         indentCreation.setUploadingPriorApprovals(indentRequestDTO.getUploadingPriorApprovals());
         indentCreation.setProjectName(indentRequestDTO.getProjectName());
         indentCreation.setIsPreBitMeetingRequired(indentRequestDTO.getIsPreBidMeetingRequired());
-        indentCreation.setPreBidMeetingDate(indentRequestDTO.getPreBidMeetingDate());
+        String Date = indentRequestDTO.getPreBidMeetingDate();
+        indentCreation.setPreBidMeetingDate(CommonUtils.convertStringToDateObject(Date));
         indentCreation.setPreBidMeetingVenue(indentRequestDTO.getPreBidMeetingVenue());
         indentCreation.setIsItARateContractIndent(indentRequestDTO.getIsItARateContractIndent());
         indentCreation.setEstimatedRate(indentRequestDTO.getEstimatedRate());
@@ -177,7 +189,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             response.setUploadingPriorApprovals(indentCreation.getUploadingPriorApprovals());
             response.setProjectName(indentCreation.getProjectName());
             response.setIsPreBidMeetingRequired(indentCreation.getIsPreBitMeetingRequired());
-            response.setPreBidMeetingDate(indentCreation.getPreBidMeetingDate());
+            LocalDate Date = indentCreation.getPreBidMeetingDate();
+            response.setPreBidMeetingDate(CommonUtils.convertDateToString(Date));
             response.setPreBidMeetingVenue(indentCreation.getPreBidMeetingVenue());
             response.setIsItARateContractIndent(indentCreation.getIsItARateContractIndent());
             response.setEstimatedRate(indentCreation.getEstimatedRate());
@@ -185,6 +198,13 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             response.setSingleAndMultipleJob(indentCreation.getSingleAndMultipleJob());
             response.setCreatedBy(indentCreation.getCreatedBy());
             response.setUpdatedBy(indentCreation.getUpdatedBy());
+            String materialCategory = indentCreation.getMaterialDetails().stream()
+                    .map(MaterialDetails::getMaterialCategory)
+                    .findFirst()
+                    .orElse(null);
+
+            response.setMaterialCategory(materialCategory);  //set material category to indent response
+
             // Map material details
             List<MaterialDetailsResponseDTO> materialDetailsResponse = indentCreation.getMaterialDetails().stream().map(material -> {
                 MaterialDetailsResponseDTO materialResponse = new MaterialDetailsResponseDTO();
@@ -200,6 +220,13 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                 materialResponse.setMaterialAndJob(material.getMaterialAndJob());
                 return materialResponse;
             }).collect(Collectors.toList());
+
+            // Calculate total price of all materials
+            BigDecimal totalPriceOfAllMaterials = materialDetailsResponse.stream()
+                    .map(MaterialDetailsResponseDTO::getTotalPrize)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            response.setTotalPriceOfAllMaterials(totalPriceOfAllMaterials);
 
             response.setMaterialDetails(materialDetailsResponse);
 

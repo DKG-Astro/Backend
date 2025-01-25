@@ -18,12 +18,15 @@ public class IndentCreationResponseDTO {
     private String uploadingPriorApprovals;
     private String projectName;
     private Boolean isPreBidMeetingRequired;
-    private LocalDate preBidMeetingDate;
+    private String preBidMeetingDate;
     private String preBidMeetingVenue;
     private Boolean isItARateContractIndent;
     private BigDecimal estimatedRate;
     private BigDecimal periodOfContract;
     private String singleAndMultipleJob;
+    private String materialCategory;
+
+    private BigDecimal totalPriceOfAllMaterials;
     private List<MaterialDetailsResponseDTO> materialDetails;
     private String createdBy;
     private String updatedBy;

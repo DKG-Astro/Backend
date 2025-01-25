@@ -20,7 +20,7 @@ public class IndentCreationRequestDTO {
     private String uploadingPriorApprovals;
     private String projectName;
     private Boolean isPreBidMeetingRequired;
-    private LocalDate preBidMeetingDate;
+    private String preBidMeetingDate;
     private String preBidMeetingVenue;
     private Boolean isItARateContractIndent;
     private BigDecimal estimatedRate;
