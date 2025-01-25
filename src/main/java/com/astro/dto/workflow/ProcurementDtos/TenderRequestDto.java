@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @Data
 public class TenderRequestDto {
 
+    private String tenderId;
     private String titleOfTender;
     private String openingDate;
     private String closingDate;

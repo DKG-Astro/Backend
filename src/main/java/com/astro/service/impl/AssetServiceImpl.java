@@ -1,13 +1,19 @@
 package com.astro.service.impl;
 
-import com.astro.dto.workflow.InventoryModule.AssetDTO;
+import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.InventoryModule.AssetRequestDTO;
+import com.astro.dto.workflow.InventoryModule.AssetResponseDto;
 import com.astro.entity.InventoryModule.Asset;
+import com.astro.entity.ProcurementModule.IndentCreation;
+import com.astro.exception.BusinessException;
+import com.astro.exception.ErrorDetails;
 import com.astro.repository.InventoryModule.AssetRepository;
 import com.astro.service.AssetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AssetServiceImpl implements AssetService {
@@ -17,7 +23,7 @@ public class AssetServiceImpl implements AssetService {
 
 
 
-    public Asset createAsset(AssetDTO assetDTO) {
+    public AssetResponseDto createAsset(AssetRequestDTO assetDTO) {
         Asset asset = new Asset();
         asset.setAssetCode(assetDTO.getAssetCode());
         asset.setMaterialCode(assetDTO.getMaterialCode());
@@ -34,11 +40,21 @@ public class AssetServiceImpl implements AssetService {
         asset.setCurrentCondition(assetDTO.getCurrentCondition());
         asset.setUpdatedBy(assetDTO.getUpdatedBy());
         asset.setCreatedBy(assetDTO.getCreatedBy());
-        return assetRepository.save(asset);
+        assetRepository.save(asset);
+        return mapToResponseDTO(asset);
     }
 
-    public Asset updateAsset(Long id, AssetDTO assetDTO) {
-        Asset asset = assetRepository.findById(id).orElseThrow(() -> new RuntimeException("Asset not found"));
+
+
+    public AssetResponseDto updateAsset(Long id, AssetRequestDTO assetDTO) {
+        Asset asset = assetRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "Contingency Purchase not found for the provided asset ID.")
+                ));
 
         asset.setAssetCode(assetDTO.getAssetCode());
         asset.setMaterialCode(assetDTO.getMaterialCode());
@@ -55,19 +71,78 @@ public class AssetServiceImpl implements AssetService {
         asset.setCurrentCondition(assetDTO.getCurrentCondition());
         asset.setUpdatedBy(assetDTO.getUpdatedBy());
         asset.setCreatedBy(assetDTO.getCreatedBy());
-        return assetRepository.save(asset);
+        assetRepository.save(asset);
+        return mapToResponseDTO(asset);
     }
 
-    public List<Asset> getAllAssets() {
-        return assetRepository.findAll();
+    public List<AssetResponseDto> getAllAssets() {
+
+        List<Asset> asset = assetRepository.findAll();
+        return asset.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
     }
 
-    public Asset getAssetById(Long id) {
-        return assetRepository.findById(id).orElseThrow(() -> new RuntimeException("Asset not found"));
+    public AssetResponseDto getAssetById(Long id) {
+        Asset asset = assetRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Contingency Purchase not found for the provided asset ID.")
+                ));
+        return mapToResponseDTO(asset);
     }
 
     public void deleteAsset(Long id) {
-        assetRepository.deleteById(id);
+
+        Asset asset = assetRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Asset not found for the provided ID."
+                        )
+                ));
+        try {
+            assetRepository.delete(asset);
+        } catch (Exception ex) {
+            throw new BusinessException(
+                    new ErrorDetails(
+                            AppConstant.INTER_SERVER_ERROR,
+                            AppConstant.ERROR_TYPE_CODE_INTERNAL,
+                            AppConstant.ERROR_TYPE_ERROR,
+                            "An error occurred while deleting the asset."
+                    ),
+                    ex
+            );
+        }
+
+    }
+
+    private AssetResponseDto mapToResponseDTO(Asset asset) {
+        AssetResponseDto assetResponseDto =new  AssetResponseDto();
+        assetResponseDto.setId(asset.getId());
+        assetResponseDto.setAssetCode(asset.getAssetCode());
+        assetResponseDto.setMaterialCode(asset.getMaterialCode());
+        assetResponseDto.setDescription(asset.getDescription());
+        assetResponseDto.setUom(asset.getUom());
+        assetResponseDto.setMakeNo(asset.getMakeNo());
+        assetResponseDto.setModelNo(asset.getModelNo());
+        assetResponseDto.setSerialNo(asset.getSerialNo());
+        assetResponseDto.setComponentName(asset.getComponentName());
+        assetResponseDto.setComponentCode(asset.getComponentCode());
+        assetResponseDto.setQuantity(asset.getQuantity());
+        assetResponseDto.setLocator(asset.getLocator());
+        assetResponseDto.setTransactionHistory(asset.getTransactionHistory());
+        assetResponseDto.setCurrentCondition(asset.getCurrentCondition());
+        assetResponseDto.setUpdatedBy(asset.getUpdatedBy());
+        assetResponseDto.setCreatedBy(asset.getCreatedBy());
+        assetResponseDto.setCreatedDate(asset.getCreatedDate());
+        assetResponseDto.setUpdatedDate(asset.getUpdatedDate());
+        return assetResponseDto;
+
+
     }
 
 }

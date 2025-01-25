@@ -4,7 +4,9 @@ package com.astro.controller.ProcurementModuleController;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 import com.astro.service.IndentCreationService;
+import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,37 +20,37 @@ public class IndentCreationController {
     private IndentCreationService indentCreationService;
 
     @PostMapping
-    public ResponseEntity<IndentCreationResponseDTO> createIndent(@RequestBody IndentCreationRequestDTO indentRequestDTO) {
+    public ResponseEntity<Object> createIndent(@RequestBody IndentCreationRequestDTO indentRequestDTO) {
         IndentCreationResponseDTO responseDTO = indentCreationService.createIndent(indentRequestDTO);
-        return ResponseEntity.ok(responseDTO);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 
     // Update Indent
-    @PutMapping("/{id}")
-    public ResponseEntity<IndentCreationResponseDTO> updateIndent(@PathVariable Long id,
+    @PutMapping("/{indentorId}")
+    public ResponseEntity<Object> updateIndent(@PathVariable String indentorId,
                                                                   @RequestBody IndentCreationRequestDTO indentRequestDTO) {
-        IndentCreationResponseDTO responseDTO = indentCreationService.updateIndent(id, indentRequestDTO);
-        return ResponseEntity.ok(responseDTO);
+        IndentCreationResponseDTO responseDTO = indentCreationService.updateIndent(indentorId, indentRequestDTO);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 
     // Get Indent by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<IndentCreationResponseDTO> getIndentById(@PathVariable Long id) {
-        IndentCreationResponseDTO responseDTO = indentCreationService.getIndentById(id);
-        return responseDTO != null ? ResponseEntity.ok(responseDTO) : ResponseEntity.notFound().build();
+    @GetMapping("/{indentorId}")
+    public ResponseEntity<Object> getIndentById(@PathVariable String indentorId) {
+        IndentCreationResponseDTO responseDTO = indentCreationService.getIndentById(indentorId);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 
     // Get All Indents
     @GetMapping
-    public ResponseEntity<List<IndentCreationResponseDTO>> getAllIndents() {
+    public ResponseEntity<Object> getAllIndents() {
         List<IndentCreationResponseDTO> responseDTOs = indentCreationService.getAllIndents();
-        return ResponseEntity.ok(responseDTOs);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTOs), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteIndent(@PathVariable Long id) {
-        indentCreationService.deleteIndent(id);
-        return ResponseEntity.ok("indent  deleted successfully. Id:"+" " +id);
+    @DeleteMapping("/{indentorId}")
+    public ResponseEntity<String> deleteIndent(@PathVariable String indentorId) {
+        indentCreationService.deleteIndent(indentorId);
+        return ResponseEntity.ok("indent  deleted successfully. Id:"+" " +indentorId);
     }
 
 

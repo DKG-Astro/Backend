@@ -1,20 +1,21 @@
 package com.astro.service;
 
-import com.astro.dto.workflow.InventoryModule.GoodsInspectionDto;
+import com.astro.dto.workflow.InventoryModule.GoodsInspectionRequestDto;
+import com.astro.dto.workflow.InventoryModule.GoodsInspectionResponseDto;
 import com.astro.entity.InventoryModule.GoodsInspection;
 
 import java.util.List;
 
 public interface GoodsInspectionService {
 
-    List<GoodsInspection> getAllGoodsInspections();
+    List<GoodsInspectionResponseDto> getAllGoodsInspections();
 
-    GoodsInspection getGoodsInspectionById(Long id);
+    GoodsInspectionResponseDto getGoodsInspectionById(Long goodsInspectionNo);
 
-    GoodsInspection createGoodsInspection(GoodsInspectionDto goodsInspectionDTO);
+    GoodsInspectionResponseDto createGoodsInspection(GoodsInspectionRequestDto goodsInspectionDTO);
 
-    GoodsInspection updateGoodsInspection(Long id, GoodsInspectionDto goodsInspectionDTO);
+    GoodsInspectionResponseDto updateGoodsInspection(Long goodsInspectionNo, GoodsInspectionRequestDto goodsInspectionDTO);
 
-    void deleteGoodsInspection(Long id);
+    void deleteGoodsInspection(Long goodsInspectionNo);
 
 }

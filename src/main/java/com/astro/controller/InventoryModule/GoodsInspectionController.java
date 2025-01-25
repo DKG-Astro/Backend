@@ -1,10 +1,14 @@
 package com.astro.controller.InventoryModule;
 
-import com.astro.dto.workflow.InventoryModule.GoodsInspectionDto;
+import com.astro.dto.workflow.InventoryModule.GoodsInspectionRequestDto;
+import com.astro.dto.workflow.InventoryModule.GoodsInspectionResponseDto;
+import com.astro.dto.workflow.InventoryModule.GprnDto.GprnResponseDto;
 import com.astro.entity.InventoryModule.GoodsInspection;
-import com.astro.entity.InventoryModule.Gprn;
 import com.astro.service.GoodsInspectionService;
+import com.astro.service.GprnService;
+import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,40 +21,50 @@ public class GoodsInspectionController {
     @Autowired
     private GoodsInspectionService goodsInspectionService;
 
+    @Autowired
+    private GprnService gprnService;
 
 
     // Create a new Goods Inspection
     @PostMapping
-    public ResponseEntity<GoodsInspection> createGoodsInspection(@RequestBody GoodsInspectionDto goodsInspectionDto) {
-        GoodsInspection createdInspection = goodsInspectionService.createGoodsInspection(goodsInspectionDto);
-        return ResponseEntity.ok(createdInspection);
+    public ResponseEntity<Object> createGoodsInspection(@RequestBody GoodsInspectionRequestDto goodsInspectionDto) {
+        GoodsInspectionResponseDto createdInspection = goodsInspectionService.createGoodsInspection(goodsInspectionDto);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(createdInspection), HttpStatus.OK);
     }
     // Get all Goods Inspections
     @GetMapping
-    public ResponseEntity<List<GoodsInspection>> getAllGoodsInspections() {
-        List<GoodsInspection> inspections = goodsInspectionService.getAllGoodsInspections();
-        return ResponseEntity.ok(inspections);
+    public ResponseEntity<Object> getAllGoodsInspections() {
+        List<GoodsInspectionResponseDto> inspections = goodsInspectionService.getAllGoodsInspections();
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(inspections), HttpStatus.OK);
     }
 
 
-    @GetMapping("/{id}")
-    public ResponseEntity<GoodsInspection> getGoodsInspectionById(@PathVariable Long id) {
-        GoodsInspection inspection = goodsInspectionService.getGoodsInspectionById(id);
-        return ResponseEntity.ok(inspection);
+
+    @GetMapping("/{goodsInspectionNo}")
+    public ResponseEntity<Object> getGoodsInspectionById(@PathVariable Long goodsInspectionNo) {
+        GoodsInspectionResponseDto inspection = goodsInspectionService.getGoodsInspectionById(goodsInspectionNo);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(inspection), HttpStatus.OK);
     }
 
 
     // Update an existing Goods Inspection by ID
-    @PutMapping("/{id}")
-    public ResponseEntity<GoodsInspection> updateGoodsInspection(@PathVariable Long id, @RequestBody GoodsInspectionDto goodsInspectionDto) {
-        GoodsInspection updatedInspection = goodsInspectionService.updateGoodsInspection(id, goodsInspectionDto);
-        return ResponseEntity.ok(updatedInspection);
+    @PutMapping("/{goodsInspectionNo}")
+    public ResponseEntity<Object> updateGoodsInspection(@PathVariable Long goodsInspectionNo, @RequestBody GoodsInspectionRequestDto goodsInspectionDto) {
+        GoodsInspectionResponseDto updatedInspection = goodsInspectionService.updateGoodsInspection(goodsInspectionNo, goodsInspectionDto);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(updatedInspection), HttpStatus.OK);
     }
 
     // Delete a Goods Inspection by ID
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteGoodsInspection(@PathVariable Long id) {
-        goodsInspectionService.deleteGoodsInspection(id);
-        return ResponseEntity.ok("GoodsInspection deleted successfully."+" " +id);
+    @DeleteMapping("/{goodsInspectionNo}")
+    public ResponseEntity<String> deleteGoodsInspection(@PathVariable Long goodsInspectionNo) {
+        goodsInspectionService.deleteGoodsInspection(goodsInspectionNo);
+        return ResponseEntity.ok("GoodsInspection deleted successfully."+" " +goodsInspectionNo);
     }
+    //fetch all details from the gprn
+    @GetMapping("/gprn/{gprnId}")
+    public ResponseEntity<Object> fetchGprDetails(@PathVariable Long gprnId) {
+        GprnResponseDto gprnDetails = gprnService.getGprnById(gprnId);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(gprnDetails), HttpStatus.OK);
+    }
+
 }

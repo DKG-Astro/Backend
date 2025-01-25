@@ -2,12 +2,19 @@ package com.astro.service.impl;
 
 
 
+import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsRequestDTO;
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderAttributesDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderAttributesResponseDTO;
 
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderResponseDTO;
+import com.astro.entity.InventoryModule.Gprn;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
+import com.astro.exception.BusinessException;
+import com.astro.exception.ErrorDetails;
+import com.astro.exception.InvalidInputException;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;
 
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderRepository;
@@ -29,7 +36,23 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
     private PurchaseOrderAttributesRepository purchaseOrderAttributesRepository;
 
     public PurchaseOrderResponseDTO createPurchaseOrder(PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
+
+        // Check if the indentorId already exists
+        if (purchaseOrderRepository.existsById(purchaseOrderRequestDTO.getPoId())) {
+            ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Purchase Order ID", "PO ID " + purchaseOrderRequestDTO.getPoId() + " already exists.");
+            throw new InvalidInputException(errorDetails);
+        }
+
+        // Iterate over materialDetails and check if materialCode already exists
+        for (PurchaseOrderAttributesDTO materialRequest : purchaseOrderRequestDTO.getPurchaseOrderAttributes()) {
+            if (purchaseOrderAttributesRepository.existsById(materialRequest.getMaterialCode())) {
+                ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Material Code",
+                        "Material Code " + materialRequest.getMaterialCode() + " already exists.");
+                throw new InvalidInputException(errorDetails);
+            }
+        }
         PurchaseOrder purchaseOrder = new PurchaseOrder();
+        purchaseOrder.setPoId(purchaseOrderRequestDTO.getPoId());
         purchaseOrder.setTenderId(purchaseOrderRequestDTO.getTenderId());
         purchaseOrder.setIndentId(purchaseOrderRequestDTO.getIndentId());
         purchaseOrder.setWarranty(purchaseOrderRequestDTO.getWarranty());
@@ -37,12 +60,12 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setBillingAddress(purchaseOrderRequestDTO.getBillingAddress());
         purchaseOrder.setDeliveryPeriod(purchaseOrderRequestDTO.getDeliveryPeriod());
         purchaseOrder.setIfLdClauseApplicable(purchaseOrderRequestDTO.getIfLdClauseApplicable());
-        purchaseOrder.setIncoterms(purchaseOrderRequestDTO.getIncoterms());
-        purchaseOrder.setPaymentterms(purchaseOrderRequestDTO.getPaymentterms());
+        purchaseOrder.setIncoTerms(purchaseOrderRequestDTO.getIncoTerms());
+        purchaseOrder.setPaymentTerms(purchaseOrderRequestDTO.getPaymentTerms());
         purchaseOrder.setVendorName(purchaseOrderRequestDTO.getVendorName());
         purchaseOrder.setVendorAddress(purchaseOrderRequestDTO.getVendorAddress());
         purchaseOrder.setApplicablePbgToBeSubmitted(purchaseOrderRequestDTO.getApplicablePbgToBeSubmitted());
-        purchaseOrder.setTransposterAndFreightForWarderDetails(purchaseOrderRequestDTO.getTransposterAndFreightForWarderDetails());
+        purchaseOrder.setTransporterAndFreightForWarderDetails(purchaseOrderRequestDTO.getTransporterAndFreightForWarderDetails());
         purchaseOrder.setVendorAccountNumber(purchaseOrderRequestDTO.getVendorAccountNumber());
         purchaseOrder.setVendorsZfscCode(purchaseOrderRequestDTO.getVendorsZfscCode());
         purchaseOrder.setVendorAccountName(purchaseOrderRequestDTO.getVendorAccountName());
@@ -72,8 +95,15 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         return mapToResponseDTO(purchaseOrder);
     }
 
-    public PurchaseOrderResponseDTO updatePurchaseOrder(Long poId, PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
-        PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(poId).orElseThrow(() -> new RuntimeException("Purchase Order not found"));
+    public PurchaseOrderResponseDTO updatePurchaseOrder(String poId, PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
+        PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(poId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "Purchase order not found for the provided asset ID.")
+                ));
 
         purchaseOrder.setTenderId(purchaseOrderRequestDTO.getTenderId());
         purchaseOrder.setIndentId(purchaseOrderRequestDTO.getIndentId());
@@ -82,17 +112,17 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setBillingAddress(purchaseOrderRequestDTO.getBillingAddress());
         purchaseOrder.setDeliveryPeriod(purchaseOrderRequestDTO.getDeliveryPeriod());
         purchaseOrder.setIfLdClauseApplicable(purchaseOrderRequestDTO.getIfLdClauseApplicable());
-        purchaseOrder.setIncoterms(purchaseOrderRequestDTO.getIncoterms());
-        purchaseOrder.setPaymentterms(purchaseOrderRequestDTO.getPaymentterms());
+        purchaseOrder.setIncoTerms(purchaseOrderRequestDTO.getIncoTerms());
+        purchaseOrder.setPaymentTerms(purchaseOrderRequestDTO.getPaymentTerms());
         purchaseOrder.setVendorName(purchaseOrderRequestDTO.getVendorName());
         purchaseOrder.setVendorAddress(purchaseOrderRequestDTO.getVendorAddress());
         purchaseOrder.setApplicablePbgToBeSubmitted(purchaseOrderRequestDTO.getApplicablePbgToBeSubmitted());
-        purchaseOrder.setTransposterAndFreightForWarderDetails(purchaseOrderRequestDTO.getTransposterAndFreightForWarderDetails());
+        purchaseOrder.setTransporterAndFreightForWarderDetails(purchaseOrderRequestDTO.getTransporterAndFreightForWarderDetails());
         purchaseOrder.setVendorAccountNumber(purchaseOrderRequestDTO.getVendorAccountNumber());
         purchaseOrder.setVendorsZfscCode(purchaseOrderRequestDTO.getVendorsZfscCode());
         purchaseOrder.setVendorAccountName(purchaseOrderRequestDTO.getVendorAccountName());
         purchaseOrder.setUpdatedBy(purchaseOrderRequestDTO.getUpdatedBy());
-        purchaseOrder.setCreatedBy(purchaseOrder.getCreatedBy());
+        purchaseOrder.setCreatedBy(purchaseOrderRequestDTO.getCreatedBy());
         List<PurchaseOrderAttributes> purchaseOrderAttributes = purchaseOrderRequestDTO.getPurchaseOrderAttributes().stream()
                 .map(dto -> {
                     PurchaseOrderAttributes attribute = new PurchaseOrderAttributes();
@@ -117,10 +147,16 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         return mapToResponseDTO(purchaseOrder);
     }
 
-    public PurchaseOrderResponseDTO getPurchaseOrderById(Long poId) {
+    public PurchaseOrderResponseDTO getPurchaseOrderById(String poId) {
         PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(poId)
-                .orElseThrow(() -> new RuntimeException("Purchase Order not found"));
-        return mapToResponseDTO(purchaseOrder);  // Return the mapped response DTO
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Purchase order not found for the provided asset ID.")
+                ));
+        return mapToResponseDTO(purchaseOrder);
     }
 
 
@@ -131,8 +167,31 @@ public List<PurchaseOrderResponseDTO> getAllPurchaseOrders() {
 }
 
 
-    public void deletePurchaseOrder(Long poId) {
-      purchaseOrderRepository.deleteById(poId);
+    public void deletePurchaseOrder(String poId) {
+
+        PurchaseOrder purchaseOrder=purchaseOrderRepository.findById(poId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Purchase order not found for the provided ID."
+                        )
+                ));
+        try {
+            purchaseOrderRepository.delete(purchaseOrder);
+        } catch (Exception ex) {
+            throw new BusinessException(
+                    new ErrorDetails(
+                            AppConstant.INTER_SERVER_ERROR,
+                            AppConstant.ERROR_TYPE_CODE_INTERNAL,
+                            AppConstant.ERROR_TYPE_ERROR,
+                            "An error occurred while deleting the  po."
+                    ),
+                    ex
+            );
+        }
+
     }
 
     private PurchaseOrderResponseDTO mapToResponseDTO(PurchaseOrder purchaseOrder) {
@@ -145,12 +204,12 @@ public List<PurchaseOrderResponseDTO> getAllPurchaseOrders() {
         responseDTO.setBillingAddress(purchaseOrder.getBillingAddress());
         responseDTO.setDeliveryPeriod(purchaseOrder.getDeliveryPeriod());
         responseDTO.setIfLdClauseApplicable(purchaseOrder.getIfLdClauseApplicable());
-        responseDTO.setIncoterms(purchaseOrder.getIncoterms());
-        responseDTO.setPaymentterms(purchaseOrder.getPaymentterms());
+        responseDTO.setIncoTerms(purchaseOrder.getIncoTerms());
+        responseDTO.setPaymentTerms(purchaseOrder.getPaymentTerms());
         responseDTO.setVendorName(purchaseOrder.getVendorName());
         responseDTO.setVendorAddress(purchaseOrder.getVendorAddress());
         responseDTO.setApplicablePbgToBeSubmitted(purchaseOrder.getApplicablePbgToBeSubmitted());
-        responseDTO.setTransposterAndFreightForWarderDetails(purchaseOrder.getTransposterAndFreightForWarderDetails());
+        responseDTO.setTransporterAndFreightForWarderDetails(purchaseOrder.getTransporterAndFreightForWarderDetails());
         responseDTO.setVendorAccountNumber(purchaseOrder.getVendorAccountNumber());
         responseDTO.setVendorsZfscCode(purchaseOrder.getVendorsZfscCode());
         responseDTO.setVendorAccountName(purchaseOrder.getVendorAccountName());
@@ -162,7 +221,6 @@ public List<PurchaseOrderResponseDTO> getAllPurchaseOrders() {
         responseDTO.setPurchaseOrderAttributes(purchaseOrder.getPurchaseOrderAttributes().stream()
                 .map(attribute -> {
                     PurchaseOrderAttributesResponseDTO attributeDTO = new PurchaseOrderAttributesResponseDTO();
-                    attributeDTO.setId(attribute.getId());
                     attributeDTO.setMaterialCode(attribute.getMaterialCode());
                     attributeDTO.setMaterialDescription(attribute.getMaterialDescription());
                     attributeDTO.setQuantity(attribute.getQuantity());

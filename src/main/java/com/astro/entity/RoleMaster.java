@@ -3,6 +3,7 @@ package com.astro.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -22,5 +23,6 @@ public class RoleMaster {
     private String createdBy;
 
     @Column(name = "CREATEDDATE")
-    private Date createdDate;
+    private LocalDateTime createdDate = LocalDateTime.now();
+  //  private Date createdDate;
 }

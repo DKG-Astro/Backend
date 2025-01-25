@@ -10,9 +10,9 @@ public interface ServiceOrderService {
     public ServiceOrderResponseDTO createServiceOrder(ServiceOrderRequestDTO serviceOrderRequestDTO);
 
 
-    public ServiceOrderResponseDTO updateServiceOrder(Long id, ServiceOrderRequestDTO serviceOrderRequestDTO);
+    public ServiceOrderResponseDTO updateServiceOrder(String soId, ServiceOrderRequestDTO serviceOrderRequestDTO);
     public List<ServiceOrderResponseDTO> getAllServiceOrders();
-    public ServiceOrderResponseDTO getServiceOrderById(Long id);
-    public void deleteServiceOrder(Long id);
+    public ServiceOrderResponseDTO getServiceOrderById(String soId);
+    public void deleteServiceOrder(String soId);
 
 }

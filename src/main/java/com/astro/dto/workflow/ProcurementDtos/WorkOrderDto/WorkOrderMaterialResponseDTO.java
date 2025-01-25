@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 @Data
 public class WorkOrderMaterialResponseDTO {
 
-    private Long id;
     private String workCode;
     private String workDescription;
     private BigDecimal quantity;

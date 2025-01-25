@@ -10,13 +10,13 @@ import java.util.List;
 public interface PurchaseOrderService {
 
     public PurchaseOrderResponseDTO createPurchaseOrder(PurchaseOrderRequestDTO purchaseOrderRequestDTO);
-    public PurchaseOrderResponseDTO updatePurchaseOrder(Long poId, PurchaseOrderRequestDTO purchaseOrderRequestDTO);
+    public PurchaseOrderResponseDTO updatePurchaseOrder(String poId, PurchaseOrderRequestDTO purchaseOrderRequestDTO);
 
 
 
    public List<PurchaseOrderResponseDTO > getAllPurchaseOrders();
 
-    public PurchaseOrderResponseDTO getPurchaseOrderById(Long poId);
-    public void deletePurchaseOrder(Long poId);
+    public PurchaseOrderResponseDTO getPurchaseOrderById(String poId);
+    public void deletePurchaseOrder(String poId);
 
 }

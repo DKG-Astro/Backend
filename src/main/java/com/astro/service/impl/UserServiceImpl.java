@@ -1,31 +1,28 @@
 package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
-import com.astro.controller.UserController;
 import com.astro.dto.workflow.UserDto;
-import com.astro.dto.workflow.UserRoleDto;
+
+import com.astro.dto.workflow.userRequestDto;
 import com.astro.entity.UserMaster;
-import com.astro.entity.UserRoleMaster;
+import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.UserMasterRepository;
-import com.astro.repository.UserRoleMasterRepository;
 import com.astro.service.UserService;
 
+import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
     UserMasterRepository userMasterRepository;
-
-    @Autowired
-    UserRoleMasterRepository userRoleMasterRepository;
 
     @Override
     public void validateUser(Integer userId) {
@@ -34,32 +31,99 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserRoleDto login(UserDto userDto) {
-        UserRoleDto userRoleDto = null;
+    public UserDto createUser(userRequestDto userDto) {
+        UserMaster userMaster = new UserMaster();
 
-        if(Objects.nonNull(userDto.getUserId()) && Objects.nonNull(userDto.getPassword())){
+        userMaster.setUserName(userDto.getUserName());
+        userMaster.setMobileNumber(userDto.getMobileNumber());
+        userMaster.setPassword(userDto.getPassword());
+        userMaster.setCreatedBy(userDto.getCreatedBy());
+        userMasterRepository.save(userMaster);
+        return mapToResponseDTO(userMaster);
+    }
 
-            UserMaster userMaster = userMasterRepository.findByUserIdAndPassword(userDto.getUserId(), userDto.getPassword());
-            if(Objects.isNull(userMaster)){
-                throw new InvalidInputException(new ErrorDetails(AppConstant.USER_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
-                        AppConstant.ERROR_TYPE_VALIDATION, "User not found."));
-            }
 
-            UserRoleMaster userRoleMaster = userRoleMasterRepository.findByUserId(userMaster.getUserId());
-            userRoleDto = new UserRoleDto();
-            userRoleDto.setUserId(userRoleMaster.getUserId());
-            userRoleDto.setUserRoleId(userRoleMaster.getUserRoleId());
-            userRoleDto.setRoleId(userRoleMaster.getRoleId());
-            userRoleDto.setCreatedDate(userRoleMaster.getCreatedDate());
-            userRoleDto.setCreatedBy(userRoleMaster.getCreatedBy());
-            userRoleDto.setReadPermission(userRoleMaster.getReadPermission());
-            userRoleDto.setWritePermission(userRoleMaster.getWritePermission());
-        }else{
-            throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
-                    AppConstant.ERROR_TYPE_VALIDATION, "Invalid input."));
+
+    @Override
+    public UserDto updateUser(int userId,userRequestDto userDto) {
+       UserMaster userMaster = userMasterRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "user not found for the provided user ID.")
+                ));
+
+
+       userMaster.setUserName(userDto.getUserName());
+       userMaster.setPassword(userDto.getPassword());
+       userMaster.setMobileNumber(userDto.getMobileNumber());
+       userMaster.setCreatedBy(userDto.getCreatedBy());
+       userMasterRepository.save(userMaster);
+        return mapToResponseDTO(userMaster);
+    }
+
+    @Override
+    public List<UserDto> getAllUsers() {
+
+        List<UserMaster> userMasters = userMasterRepository.findAll();
+        return userMasters.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
+
+    }
+
+    @Override
+    public UserDto getUserById(int userId) {
+
+        UserMaster userMaster = userMasterRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "user not found for the provided user ID.")
+                ));
+        return mapToResponseDTO(userMaster);
+    }
+
+    @Override
+    public void deleteUser(int userId) {
+       UserMaster userMaster = userMasterRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "user not found for the provided ID."
+                        )
+                ));
+        try {
+           userMasterRepository.delete(userMaster);
+        } catch (Exception ex) {
+            throw new BusinessException(
+                    new ErrorDetails(
+                            AppConstant.INTER_SERVER_ERROR,
+                            AppConstant.ERROR_TYPE_CODE_INTERNAL,
+                            AppConstant.ERROR_TYPE_VALIDATION,
+                            "An error occurred while deleting the user."
+                    ),
+                    ex
+            );
         }
 
-        return userRoleDto;
+
+    }
+    private UserDto mapToResponseDTO(UserMaster userMaster) {
+
+        UserDto userDto = new UserDto();
+        userDto.setUserId(userMaster.getUserId());
+        userDto.setUserName(userMaster.getUserName());
+        userDto.setPassword(userMaster.getPassword());
+        userDto.setMobileNumber(userMaster.getMobileNumber());
+
+        userDto.setCreatedDate(userMaster.getCreatedDate());
+        userDto.setCreatedBy(userMaster.getCreatedBy());
+        return userDto;
     }
 
     /*private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);

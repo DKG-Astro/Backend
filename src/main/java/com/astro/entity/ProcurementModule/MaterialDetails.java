@@ -1,6 +1,6 @@
 package com.astro.entity.ProcurementModule;
 
-import com.astro.entity.ProcurementModule.IndentCreation;
+
 import lombok.Data;
 
 import javax.persistence.*;
@@ -11,11 +11,12 @@ import java.math.BigDecimal;
 public class MaterialDetails {
 
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  //  @Id
+  //  @GeneratedValue(strategy = GenerationType.IDENTITY)
+   // private Long id;
 
-    @Column(name = "material_code")
+    @Id
+    @Column(name = "material_code", nullable = false, unique = true)
     private String materialCode;
 
     @Column(name = "material_description")
@@ -45,8 +46,11 @@ public class MaterialDetails {
     @Column(name = "material_and_job")
     private String materialAndJob;
 
+   // @ManyToOne
+   // @JoinColumn(name = "indent_creation_id", referencedColumnName = "id")
+   // private IndentCreation indentCreation;
     @ManyToOne
-    @JoinColumn(name = "indent_creation_id", referencedColumnName = "id")
+    @JoinColumn(name = "indent_creation_id", nullable = false)
     private IndentCreation indentCreation;
 
 

@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class ServiceOrderResponseDTO {
 
-    private Long id;
+    private String soId;
     private String tenderId;
     private String consignesAddress;
     private String billingAddress;
