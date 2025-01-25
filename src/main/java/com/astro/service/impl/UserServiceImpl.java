@@ -4,7 +4,11 @@ import com.astro.constant.AppConstant;
 import com.astro.controller.UserController;
 import com.astro.dto.workflow.UserDto;
 import com.astro.dto.workflow.UserRoleDto;
+import com.astro.dto.workflow.UserDto;
+
+import com.astro.dto.workflow.userRequestDto;
 import com.astro.entity.UserMaster;
+import com.astro.exception.BusinessException;
 import com.astro.entity.UserRoleMaster;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
@@ -12,11 +16,14 @@ import com.astro.repository.UserMasterRepository;
 import com.astro.repository.UserRoleMasterRepository;
 import com.astro.service.UserService;
 
+import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -60,6 +67,102 @@ public class UserServiceImpl implements UserService {
         }
 
         return userRoleDto;
+    }
+
+    @Override
+    public UserDto createUser(userRequestDto userDto) {
+        UserMaster userMaster = new UserMaster();
+
+        userMaster.setUserName(userDto.getUserName());
+        userMaster.setMobileNumber(userDto.getMobileNumber());
+        userMaster.setPassword(userDto.getPassword());
+        userMaster.setCreatedBy(userDto.getCreatedBy());
+        userMasterRepository.save(userMaster);
+        return mapToResponseDTO(userMaster);
+    }
+
+
+
+    @Override
+    public UserDto updateUser(int userId,userRequestDto userDto) {
+       UserMaster userMaster = userMasterRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "user not found for the provided user ID.")
+                ));
+
+
+       userMaster.setUserName(userDto.getUserName());
+       userMaster.setPassword(userDto.getPassword());
+       userMaster.setMobileNumber(userDto.getMobileNumber());
+       userMaster.setCreatedBy(userDto.getCreatedBy());
+       userMasterRepository.save(userMaster);
+        return mapToResponseDTO(userMaster);
+    }
+
+    @Override
+    public List<UserDto> getAllUsers() {
+
+        List<UserMaster> userMasters = userMasterRepository.findAll();
+        return userMasters.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
+
+    }
+
+    @Override
+    public UserDto getUserById(int userId) {
+
+        UserMaster userMaster = userMasterRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "user not found for the provided user ID.")
+                ));
+        return mapToResponseDTO(userMaster);
+    }
+
+    @Override
+    public void deleteUser(int userId) {
+       UserMaster userMaster = userMasterRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "user not found for the provided ID."
+                        )
+                ));
+        try {
+           userMasterRepository.delete(userMaster);
+        } catch (Exception ex) {
+            throw new BusinessException(
+                    new ErrorDetails(
+                            AppConstant.INTER_SERVER_ERROR,
+                            AppConstant.ERROR_TYPE_CODE_INTERNAL,
+                            AppConstant.ERROR_TYPE_VALIDATION,
+                            "An error occurred while deleting the user."
+                    ),
+                    ex
+            );
+        }
+
+
+    }
+    private UserDto mapToResponseDTO(UserMaster userMaster) {
+
+        UserDto userDto = new UserDto();
+        userDto.setUserId(userMaster.getUserId());
+        userDto.setUserName(userMaster.getUserName());
+        userDto.setPassword(userMaster.getPassword());
+        userDto.setMobileNumber(userMaster.getMobileNumber());
+
+        userDto.setCreatedDate(userMaster.getCreatedDate());
+        userDto.setCreatedBy(userMaster.getCreatedBy());
+        return userDto;
     }
 
     /*private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);

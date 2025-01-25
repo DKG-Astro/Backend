@@ -9,6 +9,8 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class CommonUtils {
@@ -121,5 +123,18 @@ public class CommonUtils {
 
         }
         return incm;
+    }
+
+    public static LocalDate convertStringToDateObject(String dateString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        return LocalDate.parse(dateString, formatter);
+    }
+
+    public static String convertDateToString(LocalDate date) {
+        if (date != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            return date.format(formatter);
+        }
+        return null;  // Handle null case if necessary
     }
 }
