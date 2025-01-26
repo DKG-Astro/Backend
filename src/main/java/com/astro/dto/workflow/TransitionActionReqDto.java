@@ -9,6 +9,6 @@ public class TransitionActionReqDto {
     private String requestId;
     private Integer actionBy;
     private String action;
-    private String userRole;
     private String remarks;
+    private String assignmentRole;
 }

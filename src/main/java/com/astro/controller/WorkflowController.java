@@ -67,6 +67,11 @@ public class WorkflowController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.performTransitionAction(transitionActionReqDto)), HttpStatus.OK);
     }
 
+    @GetMapping("/allPreviousWorkflowRole")
+    public ResponseEntity<Object> allPreviousRoleWorkflowTransition(@RequestParam Integer workflowId, @RequestParam String requestId)  {
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.allPreviousRoleWorkflowTransition(workflowId, requestId)), HttpStatus.OK);
+    }
+
 
    /* @Autowired
     private UserService userService;

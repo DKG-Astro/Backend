@@ -18,4 +18,7 @@ public interface WorkflowTransitionRepository extends JpaRepository<WorkflowTran
     WorkflowTransition findByWorkflowTransitionIdAndRequestId(Integer workflowTransitionId, String requestId);
     List<WorkflowTransition> findByNextActionAndNextRole(String pendingType, String roleName);
     List<WorkflowTransition> findByNextRole(String roleName);
+    List<WorkflowTransition> findByWorkflowIdAndRequestId(Integer workflowId, String requestId);
+    List<WorkflowTransition> findByWorkflowIdAndRequestIdAndCurrentRole(Integer workflowId, String requestId, String assignmentRole);
+    List<WorkflowTransition> findByWorkflowIdAndRequestIdAndNextRole(Integer workflowId, String requestId, String assignmentRole);
 }
