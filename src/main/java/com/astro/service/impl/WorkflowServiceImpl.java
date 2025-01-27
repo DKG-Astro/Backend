@@ -366,6 +366,50 @@ public class WorkflowServiceImpl implements WorkflowService {
         return null;
     }
 
+    @Override
+    @Transactional
+    public WorkflowTransitionDto submitWorkflow(Integer workflowTransitionId, Integer actionBy, String remarks) {
+        userService.validateUser(actionBy);
+        WorkflowTransition currentWorkflowTransition = workflowTransitionRepository.findById(workflowTransitionId).orElse(null);
+        if(Objects.isNull(currentWorkflowTransition)){
+            throw new InvalidInputException(new ErrorDetails(AppConstant.INVALID_WORKFLOW_TRANSITION, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION, "Workflow transition not found.With given workflow transition id and request id."));
+        }
+
+        TransitionDto nextTransition =  nextTransition(currentWorkflowTransition.getWorkflowId(), currentWorkflowTransition.getWorkflowName() ,roleNameByUserId(actionBy), currentWorkflowTransition.getRequestId());
+        if(Objects.isNull(nextTransition)){
+            throw new InvalidInputException(new ErrorDetails(AppConstant.NEXT_TRANSITION_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION, "Error occurred at approval. No next transition found."));
+        }
+
+        currentWorkflowTransition.setNextAction(AppConstant.COMPLETED_TYPE);
+        workflowTransitionRepository.save(currentWorkflowTransition);
+
+        WorkflowTransition nextWorkflowTransition = new WorkflowTransition();
+        nextWorkflowTransition.setWorkflowId(nextTransition.getWorkflowId());
+        nextWorkflowTransition.setTransitionId(nextTransition.getTransitionId());
+        nextWorkflowTransition.setTransitionOrder(nextTransition.getTransitionOrder());
+        nextWorkflowTransition.setTransitionSubOrder(nextTransition.getTransitionSubOrder());
+        nextWorkflowTransition.setWorkflowName(nextTransition.getWorkflowName());
+        nextWorkflowTransition.setStatus(AppConstant.IN_PROGRESS_TYPE);
+        nextWorkflowTransition.setNextAction(AppConstant.PENDING_TYPE);
+        nextWorkflowTransition.setAction(AppConstant.APPROVE_TYPE);
+        nextWorkflowTransition.setRemarks(remarks);
+        nextWorkflowTransition.setModifiedBy(actionBy);
+        nextWorkflowTransition.setModificationDate(new Date());
+        nextWorkflowTransition.setRequestId(currentWorkflowTransition.getRequestId());
+        nextWorkflowTransition.setCreatedBy(currentWorkflowTransition.getCreatedBy());
+        nextWorkflowTransition.setCreatedDate(currentWorkflowTransition.getCreatedDate());
+        nextWorkflowTransition.setCurrentRole(nextTransition.getCurrentRoleName());
+        nextWorkflowTransition.setNextRole(nextTransition.getNextRoleName());
+        nextWorkflowTransition.setWorkflowSequence(currentWorkflowTransition.getWorkflowSequence()  + 1);
+
+        workflowTransitionRepository.save(nextWorkflowTransition);
+
+
+        return null;
+    }
+
     private void requestChangeTransition(WorkflowTransition currentWorkflowTransition, TransitionMaster currentTransition, TransitionActionReqDto transitionActionReqDto) {
         if(Objects.nonNull(transitionActionReqDto.getAssignmentRole())){
             validateAssignmentRole(transitionActionReqDto.getAssignmentRole(), currentWorkflowTransition);
@@ -391,7 +435,11 @@ public class WorkflowServiceImpl implements WorkflowService {
             nextWorkflowTransition.setCreatedBy(currentWorkflowTransition.getCreatedBy());
             nextWorkflowTransition.setCreatedDate(currentWorkflowTransition.getCreatedDate());
             nextWorkflowTransition.setCurrentRole(currentWorkflowTransition.getNextRole());
-            nextWorkflowTransition.setNextRole(latestWorkflowTransition.getNextRole());
+            if(transitionActionReqDto.getAssignmentRole().equalsIgnoreCase("Request Creator")) {
+                nextWorkflowTransition.setNextRole(latestWorkflowTransition.getCurrentRole());
+            }else{
+                nextWorkflowTransition.setNextRole(latestWorkflowTransition.getNextRole());
+            }
             nextWorkflowTransition.setWorkflowSequence(currentWorkflowTransition.getWorkflowSequence()  + 1);
 
             workflowTransitionRepository.save(nextWorkflowTransition);
@@ -406,6 +454,11 @@ public class WorkflowServiceImpl implements WorkflowService {
         List<WorkflowTransition> workflowTransitionList = workflowTransitionRepository.findByWorkflowIdAndRequestIdAndNextRole(currentWorkflowTransition.getWorkflowId(), currentWorkflowTransition.getRequestId(), transitionActionReqDto.getAssignmentRole());
         if(Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()){
             workflowTransition =  workflowTransitionList.stream().sorted(Comparator.comparing(WorkflowTransition::getWorkflowTransitionId).reversed()).limit(1).collect(Collectors.toList()).get(0);
+        }else if(transitionActionReqDto.getAssignmentRole().equalsIgnoreCase("Request Creator")){
+            workflowTransitionList = workflowTransitionRepository.findByWorkflowIdAndRequestIdAndCurrentRole(currentWorkflowTransition.getWorkflowId(), currentWorkflowTransition.getRequestId(), transitionActionReqDto.getAssignmentRole());
+            if(Objects.nonNull(workflowTransitionList)){
+                workflowTransition =  workflowTransitionList.get(0);
+            }
         }
         return workflowTransition;
     }
