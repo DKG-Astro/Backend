@@ -8,7 +8,9 @@ import lombok.Data;
 @Data
 public class GprnMaterialsRequestDto {
 
- private String description;
+   private String materialCode;
+
+   private String description;
 
 
     private String uom;

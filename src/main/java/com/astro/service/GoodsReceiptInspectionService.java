@@ -9,8 +9,8 @@ import java.util.List;
 public interface GoodsReceiptInspectionService {
 
     GoodsReceiptInspectionResponseDto createGoodsReceiptInspection(GoodsReceiptInspectionRequestDto dto);
-    GoodsReceiptInspectionResponseDto updateGoodsReceiptInspection(Long id, GoodsReceiptInspectionRequestDto dto);
+    GoodsReceiptInspectionResponseDto updateGoodsReceiptInspection(String receiptInspectionNo, GoodsReceiptInspectionRequestDto dto);
     List<GoodsReceiptInspectionResponseDto> getAllGoodsReceiptInspections();
-    GoodsReceiptInspectionResponseDto getGoodsReceiptInspectionById(Long id);
-    void deleteGoodsReceiptInspection(Long id);
+    GoodsReceiptInspectionResponseDto getGoodsReceiptInspectionById(String receiptInspectionNo);
+    void deleteGoodsReceiptInspection(String receiptInspectionNo);
 }

@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 public class MaterialCreation {
 
     @Id
-   // @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "material_code")
     private String materialCode;
     @Column(name = "material_name")

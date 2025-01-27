@@ -26,4 +26,7 @@ public class MaterialMasterRequestDto {
     private byte[] uploadImage;
     private Boolean indigenousOrImported;
 
+    private String createdBy;
+    private String updatedBy;
+
 }

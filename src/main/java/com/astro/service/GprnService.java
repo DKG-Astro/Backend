@@ -10,12 +10,12 @@ public interface GprnService {
 
 
     public GprnResponseDto createGprnWithMaterialDetails(GprnRequestDto gprnRequestDto);
-    GprnResponseDto updateGprn(Long gprnId, GprnRequestDto gprnRequestDto);
+    GprnResponseDto updateGprn(String gprnId, GprnRequestDto gprnRequestDto);
 
 
     List<GprnResponseDto> getAllGprn();
-    GprnResponseDto getGprnById(Long gprnId);
-    void deleteGprn(Long gprnId);
+    GprnResponseDto getGprnById(String gprnId);
+    void deleteGprn(String gprnId);
 
 
 

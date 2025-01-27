@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 @Data
 public class AssetResponseDto {
 
-    private Long id;
 
 
     private String assetCode;

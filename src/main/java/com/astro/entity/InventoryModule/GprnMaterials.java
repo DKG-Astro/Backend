@@ -12,8 +12,8 @@ public class GprnMaterials {
     //meterial data
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long materialCode;
+    @Column(name = "material_code")
+    private String materialCode;
 
 
     private String description;
@@ -25,7 +25,6 @@ public class GprnMaterials {
     private Integer orderedQuantity;
 
     private Integer quantityDelivered;
-
 
     private Integer receivedQuantity;
 

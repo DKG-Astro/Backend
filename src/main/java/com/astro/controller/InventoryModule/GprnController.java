@@ -35,7 +35,7 @@ public class GprnController {
 
     @PutMapping("/{gprnId}")
     public ResponseEntity<Object> updateGprnById(
-            @PathVariable Long gprnId, @RequestBody GprnRequestDto gprnRequestDto) {
+            @PathVariable String gprnId, @RequestBody GprnRequestDto gprnRequestDto) {
         GprnResponseDto gprn =gprnService.updateGprn(gprnId,gprnRequestDto);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(gprn), HttpStatus.OK);
     }
@@ -48,13 +48,13 @@ public class GprnController {
     }
 
     @GetMapping("/{gprnId}")
-    public ResponseEntity<Object> getGprnById(@PathVariable Long gprnId) {
+    public ResponseEntity<Object> getGprnById(@PathVariable String gprnId) {
         GprnResponseDto gprn = gprnService.getGprnById(gprnId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(gprn), HttpStatus.OK);
     }
 
     @DeleteMapping("/{gprnId}")
-    public ResponseEntity<String> deleteGprn(@PathVariable Long gprnId) {
+    public ResponseEntity<String> deleteGprn(@PathVariable String gprnId) {
         gprnService.deleteGprn(gprnId);
         return ResponseEntity.ok("Gprn deleted successfully!");
     }

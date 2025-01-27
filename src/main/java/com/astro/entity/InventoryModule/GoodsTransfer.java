@@ -10,8 +10,6 @@ import java.time.LocalDateTime;
 public class GoodsTransfer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     @Column(name = "goods_transfer_id")
     private String goodsTransferID;
     private String consignorDetails;

@@ -3,6 +3,7 @@ package com.astro.dto.workflow;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 public class MaterialMasterResponseDto {
@@ -22,4 +23,8 @@ public class MaterialMasterResponseDto {
     private String shelfLife;
     private byte[] uploadImage;
     private Boolean indigenousOrImported;
+    private String createdBy;
+    private String updatedBy;
+    private LocalDateTime createdDate;
+    private LocalDateTime updatedDate;
 }

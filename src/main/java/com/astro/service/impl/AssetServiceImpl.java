@@ -7,6 +7,7 @@ import com.astro.entity.InventoryModule.Asset;
 import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
+import com.astro.exception.InvalidInputException;
 import com.astro.repository.InventoryModule.AssetRepository;
 import com.astro.service.AssetService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,12 @@ public class AssetServiceImpl implements AssetService {
 
 
     public AssetResponseDto createAsset(AssetRequestDTO assetDTO) {
+
+        // Check if the indentorId already exists
+        if (assetRepository.existsById(assetDTO.getAssetCode())) {
+            ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Asset code", "Asset code " + assetDTO.getAssetCode() + " already exists.");
+            throw new InvalidInputException(errorDetails);
+        }
         Asset asset = new Asset();
         asset.setAssetCode(assetDTO.getAssetCode());
         asset.setMaterialCode(assetDTO.getMaterialCode());
@@ -46,8 +53,8 @@ public class AssetServiceImpl implements AssetService {
 
 
 
-    public AssetResponseDto updateAsset(Long id, AssetRequestDTO assetDTO) {
-        Asset asset = assetRepository.findById(id)
+    public AssetResponseDto updateAsset(String assetCode, AssetRequestDTO assetDTO) {
+        Asset asset = assetRepository.findById(assetCode)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -81,8 +88,8 @@ public class AssetServiceImpl implements AssetService {
         return asset.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
     }
 
-    public AssetResponseDto getAssetById(Long id) {
-        Asset asset = assetRepository.findById(id)
+    public AssetResponseDto getAssetById(String assetCode) {
+        Asset asset = assetRepository.findById(assetCode)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -93,9 +100,9 @@ public class AssetServiceImpl implements AssetService {
         return mapToResponseDTO(asset);
     }
 
-    public void deleteAsset(Long id) {
+    public void deleteAsset(String assetCode) {
 
-        Asset asset = assetRepository.findById(id)
+        Asset asset = assetRepository.findById(assetCode)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -122,7 +129,6 @@ public class AssetServiceImpl implements AssetService {
 
     private AssetResponseDto mapToResponseDTO(Asset asset) {
         AssetResponseDto assetResponseDto =new  AssetResponseDto();
-        assetResponseDto.setId(asset.getId());
         assetResponseDto.setAssetCode(asset.getAssetCode());
         assetResponseDto.setMaterialCode(asset.getMaterialCode());
         assetResponseDto.setDescription(asset.getDescription());

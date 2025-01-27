@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface GprnRepository extends JpaRepository<Gprn,Long> {
+public interface GprnRepository extends JpaRepository<Gprn,String> {
 }

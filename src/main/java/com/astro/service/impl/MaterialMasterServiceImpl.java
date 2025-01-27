@@ -37,6 +37,8 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
         materialMaster.setShelfLife(materialMasterRequestDto.getShelfLife());
         materialMaster.setUploadImage(materialMasterRequestDto.getUploadImage());
         materialMaster.setIndigenousOrImported(materialMasterRequestDto.getIndigenousOrImported());
+        materialMaster.setCreatedBy(materialMasterRequestDto.getCreatedBy());
+        materialMaster.setUpdatedBy(materialMasterRequestDto.getUpdatedBy());
         materialMasterRepository.save(materialMaster);
 
         return mapToResponseDTO(materialMaster);
@@ -69,6 +71,8 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
         materialMaster.setShelfLife(materialMasterRequestDto.getShelfLife());
         materialMaster.setUploadImage(materialMasterRequestDto.getUploadImage());
         materialMaster.setIndigenousOrImported(materialMasterRequestDto.getIndigenousOrImported());
+        materialMaster.setUpdatedBy(materialMasterRequestDto.getUpdatedBy());
+        materialMaster.setCreatedBy(materialMasterRequestDto.getCreatedBy());
         materialMasterRepository.save(materialMaster);
 
         return mapToResponseDTO(materialMaster);
@@ -140,6 +144,11 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
         materialMasterResponseDto.setShelfLife(materialMaster.getShelfLife());
         materialMasterResponseDto.setUploadImage(materialMaster.getUploadImage());
         materialMasterResponseDto.setIndigenousOrImported(materialMaster.getIndigenousOrImported());
+        materialMasterResponseDto.setCreatedBy(materialMaster.getCreatedBy());
+        materialMasterResponseDto.setUpdatedBy(materialMaster.getUpdatedBy());
+        materialMasterResponseDto.setCreatedDate(materialMaster.getCreatedDate());
+        materialMasterResponseDto.setUpdatedDate(materialMaster.getUpdatedDate());
+
         return materialMasterResponseDto;
 
     }

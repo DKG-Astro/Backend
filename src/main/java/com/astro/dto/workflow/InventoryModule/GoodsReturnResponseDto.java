@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Data
 public class GoodsReturnResponseDto {
 
-    private Long id;
+    private String goodsReturnId;
 
 
     private String goodsReturnNoteNo;

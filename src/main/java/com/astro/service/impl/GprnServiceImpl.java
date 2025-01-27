@@ -2,17 +2,20 @@ package com.astro.service.impl;
 
 
 import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.InventoryModule.GprnDto.GprnMaterialsRequestDto;
 import com.astro.dto.workflow.InventoryModule.GprnDto.GprnMaterialsResponseDto;
 
 import com.astro.dto.workflow.InventoryModule.GprnDto.GprnRequestDto;
 import com.astro.dto.workflow.InventoryModule.GprnDto.GprnResponseDto;
 
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderAttributesDTO;
 import com.astro.entity.InventoryModule.Gprn;
 import com.astro.entity.InventoryModule.GprnMaterials;
 
 
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
+import com.astro.exception.InvalidInputException;
 import com.astro.repository.InventoryModule.GprnRepository.GprnMaterialsRepository;
 import com.astro.repository.InventoryModule.GprnRepository.GprnRepository;
 import com.astro.service.GprnService;
@@ -41,8 +44,24 @@ public class GprnServiceImpl implements GprnService {
     @Transactional
     public GprnResponseDto createGprnWithMaterialDetails(GprnRequestDto gprnRequestDto) {
 
+        // Check if the indentorId already exists
+        if (gprnRepository.existsById(gprnRequestDto.getGprnNo())) {
+            ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate GPRN ID", "GPRN ID " + gprnRequestDto.getGprnNo() + " already exists.");
+            throw new InvalidInputException(errorDetails);
+        }
+
+        // Iterate over materialDetails and check if materialCode already exists
+        for (GprnMaterialsRequestDto materialRequest : gprnRequestDto.getGprnMaterials()) {
+            if (gprnMaterialsRepository.existsById(materialRequest.getMaterialCode())) {
+                ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Material Code",
+                        "Material Code " + materialRequest.getMaterialCode() + " already exists.");
+                throw new InvalidInputException(errorDetails);
+            }
+        }
+
         // Map GprnRequestDto to Gprn entity
         Gprn gprn = new Gprn();
+        gprn.setGprnNo(gprnRequestDto.getGprnNo());
         gprn.setPoNo(gprnRequestDto.getPoNo());
         gprn.setDate(CommonUtils.convertStringToDateObject(gprnRequestDto.getDate()));
         gprn.setDeliveryChallanNo(gprnRequestDto.getDeliveryChallanNo());
@@ -70,6 +89,7 @@ public class GprnServiceImpl implements GprnService {
         // Save MaterialDetails entities and link them to the Gprn
         List<GprnMaterials> gprnMaterials = gprnRequestDto.getGprnMaterials().stream().map(materialRequest -> {
             GprnMaterials gprnMaterial = new GprnMaterials();
+            gprnMaterial.setMaterialCode(materialRequest.getMaterialCode());
             gprnMaterial.setDescription(materialRequest.getDescription());
             gprnMaterial.setUom(materialRequest.getUom());
             gprnMaterial.setOrderedQuantity(materialRequest.getOrderedQuantity());
@@ -114,7 +134,7 @@ public class GprnServiceImpl implements GprnService {
     }
 
     @Transactional
-    public GprnResponseDto updateGprn(Long gprnId, GprnRequestDto gprnRequestDto) {
+    public GprnResponseDto updateGprn(String gprnId, GprnRequestDto gprnRequestDto) {
 
         Gprn gprn = gprnRepository.findById(gprnId)
                 .orElseThrow(() -> new BusinessException(
@@ -163,6 +183,7 @@ public class GprnServiceImpl implements GprnService {
                     GprnMaterials gprnMaterial = new GprnMaterials();
 
                     // Manually map fields from GprnMaterialsRequestDto to GprnMaterials entity
+                    gprnMaterial.setMaterialCode(materialRequestDto.getMaterialCode());
                     gprnMaterial.setDescription(materialRequestDto.getDescription());
                     gprnMaterial.setUom(materialRequestDto.getUom());
                     gprnMaterial.setOrderedQuantity(materialRequestDto.getOrderedQuantity());
@@ -211,7 +232,7 @@ public class GprnServiceImpl implements GprnService {
     }
 
     @Override
-    public GprnResponseDto getGprnById(Long gprnId) {
+    public GprnResponseDto getGprnById(String gprnId) {
         Gprn gprn = gprnRepository.findById(gprnId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
@@ -224,7 +245,7 @@ public class GprnServiceImpl implements GprnService {
     }
 
     @Override
-    public void deleteGprn(Long gprnId) {
+    public void deleteGprn(String gprnId) {
 
         Gprn  gprn= gprnRepository.findById(gprnId)
                 .orElseThrow(() -> new BusinessException(
@@ -253,6 +274,7 @@ public class GprnServiceImpl implements GprnService {
 
     private GprnResponseDto mapToResponseDTO(Gprn gprn) {
         GprnResponseDto gprnResponseDto = new GprnResponseDto();
+        gprnResponseDto.setGprnNo(gprn.getGprnNo());
         gprnResponseDto.setGprnNo(gprn.getGprnNo());
         gprnResponseDto.setPoNo(gprn.getPoNo());
         gprnResponseDto.setDate(CommonUtils.convertDateToString(gprn.getDate()));

@@ -6,6 +6,7 @@ import javax.persistence.Column;
 
 @Data
 public class GoodsInspectionRequestDto {
+    private String goodsInspectionNo;
     private String installationDate;
     private String commissioningDate;
     private String uploadInstallationReport;

@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "material_master")
@@ -56,6 +57,14 @@ public class MaterialMaster {
 
     @Column(name = "indigenous_or_imported")
     private Boolean indigenousOrImported;
+
+    @Column(name = "created_by")
+    private String createdBy;
+    @Column(name = "updated_by")
+    private String updatedBy;
+
+    private LocalDateTime createdDate = LocalDateTime.now();
+    private LocalDateTime updatedDate = LocalDateTime.now();
 
 
 }

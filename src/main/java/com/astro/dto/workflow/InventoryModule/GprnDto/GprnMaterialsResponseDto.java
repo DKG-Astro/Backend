@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Data
 public class GprnMaterialsResponseDto {
 
-    private Long materialCode;
+    private String materialCode;
 
 
     private String description;

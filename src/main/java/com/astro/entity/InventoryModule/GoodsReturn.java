@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 public class GoodsReturn {
 
      @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "goods_return_id")
+    private String goodsReturnId;
 
     @Column(name = "goods_return_note_no")
     private String goodsReturnNoteNo;

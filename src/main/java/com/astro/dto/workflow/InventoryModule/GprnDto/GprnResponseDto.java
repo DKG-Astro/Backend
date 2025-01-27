@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 public class GprnResponseDto {
 
-    private Long gprnNo;
+    private String gprnNo;
 
     private String poNo;
 

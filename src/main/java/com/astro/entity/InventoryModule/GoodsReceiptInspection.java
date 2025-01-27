@@ -11,10 +11,11 @@ import java.time.LocalDateTime;
 @Table(name = "goods_receipt_inspection")
 public class GoodsReceiptInspection {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  //  @Id
+ //   @Column(name = "gri_id")
+  //  private String griId;
 
+    @Id
     @Column(name = "receipt_inspection_no")
     private String receiptInspectionNo;
 

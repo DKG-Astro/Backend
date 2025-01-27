@@ -28,9 +28,9 @@ public class AssetController {
     }
 
     // Update asset
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateAsset(@PathVariable Long id, @RequestBody AssetRequestDTO assetDTO) {
-       AssetResponseDto asset = assetService.updateAsset(id, assetDTO);
+    @PutMapping("/{assetCode}")
+    public ResponseEntity<Object> updateAsset(@PathVariable String assetCode, @RequestBody AssetRequestDTO assetDTO) {
+       AssetResponseDto asset = assetService.updateAsset(assetCode, assetDTO);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(asset), HttpStatus.OK);
 
     }
@@ -43,16 +43,16 @@ public class AssetController {
     }
 
     // Get asset by id
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getAssetById(@PathVariable Long id) {
-        AssetResponseDto asset = assetService.getAssetById(id);
+    @GetMapping("/{assetCode}")
+    public ResponseEntity<Object> getAssetById(@PathVariable String assetCode) {
+        AssetResponseDto asset = assetService.getAssetById(assetCode);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(asset), HttpStatus.OK);
     }
 
     // Delete asset
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteAsset(@PathVariable Long id) {
-        assetService.deleteAsset(id);
+    @DeleteMapping("/{assetCode}")
+    public ResponseEntity<String> deleteAsset(@PathVariable String assetCode) {
+        assetService.deleteAsset(assetCode);
         return ResponseEntity.ok("Asset deleted successfully!");
     }
 

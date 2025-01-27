@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class AssetRequestDTO {
 
-    private Long id;
+
     private String assetCode;
     private String materialCode;
     private String description;

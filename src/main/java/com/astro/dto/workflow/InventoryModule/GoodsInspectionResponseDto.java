@@ -11,9 +11,7 @@ import java.time.LocalDateTime;
 public class GoodsInspectionResponseDto {
 
 
-    private Long goodsInspectionNo;
-
-
+    private String goodsInspectionNo;
     private String installationDate;
 
     private String commissioningDate;

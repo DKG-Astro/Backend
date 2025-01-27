@@ -7,6 +7,7 @@ import com.astro.entity.InventoryModule.Asset;
 import com.astro.entity.InventoryModule.GoodsInspection;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
+import com.astro.exception.InvalidInputException;
 import com.astro.repository.InventoryModule.GoodsInspectionRepository;
 import com.astro.service.GoodsInspectionService;
 import com.astro.util.CommonUtils;
@@ -27,7 +28,14 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
 
     @Override
     public GoodsInspectionResponseDto createGoodsInspection(GoodsInspectionRequestDto goodsInspectionDTO) {
+        // Check if the indentorId already exists
+        if (repository.existsById(goodsInspectionDTO.getGoodsInspectionNo())) {
+            ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Goods Inspection ID", "goods Inspection ID " + goodsInspectionDTO.getGoodsInspectionNo() + " already exists.");
+            throw new InvalidInputException(errorDetails);
+        }
+
          GoodsInspection goodsInspection = new GoodsInspection();
+         goodsInspection.setGoodsInspectionNo(goodsInspectionDTO.getGoodsInspectionNo());
         String InstallationDate=goodsInspectionDTO.getInstallationDate();
         goodsInspection.setInstallationDate(CommonUtils.convertStringToDateObject(InstallationDate));
         String CommissioningDate= goodsInspectionDTO.getCommissioningDate();
@@ -70,7 +78,7 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
     }
 
     @Override
-    public GoodsInspectionResponseDto updateGoodsInspection(Long goodsInspectionNo, GoodsInspectionRequestDto goodsInspectionDTO) {
+    public GoodsInspectionResponseDto updateGoodsInspection(String goodsInspectionNo, GoodsInspectionRequestDto goodsInspectionDTO) {
         GoodsInspection existing = repository.findById(goodsInspectionNo)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
@@ -106,7 +114,7 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
     }
 
     @Override
-    public GoodsInspectionResponseDto getGoodsInspectionById(Long goodsInspectionNo) {
+    public GoodsInspectionResponseDto getGoodsInspectionById(String goodsInspectionNo) {
        GoodsInspection inspection = repository.findById(goodsInspectionNo)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
@@ -118,7 +126,7 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
         return mapToResponseDTO(inspection);
     }
     @Override
-    public void deleteGoodsInspection(Long goodsInspectionNo) {
+    public void deleteGoodsInspection(String goodsInspectionNo) {
 
      GoodsInspection inspection =repository.findById(goodsInspectionNo)
                 .orElseThrow(() -> new BusinessException(
