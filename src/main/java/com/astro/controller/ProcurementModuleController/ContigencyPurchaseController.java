@@ -29,7 +29,7 @@ public class ContigencyPurchaseController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> createContingencyPurchaseRequest(
-            @RequestPart("contingencyDetails") ContigencyPurchaseRequestDto contigencyPurchaseDto,
+            @RequestPart("contigencyPurchaseDto") ContigencyPurchaseRequestDto contigencyPurchaseDto,
             @RequestPart(value = "uploadCopyOfInvoice") MultipartFile uploadCopyOfInvoice
     ) {
         contigencyPurchaseDto.setUploadCopyOfInvoice(uploadCopyOfInvoice);
@@ -42,7 +42,7 @@ public class ContigencyPurchaseController {
     @PutMapping(value = "/{contigencyId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> updateContingencyPurchaseRequest(
             @PathVariable String contigencyId,
-            @RequestPart("contingencyDetails") ContigencyPurchaseRequestDto contigencyPurchaseDto,
+            @RequestPart("contigencyPurchaseDto") ContigencyPurchaseRequestDto contigencyPurchaseDto,
             @RequestPart(value = "uploadCopyOfInvoice") MultipartFile uploadCopyOfInvoice
     ) {
 

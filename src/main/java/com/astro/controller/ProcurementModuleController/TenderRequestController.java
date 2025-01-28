@@ -28,7 +28,7 @@ public class TenderRequestController {
     private TenderRequestService TRService;
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> createTenderRequest(
-            @RequestPart("tenderDetails") TenderRequestDto tenderRequestDto,
+            @RequestPart("tenderRequestDto") TenderRequestDto tenderRequestDto,
             @RequestPart(value = "uploadTenderDocuments") MultipartFile uploadTenderDocuments,
             @RequestPart(value = "uploadGeneralTermsAndConditions") MultipartFile uploadGeneralTermsAndConditions,
             @RequestPart(value = "uploadSpecificTermsAndConditions") MultipartFile uploadSpecificTermsAndConditions
@@ -54,7 +54,7 @@ public class TenderRequestController {
     @PutMapping(value = "/{tenderId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> updateTenderRequest(
             @PathVariable String tenderId,
-            @RequestPart("tenderDetails") TenderRequestDto tenderRequestDto,
+            @RequestPart("tenderRequestDto") TenderRequestDto tenderRequestDto,
             @RequestPart(value = "uploadTenderDocuments") MultipartFile uploadTenderDocuments,
             @RequestPart(value = "uploadGeneralTermsAndConditions") MultipartFile uploadGeneralTermsAndConditions,
             @RequestPart(value = "uploadSpecificTermsAndConditions") MultipartFile uploadSpecificTermsAndConditions

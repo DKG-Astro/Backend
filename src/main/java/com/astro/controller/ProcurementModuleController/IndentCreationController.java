@@ -3,11 +3,12 @@ package com.astro.controller.ProcurementModuleController;
 
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
-import com.astro.entity.ProcurementModule.IndentCreation;
+
 import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
 import com.astro.service.IndentCreationService;
-import com.astro.service.impl.GprnServiceImpl;
+
 import com.astro.util.ResponseBuilder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class IndentCreationController {
 
  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
  public ResponseEntity<Object> createIndent(
-        @RequestPart("indentDetails") IndentCreationRequestDTO indentRequestDTO,
+         @RequestPart("indentRequestDTO") IndentCreationRequestDTO indentRequestDTO,
         @RequestPart(value = "uploadingPriorApprovals") MultipartFile uploadingPriorApprovals,
         @RequestPart(value = "uploadTenderDocuments") MultipartFile uploadTenderDocuments,
         @RequestPart(value = "uploadGOIOrRFP") MultipartFile uploadGOIOrRFP,
@@ -59,7 +60,7 @@ public class IndentCreationController {
     @PutMapping(value = "/{indentorId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> updateIndent(
             @PathVariable String indentorId,
-            @RequestPart("indentDetails") IndentCreationRequestDTO indentRequestDTO,
+            @RequestPart("indentRequestDTO") IndentCreationRequestDTO indentRequestDTO,
             @RequestPart(value = "uploadingPriorApprovals") MultipartFile uploadingPriorApprovals,
             @RequestPart(value = "uploadTenderDocuments") MultipartFile uploadTenderDocuments,
             @RequestPart(value = "uploadGOIOrRFP") MultipartFile uploadGOIOrRFP,
