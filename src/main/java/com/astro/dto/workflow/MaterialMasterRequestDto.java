@@ -3,6 +3,7 @@ package com.astro.dto.workflow;
 import com.astro.util.Base64ToByteArrayConverter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 
@@ -22,8 +23,7 @@ public class MaterialMasterRequestDto {
     private BigDecimal reOrderLevel;
     private String conditionOfGoods;
     private String shelfLife;
-    @JsonDeserialize(converter = Base64ToByteArrayConverter.class)
-    private byte[] uploadImage;
+    private MultipartFile uploadImage;
     private Boolean indigenousOrImported;
 
     private String createdBy;

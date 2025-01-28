@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -19,19 +20,38 @@ public class MaterialMasterController {
 
     @Autowired
     private MaterialMasterService materialMasterService;
-
-
     @PostMapping
-    public ResponseEntity<Object> createMaterialMaster(@RequestBody MaterialMasterRequestDto requestDTO) {
-        MaterialMasterResponseDto material = materialMasterService.createMaterialMaster(requestDTO);
-        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(material), HttpStatus.OK);
-    }
+    public ResponseEntity<Object> createMaterialMaster(
+        @RequestPart("materialDetails") MaterialMasterRequestDto materialMasterRequestDto,
+        @RequestPart(value = "uploadImage") MultipartFile uploadImage){
+
+    materialMasterRequestDto.setUploadImage(uploadImage);
+
+    String uploadImageFileName = uploadImage.getOriginalFilename();
+
+    MaterialMasterResponseDto created = materialMasterService.createMaterialMaster(
+            materialMasterRequestDto, uploadImageFileName);
+
+    // Return success response
+    return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(created), HttpStatus.OK);
+}
+
 
     @PutMapping("/{materialCode}")
-    public ResponseEntity<Object> updateMaterialMaster(@PathVariable String materialCode,
-                                                 @RequestBody MaterialMasterRequestDto requestDTO) {
-        MaterialMasterResponseDto response = materialMasterService.updateMaterialMaster(materialCode, requestDTO);
-        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+    public ResponseEntity<Object> updateMaterialMaster(
+            @PathVariable String materialCode,
+            @RequestPart("materialDetails") MaterialMasterRequestDto materialMasterRequestDto,
+            @RequestPart(value = "uploadImage") MultipartFile uploadImage) {
+
+
+            materialMasterRequestDto.setUploadImage(uploadImage);
+
+        String uploadImageFileName = uploadImage != null ? uploadImage.getOriginalFilename() : null;
+
+        MaterialMasterResponseDto updated = materialMasterService.updateMaterialMaster(
+                materialCode, materialMasterRequestDto, uploadImageFileName);
+
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(updated), HttpStatus.OK);
     }
     @GetMapping
     public ResponseEntity<Object> getAllMaterialMaster() {

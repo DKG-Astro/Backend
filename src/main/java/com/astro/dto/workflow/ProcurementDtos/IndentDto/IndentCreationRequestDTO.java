@@ -1,6 +1,9 @@
 package com.astro.dto.workflow.ProcurementDtos.IndentDto;
 
+import com.astro.util.Base64ToByteArrayConverter;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,7 +20,12 @@ public class IndentCreationRequestDTO {
 
     private String indentorEmailAddress;
     private String consignesLocation;
-    private String uploadingPriorApprovals;
+
+   private MultipartFile uploadingPriorApprovals;
+    private MultipartFile uploadTenderDocuments;
+    private MultipartFile uploadGOIOrRFP;
+    private MultipartFile uploadPACOrBrandPAC;
+
     private String projectName;
     private Boolean isPreBidMeetingRequired;
     private String preBidMeetingDate;

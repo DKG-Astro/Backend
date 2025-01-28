@@ -254,7 +254,7 @@ CREATE TABLE indent_creation (
     indentor_mobile_no VARCHAR(20),
     indentor_email_address VARCHAR(255),
     consignes_location VARCHAR(255),
-    uploading_prior_approvals VARCHAR(255),
+    uploading_prior_approvals BLOB,
     project_name VARCHAR(255),
     upload_tender_documents BLOB,
     is_pre_bit_meeting_required BOOLEAN,

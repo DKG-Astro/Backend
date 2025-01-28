@@ -54,6 +54,8 @@ public class MaterialMaster {
     @Lob
     @Column(name = "upload_image")
     private byte[] uploadImage;
+    @Column(name = "upload_image_name")
+    private String uploadImageName;
 
     @Column(name = "indigenous_or_imported")
     private Boolean indigenousOrImported;

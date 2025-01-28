@@ -5,11 +5,18 @@ import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseResponseDto;
 import com.astro.entity.ProcurementModule.ContigencyPurchase;
 import com.astro.service.ContigencyPurchaseService;
 import com.astro.util.ResponseBuilder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.Column;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -18,17 +25,37 @@ public class ContigencyPurchaseController {
 
     @Autowired
     private ContigencyPurchaseService CPservice;
-    @PostMapping
-    public ResponseEntity<Object> createTenderRequest(@RequestBody ContigencyPurchaseRequestDto contigencyPurchaseDto) {
-        ContigencyPurchaseResponseDto created = CPservice.createContigencyPurchase(contigencyPurchaseDto);
-        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(created), HttpStatus.OK);
+
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> createContingencyPurchaseRequest(
+            @RequestPart("contingencyDetails") ContigencyPurchaseRequestDto contigencyPurchaseDto,
+            @RequestPart(value = "uploadCopyOfInvoice") MultipartFile uploadCopyOfInvoice
+    ) {
+        contigencyPurchaseDto.setUploadCopyOfInvoice(uploadCopyOfInvoice);
+       String uploadCopyOfInvoiceFileName =uploadCopyOfInvoice.getOriginalFilename();
+        ContigencyPurchaseResponseDto created = CPservice.createContigencyPurchase(contigencyPurchaseDto,uploadCopyOfInvoiceFileName);
+
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(created), HttpStatus.OK);
     }
 
-    @PutMapping("/{contigencyId}")
-    public ResponseEntity<Object> updateContigencyPurchase(@PathVariable String contigencyId, @RequestBody ContigencyPurchaseRequestDto contigencyPurchaseDto) {
-        ContigencyPurchaseResponseDto updated = CPservice.updateContigencyPurchase(contigencyId, contigencyPurchaseDto);
-        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(updated), HttpStatus.OK);
+    @PutMapping(value = "/{contigencyId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> updateContingencyPurchaseRequest(
+            @PathVariable String contigencyId,
+            @RequestPart("contingencyDetails") ContigencyPurchaseRequestDto contigencyPurchaseDto,
+            @RequestPart(value = "uploadCopyOfInvoice") MultipartFile uploadCopyOfInvoice
+    ) {
+
+            contigencyPurchaseDto.setUploadCopyOfInvoice(uploadCopyOfInvoice);
+        String uploadCopyOfInvoiceFileName =uploadCopyOfInvoice.getOriginalFilename();
+        ContigencyPurchaseResponseDto updated = CPservice.updateContigencyPurchase(contigencyId, contigencyPurchaseDto,uploadCopyOfInvoiceFileName);
+
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(updated), HttpStatus.OK);
     }
+
+
+
+
 
     @GetMapping
     public ResponseEntity<Object> getAllContigencyPurchase() {
@@ -40,7 +67,6 @@ public class ContigencyPurchaseController {
 
     @GetMapping("/{contigencyId}")
     public ResponseEntity<Object> getContigencyPurchaseById(@PathVariable String contigencyId) {
-
        ContigencyPurchaseResponseDto contigencyPurchase= CPservice.getContigencyPurchaseById(contigencyId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(contigencyPurchase), HttpStatus.OK);
     }

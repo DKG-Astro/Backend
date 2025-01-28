@@ -37,6 +37,8 @@ public class ContigencyPurchase {
     @Lob
     @Column(name = "upload_copy_of_invoice")
     private byte[] uploadCopyOfInvoice;
+    @Column(name = "upload_copy_of_invoice_file_name")
+    private String uploadCopyOfInvoiceFileName;
     @Column(name = "predifined_purchase_statement")
     private String predifinedPurchaseStatement;
     @Column(name = "project_detail")

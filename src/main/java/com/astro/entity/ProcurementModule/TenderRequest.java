@@ -54,6 +54,13 @@ public class TenderRequest {
     @Lob
     @Column(name = "upload_general_terms_and_conditions")
     private byte[] uploadGeneralTermsAndConditions;
+    @Column(name = "upload_tender_documents_file_name")
+    private String uploadTenderDocumentsFileName;
+    @Column(name = "upload_general_terms_and_conditions_file_name")
+    private String uploadGeneralTermsAndConditionsFileName;
+    @Column(name = "upload_specific_terms_and_conditions_file_name")
+    private String uploadSpecificTermsAndConditionsFileName;
+
     @Lob
     @Column(name = "upload_specific_terms_and_conditions")
     private byte[] uploadSpecificTermsAndConditions;

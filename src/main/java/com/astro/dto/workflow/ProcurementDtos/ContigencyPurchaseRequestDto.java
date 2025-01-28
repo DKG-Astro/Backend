@@ -1,8 +1,7 @@
 package com.astro.dto.workflow.ProcurementDtos;
 
-import com.astro.util.Base64ToByteArrayConverter;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.math.BigDecimal;
@@ -20,8 +19,7 @@ public class ContigencyPurchaseRequestDto {
     private BigDecimal unitPrice;
     private String remarksForPurchase;
     private BigDecimal amountToBePaid;
-    @JsonDeserialize(converter = Base64ToByteArrayConverter.class)
-    private byte[] uploadCopyOfInvoice;
+   private MultipartFile uploadCopyOfInvoice;
     private String predifinedPurchaseStatement;
     private String projectDetail;
     private String updatedBy;

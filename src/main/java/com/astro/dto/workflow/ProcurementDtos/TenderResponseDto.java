@@ -8,10 +8,9 @@ import java.time.LocalDateTime;
 
 @Data
 public class TenderResponseDto {
-
     private String tenderId;
     private String titleOfTender;
-    private String  openingDate;
+    private String openingDate;
     private String closingDate;
     private String indentId;
     private String indentMaterials;
@@ -26,21 +25,13 @@ public class TenderResponseDto {
     private String applicablePerformance;
     private Boolean bidSecurityDeclaration;
     private Boolean mllStatusDeclaration;
-
-    private byte[] uploadTenderDocuments;
+    private String uploadTenderDocuments;
     private String singleAndMultipleVendors;
-
-    private byte[] uploadGeneralTermsAndConditions;
-
-    private byte[] uploadSpecificTermsAndConditions;
+    private String uploadGeneralTermsAndConditions;
+    private String uploadSpecificTermsAndConditions;
     private String preBidDisscussions;
-
     private String updatedBy;
     private String createdBy;
-
     private LocalDateTime createdDate;
-
     private LocalDateTime updatedDate;
-
-
 }

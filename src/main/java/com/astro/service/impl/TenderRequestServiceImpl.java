@@ -4,6 +4,7 @@ import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderMaterialRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.TenderRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.TenderResponseDto;
+import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.entity.ProcurementModule.ServiceOrder;
 import com.astro.entity.ProcurementModule.TenderRequest;
 import com.astro.exception.BusinessException;
@@ -15,9 +16,13 @@ import com.astro.util.CommonUtils;
 import com.ctc.wstx.shaded.msv_core.verifier.jarv.TheFactoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,11 +31,12 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     @Autowired
     private TenderRequestRepository TRrepo;
     @Override
-    public TenderResponseDto createTenderRequest(TenderRequestDto tenderRequestDto) {
+    public TenderResponseDto createTenderRequest(TenderRequestDto tenderRequestDto,String uploadTenderDocumentsFileName,String uploadGeneralTermsAndConditionsFileName
+            , String uploadSpecificTermsAndConditionsFileName) {
 
         // Check if the indentorId already exists
         if (TRrepo.existsById(tenderRequestDto.getTenderId())) {
-            ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Tender Request ID", "SO ID " + tenderRequestDto.getTenderId() + " already exists.");
+            ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Tender Request ID", "Tender ID " + tenderRequestDto.getTenderId() + " already exists.");
             throw new InvalidInputException(errorDetails);
         }
 
@@ -57,13 +63,20 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         tenderRequest.setApplicablePerformance(tenderRequestDto.getApplicablePerformance());
         tenderRequest.setBidSecurityDeclaration(tenderRequestDto.getBidSecurityDeclaration());
         tenderRequest.setMllStatusDeclaration(tenderRequestDto.getMllStatusDeclaration());
-        tenderRequest.setUploadTenderDocuments(tenderRequestDto.getUploadTenderDocuments());
         tenderRequest.setSingleAndMultipleVendors(tenderRequestDto.getSingleAndMultipleVendors());
-        tenderRequest.setUploadGeneralTermsAndConditions(tenderRequestDto.getUploadGeneralTermsAndConditions());
-        tenderRequest.setUploadSpecificTermsAndConditions(tenderRequestDto.getUploadSpecificTermsAndConditions());
         tenderRequest.setPreBidDisscussions(tenderRequestDto.getPreBidDisscussions());
         tenderRequest.setUpdatedBy(tenderRequestDto.getUpdatedBy());
         tenderRequest.setCreatedBy(tenderRequestDto.getCreatedBy());
+        tenderRequest.setUploadTenderDocumentsFileName(uploadTenderDocumentsFileName);
+        tenderRequest.setUploadSpecificTermsAndConditionsFileName(uploadSpecificTermsAndConditionsFileName);
+        tenderRequest.setUploadGeneralTermsAndConditionsFileName(uploadGeneralTermsAndConditionsFileName);
+        handleFileUpload(tenderRequest, tenderRequestDto.getUploadTenderDocuments(),
+                tenderRequest::setUploadTenderDocuments);
+        handleFileUpload(tenderRequest, tenderRequestDto.getUploadGeneralTermsAndConditions(),
+                tenderRequest::setUploadGeneralTermsAndConditions);
+        handleFileUpload(tenderRequest, tenderRequestDto.getUploadSpecificTermsAndConditions(),
+                tenderRequest::setUploadSpecificTermsAndConditions);
+
 
         TRrepo.save(tenderRequest);
 
@@ -72,7 +85,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
 
 
     @Override
-    public TenderResponseDto updateTenderRequest(String tenderId, TenderRequestDto tenderRequestDto) {
+    public TenderResponseDto updateTenderRequest(String tenderId, TenderRequestDto tenderRequestDto,String uploadTenderDocumentsFileName,String uploadGeneralTermsAndConditionsFileName
+            , String uploadSpecificTermsAndConditionsFileName) {
         TenderRequest existingTR = TRrepo.findById(tenderId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
@@ -100,13 +114,19 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         existingTR.setApplicablePerformance(tenderRequestDto.getApplicablePerformance());
         existingTR.setBidSecurityDeclaration(tenderRequestDto.getBidSecurityDeclaration());
         existingTR.setMllStatusDeclaration(tenderRequestDto.getMllStatusDeclaration());
-        existingTR.setUploadTenderDocuments(tenderRequestDto.getUploadTenderDocuments());
         existingTR.setSingleAndMultipleVendors(tenderRequestDto.getSingleAndMultipleVendors());
-        existingTR.setUploadGeneralTermsAndConditions(tenderRequestDto.getUploadGeneralTermsAndConditions());
-        existingTR.setUploadSpecificTermsAndConditions(tenderRequestDto.getUploadSpecificTermsAndConditions());
         existingTR.setPreBidDisscussions(tenderRequestDto.getPreBidDisscussions());
         existingTR.setUpdatedBy(tenderRequestDto.getUpdatedBy());
         existingTR.setCreatedBy(tenderRequestDto.getCreatedBy());
+        existingTR.setUploadTenderDocumentsFileName(uploadTenderDocumentsFileName);
+        existingTR.setUploadSpecificTermsAndConditionsFileName(uploadSpecificTermsAndConditionsFileName);
+        existingTR.setUploadGeneralTermsAndConditionsFileName(uploadGeneralTermsAndConditionsFileName);
+        handleFileUpload(existingTR, tenderRequestDto.getUploadTenderDocuments(),
+                existingTR::setUploadTenderDocuments);
+        handleFileUpload(existingTR, tenderRequestDto.getUploadGeneralTermsAndConditions(),
+                existingTR::setUploadGeneralTermsAndConditions);
+        handleFileUpload(existingTR, tenderRequestDto.getUploadSpecificTermsAndConditions(),
+                existingTR::setUploadSpecificTermsAndConditions);
          TRrepo.save(existingTR);
 
         return mapToResponseDTO(existingTR);
@@ -185,10 +205,10 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         tenderResponseDto.setApplicablePerformance(tenderRequest.getApplicablePerformance());
         tenderResponseDto.setBidSecurityDeclaration(tenderRequest.getBidSecurityDeclaration());
         tenderResponseDto.setMllStatusDeclaration(tenderRequest.getMllStatusDeclaration());
-        tenderResponseDto.setUploadTenderDocuments(tenderRequest.getUploadTenderDocuments());
+        tenderResponseDto.setUploadTenderDocuments(tenderRequest.getUploadTenderDocumentsFileName());
         tenderResponseDto.setSingleAndMultipleVendors(tenderRequest.getSingleAndMultipleVendors());
-        tenderResponseDto.setUploadGeneralTermsAndConditions(tenderRequest.getUploadGeneralTermsAndConditions());
-        tenderResponseDto.setUploadSpecificTermsAndConditions(tenderRequest.getUploadSpecificTermsAndConditions());
+        tenderResponseDto.setUploadGeneralTermsAndConditions(tenderRequest.getUploadGeneralTermsAndConditionsFileName());
+        tenderResponseDto.setUploadSpecificTermsAndConditions(tenderRequest.getUploadSpecificTermsAndConditionsFileName());
         tenderResponseDto.setPreBidDisscussions(tenderRequest.getPreBidDisscussions());
         tenderResponseDto.setUpdatedBy(tenderRequest.getUpdatedBy());
         tenderResponseDto.setCreatedBy(tenderRequest.getCreatedBy());
@@ -198,6 +218,20 @@ public class TenderRequestServiceImpl implements TenderRequestService {
 
 
 
+    }
+
+    public void handleFileUpload(TenderRequest tenderRequest, MultipartFile file, Consumer<byte[]> fileSetter) {
+        if (file != null) {
+            try (InputStream inputStream = file.getInputStream()) {
+                byte[] fileBytes = inputStream.readAllBytes();
+                fileSetter.accept(fileBytes);
+            } catch (IOException e) {
+                throw new InvalidInputException(new ErrorDetails(500, 3, "File Processing Error",
+                        "Error while processing the uploaded file. Please try again."));
+            }
+        } else {
+            fileSetter.accept(null);  // Handle gracefully if no file is uploaded
+        }
     }
 
 }

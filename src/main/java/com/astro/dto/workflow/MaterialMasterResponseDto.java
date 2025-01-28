@@ -21,7 +21,7 @@ public class MaterialMasterResponseDto {
     private BigDecimal reOrderLevel;
     private String conditionOfGoods;
     private String shelfLife;
-    private byte[] uploadImage;
+    private String uploadImage;
     private Boolean indigenousOrImported;
     private String createdBy;
     private String updatedBy;

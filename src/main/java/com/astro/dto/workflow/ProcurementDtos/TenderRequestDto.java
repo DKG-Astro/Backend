@@ -1,12 +1,10 @@
 package com.astro.dto.workflow.ProcurementDtos;
 
-import com.astro.util.Base64ToByteArrayConverter;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import lombok.Data;
 
-import javax.persistence.Lob;
-import java.sql.Blob;
-import java.time.LocalDate;
+import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
+
+
 
 @Data
 public class TenderRequestDto {
@@ -28,13 +26,13 @@ public class TenderRequestDto {
     private String applicablePerformance;
     private Boolean bidSecurityDeclaration;
     private Boolean mllStatusDeclaration;
-    @JsonDeserialize(converter = Base64ToByteArrayConverter.class)
-    private byte[] uploadTenderDocuments;
+
+    private MultipartFile uploadTenderDocuments;
     private String singleAndMultipleVendors;
-    @JsonDeserialize(converter = Base64ToByteArrayConverter.class)
-    private byte[] uploadGeneralTermsAndConditions;
-    @JsonDeserialize(converter = Base64ToByteArrayConverter.class)
-    private byte[] uploadSpecificTermsAndConditions;
+
+    private MultipartFile uploadGeneralTermsAndConditions;
+
+    private MultipartFile uploadSpecificTermsAndConditions;
     private String preBidDisscussions;
     private String updatedBy;
     private String createdBy;
