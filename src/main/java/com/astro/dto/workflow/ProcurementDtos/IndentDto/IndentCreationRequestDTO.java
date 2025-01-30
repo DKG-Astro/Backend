@@ -14,7 +14,7 @@ public class IndentCreationRequestDTO {
 
     private String indentorName;
 
-    private String indentorId;
+    private String indentId;
 
     private String indentorMobileNo;
 

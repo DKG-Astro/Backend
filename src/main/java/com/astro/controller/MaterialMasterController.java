@@ -22,7 +22,7 @@ public class MaterialMasterController {
     private MaterialMasterService materialMasterService;
     @PostMapping
     public ResponseEntity<Object> createMaterialMaster(
-        @RequestPart("materialDetails") MaterialMasterRequestDto materialMasterRequestDto,
+        @RequestPart("materialMasterRequestDto") MaterialMasterRequestDto materialMasterRequestDto,
         @RequestPart(value = "uploadImage") MultipartFile uploadImage){
 
     materialMasterRequestDto.setUploadImage(uploadImage);
@@ -40,7 +40,7 @@ public class MaterialMasterController {
     @PutMapping("/{materialCode}")
     public ResponseEntity<Object> updateMaterialMaster(
             @PathVariable String materialCode,
-            @RequestPart("materialDetails") MaterialMasterRequestDto materialMasterRequestDto,
+            @RequestPart("materialMasterRequestDto") MaterialMasterRequestDto materialMasterRequestDto,
             @RequestPart(value = "uploadImage") MultipartFile uploadImage) {
 
 

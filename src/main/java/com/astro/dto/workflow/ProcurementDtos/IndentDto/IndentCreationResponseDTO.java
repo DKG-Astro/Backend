@@ -12,7 +12,7 @@ public class IndentCreationResponseDTO {
 
 
     private String indentorName;
-    private String indentorId;
+    private String indentId;
     private String indentorMobileNo;
     private String indentorEmailAddress;
     private String consignesLocation;

@@ -57,9 +57,9 @@ public class IndentCreationController {
 }
 
 
-    @PutMapping(value = "/{indentorId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/{indentId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> updateIndent(
-            @PathVariable String indentorId,
+            @PathVariable String indentId,
             @RequestPart("indentRequestDTO") IndentCreationRequestDTO indentRequestDTO,
             @RequestPart(value = "uploadingPriorApprovals") MultipartFile uploadingPriorApprovals,
             @RequestPart(value = "uploadTenderDocuments") MultipartFile uploadTenderDocuments,
@@ -77,7 +77,7 @@ public class IndentCreationController {
         String uploadPACOrBrandPACFileName = uploadPACOrBrandPAC.getOriginalFilename();
 
         // Call the service to update the indent
-        IndentCreationResponseDTO responseDTO = indentCreationService.updateIndent(indentorId, indentRequestDTO,uploadingPriorApprovalsFileName,
+        IndentCreationResponseDTO responseDTO = indentCreationService.updateIndent(indentId, indentRequestDTO,uploadingPriorApprovalsFileName,
                 uploadTenderDocumentsFileName,uploadGOIOrRFPFileName,uploadPACOrBrandPACFileName );
 
         // Return the success response
@@ -86,9 +86,9 @@ public class IndentCreationController {
 
 
     // Get Indent by ID
-    @GetMapping("/{indentorId}")
-    public ResponseEntity<Object> getIndentById(@PathVariable String indentorId) {
-        IndentCreationResponseDTO responseDTO = indentCreationService.getIndentById(indentorId);
+    @GetMapping("/{indentId}")
+    public ResponseEntity<Object> getIndentById(@PathVariable String indentId) {
+        IndentCreationResponseDTO responseDTO = indentCreationService.getIndentById(indentId);
         // Set filenames for the uploaded files in the response DTO
         responseDTO.setUploadingPriorApprovalsFileName(responseDTO.getUploadingPriorApprovalsFileName());
         responseDTO.setUploadTenderDocumentsFileName(responseDTO.getUploadTenderDocumentsFileName());
@@ -104,10 +104,10 @@ public class IndentCreationController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTOs), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{indentorId}")
-    public ResponseEntity<String> deleteIndent(@PathVariable String indentorId) {
-        indentCreationService.deleteIndent(indentorId);
-        return ResponseEntity.ok("indent  deleted successfully. Id:"+" " +indentorId);
+    @DeleteMapping("/{indentId}")
+    public ResponseEntity<String> deleteIndent(@PathVariable String indentId) {
+        indentCreationService.deleteIndent(indentId);
+        return ResponseEntity.ok("indent deleted successfully. Id:"+" " +indentId);
     }
 
 

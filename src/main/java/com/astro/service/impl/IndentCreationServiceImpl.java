@@ -41,8 +41,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
     public IndentCreationResponseDTO createIndent(IndentCreationRequestDTO indentRequestDTO,String uploadingPriorApprovalsFileName,
                                                   String uploadTenderDocumentsFileName,String uploadGOIOrRFPFileName,String uploadPACOrBrandPACFileName) {
         // Check if the indentorId already exists
-        if (indentCreationRepository.existsById(indentRequestDTO.getIndentorId())) {
-            ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Indentor ID", "Indentor ID " + indentRequestDTO.getIndentorId() + " already exists.");
+        if (indentCreationRepository.existsById(indentRequestDTO.getIndentId())) {
+            ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Indent ID", "Indent ID " + indentRequestDTO.getIndentId() + " already exists.");
             throw new InvalidInputException(errorDetails);
         }
 
@@ -65,7 +65,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         IndentCreation indentCreation = new IndentCreation();
 
         indentCreation.setIndentorName(indentRequestDTO.getIndentorName());
-        indentCreation.setIndentorId(indentRequestDTO.getIndentorId());
+        indentCreation.setIndentId(indentRequestDTO.getIndentId());
         indentCreation.setIndentorMobileNo(indentRequestDTO.getIndentorMobileNo());
         indentCreation.setIndentorEmailAddress(indentRequestDTO.getIndentorEmailAddress());
         indentCreation.setConsignesLocation(indentRequestDTO.getConsignesLocation());
@@ -121,15 +121,15 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         return mapToResponseDTO(indentCreation);
     }
 
-    public IndentCreationResponseDTO updateIndent(String indentorId, IndentCreationRequestDTO indentRequestDTO,String uploadingPriorApprovalsFileName,
+    public IndentCreationResponseDTO updateIndent(String indentId, IndentCreationRequestDTO indentRequestDTO,String uploadingPriorApprovalsFileName,
                                                   String uploadTenderDocumentsFileName,String uploadGOIOrRFPFileName,String uploadPACOrBrandPACFileName) {
-        IndentCreation indentCreation = indentCreationRepository.findById(indentorId)
+        IndentCreation indentCreation = indentCreationRepository.findById(indentId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_VALIDATION,
-                                "indent not found for the provided asset ID.")
+                                "indent not found for the provided indent ID.")
                 ));
 
         indentCreation.setIndentorName(indentRequestDTO.getIndentorName());
@@ -191,14 +191,14 @@ public class IndentCreationServiceImpl implements IndentCreationService {
     }
 
 
-    public IndentCreationResponseDTO getIndentById(String indentorId) {
-            IndentCreation indentCreation = indentCreationRepository.findById(indentorId)
+    public IndentCreationResponseDTO getIndentById(String indentId) {
+            IndentCreation indentCreation = indentCreationRepository.findById(indentId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_RESOURCE,
-                                "Indent not found for the provided asset ID.")
+                                "Indent not found for the provided Indent ID.")
                 ));
         return mapToResponseDTO(indentCreation);
         }
@@ -212,7 +212,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         private IndentCreationResponseDTO mapToResponseDTO(IndentCreation indentCreation) {
             IndentCreationResponseDTO response = new IndentCreationResponseDTO();
             response.setIndentorName(indentCreation.getIndentorName());
-            response.setIndentorId(indentCreation.getIndentorId());
+            response.setIndentId(indentCreation.getIndentId());
             response.setIndentorMobileNo(indentCreation.getIndentorMobileNo());
             response.setIndentorEmailAddress(indentCreation.getIndentorEmailAddress());
             response.setConsignesLocation(indentCreation.getConsignesLocation());
@@ -274,9 +274,9 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             return response;
         }
     @Override
-    public void deleteIndent(String indentorId) {
+    public void deleteIndent(String indentId) {
 
-       IndentCreation  gprn=indentCreationRepository.findById(indentorId)
+       IndentCreation  indent=indentCreationRepository.findById(indentId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -286,7 +286,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                         )
                 ));
         try {
-            indentCreationRepository.delete(gprn);
+            indentCreationRepository.delete(indent);
         } catch (Exception ex) {
             throw new BusinessException(
                     new ErrorDetails(

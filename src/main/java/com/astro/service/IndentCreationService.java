@@ -13,13 +13,13 @@ public interface IndentCreationService {
     public IndentCreationResponseDTO createIndent(IndentCreationRequestDTO indentRequestDTO,String uploadingPriorApprovalsFileName,
                                                   String uploadTenderDocumentsFileName,String uploadGOIOrRFPFileName,String uploadPACOrBrandPACFileName );
 
-    public IndentCreationResponseDTO updateIndent(String indentorId, IndentCreationRequestDTO indentRequestDTO,String uploadingPriorApprovalsFileName,
+    public IndentCreationResponseDTO updateIndent(String indentId, IndentCreationRequestDTO indentRequestDTO,String uploadingPriorApprovalsFileName,
                                                   String uploadTenderDocumentsFileName,String uploadGOIOrRFPFileName,String uploadPACOrBrandPACFileName);
 
-    public IndentCreationResponseDTO getIndentById(String indentorId);
+    public IndentCreationResponseDTO getIndentById(String indentId);
 
     public List<IndentCreationResponseDTO> getAllIndents();
 
-    void deleteIndent(String indentorId);
+    void deleteIndent(String indentId);
 
 }

@@ -15,8 +15,8 @@ public class IndentCreation {
 
 
         @Id
-        @Column(name = "indentor_id", nullable = false, unique = true)
-        private String indentorId;
+        @Column(name = "indent_id", nullable = false, unique = true)
+        private String indentId;
 
         @Column(name = "indentor_name")
         private String indentorName;
