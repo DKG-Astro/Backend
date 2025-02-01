@@ -62,7 +62,8 @@ public class Gprn {
     @Lob
     private byte[] provisionalReceiptCertificate;
 
-
+   // @Column(name = "")
+    private String provisionalReceiptCertificateFileName;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "gprn_id")  // Updated to reflect the new column name in the GprnMaterials table

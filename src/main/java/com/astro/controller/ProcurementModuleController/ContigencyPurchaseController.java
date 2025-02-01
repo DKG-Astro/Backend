@@ -26,15 +26,18 @@ public class ContigencyPurchaseController {
     @Autowired
     private ContigencyPurchaseService CPservice;
 
+    @Autowired
+    private ObjectMapper mapper;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> createContingencyPurchaseRequest(
-            @RequestPart("contigencyPurchaseDto") ContigencyPurchaseRequestDto contigencyPurchaseDto,
+            @RequestPart("contigencyPurchaseDto") String contigencyPurchaseDto,
             @RequestPart(value = "uploadCopyOfInvoice") MultipartFile uploadCopyOfInvoice
-    ) {
-        contigencyPurchaseDto.setUploadCopyOfInvoice(uploadCopyOfInvoice);
+    ) throws JsonProcessingException {
+        ContigencyPurchaseRequestDto contigencyPurchaseDTO = mapper.readValue(contigencyPurchaseDto,ContigencyPurchaseRequestDto.class);
+        contigencyPurchaseDTO.setUploadCopyOfInvoice(uploadCopyOfInvoice);
        String uploadCopyOfInvoiceFileName =uploadCopyOfInvoice.getOriginalFilename();
-        ContigencyPurchaseResponseDto created = CPservice.createContigencyPurchase(contigencyPurchaseDto,uploadCopyOfInvoiceFileName);
+        ContigencyPurchaseResponseDto created = CPservice.createContigencyPurchase(contigencyPurchaseDTO,uploadCopyOfInvoiceFileName);
 
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(created), HttpStatus.OK);
     }
@@ -42,13 +45,13 @@ public class ContigencyPurchaseController {
     @PutMapping(value = "/{contigencyId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> updateContingencyPurchaseRequest(
             @PathVariable String contigencyId,
-            @RequestPart("contigencyPurchaseDto") ContigencyPurchaseRequestDto contigencyPurchaseDto,
+            @RequestPart("contigencyPurchaseDto") String contigencyPurchaseDto,
             @RequestPart(value = "uploadCopyOfInvoice") MultipartFile uploadCopyOfInvoice
-    ) {
-
-            contigencyPurchaseDto.setUploadCopyOfInvoice(uploadCopyOfInvoice);
+    ) throws JsonProcessingException {
+        ContigencyPurchaseRequestDto contigencyPurchaseDTO = mapper.readValue(contigencyPurchaseDto,ContigencyPurchaseRequestDto.class);
+            contigencyPurchaseDTO.setUploadCopyOfInvoice(uploadCopyOfInvoice);
         String uploadCopyOfInvoiceFileName =uploadCopyOfInvoice.getOriginalFilename();
-        ContigencyPurchaseResponseDto updated = CPservice.updateContigencyPurchase(contigencyId, contigencyPurchaseDto,uploadCopyOfInvoiceFileName);
+        ContigencyPurchaseResponseDto updated = CPservice.updateContigencyPurchase(contigencyId, contigencyPurchaseDTO,uploadCopyOfInvoiceFileName);
 
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(updated), HttpStatus.OK);
     }

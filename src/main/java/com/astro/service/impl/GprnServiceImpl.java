@@ -13,6 +13,7 @@ import com.astro.entity.InventoryModule.Gprn;
 import com.astro.entity.InventoryModule.GprnMaterials;
 
 
+import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
@@ -25,12 +26,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
+
 @Service
 public class GprnServiceImpl implements GprnService {
 
@@ -42,7 +48,7 @@ public class GprnServiceImpl implements GprnService {
     private static final Logger log = LoggerFactory.getLogger(GprnServiceImpl.class);
 
     @Transactional
-    public GprnResponseDto createGprnWithMaterialDetails(GprnRequestDto gprnRequestDto) {
+    public GprnResponseDto createGprnWithMaterialDetails(GprnRequestDto gprnRequestDto,String provisionalReceiptCertificateFileName, String photoFileName) {
 
         // Check if the indentorId already exists
         if (gprnRepository.existsById(gprnRequestDto.getGprnNo())) {
@@ -82,9 +88,12 @@ public class GprnServiceImpl implements GprnService {
         gprn.setReceivedQty(gprnRequestDto.getReceivedQty());
         gprn.setPendingQty(gprnRequestDto.getPendingQty());
         gprn.setAcceptedQty(gprnRequestDto.getAcceptedQty());
-        gprn.setProvisionalReceiptCertificate(gprnRequestDto.getProvisionalReceiptCertificate());
+       // gprn.setProvisionalReceiptCertificate(gprnRequestDto.getProvisionalReceiptCertificate());
+        handleFileUpload(gprn, gprnRequestDto.getProvisionalReceiptCertificate(),
+                gprn::setProvisionalReceiptCertificate);
         gprn.setUpdatedBy(gprnRequestDto.getUpdatedBy());
         gprn.setCreatedBy(gprnRequestDto.getCreatedBy());
+        gprn.setProvisionalReceiptCertificateFileName(provisionalReceiptCertificateFileName);
         gprnRepository.save(gprn);
         // Save MaterialDetails entities and link them to the Gprn
         List<GprnMaterials> gprnMaterials = gprnRequestDto.getGprnMaterials().stream().map(materialRequest -> {
@@ -111,30 +120,21 @@ public class GprnServiceImpl implements GprnService {
             gprnMaterial.setSerialNo(materialRequest.getSerialNo());
             gprnMaterial.setWarranty(materialRequest.getWarranty());
             gprnMaterial.setNote(materialRequest.getNote());
-            gprnMaterial.setPhotographPath(materialRequest.getPhotographPath());
+            gprnMaterial.setPhotoFileName(photoFileName);
+            handleFileUploadMaterial(gprnMaterial, materialRequest.getPhotographPath(),
+                  gprnMaterial::setPhotographPath);
+           // gprnMaterial.setPhotographPath(materialRequest.getPhotographPath());
             gprnMaterial.setGprn(gprn);
             return gprnMaterial;
         }).collect(Collectors.toList());
-
-
-
-
-        // Save all material details
+         // Save all material details
         gprnMaterialsRepository.saveAll(gprnMaterials);
-
-
-        gprn.setGprnMaterials(gprnMaterials);
-
-
-
-
-
-
-        return mapToResponseDTO(gprn);
+         gprn.setGprnMaterials(gprnMaterials);
+         return mapToResponseDTO(gprn);
     }
 
     @Transactional
-    public GprnResponseDto updateGprn(String gprnId, GprnRequestDto gprnRequestDto) {
+    public GprnResponseDto updateGprn(String gprnId, GprnRequestDto gprnRequestDto,String provisionalReceiptCertificateFileName, String photoFileName) {
 
         Gprn gprn = gprnRepository.findById(gprnId)
                 .orElseThrow(() -> new BusinessException(
@@ -168,7 +168,10 @@ public class GprnServiceImpl implements GprnService {
         gprn.setReceivedQty(gprnRequestDto.getReceivedQty());
         gprn.setPendingQty(gprnRequestDto.getPendingQty());
         gprn.setAcceptedQty(gprnRequestDto.getAcceptedQty());
-        gprn.setProvisionalReceiptCertificate(gprnRequestDto.getProvisionalReceiptCertificate());
+        handleFileUpload(gprn, gprnRequestDto.getProvisionalReceiptCertificate(),
+                gprn::setProvisionalReceiptCertificate);
+        //gprn.setProvisionalReceiptCertificate(gprnRequestDto.getProvisionalReceiptCertificate());
+        gprn.setProvisionalReceiptCertificateFileName(provisionalReceiptCertificateFileName);
         gprnRepository.save(gprn);
 
         // Get existing material details
@@ -205,7 +208,9 @@ public class GprnServiceImpl implements GprnService {
                     gprnMaterial.setSerialNo(materialRequestDto.getSerialNo());
                     gprnMaterial.setWarranty(materialRequestDto.getWarranty());
                     gprnMaterial.setNote(materialRequestDto.getNote());
-                    gprnMaterial.setPhotographPath(materialRequestDto.getPhotographPath());
+                    gprnMaterial.setPhotoFileName(photoFileName);
+                    handleFileUploadMaterial(gprnMaterial, materialRequestDto.getPhotographPath(),
+                            gprnMaterial::setPhotographPath);
                     gprnMaterial.setGprn(gprn); // Ensure the Gprn reference is set
 
                     return gprnMaterial;
@@ -297,7 +302,8 @@ public class GprnServiceImpl implements GprnService {
         gprnResponseDto.setReceivedQty(gprn.getReceivedQty());
         gprnResponseDto.setPendingQty(gprn.getPendingQty());
         gprnResponseDto.setAcceptedQty(gprn.getAcceptedQty());
-        gprnResponseDto.setProvisionalReceiptCertificate(gprn.getProvisionalReceiptCertificate());
+      //  gprnResponseDto.setProvisionalReceiptCertificate(gprn.getProvisionalReceiptCertificate());
+        gprnResponseDto.setProvisionalReceiptCertificateFileName(gprn.getProvisionalReceiptCertificateFileName());
         gprnResponseDto.setCreatedDate(gprn.getCreatedDate());
         gprnResponseDto.setUpdatedDate(gprn.getUpdatedDate());
         // Map material details
@@ -316,13 +322,44 @@ public class GprnServiceImpl implements GprnService {
             gprnMaterialsResponsetDto.setSerialNo(material.getSerialNo());
             gprnMaterialsResponsetDto.setWarranty(material.getWarranty());
             gprnMaterialsResponsetDto.setNote(material.getNote());
-            gprnMaterialsResponsetDto.setPhotographPath(material.getPhotographPath());
+            gprnMaterialsResponsetDto.setPhotoFileName(material.getPhotoFileName());
             return gprnMaterialsResponsetDto;
         }).collect(Collectors.toList());
 
         gprnResponseDto.setGprnMaterialsResponsetDtos(gprnMaterialsResponsetDtos);
         return gprnResponseDto;
     }
+
+    public void handleFileUpload(Gprn gprn, MultipartFile file, Consumer<byte[]> fileSetter) {
+        if (file != null) {
+            try (InputStream inputStream = file.getInputStream()) {
+                byte[] fileBytes = inputStream.readAllBytes();
+                fileSetter.accept(fileBytes); // Set file content (byte[])
+
+            } catch (IOException e) {
+                throw new InvalidInputException(new ErrorDetails(500, 3, "File Processing Error",
+                        "Error while processing the uploaded file. Please try again."));
+            }
+        } else {
+            fileSetter.accept(null);  // Handle gracefully if no file is uploaded
+        }
+    }
+    public void handleFileUploadMaterial(GprnMaterials gprnMaterials, MultipartFile file, Consumer<byte[]> fileSetter) {
+        if (file != null) {
+            try (InputStream inputStream = file.getInputStream()) {
+                byte[] fileBytes = inputStream.readAllBytes();
+                fileSetter.accept(fileBytes); // Set file content (byte[])
+
+            } catch (IOException e) {
+                throw new InvalidInputException(new ErrorDetails(500, 3, "File Processing Error",
+                        "Error while processing the uploaded file. Please try again."));
+            }
+        } else {
+            fileSetter.accept(null);  // Handle gracefully if no file is uploaded
+        }
+    }
+
+
 
 }
 

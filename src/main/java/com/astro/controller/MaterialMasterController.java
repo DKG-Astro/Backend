@@ -6,6 +6,8 @@ import com.astro.dto.workflow.MaterialMasterRequestDto;
 import com.astro.dto.workflow.MaterialMasterResponseDto;
 import com.astro.service.MaterialMasterService;
 import com.astro.util.ResponseBuilder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,15 +18,19 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/material-master")
-public class MaterialMasterController {
+public class gMaterialMasterController {
 
     @Autowired
     private MaterialMasterService materialMasterService;
+
+    @Autowired
+    private ObjectMapper mapper;
     @PostMapping
     public ResponseEntity<Object> createMaterialMaster(
-        @RequestPart("materialMasterRequestDto") MaterialMasterRequestDto materialMasterRequestDto,
-        @RequestPart(value = "uploadImage") MultipartFile uploadImage){
+        @RequestPart("materialMasterRequestDto") String materialMasterRequestDTO,
+        @RequestPart(value = "uploadImage") MultipartFile uploadImage) throws JsonProcessingException {
 
+        MaterialMasterRequestDto materialMasterRequestDto = mapper.readValue(materialMasterRequestDTO, MaterialMasterRequestDto.class);
     materialMasterRequestDto.setUploadImage(uploadImage);
 
     String uploadImageFileName = uploadImage.getOriginalFilename();
@@ -40,10 +46,9 @@ public class MaterialMasterController {
     @PutMapping("/{materialCode}")
     public ResponseEntity<Object> updateMaterialMaster(
             @PathVariable String materialCode,
-            @RequestPart("materialMasterRequestDto") MaterialMasterRequestDto materialMasterRequestDto,
-            @RequestPart(value = "uploadImage") MultipartFile uploadImage) {
-
-
+            @RequestPart("materialMasterRequestDto") String materialMasterRequestDTO,
+            @RequestPart(value = "uploadImage") MultipartFile uploadImage) throws JsonProcessingException {
+        MaterialMasterRequestDto materialMasterRequestDto = mapper.readValue(materialMasterRequestDTO,MaterialMasterRequestDto.class);
             materialMasterRequestDto.setUploadImage(uploadImage);
 
         String uploadImageFileName = uploadImage != null ? uploadImage.getOriginalFilename() : null;

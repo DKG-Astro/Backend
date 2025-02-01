@@ -4,11 +4,15 @@ package com.astro.controller.ProcurementModuleController;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 
+import com.astro.dto.workflow.WorkflowTransitionDto;
 import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
 import com.astro.service.IndentCreationService;
 
+import com.astro.service.WorkflowService;
 import com.astro.util.ResponseBuilder;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +22,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+
 import java.util.List;
-import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/indents")
@@ -31,17 +35,22 @@ public class IndentCreationController {
 
     @Autowired
     private IndentCreationRepository indentCreationRepository;
+    @Autowired
+    private ObjectMapper mapper;
+    @Autowired
+    private WorkflowService workflowService;
     private static final Logger log = LoggerFactory.getLogger(IndentCreationController.class);
 
 
  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
  public ResponseEntity<Object> createIndent(
-         @RequestPart("indentRequestDTO") IndentCreationRequestDTO indentRequestDTO,
+         @RequestPart("indentRequestDTO") String indentRequestDto,
         @RequestPart(value = "uploadingPriorApprovals") MultipartFile uploadingPriorApprovals,
         @RequestPart(value = "uploadTenderDocuments") MultipartFile uploadTenderDocuments,
         @RequestPart(value = "uploadGOIOrRFP") MultipartFile uploadGOIOrRFP,
         @RequestPart(value = "uploadPACOrBrandPAC") MultipartFile uploadPACOrBrandPAC
-){
+) throws JsonProcessingException {
+     IndentCreationRequestDTO indentRequestDTO = mapper.readValue(indentRequestDto, IndentCreationRequestDTO.class);
     // Set files in DTO
     indentRequestDTO.setUploadingPriorApprovals(uploadingPriorApprovals);
     indentRequestDTO.setUploadTenderDocuments(uploadTenderDocuments);
@@ -53,19 +62,49 @@ public class IndentCreationController {
      String uploadPACOrBrandPACFileName = uploadPACOrBrandPAC.getOriginalFilename();
      IndentCreationResponseDTO responseDTO = indentCreationService.createIndent(indentRequestDTO,uploadingPriorApprovalsFileName,
           uploadTenderDocumentsFileName,uploadGOIOrRFPFileName,uploadPACOrBrandPACFileName );
-    return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
+ /*
+     // Initiateing the workflow after saving the indent
+     String requestId = responseDTO.getIndentId(); // Useing the indent ID as the request ID
+     String workflowName = "Indent Workflow";
+     String createdBy = indentRequestDTO.getCreatedBy();
+
+     // Call initiateWorkflow API
+     WorkflowTransitionDto workflowTransitionDto = workflowService.initiateWorkflow(requestId, workflowName, createdBy);
+
+    // action approve
+
+     // Transition to the next role
+     TransitionDto nextTransition = workflowService.nextTransition(
+             workflowTransitionDto.getWorkflowId(),
+             workflowName,
+             workflowTransitionDto.getCurrentRole(),
+             requestId
+     );
+     //Automatic approved with example data. we can approve manual by using swagger link
+     TransitionActionReqDto transitionActionReqDto = new TransitionActionReqDto();
+     transitionActionReqDto.setWorkflowTransitionId(workflowTransitionDto.getWorkflowTransitionId());
+     transitionActionReqDto.setActionBy(createdBy);
+     transitionActionReqDto.setAction("APPROVE"); // or "REJECT"
+     transitionActionReqDto.setRemarks("Automatically approved by system.");
+
+     WorkflowTransitionDto workflowTransitionDto = workflowService.performTransitionAction(transitionActionReqDto);
+
+
+ */
+     return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
 }
 
 
     @PutMapping(value = "/{indentId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> updateIndent(
             @PathVariable String indentId,
-            @RequestPart("indentRequestDTO") IndentCreationRequestDTO indentRequestDTO,
+            @RequestPart("indentRequestDTO") String indentRequestDto,
             @RequestPart(value = "uploadingPriorApprovals") MultipartFile uploadingPriorApprovals,
             @RequestPart(value = "uploadTenderDocuments") MultipartFile uploadTenderDocuments,
             @RequestPart(value = "uploadGOIOrRFP") MultipartFile uploadGOIOrRFP,
             @RequestPart(value = "uploadPACOrBrandPAC") MultipartFile uploadPACOrBrandPAC
-    ){
+    ) throws JsonProcessingException {
+     IndentCreationRequestDTO indentRequestDTO = mapper.readValue(indentRequestDto,IndentCreationRequestDTO.class);
         // Set files in DTO if present
             indentRequestDTO.setUploadingPriorApprovals(uploadingPriorApprovals);
             indentRequestDTO.setUploadTenderDocuments(uploadTenderDocuments);

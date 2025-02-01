@@ -87,7 +87,7 @@ CREATE TABLE `astrodatabase`.`state_master` (
 CREATE TABLE GPRN (
     gprn_no VARCHAR(255) PRIMARY KEY,
     po_no VARCHAR(255),
-    date DATE NOT NULL,
+    date DATE,
     delivery_challan_no VARCHAR(255),
     delivery_challan_date DATE ,
     vendor_id VARCHAR(255),

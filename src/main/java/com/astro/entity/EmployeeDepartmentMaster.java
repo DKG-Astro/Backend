@@ -15,7 +15,7 @@ public class EmployeeDepartmentMaster {
 
 
     @Id
-    @Column(name = " employee_id")
+    @Column(name = "employee_id")
     private String employeeId;
     @Column(name = "employee_name")
     private String employeeName;

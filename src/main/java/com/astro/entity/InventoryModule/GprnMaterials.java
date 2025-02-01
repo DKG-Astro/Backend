@@ -27,8 +27,6 @@ public class GprnMaterials {
     private Integer quantityDelivered;
 
     private Integer receivedQuantity;
-
-
     private Double unitPrice;
 
     @Column(name = "net_price")
@@ -44,7 +42,11 @@ public class GprnMaterials {
 
     private String note;
 
-    private String photographPath;
+    @Lob
+    private byte[] photographPath;
+
+    private String photoFileName;
+
     @ManyToOne
     @JoinColumn(name = "gprn_id", referencedColumnName = "gprn_no")
     private Gprn gprn;

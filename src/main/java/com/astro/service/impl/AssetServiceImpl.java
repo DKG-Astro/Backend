@@ -22,8 +22,6 @@ public class AssetServiceImpl implements AssetService {
     @Autowired
     private AssetRepository assetRepository;
 
-
-
     public AssetResponseDto createAsset(AssetRequestDTO assetDTO) {
 
         // Check if the indentorId already exists
