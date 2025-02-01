@@ -50,6 +50,10 @@ public class PurchaseOrder {
     private String vendorsZfscCode;
     @Column(name = "vendor_account_name")
     private String vendorAccountName;
+    @Column(name = "total_value_of_po")
+    private BigDecimal totalValueOfPo;
+    @Column(name = "project_name")
+    private String projectName;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "purchase_order_id")

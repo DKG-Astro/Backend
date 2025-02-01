@@ -24,6 +24,7 @@ public class ContigencyPurchaseResponseDto {
     private String uploadCopyOfInvoice;
     private String predifinedPurchaseStatement;
     private String projectDetail;
+    private String projectName;
     private String updatedBy;
     private String createdBy;
 

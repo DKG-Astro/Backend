@@ -5,9 +5,12 @@ import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationRequestDTO
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 
 import com.astro.dto.workflow.WorkflowTransitionDto;
+import com.astro.entity.UserMaster;
 import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
+import com.astro.repository.UserMasterRepository;
 import com.astro.service.IndentCreationService;
 
+import com.astro.service.UserService;
 import com.astro.service.WorkflowService;
 import com.astro.util.ResponseBuilder;
 
@@ -38,7 +41,9 @@ public class IndentCreationController {
     @Autowired
     private ObjectMapper mapper;
     @Autowired
-    private WorkflowService workflowService;
+   private WorkflowService workflowService;
+    @Autowired
+   private UserService userService;
     private static final Logger log = LoggerFactory.getLogger(IndentCreationController.class);
 
 
@@ -62,15 +67,18 @@ public class IndentCreationController {
      String uploadPACOrBrandPACFileName = uploadPACOrBrandPAC.getOriginalFilename();
      IndentCreationResponseDTO responseDTO = indentCreationService.createIndent(indentRequestDTO,uploadingPriorApprovalsFileName,
           uploadTenderDocumentsFileName,uploadGOIOrRFPFileName,uploadPACOrBrandPACFileName );
- /*
+
      // Initiateing the workflow after saving the indent
      String requestId = responseDTO.getIndentId(); // Useing the indent ID as the request ID
      String workflowName = "Indent Workflow";
      String createdBy = indentRequestDTO.getCreatedBy();
+     UserMaster userMaster = userService.getUserByCreatedBy(createdBy);
+     Integer userId = userMaster.getUserId();
+
 
      // Call initiateWorkflow API
-     WorkflowTransitionDto workflowTransitionDto = workflowService.initiateWorkflow(requestId, workflowName, createdBy);
-
+    WorkflowTransitionDto workflowTransitionDto = workflowService.initiateWorkflow(requestId, workflowName, userId);
+/*
     // action approve
 
      // Transition to the next role

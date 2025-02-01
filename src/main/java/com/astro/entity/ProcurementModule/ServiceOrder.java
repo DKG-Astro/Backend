@@ -41,6 +41,10 @@ public class ServiceOrder {
     private String vendorsZRSCCode;
     @Column(name = "vendors_account_name")
     private String vendorsAccountName;
+    @Column(name = "total_value_of_so")
+    private BigDecimal totalValueOfSo;
+    @Column(name = "project_name")
+    private String projectName;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "service_order_id")

@@ -53,6 +53,7 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
         contigencyPurchase.setRemarksForPurchase(contigencyPurchaseDto.getRemarksForPurchase());
         contigencyPurchase.setAmountToBePaid(contigencyPurchaseDto.getAmountToBePaid());
         contigencyPurchase.setUploadCopyOfInvoiceFileName(uploadCopyOfInvoiceFileName);
+        contigencyPurchase.setProjectName(contigencyPurchaseDto.getProjectName());
         handleFileUpload(contigencyPurchase, contigencyPurchaseDto.getUploadCopyOfInvoice(),
                 contigencyPurchase::setUploadCopyOfInvoice);
         contigencyPurchase.setPredifinedPurchaseStatement(contigencyPurchaseDto.getPredifinedPurchaseStatement());
@@ -87,6 +88,7 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
         existingCP.setRemarksForPurchase(contigencyPurchaseDto.getRemarksForPurchase());
         existingCP.setAmountToBePaid(contigencyPurchaseDto.getAmountToBePaid());
         existingCP.setUploadCopyOfInvoiceFileName(uploadCopyOfInvoiceFileName);
+        existingCP.setProjectName(contigencyPurchaseDto.getProjectName());
         handleFileUpload(existingCP, contigencyPurchaseDto.getUploadCopyOfInvoice(),
                 existingCP::setUploadCopyOfInvoice);
         existingCP.setPredifinedPurchaseStatement(contigencyPurchaseDto.getPredifinedPurchaseStatement());
@@ -160,6 +162,7 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
         contigencyPurchaseResponseDto.setUploadCopyOfInvoice(contigencyPurchase.getUploadCopyOfInvoiceFileName());
         contigencyPurchaseResponseDto.setPredifinedPurchaseStatement(contigencyPurchase.getPredifinedPurchaseStatement());
         contigencyPurchaseResponseDto.setProjectDetail(contigencyPurchase.getProjectDetail());
+        contigencyPurchaseResponseDto.setProjectName(contigencyPurchase.getProjectName());
         contigencyPurchaseResponseDto.setUpdatedBy(contigencyPurchase.getUpdatedBy());
         contigencyPurchaseResponseDto.setCreatedBy(contigencyPurchase.getCreatedBy());
         contigencyPurchaseResponseDto.setUpdatedDate(contigencyPurchase.getUpdatedDate());

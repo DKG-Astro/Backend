@@ -61,6 +61,8 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         serviceOrder.setVendorsAccountNo(serviceOrderRequestDTO.getVendorsAccountNo());
         serviceOrder.setVendorsZRSCCode(serviceOrderRequestDTO.getVendorsZRSCCode());
         serviceOrder.setVendorsAccountName(serviceOrderRequestDTO.getVendorsAccountName());
+        serviceOrder.setTotalValueOfSo(serviceOrderRequestDTO.getTotalValueOfSo());
+        serviceOrder.setProjectName(serviceOrderRequestDTO.getProjectName());
         serviceOrder.setCreatedBy(serviceOrderRequestDTO.getCreatedBy());
         serviceOrder.setUpdatedBy(serviceOrderRequestDTO.getUpdatedBy());
         List<ServiceOrderMaterial> serviceOrderMaterials = serviceOrderRequestDTO.getMaterials().stream()
@@ -106,6 +108,8 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         existingServiceOrder.setVendorsAccountNo(serviceOrderRequestDTO.getVendorsAccountNo());
         existingServiceOrder.setVendorsZRSCCode(serviceOrderRequestDTO.getVendorsZRSCCode());
         existingServiceOrder.setVendorsAccountName(serviceOrderRequestDTO.getVendorsAccountName());
+        existingServiceOrder.setProjectName(serviceOrderRequestDTO.getProjectName());
+        existingServiceOrder.setTotalValueOfSo(serviceOrderRequestDTO.getTotalValueOfSo());
 
         existingServiceOrder.setUpdatedBy(serviceOrderRequestDTO.getUpdatedBy());
         existingServiceOrder.setCreatedBy(serviceOrderRequestDTO.getCreatedBy());
@@ -196,6 +200,8 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         response.setVendorsAccountNo(ServiceOrder.getVendorsAccountNo());
         response.setVendorsZRSCCode(ServiceOrder.getVendorsZRSCCode());
         response.setVendorsAccountName(ServiceOrder.getVendorsAccountName());
+        response.setTotalValueOfSo(ServiceOrder.getTotalValueOfSo());
+        response.setProjectName(ServiceOrder.getProjectName());
         response.setCreatedBy(ServiceOrder.getCreatedBy());
         response.setUpdatedBy(ServiceOrder.getUpdatedBy());
         response.setCreatedDate(ServiceOrder.getCreatedDate());

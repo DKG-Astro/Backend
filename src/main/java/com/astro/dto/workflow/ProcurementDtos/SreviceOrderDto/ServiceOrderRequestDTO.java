@@ -2,6 +2,7 @@ package com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -22,6 +23,8 @@ public class ServiceOrderRequestDTO {
     private String vendorsAccountNo;
     private String vendorsZRSCCode;
     private String vendorsAccountName;
+    private BigDecimal totalValueOfSo;
+    private String projectName;
     private List<ServiceOrderMaterialRequestDTO> materials;
     private String createdBy;
     private String updatedBy;

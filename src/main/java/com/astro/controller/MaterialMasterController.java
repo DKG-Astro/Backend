@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/material-master")
-public class gMaterialMasterController {
+public class MaterialMasterController {
 
     @Autowired
     private MaterialMasterService materialMasterService;
