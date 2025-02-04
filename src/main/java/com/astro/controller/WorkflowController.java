@@ -33,12 +33,12 @@ public class WorkflowController {
     }
 
     @PostMapping("/initiateWorkflow")
-    public ResponseEntity<Object> initiateWorkflow(@RequestParam Integer requestId, @RequestParam String workflowName,@RequestParam Integer createdBy)  {
+    public ResponseEntity<Object> initiateWorkflow(@RequestParam String requestId, @RequestParam String workflowName,@RequestParam Integer createdBy)  {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.initiateWorkflow(requestId, workflowName, createdBy)), HttpStatus.OK);
     }
 
     @GetMapping("/workflowTransitionHistory")
-    public ResponseEntity<Object> workflowTransitionHistory(@RequestParam Integer requestId)  {
+    public ResponseEntity<Object> workflowTransitionHistory(@RequestParam String requestId)  {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.workflowTransitionHistory(requestId)), HttpStatus.OK);
     }
 
@@ -58,8 +58,8 @@ public class WorkflowController {
     }
 
     @GetMapping("/nextTransition")
-    public ResponseEntity<Object> nextTransition(@RequestParam Integer workflowId, @RequestParam String currentRole, @RequestParam(required = false) String tranConditionKey, @RequestParam(required = false) String tranConditionValue)  {
-        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.nextTransition(workflowId, currentRole, tranConditionKey, tranConditionValue)), HttpStatus.OK);
+    public ResponseEntity<Object> nextTransition(@RequestParam Integer workflowId, @RequestParam String workflowName, @RequestParam String currentRole, @RequestParam String requestId)  {
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.nextTransition(workflowId, workflowName, currentRole, requestId)), HttpStatus.OK);
     }
 
     @PostMapping("/performTransitionAction")
@@ -67,6 +67,15 @@ public class WorkflowController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.performTransitionAction(transitionActionReqDto)), HttpStatus.OK);
     }
 
+    @GetMapping("/allPreviousWorkflowRole")
+    public ResponseEntity<Object> allPreviousRoleWorkflowTransition(@RequestParam Integer workflowId, @RequestParam String requestId)  {
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.allPreviousRoleWorkflowTransition(workflowId, requestId)), HttpStatus.OK);
+    }
+
+    @PostMapping("/submitWorkflow")
+    public ResponseEntity<Object> submitWorkflow(@RequestParam Integer workflowTransitionId, @RequestParam Integer actionBy, @RequestParam String remarks)  {
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.submitWorkflow(workflowTransitionId, actionBy, remarks)), HttpStatus.OK);
+    }
 
    /* @Autowired
     private UserService userService;

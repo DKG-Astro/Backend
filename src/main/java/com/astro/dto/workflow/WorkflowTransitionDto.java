@@ -12,7 +12,7 @@ public class WorkflowTransitionDto {
     private Integer workflowId;
     private String workflowName;
     private Integer transitionId;
-    private Integer requestId;
+    private String requestId;
     private Integer createdBy;
     private String createdRole;
     private Integer modifiedBy;
