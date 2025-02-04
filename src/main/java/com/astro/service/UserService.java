@@ -2,6 +2,7 @@ package com.astro.service;
 
 import com.astro.dto.workflow.UserDto;
 import com.astro.dto.workflow.userRequestDto;
+import com.astro.entity.UserMaster;
 
 
 import java.util.List;
@@ -18,7 +19,7 @@ public interface UserService {
     public List<UserDto> getAllUsers();
     public UserDto getUserById(int userId);
 
-
+    public UserMaster getUserByCreatedBy(String createdBy);
     public void deleteUser(int userId);
 
 

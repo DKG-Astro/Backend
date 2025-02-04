@@ -9,11 +9,11 @@ import java.util.List;
 public interface GoodsTransferService {
 
     public GoodsTransferResponseDto createGoodsTransfer(GoodsTransferRequestDto goodsTransferRequestDto);
-    GoodsTransferResponseDto updateGoodsTransfer(Long id, GoodsTransferRequestDto goodsTransferRequestDto);
+    GoodsTransferResponseDto updateGoodsTransfer(String goodsTransferID, GoodsTransferRequestDto goodsTransferRequestDto);
 
 
     List<GoodsTransferResponseDto> getAllGoodsTransfer();
-    GoodsTransferResponseDto getGoodsTransferById(Long id);
-    void deleteGoodsTransfer(Long id);
+    GoodsTransferResponseDto getGoodsTransferById(String goodsTransferID);
+    void deleteGoodsTransfer(String goodsTransferID);
 
 }

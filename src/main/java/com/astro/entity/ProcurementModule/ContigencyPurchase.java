@@ -1,6 +1,6 @@
 package com.astro.entity.ProcurementModule;
 
-import jdk.jfr.Label;
+
 import lombok.Data;
 
 import javax.persistence.*;
@@ -37,10 +37,14 @@ public class ContigencyPurchase {
     @Lob
     @Column(name = "upload_copy_of_invoice")
     private byte[] uploadCopyOfInvoice;
+    @Column(name = "upload_copy_of_invoice_file_name")
+    private String uploadCopyOfInvoiceFileName;
     @Column(name = "predifined_purchase_statement")
     private String predifinedPurchaseStatement;
     @Column(name = "project_detail")
     private String projectDetail;
+    @Column(name = "project_name")
+    private String projectName;
     @Column(name = "created_by")
     private String updatedBy;
     @Column(name = "updated_by")

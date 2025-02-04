@@ -7,6 +7,7 @@ import com.astro.entity.InventoryModule.GoodsReturn;
 import com.astro.entity.InventoryModule.GoodsTransfer;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
+import com.astro.exception.InvalidInputException;
 import com.astro.repository.InventoryModule.GoodsTransferRepository;
 import com.astro.service.GoodsTransferService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,12 @@ public class GoodsTransferServiceImpl implements GoodsTransferService {
     private GoodsTransferRepository goodsTransferRepository;
     @Override
     public GoodsTransferResponseDto createGoodsTransfer(GoodsTransferRequestDto goodsTransferRequestDto) {
+        // Check if the indentorId already exists
+        if (goodsTransferRepository.existsById(goodsTransferRequestDto.getGoodsTransferID())) {
+            ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Goods Transfer ID", "Goods Transfer ID " + goodsTransferRequestDto.getGoodsTransferID() + " already exists.");
+            throw new InvalidInputException(errorDetails);
+        }
+
         GoodsTransfer goodsTransfer = new GoodsTransfer();
 
         goodsTransfer.setGoodsTransferID(goodsTransferRequestDto.getGoodsTransferID());
@@ -41,8 +48,8 @@ public class GoodsTransferServiceImpl implements GoodsTransferService {
 
 
     @Override
-    public GoodsTransferResponseDto updateGoodsTransfer(Long id, GoodsTransferRequestDto goodsTransferRequestDto) {
-        GoodsTransfer existing = goodsTransferRepository.findById(id)
+    public GoodsTransferResponseDto updateGoodsTransfer(String goodsTransferID, GoodsTransferRequestDto goodsTransferRequestDto) {
+        GoodsTransfer existing = goodsTransferRepository.findById(goodsTransferID)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -72,8 +79,8 @@ public class GoodsTransferServiceImpl implements GoodsTransferService {
     }
 
     @Override
-    public GoodsTransferResponseDto getGoodsTransferById(Long id) {
-        GoodsTransfer goodsTransfer= goodsTransferRepository.findById(id)
+    public GoodsTransferResponseDto getGoodsTransferById(String goodsTransferID) {
+        GoodsTransfer goodsTransfer= goodsTransferRepository.findById(goodsTransferID)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -85,8 +92,8 @@ public class GoodsTransferServiceImpl implements GoodsTransferService {
     }
 
     @Override
-    public void deleteGoodsTransfer(Long id) {
-       GoodsTransfer goodsTransfer=goodsTransferRepository.findById(id)
+    public void deleteGoodsTransfer(String goodsTransferID) {
+       GoodsTransfer goodsTransfer=goodsTransferRepository.findById(goodsTransferID)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -113,7 +120,6 @@ public class GoodsTransferServiceImpl implements GoodsTransferService {
 
     private GoodsTransferResponseDto mapToResponseDTO(GoodsTransfer goodsTransfer) {
         GoodsTransferResponseDto goodsTransferResponseDto = new GoodsTransferResponseDto();
-        goodsTransferResponseDto.setId(goodsTransfer.getId());
         goodsTransferResponseDto.setGoodsTransferID(goodsTransfer.getGoodsTransferID());
         goodsTransferResponseDto.setConsignorDetails(goodsTransfer.getConsignorDetails());
         goodsTransferResponseDto.setConsigneeDetails(goodsTransfer.getConsigneeDetails());

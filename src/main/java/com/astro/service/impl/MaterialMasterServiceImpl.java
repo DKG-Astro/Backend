@@ -4,14 +4,20 @@ import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.MaterialMasterRequestDto;
 import com.astro.dto.workflow.MaterialMasterResponseDto;
 import com.astro.entity.MaterialMaster;
+import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
+import com.astro.exception.InvalidInputException;
 import com.astro.repository.MaterialMasterRepository;
 import com.astro.service.MaterialMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,7 +26,7 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
     @Autowired
     private MaterialMasterRepository materialMasterRepository;
     @Override
-    public MaterialMasterResponseDto createMaterialMaster(MaterialMasterRequestDto materialMasterRequestDto) {
+    public MaterialMasterResponseDto createMaterialMaster(MaterialMasterRequestDto materialMasterRequestDto,String uploadImageFileName) {
         MaterialMaster materialMaster= new MaterialMaster();
         materialMaster.setMaterialCode(materialMasterRequestDto.getMaterialCode());
         materialMaster.setCategory(materialMasterRequestDto.getCategory());
@@ -35,8 +41,12 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
         materialMaster.setReOrderLevel(materialMasterRequestDto.getReOrderLevel());
         materialMaster.setConditionOfGoods(materialMasterRequestDto.getConditionOfGoods());
         materialMaster.setShelfLife(materialMasterRequestDto.getShelfLife());
-        materialMaster.setUploadImage(materialMasterRequestDto.getUploadImage());
+        materialMaster.setUploadImageName(uploadImageFileName);
         materialMaster.setIndigenousOrImported(materialMasterRequestDto.getIndigenousOrImported());
+        materialMaster.setCreatedBy(materialMasterRequestDto.getCreatedBy());
+        materialMaster.setUpdatedBy(materialMasterRequestDto.getUpdatedBy());
+        handleFileUpload(materialMaster, materialMasterRequestDto.getUploadImage(),
+                materialMaster::setUploadImage);
         materialMasterRepository.save(materialMaster);
 
         return mapToResponseDTO(materialMaster);
@@ -44,7 +54,7 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
 
 
     @Override
-    public MaterialMasterResponseDto updateMaterialMaster(String materialCode, MaterialMasterRequestDto materialMasterRequestDto) {
+    public MaterialMasterResponseDto updateMaterialMaster(String materialCode, MaterialMasterRequestDto materialMasterRequestDto, String uploadImageFileName) {
         MaterialMaster materialMaster = materialMasterRepository.findById(materialCode)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
@@ -54,7 +64,7 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
                                 "Materail master not found for the provided Material master ID.")
                 ));
 
-        materialMaster.setMaterialCode(materialMasterRequestDto.getMaterialCode());
+      //  materialMaster.setMaterialCode(materialMasterRequestDto.getMaterialCode());
         materialMaster.setCategory(materialMasterRequestDto.getCategory());
         materialMaster.setSubCategory(materialMasterRequestDto.getSubCategory());
         materialMaster.setDescription(materialMasterRequestDto.getDescription());
@@ -67,8 +77,12 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
         materialMaster.setReOrderLevel(materialMasterRequestDto.getReOrderLevel());
         materialMaster.setConditionOfGoods(materialMasterRequestDto.getConditionOfGoods());
         materialMaster.setShelfLife(materialMasterRequestDto.getShelfLife());
-        materialMaster.setUploadImage(materialMasterRequestDto.getUploadImage());
+        materialMaster.setUploadImageName(uploadImageFileName);
         materialMaster.setIndigenousOrImported(materialMasterRequestDto.getIndigenousOrImported());
+        materialMaster.setUpdatedBy(materialMasterRequestDto.getUpdatedBy());
+        materialMaster.setCreatedBy(materialMasterRequestDto.getCreatedBy());
+        handleFileUpload(materialMaster, materialMasterRequestDto.getUploadImage(),
+                materialMaster::setUploadImage);
         materialMasterRepository.save(materialMaster);
 
         return mapToResponseDTO(materialMaster);
@@ -121,6 +135,7 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
             );
         }
 
+
     }
     private MaterialMasterResponseDto mapToResponseDTO(MaterialMaster materialMaster) {
 
@@ -138,10 +153,29 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
         materialMasterResponseDto.setReOrderLevel(materialMaster.getReOrderLevel());
         materialMasterResponseDto.setConditionOfGoods(materialMaster.getConditionOfGoods());
         materialMasterResponseDto.setShelfLife(materialMaster.getShelfLife());
-        materialMasterResponseDto.setUploadImage(materialMaster.getUploadImage());
+        materialMasterResponseDto.setUploadImage(materialMaster.getUploadImageName());
         materialMasterResponseDto.setIndigenousOrImported(materialMaster.getIndigenousOrImported());
+        materialMasterResponseDto.setCreatedBy(materialMaster.getCreatedBy());
+        materialMasterResponseDto.setUpdatedBy(materialMaster.getUpdatedBy());
+        materialMasterResponseDto.setCreatedDate(materialMaster.getCreatedDate());
+        materialMasterResponseDto.setUpdatedDate(materialMaster.getUpdatedDate());
+
         return materialMasterResponseDto;
 
+    }
+    public void handleFileUpload(MaterialMaster materialMaster, MultipartFile file, Consumer<byte[]> fileSetter) {
+        if (file != null) {
+            try (InputStream inputStream = file.getInputStream()) {
+                byte[] fileBytes = inputStream.readAllBytes();
+                fileSetter.accept(fileBytes); // Set file content (byte[])
+
+            } catch (IOException e) {
+                throw new InvalidInputException(new ErrorDetails(500, 3, "File Processing Error",
+                        "Error while processing the uploaded file. Please try again."));
+            }
+        } else {
+            fileSetter.accept(null);  // Handle gracefully if no file is uploaded
+        }
     }
 
 }

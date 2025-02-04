@@ -7,6 +7,7 @@ import com.astro.entity.InventoryModule.GoodsInspection;
 import com.astro.entity.InventoryModule.GoodsReturn;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
+import com.astro.exception.InvalidInputException;
 import com.astro.repository.InventoryModule.GoodsReturnRepository;
 import com.astro.service.GoodsReturnService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,14 @@ public class GoodsResturnServiceImpl implements GoodsReturnService {
 
     @Override
     public GoodsReturnResponseDto createGoodsReturn(GoodsReturnRequestDto goodsReturnDto) {
+        // Check if the indentorId already exists
+        if (repository.existsById(goodsReturnDto.getGoodsReturnId())) {
+            ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Goods Return ID", "Goods Return ID " + goodsReturnDto.getGoodsReturnId() + " already exists.");
+            throw new InvalidInputException(errorDetails);
+        }
+
         GoodsReturn goodsReturn = new GoodsReturn();
+        goodsReturn.setGoodsReturnId(goodsReturnDto.getGoodsReturnId());
         goodsReturn.setGoodsReturnNoteNo(goodsReturnDto.getGoodsReturnNoteNo());
         goodsReturn.setRejectedQuantity(goodsReturnDto.getRejectedQuantity());
         goodsReturn.setReturnQuantity(goodsReturnDto.getReturnQuantity());
@@ -38,8 +46,8 @@ public class GoodsResturnServiceImpl implements GoodsReturnService {
 
 
     @Override
-    public GoodsReturnResponseDto updateGoodsReturn(Long id, GoodsReturnRequestDto goodsReturnDto) {
-        GoodsReturn existing = repository.findById(id)
+    public GoodsReturnResponseDto updateGoodsReturn(String goodsReturnId, GoodsReturnRequestDto goodsReturnDto) {
+        GoodsReturn existing = repository.findById(goodsReturnId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -66,8 +74,8 @@ public class GoodsResturnServiceImpl implements GoodsReturnService {
     }
 
     @Override
-    public GoodsReturnResponseDto getGoodsReturnById(Long id) {
-     GoodsReturn goodsReturn= repository.findById(id)
+    public GoodsReturnResponseDto getGoodsReturnById(String goodsReturnId) {
+     GoodsReturn goodsReturn= repository.findById(goodsReturnId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -78,9 +86,9 @@ public class GoodsResturnServiceImpl implements GoodsReturnService {
         return mapToResponseDTO(goodsReturn);
     }
     @Override
-    public void deleteGoodsReturn(Long id) {
+    public void deleteGoodsReturn(String goodsReturnId) {
 
-     GoodsReturn  goodsReturn=repository.findById(id)
+     GoodsReturn  goodsReturn=repository.findById(goodsReturnId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -106,14 +114,14 @@ public class GoodsResturnServiceImpl implements GoodsReturnService {
 
     private GoodsReturnResponseDto mapToResponseDTO(GoodsReturn goodsReturn) {
         GoodsReturnResponseDto goodsReturnResponseDto = new GoodsReturnResponseDto();
-        goodsReturnResponseDto.setId(goodsReturn.getId());
-        goodsReturnResponseDto .setGoodsReturnNoteNo(goodsReturn.getGoodsReturnNoteNo());
-        goodsReturnResponseDto .setRejectedQuantity(goodsReturn.getRejectedQuantity());
-        goodsReturnResponseDto .setReturnQuantity(goodsReturn.getReturnQuantity());
-        goodsReturnResponseDto .setTypeOfReturn(goodsReturn.getTypeOfReturn());
-        goodsReturnResponseDto .setReasonOfReturn(goodsReturn.getReasonOfReturn());
-        goodsReturnResponseDto .setUpdatedBy(goodsReturn.getUpdatedBy());
-        goodsReturnResponseDto .setCreatedBy(goodsReturn.getCreatedBy());
+        goodsReturnResponseDto.setGoodsReturnId(goodsReturn.getGoodsReturnId());
+        goodsReturnResponseDto.setGoodsReturnNoteNo(goodsReturn.getGoodsReturnNoteNo());
+        goodsReturnResponseDto.setRejectedQuantity(goodsReturn.getRejectedQuantity());
+        goodsReturnResponseDto.setReturnQuantity(goodsReturn.getReturnQuantity());
+        goodsReturnResponseDto.setTypeOfReturn(goodsReturn.getTypeOfReturn());
+        goodsReturnResponseDto.setReasonOfReturn(goodsReturn.getReasonOfReturn());
+        goodsReturnResponseDto.setUpdatedBy(goodsReturn.getUpdatedBy());
+        goodsReturnResponseDto.setCreatedBy(goodsReturn.getCreatedBy());
         goodsReturnResponseDto.setCreatedDate(goodsReturn.getCreatedDate());
         goodsReturnResponseDto.setUpdatedDate(goodsReturn.getUpdatedDate());
         return goodsReturnResponseDto;

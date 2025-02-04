@@ -31,22 +31,22 @@ public class GoodsTransferController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(goodsTransfer), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getGoodsTransferById(@PathVariable Long id) {
-        GoodsTransferResponseDto goodsTransfer =goodsTransferService.getGoodsTransferById(id);
+    @GetMapping("/{goodsTransferID}")
+    public ResponseEntity<Object> getGoodsTransferById(@PathVariable String goodsTransferID) {
+        GoodsTransferResponseDto goodsTransfer =goodsTransferService.getGoodsTransferById(goodsTransferID);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(goodsTransfer), HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{goodsTransferID}")
     public ResponseEntity<Object> updateGoodsTransfer(
-            @PathVariable Long id, @RequestBody GoodsTransferRequestDto goodsTransferRequestDto) {
-        GoodsTransferResponseDto goodsTransfer =goodsTransferService.updateGoodsTransfer(id, goodsTransferRequestDto);
+            @PathVariable String goodsTransferID, @RequestBody GoodsTransferRequestDto goodsTransferRequestDto) {
+        GoodsTransferResponseDto goodsTransfer =goodsTransferService.updateGoodsTransfer(goodsTransferID, goodsTransferRequestDto);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(goodsTransfer), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteGoodsTransfer(@PathVariable Long id) {
-        goodsTransferService.deleteGoodsTransfer(id);
+    @DeleteMapping("/{goodsTransferID}")
+    public ResponseEntity<String> deleteGoodsTransfer(@PathVariable String goodsTransferID) {
+        goodsTransferService.deleteGoodsTransfer(goodsTransferID);
         return ResponseEntity.ok("Goods transfer deleted successfully!");
     }
 

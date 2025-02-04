@@ -69,6 +69,8 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setVendorAccountNumber(purchaseOrderRequestDTO.getVendorAccountNumber());
         purchaseOrder.setVendorsZfscCode(purchaseOrderRequestDTO.getVendorsZfscCode());
         purchaseOrder.setVendorAccountName(purchaseOrderRequestDTO.getVendorAccountName());
+        purchaseOrder.setTotalValueOfPo(purchaseOrderRequestDTO.getTotalValueOfPo());
+        purchaseOrder.setProjectName(purchaseOrderRequestDTO.getProjectName());
         purchaseOrder.setCreatedBy(purchaseOrderRequestDTO.getCreatedBy());
         purchaseOrder.setUpdatedBy(purchaseOrderRequestDTO.getUpdatedBy());
         List<PurchaseOrderAttributes> purchaseOrderAttributes = purchaseOrderRequestDTO.getPurchaseOrderAttributes().stream()
@@ -121,6 +123,8 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setVendorAccountNumber(purchaseOrderRequestDTO.getVendorAccountNumber());
         purchaseOrder.setVendorsZfscCode(purchaseOrderRequestDTO.getVendorsZfscCode());
         purchaseOrder.setVendorAccountName(purchaseOrderRequestDTO.getVendorAccountName());
+        purchaseOrder.setProjectName(purchaseOrderRequestDTO.getProjectName());
+        purchaseOrder.setTotalValueOfPo(purchaseOrderRequestDTO.getTotalValueOfPo());
         purchaseOrder.setUpdatedBy(purchaseOrderRequestDTO.getUpdatedBy());
         purchaseOrder.setCreatedBy(purchaseOrderRequestDTO.getCreatedBy());
         List<PurchaseOrderAttributes> purchaseOrderAttributes = purchaseOrderRequestDTO.getPurchaseOrderAttributes().stream()
@@ -213,6 +217,8 @@ public List<PurchaseOrderResponseDTO> getAllPurchaseOrders() {
         responseDTO.setVendorAccountNumber(purchaseOrder.getVendorAccountNumber());
         responseDTO.setVendorsZfscCode(purchaseOrder.getVendorsZfscCode());
         responseDTO.setVendorAccountName(purchaseOrder.getVendorAccountName());
+        responseDTO.setProjectName(purchaseOrder.getProjectName());
+        responseDTO.setTotalValueOfPo(purchaseOrder.getTotalValueOfPo());
         responseDTO.setCreatedBy(purchaseOrder.getCreatedBy());
         responseDTO.setUpdatedBy(purchaseOrder.getUpdatedBy());
         responseDTO.setCreatedDate(purchaseOrder.getCreatedDate());

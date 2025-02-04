@@ -2,6 +2,7 @@ package com.astro.dto.workflow.ProcurementDtos.purchaseOrder;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,6 +27,8 @@ public class PurchaseOrderResponseDTO {
     private String vendorAccountNumber;
     private String vendorsZfscCode;
     private String vendorAccountName;
+    private BigDecimal totalValueOfPo;
+    private String projectName;
     private List<PurchaseOrderAttributesResponseDTO> purchaseOrderAttributes;
     private String createdBy;
     private String updatedBy;

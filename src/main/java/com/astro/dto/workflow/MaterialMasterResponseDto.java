@@ -3,6 +3,7 @@ package com.astro.dto.workflow;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 public class MaterialMasterResponseDto {
@@ -20,6 +21,10 @@ public class MaterialMasterResponseDto {
     private BigDecimal reOrderLevel;
     private String conditionOfGoods;
     private String shelfLife;
-    private byte[] uploadImage;
+    private String uploadImage;
     private Boolean indigenousOrImported;
+    private String createdBy;
+    private String updatedBy;
+    private LocalDateTime createdDate;
+    private LocalDateTime updatedDate;
 }

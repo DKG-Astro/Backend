@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class GoodsReturnRequestDto {
 
+    private String goodsReturnId;
     private String goodsReturnNoteNo;
     private Integer rejectedQuantity;
     private Integer returnQuantity;

@@ -41,9 +41,9 @@ public class GRIController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(created), HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateGoodsReceiptInspection(@PathVariable Long id, @RequestBody GoodsReceiptInspectionRequestDto dto) {
-        GoodsReceiptInspectionResponseDto updated = service.updateGoodsReceiptInspection(id, dto);
+    @PutMapping("/{receiptInspectionNo}")
+    public ResponseEntity<Object> updateGoodsReceiptInspection(@PathVariable String receiptInspectionNo, @RequestBody GoodsReceiptInspectionRequestDto dto) {
+        GoodsReceiptInspectionResponseDto updated = service.updateGoodsReceiptInspection(receiptInspectionNo, dto);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(updated), HttpStatus.OK);
     }
 
@@ -53,15 +53,15 @@ public class GRIController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(gri), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getGoodsReceiptInspectionById(@PathVariable Long id) {
-        GoodsReceiptInspectionResponseDto gri = service.getGoodsReceiptInspectionById(id);
+    @GetMapping("/{receiptInspectionNo}")
+    public ResponseEntity<Object> getGoodsReceiptInspectionById(@PathVariable String receiptInspectionNo) {
+        GoodsReceiptInspectionResponseDto gri = service.getGoodsReceiptInspectionById(receiptInspectionNo);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(gri), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteGoodsReceiptInspection(@PathVariable Long id) {
-        service.deleteGoodsReceiptInspection(id);
+    @DeleteMapping("/{receiptInspectionNo}")
+    public ResponseEntity<String> deleteGoodsReceiptInspection(@PathVariable String receiptInspectionNo) {
+        service.deleteGoodsReceiptInspection(receiptInspectionNo);
         return ResponseEntity.ok("GoodsReceiptInspection deleted successfully!");
     }
 
@@ -73,13 +73,13 @@ public class GRIController {
     }
 
     @GetMapping("/gprn/{gprnId}")
-    public ResponseEntity<Object> fetchGprDetails(@PathVariable Long gprnId) {
+    public ResponseEntity<Object> fetchGprDetails(@PathVariable String gprnId) {
         GprnResponseDto gprnDetails = gprnService.getGprnById(gprnId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(gprnDetails), HttpStatus.OK);
     }
 
     @GetMapping("/goodsInspection/{goodsInspectionNo}")
-    public ResponseEntity<Object> fetchGoodsInspectionDetails(@PathVariable Long goodsInspectionNo) {
+    public ResponseEntity<Object> fetchGoodsInspectionDetails(@PathVariable String goodsInspectionNo) {
         GoodsInspectionResponseDto inspection = goodsInspectionService.getGoodsInspectionById(goodsInspectionNo);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(inspection), HttpStatus.OK);
     }

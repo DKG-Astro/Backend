@@ -162,6 +162,9 @@ public class UserServiceImpl implements UserService {
         userDto.setCreatedBy(userMaster.getCreatedBy());
         return userDto;
     }
+    public UserMaster getUserByCreatedBy(String createdBy) {
+        return userMasterRepository.findByCreatedBy(createdBy).orElse(null);
+    }
 
     /*private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 

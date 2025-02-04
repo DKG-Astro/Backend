@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Data
 public class GoodsReceiptInspectionResponseDto {
 
-    private Long id;
 
     private String receiptInspectionNo;
 

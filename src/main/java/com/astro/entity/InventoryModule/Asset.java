@@ -9,9 +9,10 @@ import java.time.LocalDateTime;
 @Data
 
 public class Asset {
+    //@Id
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+   // private Long id;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private String assetCode;
 
 

@@ -12,9 +12,8 @@ import java.time.LocalDateTime;
 public class GoodsInspection {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "goods_inspection_no")
-    private Long goodsInspectionNo;
+    private String goodsInspectionNo;
 
     @Column(name = "gpr_id")
     private Long gprId; // Foreign key to Good Provisional Receipt entity

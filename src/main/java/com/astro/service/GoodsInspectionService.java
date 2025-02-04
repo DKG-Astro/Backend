@@ -10,12 +10,12 @@ public interface GoodsInspectionService {
 
     List<GoodsInspectionResponseDto> getAllGoodsInspections();
 
-    GoodsInspectionResponseDto getGoodsInspectionById(Long goodsInspectionNo);
+    GoodsInspectionResponseDto getGoodsInspectionById(String goodsInspectionNo);
 
     GoodsInspectionResponseDto createGoodsInspection(GoodsInspectionRequestDto goodsInspectionDTO);
 
-    GoodsInspectionResponseDto updateGoodsInspection(Long goodsInspectionNo, GoodsInspectionRequestDto goodsInspectionDTO);
+    GoodsInspectionResponseDto updateGoodsInspection(String goodsInspectionNo, GoodsInspectionRequestDto goodsInspectionDTO);
 
-    void deleteGoodsInspection(Long goodsInspectionNo);
+    void deleteGoodsInspection(String goodsInspectionNo);
 
 }

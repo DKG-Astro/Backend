@@ -13,9 +13,8 @@ import java.util.List;
 public class Gprn {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "gprn_no")
-    private Long gprnNo;
+    private String gprnNo;
 
     @Column(nullable = false)
     private String poNo;
@@ -63,13 +62,14 @@ public class Gprn {
     @Lob
     private byte[] provisionalReceiptCertificate;
 
-
+   // @Column(name = "")
+    private String provisionalReceiptCertificateFileName;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "gprn_id")  // Updated to reflect the new column name in the GprnMaterials table
     private List<GprnMaterials> gprnMaterials;
 
-    @Column(nullable = false)
+    @Column(name = "received_by")
     private String receivedBy;
     @Column(name = "created_by")
     private String createdBy;

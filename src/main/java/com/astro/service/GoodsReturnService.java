@@ -10,9 +10,9 @@ public interface GoodsReturnService {
 
 
     List<GoodsReturnResponseDto> getAllGoodsReturns();
-    GoodsReturnResponseDto getGoodsReturnById(Long id);
+    GoodsReturnResponseDto getGoodsReturnById(String goodsReturnId);
     GoodsReturnResponseDto createGoodsReturn(GoodsReturnRequestDto goodsReturnDto);
-    GoodsReturnResponseDto updateGoodsReturn(Long id, GoodsReturnRequestDto goodsReturnDto);
-    void deleteGoodsReturn(Long id);
+    GoodsReturnResponseDto updateGoodsReturn(String goodsReturnId, GoodsReturnRequestDto goodsReturnDto);
+    void deleteGoodsReturn(String goodsReturnId);
 
 }

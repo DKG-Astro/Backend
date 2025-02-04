@@ -89,56 +89,56 @@ CREATE TABLE `astrodatabase`.`state_master` (
 
 
 --Inventory Modules
-CREATE TABLE gprn (
-    gprn_no BIGINT AUTO_INCREMENT PRIMARY KEY,
-    po_no VARCHAR(255) NOT NULL,
-    date DATE NOT NULL,
-    delivery_challan_no VARCHAR(255) NOT NULL,
-    delivery_challan_date DATE NOT NULL,
-    vendor_id VARCHAR(255) NOT NULL,
-    vendor_name VARCHAR(255) NOT NULL,
+CREATE TABLE GPRN (
+    gprn_no VARCHAR(255) PRIMARY KEY,
+    po_no VARCHAR(255),
+    date DATE,
+    delivery_challan_no VARCHAR(255),
+    delivery_challan_date DATE ,
+    vendor_id VARCHAR(255),
+    vendor_name VARCHAR(255),
     vendor_email VARCHAR(255),
     vendor_contact_no BIGINT,
-    field_station VARCHAR(255) NOT NULL,
-    indentor_name VARCHAR(255) NOT NULL,
-    expected_supply_date DATE NOT NULL,
-    consignee_detail VARCHAR(255) NOT NULL,
+    field_station VARCHAR(255),
+    indentor_name VARCHAR(255),
+    expected_supply_date DATE,
+    consignee_detail VARCHAR(255),
     warranty_years INT,
     project VARCHAR(255),
     received_qty VARCHAR(255),
     pending_qty VARCHAR(255),
     accepted_qty VARCHAR(255),
-    provisional_receipt_certificate LONGBLOB,
-    received_by VARCHAR(255) NOT NULL,
+    provisional_receipt_certificate BLOB,
+    received_by VARCHAR(255),
     created_by VARCHAR(255),
     updated_by VARCHAR(255),
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 CREATE TABLE gprn_materials (
-    material_code BIGINT AUTO_INCREMENT PRIMARY KEY,
+    material_code VARCHAR(255) PRIMARY KEY,
     description VARCHAR(255),
     uom VARCHAR(50),
     ordered_quantity INT,
     quantity_delivered INT,
     received_quantity INT,
     unit_price DOUBLE,
-    net_price DECIMAL(19, 4),
+    net_price DECIMAL(18, 2),
     make_no VARCHAR(255),
     model_no VARCHAR(255),
     serial_no VARCHAR(255),
     warranty VARCHAR(255),
-    note TEXT,
+    note VARCHAR(255),
     photograph_path VARCHAR(255),
-    gprn_id BIGINT,
-    FOREIGN KEY (gprn_id) REFERENCES gprn(gprn_no) ON DELETE CASCADE
+    gprn_id VARCHAR(255),
+    FOREIGN KEY (gprn_id) REFERENCES GPRN(gprn_no)
 );
 
 
 
 CREATE TABLE goods_inspection (
     goods_inspection_no BigInt AUTO_INCREMENT PRIMARY KEY,
-	gpr_id BIGINT, -- Foreign key to Good Provisional Receipt entity
+	receipt_inspection_no VARCHAR(255), -- Foreign key to Good Provisional Receipt entity
     installation_date varchar(20),
     commissioning_date varchar(20),
     upload_installation_report text, -- For storing PDF files
@@ -158,21 +158,19 @@ CREATE TABLE goods_inspection (
 
 
 CREATE TABLE goods_return (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    goods_return_note_no VARCHAR(255) NOT NULL,
-    rejected_quantity INT NOT NULL,
-    return_quantity INT NOT NULL,
-    type_of_return VARCHAR(100) NOT NULL,
-    reason_of_return TEXT NOT NULL,
+    goods_return_id VARCHAR(255) PRIMARY KEY,
+    goods_return_note_no VARCHAR(255) ,
+    rejected_quantity INT ,
+    return_quantity INT,
+    type_of_return VARCHAR(100) ,
+    reason_of_return TEXT ,
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     created_by varchar(200),
     updated_by varchar(200),
     updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
 CREATE TABLE goods_receipt_inspection (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    receipt_inspection_no VARCHAR(255),
+    receipt_inspection_no VARCHAR(255)  PRIMARY KEY,
     installation_date DATE,
     commissioning_date DATE,
     asset_code VARCHAR(255),
@@ -188,8 +186,7 @@ CREATE TABLE goods_receipt_inspection (
     updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 CREATE TABLE asset (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    asset_code VARCHAR(255) ,
+    asset_code VARCHAR(255) PRIMARY KEY,
     material_code VARCHAR(255),
     description TEXT ,
     uom VARCHAR(50) ,
@@ -262,7 +259,7 @@ CREATE TABLE indent_creation (
     indentor_mobile_no VARCHAR(20),
     indentor_email_address VARCHAR(255),
     consignes_location VARCHAR(255),
-    uploading_prior_approvals VARCHAR(255),
+    uploading_prior_approvals BLOB,
     project_name VARCHAR(255),
     upload_tender_documents BLOB,
     is_pre_bit_meeting_required BOOLEAN,
@@ -405,6 +402,30 @@ CREATE TABLE work_order_material (
     work_order_id VARCHAR(255),
     FOREIGN KEY (work_order_id) REFERENCES work_order(wo_id) ON DELETE CASCADE
 );
+--Masters Tables
+CREATE TABLE material_master (
+    material_code VARCHAR(50) PRIMARY KEY,
+    category VARCHAR(100),
+    sub_category VARCHAR(100),
+    description TEXT,
+    uom VARCHAR(50),
+    mode_of_procurement VARCHAR(100),
+    end_of_life VARCHAR(50),
+    depreciation_rate DECIMAL(10, 2),
+    stock_levels_min DECIMAL(10, 2),
+    stock_levels_max DECIMAL(10, 2),
+    re_order_level DECIMAL(10, 2),
+    condition_of_goods VARCHAR(100),
+    shelf_life VARCHAR(50),
+    upload_image LONGBLOB,
+    indigenous_or_imported BOOLEAN,
+    updated_by varchar(200),
+    created_by varchar(200),
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
 CREATE TABLE project_master (
     project_code VARCHAR(255) PRIMARY KEY,
     project_name_description VARCHAR(255),
@@ -454,6 +475,47 @@ CREATE TABLE location_master (
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+CREATE TABLE vendor_master (
+    vendor_id VARCHAR(10) PRIMARY KEY,
+    vendor_type VARCHAR(50),
+    vendor_name VARCHAR(100),
+    contact_no VARCHAR(20),
+    email_address VARCHAR(100),
+    registered_platform VARCHAR(10),
+    pfms_vendor_code VARCHAR(20),
+    primary_business VARCHAR(50),
+    address TEXT,
+    landline VARCHAR(20),
+    mobile_no VARCHAR(20),
+    fax VARCHAR(20),
+    pan_no VARCHAR(20),
+    gst_no VARCHAR(20),
+    bank_name VARCHAR(50),
+    account_no VARCHAR(20),
+    ifsc_code VARCHAR(15),
+    purchase_history TEXT,
+    status VARCHAR(10),
+    updated_by varchar(200),
+    created_by varchar(200),
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE employee_department_master (
+    employee_id varchar(100) PRIMARY KEY,
+    employee_name VARCHAR(100),
+    department_name VARCHAR(100),
+    designation VARCHAR(50),
+    contact_details VARCHAR(100),
+    updated_by varchar(200),
+    created_by varchar(200),
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
+
+
 
 
 

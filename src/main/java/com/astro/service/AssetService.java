@@ -9,12 +9,12 @@ import java.util.List;
 public interface AssetService {
 
     public AssetResponseDto createAsset(AssetRequestDTO assetDTO);
-    public AssetResponseDto updateAsset(Long id, AssetRequestDTO assetDTO);
+    public AssetResponseDto updateAsset(String assetCode, AssetRequestDTO assetDTO);
     public List<AssetResponseDto> getAllAssets();
 
-    public AssetResponseDto getAssetById(Long id);
+    public AssetResponseDto getAssetById(String assetCode);
 
 
-    public void deleteAsset(Long id);
+    public void deleteAsset(String assetCode);
 
 }

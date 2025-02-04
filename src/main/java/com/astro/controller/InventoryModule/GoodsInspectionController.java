@@ -41,7 +41,7 @@ public class GoodsInspectionController {
 
 
     @GetMapping("/{goodsInspectionNo}")
-    public ResponseEntity<Object> getGoodsInspectionById(@PathVariable Long goodsInspectionNo) {
+    public ResponseEntity<Object> getGoodsInspectionById(@PathVariable String goodsInspectionNo) {
         GoodsInspectionResponseDto inspection = goodsInspectionService.getGoodsInspectionById(goodsInspectionNo);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(inspection), HttpStatus.OK);
     }
@@ -49,20 +49,20 @@ public class GoodsInspectionController {
 
     // Update an existing Goods Inspection by ID
     @PutMapping("/{goodsInspectionNo}")
-    public ResponseEntity<Object> updateGoodsInspection(@PathVariable Long goodsInspectionNo, @RequestBody GoodsInspectionRequestDto goodsInspectionDto) {
+    public ResponseEntity<Object> updateGoodsInspection(@PathVariable String goodsInspectionNo, @RequestBody GoodsInspectionRequestDto goodsInspectionDto) {
         GoodsInspectionResponseDto updatedInspection = goodsInspectionService.updateGoodsInspection(goodsInspectionNo, goodsInspectionDto);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(updatedInspection), HttpStatus.OK);
     }
 
     // Delete a Goods Inspection by ID
     @DeleteMapping("/{goodsInspectionNo}")
-    public ResponseEntity<String> deleteGoodsInspection(@PathVariable Long goodsInspectionNo) {
+    public ResponseEntity<String> deleteGoodsInspection(@PathVariable String goodsInspectionNo) {
         goodsInspectionService.deleteGoodsInspection(goodsInspectionNo);
         return ResponseEntity.ok("GoodsInspection deleted successfully."+" " +goodsInspectionNo);
     }
     //fetch all details from the gprn
     @GetMapping("/gprn/{gprnId}")
-    public ResponseEntity<Object> fetchGprDetails(@PathVariable Long gprnId) {
+    public ResponseEntity<Object> fetchGprDetails(@PathVariable String gprnId) {
         GprnResponseDto gprnDetails = gprnService.getGprnById(gprnId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(gprnDetails), HttpStatus.OK);
     }

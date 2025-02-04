@@ -15,8 +15,8 @@ public class IndentCreation {
 
 
         @Id
-        @Column(name = "indentor_id", nullable = false, unique = true)
-        private String indentorId;
+        @Column(name = "indent_id", nullable = false, unique = true)
+        private String indentId;
 
         @Column(name = "indentor_name")
         private String indentorName;
@@ -30,9 +30,9 @@ public class IndentCreation {
 
         @Column(name = "consignes_location")
         private String consignesLocation;
-
+        @Lob
         @Column(name = "uploading_prior_approvals")
-        private String uploadingPriorApprovals;
+        private byte[] uploadingPriorApprovals;
 
         @Column(name = "project_name")
         private String projectName;
@@ -70,7 +70,14 @@ public class IndentCreation {
         @Column(name = "upload_pac_or_brand_pac")
         private byte[] uploadPACOrBrandPAC;
 
-
+        @Column(name = "uploading_prior_approvals_file_name")
+        private String uploadingPriorApprovalsFileName;
+        @Column(name = "upload_tender_documents_file_name")
+        private String uploadTenderDocumentsFileName;
+        @Column(name = "upload_goi_or_rfp_file_name")
+        private String uploadGOIOrRFPFileName;
+        @Column(name = "upload_pac_or_brand_pac_file_name")
+        private String uploadPACOrBrandPACFileName;
 
         @OneToMany(mappedBy = "indentCreation", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<MaterialDetails> materialDetails;

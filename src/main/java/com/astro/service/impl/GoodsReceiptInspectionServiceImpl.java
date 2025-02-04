@@ -8,6 +8,7 @@ import com.astro.entity.InventoryModule.GoodsReceiptInspection;
 import com.astro.entity.InventoryModule.GoodsReturn;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
+import com.astro.exception.InvalidInputException;
 import com.astro.repository.InventoryModule.GoodsReceiptInspectionRepository;
 import com.astro.service.GoodsReceiptInspectionService;
 import com.astro.util.CommonUtils;
@@ -26,7 +27,15 @@ public class GoodsReceiptInspectionServiceImpl implements GoodsReceiptInspection
 
     @Override
     public GoodsReceiptInspectionResponseDto createGoodsReceiptInspection(GoodsReceiptInspectionRequestDto dto) {
+
+        // Check if the indentorId already exists
+        if (GRIrepository.existsById(dto.getReceiptInspectionNo())) {
+            ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate GRI ID", "GRI ID " + dto.getReceiptInspectionNo() + " already exists.");
+            throw new InvalidInputException(errorDetails);
+        }
+
         GoodsReceiptInspection entity = new GoodsReceiptInspection();
+
         entity.setReceiptInspectionNo(dto.getReceiptInspectionNo());
         String InstallationDate = dto.getInstallationDate();
         entity.setInstallationDate(CommonUtils.convertStringToDateObject(InstallationDate));
@@ -48,8 +57,8 @@ public class GoodsReceiptInspectionServiceImpl implements GoodsReceiptInspection
 
 
     @Override
-    public GoodsReceiptInspectionResponseDto updateGoodsReceiptInspection(Long id, GoodsReceiptInspectionRequestDto dto) {
-        GoodsReceiptInspection entity = GRIrepository.findById(id)
+    public GoodsReceiptInspectionResponseDto updateGoodsReceiptInspection(String receiptInspectionNo, GoodsReceiptInspectionRequestDto dto) {
+        GoodsReceiptInspection entity = GRIrepository.findById(receiptInspectionNo)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -57,6 +66,7 @@ public class GoodsReceiptInspectionServiceImpl implements GoodsReceiptInspection
                                 AppConstant.ERROR_TYPE_VALIDATION,
                                 "Goods Receipt not found for the provided asset ID.")
                 ));
+        //entity.setReceiptInspectionNo(dto.getReceiptInspectionNo());
         entity.setReceiptInspectionNo(dto.getReceiptInspectionNo());
         String InstallationDate = dto.getInstallationDate();
         entity.setInstallationDate(CommonUtils.convertStringToDateObject(InstallationDate));
@@ -84,8 +94,8 @@ public class GoodsReceiptInspectionServiceImpl implements GoodsReceiptInspection
     }
 
     @Override
-    public GoodsReceiptInspectionResponseDto getGoodsReceiptInspectionById(Long id) {
-       GoodsReceiptInspection goods= GRIrepository.findById(id)
+    public GoodsReceiptInspectionResponseDto getGoodsReceiptInspectionById(String receiptInspectionNo) {
+       GoodsReceiptInspection goods= GRIrepository.findById(receiptInspectionNo)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -97,14 +107,14 @@ public class GoodsReceiptInspectionServiceImpl implements GoodsReceiptInspection
     }
 
     @Override
-    public void deleteGoodsReceiptInspection(Long id) {
-       GoodsReceiptInspection  goods=GRIrepository.findById(id)
+    public void deleteGoodsReceiptInspection(String receiptInspectionNo) {
+       GoodsReceiptInspection  goods=GRIrepository.findById(receiptInspectionNo)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_CODE_RESOURCE,
                                 AppConstant.ERROR_TYPE_RESOURCE,
-                                " Goods ReceiptInspection not found for the provided ID."
+                                " Goods Receipt Inspection not found for the provided ID."
                         )
                 ));
         try {
@@ -121,9 +131,10 @@ public class GoodsReceiptInspectionServiceImpl implements GoodsReceiptInspection
             );
         }
     }
+
     private GoodsReceiptInspectionResponseDto mapToResponseDTO(GoodsReceiptInspection entity) {
         GoodsReceiptInspectionResponseDto goodsReceiptInspectionResponseDto = new GoodsReceiptInspectionResponseDto();
-        goodsReceiptInspectionResponseDto.setId(entity.getId());
+
         goodsReceiptInspectionResponseDto.setReceiptInspectionNo(entity.getReceiptInspectionNo());
         LocalDate InstallationDate = entity.getInstallationDate();
         goodsReceiptInspectionResponseDto.setInstallationDate(CommonUtils.convertDateToString(InstallationDate));

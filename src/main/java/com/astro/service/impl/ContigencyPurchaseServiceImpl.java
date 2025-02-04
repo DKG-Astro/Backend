@@ -6,17 +6,23 @@ import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseResponseDto;
 import com.astro.entity.InventoryModule.GoodsInspection;
 import com.astro.entity.InventoryModule.Gprn;
 import com.astro.entity.ProcurementModule.ContigencyPurchase;
+import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.ProcurementModule.ContigencyPurchaseRepository;
 import com.astro.service.ContigencyPurchaseService;
 import com.astro.util.CommonUtils;
+import com.azure.storage.internal.avro.implementation.schema.AvroSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,7 +31,7 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
     private ContigencyPurchaseRepository CPrepo;
 
     @Override
-    public ContigencyPurchaseResponseDto createContigencyPurchase(ContigencyPurchaseRequestDto contigencyPurchaseDto) {
+    public ContigencyPurchaseResponseDto createContigencyPurchase(ContigencyPurchaseRequestDto contigencyPurchaseDto,String uploadCopyOfInvoiceFileName) {
 
         // Check if the indentorId already exists
         if (CPrepo.existsById(contigencyPurchaseDto.getContigencyId())) {
@@ -38,15 +44,18 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
         contigencyPurchase.setContigencyId(contigencyPurchaseDto.getContigencyId());
         contigencyPurchase.setVendorsName(contigencyPurchaseDto.getVendorsName());
         contigencyPurchase.setVendorsInvoiceNo(contigencyPurchaseDto.getVendorsInvoiceNo());
-        String Date = contigencyPurchaseDto.getDate();
-        contigencyPurchase.setDate(CommonUtils.convertStringToDateObject(Date));
+        String date = contigencyPurchaseDto.getDate();
+        contigencyPurchase.setDate(CommonUtils.convertStringToDateObject(date));
         contigencyPurchase.setMaterialCode(contigencyPurchaseDto.getMaterialCode());
         contigencyPurchase.setMaterialDescription(contigencyPurchaseDto.getMaterialDescription());
         contigencyPurchase.setQuantity(contigencyPurchaseDto.getQuantity());
         contigencyPurchase.setUnitPrice(contigencyPurchaseDto.getUnitPrice());
         contigencyPurchase.setRemarksForPurchase(contigencyPurchaseDto.getRemarksForPurchase());
         contigencyPurchase.setAmountToBePaid(contigencyPurchaseDto.getAmountToBePaid());
-        contigencyPurchase.setUploadCopyOfInvoice(contigencyPurchaseDto.getUploadCopyOfInvoice());
+        contigencyPurchase.setUploadCopyOfInvoiceFileName(uploadCopyOfInvoiceFileName);
+        contigencyPurchase.setProjectName(contigencyPurchaseDto.getProjectName());
+        handleFileUpload(contigencyPurchase, contigencyPurchaseDto.getUploadCopyOfInvoice(),
+                contigencyPurchase::setUploadCopyOfInvoice);
         contigencyPurchase.setPredifinedPurchaseStatement(contigencyPurchaseDto.getPredifinedPurchaseStatement());
         contigencyPurchase.setProjectDetail(contigencyPurchaseDto.getProjectDetail());
         contigencyPurchase.setUpdatedBy(contigencyPurchaseDto.getUpdatedBy());
@@ -59,7 +68,7 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
 
 
     @Override
-    public ContigencyPurchaseResponseDto updateContigencyPurchase(String contigencyId, ContigencyPurchaseRequestDto contigencyPurchaseDto) {
+    public ContigencyPurchaseResponseDto updateContigencyPurchase(String contigencyId, ContigencyPurchaseRequestDto contigencyPurchaseDto,String uploadCopyOfInvoiceFileName) {
         ContigencyPurchase existingCP = CPrepo.findById(contigencyId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
@@ -70,15 +79,18 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
                 ));
         existingCP.setVendorsName(contigencyPurchaseDto.getVendorsName());
         existingCP.setVendorsInvoiceNo(contigencyPurchaseDto.getVendorsInvoiceNo());
-        String Date = contigencyPurchaseDto.getDate();
-        existingCP.setDate(CommonUtils.convertStringToDateObject(Date));
+        String date = contigencyPurchaseDto.getDate();
+        existingCP.setDate(CommonUtils.convertStringToDateObject(date));
         existingCP.setMaterialCode(contigencyPurchaseDto.getMaterialCode());
         existingCP.setMaterialDescription(contigencyPurchaseDto.getMaterialDescription());
         existingCP.setQuantity(contigencyPurchaseDto.getQuantity());
         existingCP.setUnitPrice(contigencyPurchaseDto.getUnitPrice());
         existingCP.setRemarksForPurchase(contigencyPurchaseDto.getRemarksForPurchase());
         existingCP.setAmountToBePaid(contigencyPurchaseDto.getAmountToBePaid());
-        existingCP.setUploadCopyOfInvoice(contigencyPurchaseDto.getUploadCopyOfInvoice());
+        existingCP.setUploadCopyOfInvoiceFileName(uploadCopyOfInvoiceFileName);
+        existingCP.setProjectName(contigencyPurchaseDto.getProjectName());
+        handleFileUpload(existingCP, contigencyPurchaseDto.getUploadCopyOfInvoice(),
+                existingCP::setUploadCopyOfInvoice);
         existingCP.setPredifinedPurchaseStatement(contigencyPurchaseDto.getPredifinedPurchaseStatement());
         existingCP.setProjectDetail(contigencyPurchaseDto.getProjectDetail());
         existingCP.setUpdatedBy(contigencyPurchaseDto.getUpdatedBy());
@@ -147,14 +159,29 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
         contigencyPurchaseResponseDto.setUnitPrice(contigencyPurchase.getUnitPrice());
         contigencyPurchaseResponseDto.setRemarksForPurchase(contigencyPurchase.getRemarksForPurchase());
         contigencyPurchaseResponseDto.setAmountToBePaid(contigencyPurchase.getAmountToBePaid());
-        contigencyPurchaseResponseDto.setUploadCopyOfInvoice(contigencyPurchase.getUploadCopyOfInvoice());
+        contigencyPurchaseResponseDto.setUploadCopyOfInvoice(contigencyPurchase.getUploadCopyOfInvoiceFileName());
         contigencyPurchaseResponseDto.setPredifinedPurchaseStatement(contigencyPurchase.getPredifinedPurchaseStatement());
         contigencyPurchaseResponseDto.setProjectDetail(contigencyPurchase.getProjectDetail());
+        contigencyPurchaseResponseDto.setProjectName(contigencyPurchase.getProjectName());
         contigencyPurchaseResponseDto.setUpdatedBy(contigencyPurchase.getUpdatedBy());
         contigencyPurchaseResponseDto.setCreatedBy(contigencyPurchase.getCreatedBy());
         contigencyPurchaseResponseDto.setUpdatedDate(contigencyPurchase.getUpdatedDate());
         contigencyPurchaseResponseDto.setCreatedDate(contigencyPurchase.getCreatedDate());
         return contigencyPurchaseResponseDto;
 
+    }
+
+    public void handleFileUpload(ContigencyPurchase contigencyPurchase, MultipartFile file, Consumer<byte[]> fileSetter) {
+        if (file != null) {
+            try (InputStream inputStream = file.getInputStream()) {
+                byte[] fileBytes = inputStream.readAllBytes();
+                fileSetter.accept(fileBytes);
+            } catch (IOException e) {
+                throw new InvalidInputException(new ErrorDetails(500, 3, "File Processing Error",
+                        "Error while processing the uploaded file. Please try again."));
+            }
+        } else {
+            fileSetter.accept(null);  // Handle gracefully if no file is uploaded
+        }
     }
 }

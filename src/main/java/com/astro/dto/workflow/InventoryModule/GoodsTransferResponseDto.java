@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 @Data
 public class GoodsTransferResponseDto {
 
-    private Long id;
     private String goodsTransferID;
     private String consignorDetails;
     private String consigneeDetails;
