@@ -77,6 +77,11 @@ public class WorkflowController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.submitWorkflow(workflowTransitionId, actionBy, remarks)), HttpStatus.OK);
     }
 
+    @GetMapping("/approvedWorkflowTransition")
+    public ResponseEntity<Object> approvedWorkflowTransition(@RequestParam Integer modifiedBy)  {
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.approvedWorkflowTransition(modifiedBy)), HttpStatus.OK);
+    }
+
    /* @Autowired
     private UserService userService;
 

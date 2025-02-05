@@ -20,4 +20,5 @@ public interface WorkflowService {
     public TransitionDto nextTransition(Integer workflowId, String workflowName, String currentRole, String requestId);
     public WorkflowTransitionDto performTransitionAction(TransitionActionReqDto transitionActionReqDto);
     public WorkflowTransitionDto submitWorkflow(Integer workflowTransitionId, Integer actionBy, String remarks);
+    public List<WorkflowTransitionDto> approvedWorkflowTransition(Integer modifiedBy);
 }

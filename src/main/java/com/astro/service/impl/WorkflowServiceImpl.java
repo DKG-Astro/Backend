@@ -286,6 +286,8 @@ public class WorkflowServiceImpl implements WorkflowService {
         workflowTransitionDto.setCurrentRole(workflowTransition.getCurrentRole());
         workflowTransitionDto.setNextRole(workflowTransition.getNextRole());
         workflowTransitionDto.setWorkflowSequence(workflowTransition.getWorkflowSequence());
+        workflowTransitionDto.setAction(workflowTransition.getAction());
+        workflowTransitionDto.setRemarks(workflowTransition.getRemarks());
         TransitionMaster transitionMaster = transitionById(workflowTransition.getTransitionId());
         if(Objects.nonNull(transitionMaster)) {
             workflowTransitionDto.setNextActionId(transitionMaster.getNextRoleId());
@@ -408,6 +410,18 @@ public class WorkflowServiceImpl implements WorkflowService {
 
 
         return null;
+    }
+
+    @Override
+    public List<WorkflowTransitionDto> approvedWorkflowTransition(Integer modifiedBy) {
+        List<WorkflowTransitionDto> workflowTransitionDtoList = new ArrayList<>();
+        List<WorkflowTransition> workflowTransitionList = workflowTransitionRepository.findByModifiedBy(modifiedBy);
+        if(Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()) {
+            workflowTransitionDtoList = workflowTransitionList.stream().sorted(Comparator.comparing(WorkflowTransition::getWorkflowSequence).reversed()).map(e -> {
+                return mapWorkflowTransitionDto(e);
+            }).collect(Collectors.toList());
+        }
+        return workflowTransitionDtoList;
     }
 
     private void requestChangeTransition(WorkflowTransition currentWorkflowTransition, TransitionMaster currentTransition, TransitionActionReqDto transitionActionReqDto) {
