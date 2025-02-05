@@ -1,9 +1,11 @@
 package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderMaterialRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.TenderRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.TenderResponseDto;
+import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.entity.ProcurementModule.ServiceOrder;
 import com.astro.entity.ProcurementModule.TenderRequest;
@@ -11,6 +13,7 @@ import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.ProcurementModule.TenderRequestRepository;
+import com.astro.service.IndentCreationService;
 import com.astro.service.TenderRequestService;
 import com.astro.util.CommonUtils;
 import com.ctc.wstx.shaded.msv_core.verifier.jarv.TheFactoryImpl;
@@ -30,6 +33,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
 
     @Autowired
     private TenderRequestRepository TRrepo;
+    @Autowired
+    private IndentCreationService indentCreationService;
     @Override
     public TenderResponseDto createTenderRequest(TenderRequestDto tenderRequestDto,String uploadTenderDocumentsFileName,String uploadGeneralTermsAndConditionsFileName
             , String uploadSpecificTermsAndConditionsFileName) {
@@ -133,7 +138,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     }
 
     @Override
-    public TenderResponseDto getTenderRequestById(String tenderId) {
+    public  TenderWithIndentResponseDTO getTenderRequestById(String tenderId) {
         TenderRequest tenderRequest =TRrepo.findById(tenderId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
@@ -142,7 +147,46 @@ public class TenderRequestServiceImpl implements TenderRequestService {
                                 AppConstant.ERROR_TYPE_RESOURCE,
                                 "Tender not found for the provided asset ID.")
                 ));
-        return mapToResponseDTO(tenderRequest);
+
+        // Fetch Indent Data using indentId from TenderRequest
+        IndentCreationResponseDTO indentData = indentCreationService.getIndentById(tenderRequest.getIndentId());
+
+        // Combine both Tender and Indent data into a single response DTO
+        TenderWithIndentResponseDTO responseDTO = new TenderWithIndentResponseDTO();
+        // Set Tender Details
+        responseDTO.setTenderId(tenderRequest.getTenderId());
+        responseDTO.setTitleOfTender(tenderRequest.getTitleOfTender());
+        LocalDate openingDate = tenderRequest.getOpeningDate();
+        responseDTO.setOpeningDate(CommonUtils.convertDateToString(openingDate));
+        LocalDate closeingDate = tenderRequest.getClosingDate();
+        responseDTO.setClosingDate(CommonUtils.convertDateToString(closeingDate));
+        responseDTO.setIndentId(tenderRequest.getIndentId());
+        responseDTO.setIndentMaterials(tenderRequest.getIndentMaterials());
+        responseDTO.setModeOfProcurement(tenderRequest.getModeOfProcurement());
+        responseDTO.setBidType(tenderRequest.getBidType());
+        LocalDate LastDateOfSubmission = tenderRequest.getLastDateOfSubmission();
+        responseDTO.setLastDateOfSubmission(CommonUtils.convertDateToString(LastDateOfSubmission));
+        responseDTO.setApplicableTaxes(tenderRequest.getApplicableTaxes());
+        responseDTO.setConsignesAndBillinngAddress(tenderRequest.getConsignesAndBillinngAddress());
+        responseDTO.setIncoTerms(tenderRequest.getIncoTerms());
+        responseDTO.setPaymentTerms(tenderRequest.getPaymentTerms());
+        responseDTO.setLdClause(tenderRequest.getLdClause());
+        responseDTO.setApplicablePerformance(tenderRequest.getApplicablePerformance());
+        responseDTO.setBidSecurityDeclaration(tenderRequest.getBidSecurityDeclaration());
+        responseDTO.setMllStatusDeclaration(tenderRequest.getMllStatusDeclaration());
+        responseDTO.setUploadTenderDocuments(tenderRequest.getUploadTenderDocumentsFileName());
+        responseDTO.setSingleAndMultipleVendors(tenderRequest.getSingleAndMultipleVendors());
+        responseDTO.setUploadGeneralTermsAndConditions(tenderRequest.getUploadGeneralTermsAndConditionsFileName());
+        responseDTO.setUploadSpecificTermsAndConditions(tenderRequest.getUploadSpecificTermsAndConditionsFileName());
+        responseDTO.setPreBidDisscussions(tenderRequest.getPreBidDisscussions());
+        responseDTO.setUpdatedBy(tenderRequest.getUpdatedBy());
+        responseDTO.setCreatedBy(tenderRequest.getCreatedBy());
+        responseDTO.setCreatedDate(tenderRequest.getCreatedDate());
+        responseDTO.setUpdatedDate(tenderRequest.getUpdatedDate());
+        responseDTO.setIndentResponseDTO(indentData);
+
+        return responseDTO;
+
     }
 
     @Override

@@ -12,11 +12,12 @@ public class GoodsInspectionResponseDto {
 
 
     private String goodsInspectionNo;
+    private String receiptInspectionNo;
     private String installationDate;
 
     private String commissioningDate;
 
-    private String uploadInstallationReport;
+    private String uploadInstallationReportFileName;
 
     private int acceptedQuantity;
 

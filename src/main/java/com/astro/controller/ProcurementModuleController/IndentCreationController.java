@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -49,7 +50,7 @@ public class IndentCreationController {
 
  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
  public ResponseEntity<Object> createIndent(
-         @RequestPart("indentRequestDTO") String indentRequestDto,
+         @RequestPart("indentRequestDto") String indentRequestDto,
         @RequestPart(value = "uploadingPriorApprovals") MultipartFile uploadingPriorApprovals,
         @RequestPart(value = "uploadTenderDocuments") MultipartFile uploadTenderDocuments,
         @RequestPart(value = "uploadGOIOrRFP") MultipartFile uploadGOIOrRFP,
@@ -72,8 +73,8 @@ public class IndentCreationController {
      String requestId = responseDTO.getIndentId(); // Useing the indent ID as the request ID
      String workflowName = "Indent Workflow";
      String createdBy = indentRequestDTO.getCreatedBy();
-     UserMaster userMaster = userService.getUserByCreatedBy(createdBy);
-     Integer userId = userMaster.getUserId();
+     Optional<UserMaster> userMaster = userService.getUserMasterByCreatedBy(createdBy);
+     Integer userId = userMaster.get().getUserId();
 
 
      // Call initiateWorkflow API
@@ -106,7 +107,7 @@ public class IndentCreationController {
     @PutMapping(value = "/{indentId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> updateIndent(
             @PathVariable String indentId,
-            @RequestPart("indentRequestDTO") String indentRequestDto,
+            @RequestPart("indentRequestDto") String indentRequestDto,
             @RequestPart(value = "uploadingPriorApprovals") MultipartFile uploadingPriorApprovals,
             @RequestPart(value = "uploadTenderDocuments") MultipartFile uploadTenderDocuments,
             @RequestPart(value = "uploadGOIOrRFP") MultipartFile uploadGOIOrRFP,

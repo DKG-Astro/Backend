@@ -15,8 +15,8 @@ public class GoodsInspection {
     @Column(name = "goods_inspection_no")
     private String goodsInspectionNo;
 
-    @Column(name = "gpr_id")
-    private Long gprId; // Foreign key to Good Provisional Receipt entity
+    @Column(name = "receipt_inspection_no")
+    private String receiptInspectionNo; // Foreign key to Good Provisional Receipt entity
 
     @Column(name = "installation_date")
     private LocalDate installationDate;
@@ -26,7 +26,10 @@ public class GoodsInspection {
 
     @Lob
     @Column(name = "upload_installation_report")
-    private String uploadInstallationReport;
+    private byte[] uploadInstallationReport;
+
+    @Column(name = "upload_installation_report_file_name")
+    private String uploadInstallationReportFileName;
 
     @Column(name = "accepted_quantity", nullable = false)
     private int acceptedQuantity;

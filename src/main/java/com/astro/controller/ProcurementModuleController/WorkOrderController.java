@@ -3,7 +3,11 @@ package com.astro.controller.ProcurementModuleController;
 
 import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.WorkOrderRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.WorkOrderResponseDTO;
+import com.astro.dto.workflow.WorkflowTransitionDto;
+import com.astro.entity.UserMaster;
+import com.astro.service.UserService;
 import com.astro.service.WorkOrderService;
+import com.astro.service.WorkflowService;
 import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/work-orders")
@@ -18,9 +23,23 @@ public class WorkOrderController {
 
     @Autowired
     private WorkOrderService workOrder;
+    @Autowired
+    private WorkflowService workflowService;
+    @Autowired
+    private UserService userService;
     @PostMapping
     public ResponseEntity<Object> createWorkOrder(@RequestBody WorkOrderRequestDTO requestDTO) {
         WorkOrderResponseDTO responseDTO = workOrder.createWorkOrder(requestDTO);
+        // Initiateing the workflow after saving the indent
+        String requestId = responseDTO.getWoId(); // Useing the indent ID as the request ID
+        String workflowName = "PO/SO/WO Workflow";
+        String createdBy = responseDTO.getCreatedBy();
+        Optional<UserMaster> userMaster = userService.getUserMasterByCreatedBy(createdBy);
+        Integer userId = userMaster.get().getUserId();
+
+        // Call initiateWorkflow API
+        WorkflowTransitionDto workflowTransitionDto = workflowService.initiateWorkflow(requestId, workflowName, userId);
+
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 

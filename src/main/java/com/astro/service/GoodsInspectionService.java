@@ -12,9 +12,9 @@ public interface GoodsInspectionService {
 
     GoodsInspectionResponseDto getGoodsInspectionById(String goodsInspectionNo);
 
-    GoodsInspectionResponseDto createGoodsInspection(GoodsInspectionRequestDto goodsInspectionDTO);
+    GoodsInspectionResponseDto createGoodsInspection(GoodsInspectionRequestDto goodsInspectionDTO, String uploadInstallationReportFileName);
 
-    GoodsInspectionResponseDto updateGoodsInspection(String goodsInspectionNo, GoodsInspectionRequestDto goodsInspectionDTO);
+    GoodsInspectionResponseDto updateGoodsInspection(String goodsInspectionNo, GoodsInspectionRequestDto goodsInspectionDTO, String uploadInstallationReportFileName);
 
     void deleteGoodsInspection(String goodsInspectionNo);
 

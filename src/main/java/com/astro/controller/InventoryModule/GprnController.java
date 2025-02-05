@@ -80,7 +80,7 @@ public class GprnController {
         gprnService.deleteGprn(gprnId);
         return ResponseEntity.ok("Gprn deleted successfully!");
     }
-
+/*
 
     @GetMapping("/purchase-orders/{poId}")
     public ResponseEntity<Object> fetchPurchaseOrderDetails(@PathVariable String poId) {
@@ -88,6 +88,8 @@ public class GprnController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(po), HttpStatus.OK);
     }
 
+
+ */
 
 
 }

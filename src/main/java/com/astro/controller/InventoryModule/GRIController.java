@@ -65,12 +65,14 @@ public class GRIController {
         return ResponseEntity.ok("GoodsReceiptInspection deleted successfully!");
     }
 
-
+/*
     @GetMapping("/purchase-orders/{poId}")
     public ResponseEntity<Object> fetchPurchaseOrderDetails(@PathVariable String poId) {
         PurchaseOrderResponseDTO po = poService.getPurchaseOrderById(poId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(po), HttpStatus.OK);
     }
+
+ */
 
     @GetMapping("/gprn/{gprnId}")
     public ResponseEntity<Object> fetchGprDetails(@PathVariable String gprnId) {

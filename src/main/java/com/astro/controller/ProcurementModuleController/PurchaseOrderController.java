@@ -5,7 +5,12 @@ package com.astro.controller.ProcurementModuleController;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderResponseDTO;
 
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.poWithTenderAndIndentResponseDTO;
+import com.astro.dto.workflow.WorkflowTransitionDto;
+import com.astro.entity.UserMaster;
 import com.astro.service.PurchaseOrderService;
+import com.astro.service.UserService;
+import com.astro.service.WorkflowService;
 import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/purchase-orders")
@@ -21,11 +27,28 @@ public class PurchaseOrderController {
 
     @Autowired
     private PurchaseOrderService poService;
+    @Autowired
+    private WorkflowService workflowService;
+    @Autowired
+    private UserService userService;
 
     // Create a new PO
     @PostMapping
     public ResponseEntity<Object> createPurchaseOrder(@RequestBody @Valid PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
         PurchaseOrderResponseDTO createdPO = poService.createPurchaseOrder(purchaseOrderRequestDTO);
+      // Initiateing the workflow after saving the indent
+        String requestId = createdPO.getPoId(); // Useing the indent ID as the request ID
+        String workflowName = "PO/SO/WO Workflow";
+        String createdBy = purchaseOrderRequestDTO.getCreatedBy();
+        Optional<UserMaster> userMaster = userService.getUserMasterByCreatedBy(createdBy);
+        Integer userId = userMaster.get().getUserId();
+
+
+        // Call initiateWorkflow API
+        WorkflowTransitionDto workflowTransitionDto = workflowService.initiateWorkflow(requestId, workflowName, userId);
+
+
+
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(createdPO), HttpStatus.OK);
     }
 
@@ -49,7 +72,7 @@ public class PurchaseOrderController {
     // Get a PO by ID
     @GetMapping("/{poId}")
     public ResponseEntity<Object> getPurchaseOrderById(@PathVariable String poId) {
-        PurchaseOrderResponseDTO  po = poService.getPurchaseOrderById(poId);
+        poWithTenderAndIndentResponseDTO po = poService.getPurchaseOrderById(poId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(po), HttpStatus.OK);
     }
 

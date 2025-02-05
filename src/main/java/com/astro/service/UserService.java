@@ -6,6 +6,7 @@ import com.astro.entity.UserMaster;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import com.astro.dto.workflow.UserDto;
 import com.astro.dto.workflow.UserRoleDto;
@@ -19,7 +20,8 @@ public interface UserService {
     public List<UserDto> getAllUsers();
     public UserDto getUserById(int userId);
 
-    public UserMaster getUserByCreatedBy(String createdBy);
+   // public UserMaster getUserByCreatedBy(String createdBy);
+    public Optional<UserMaster> getUserMasterByCreatedBy(String createdBy);
     public void deleteUser(int userId);
 
 

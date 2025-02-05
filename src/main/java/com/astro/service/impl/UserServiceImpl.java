@@ -124,6 +124,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<UserMaster> getUserMasterByCreatedBy(String createdBy) {
+        return userMasterRepository.findByCreatedBy(createdBy);
+    }
+
+    @Override
     public void deleteUser(int userId) {
        UserMaster userMaster = userMasterRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(

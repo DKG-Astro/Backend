@@ -1,15 +1,17 @@
 package com.astro.dto.workflow.InventoryModule;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.Column;
 
 @Data
 public class GoodsInspectionRequestDto {
     private String goodsInspectionNo;
+    private String receiptInspectionNo;
     private String installationDate;
     private String commissioningDate;
-    private String uploadInstallationReport;
+    private MultipartFile uploadInstallationReport;
     private int acceptedQuantity;
     private int rejectedQuantity;
     private String goodsReturnPermamentOrReplacement;

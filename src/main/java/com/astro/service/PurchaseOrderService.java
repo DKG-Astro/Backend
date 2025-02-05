@@ -4,6 +4,7 @@ package com.astro.service;
 
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.poWithTenderAndIndentResponseDTO;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public interface PurchaseOrderService {
 
    public List<PurchaseOrderResponseDTO > getAllPurchaseOrders();
 
-    public PurchaseOrderResponseDTO getPurchaseOrderById(String poId);
+    public poWithTenderAndIndentResponseDTO getPurchaseOrderById(String poId);
     public void deletePurchaseOrder(String poId);
 
 }

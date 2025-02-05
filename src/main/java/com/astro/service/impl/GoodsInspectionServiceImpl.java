@@ -13,9 +13,13 @@ import com.astro.service.GoodsInspectionService;
 import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +31,7 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
 
 
     @Override
-    public GoodsInspectionResponseDto createGoodsInspection(GoodsInspectionRequestDto goodsInspectionDTO) {
+    public GoodsInspectionResponseDto createGoodsInspection(GoodsInspectionRequestDto goodsInspectionDTO, String uploadInstallationReportFileName) {
         // Check if the indentorId already exists
         if (repository.existsById(goodsInspectionDTO.getGoodsInspectionNo())) {
             ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Goods Inspection ID", "goods Inspection ID " + goodsInspectionDTO.getGoodsInspectionNo() + " already exists.");
@@ -36,11 +40,14 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
 
          GoodsInspection goodsInspection = new GoodsInspection();
          goodsInspection.setGoodsInspectionNo(goodsInspectionDTO.getGoodsInspectionNo());
+         goodsInspection.setReceiptInspectionNo(goodsInspectionDTO.getReceiptInspectionNo());
         String InstallationDate=goodsInspectionDTO.getInstallationDate();
         goodsInspection.setInstallationDate(CommonUtils.convertStringToDateObject(InstallationDate));
         String CommissioningDate= goodsInspectionDTO.getCommissioningDate();
         goodsInspection.setCommissioningDate(CommonUtils.convertStringToDateObject(CommissioningDate));
-        goodsInspection.setUploadInstallationReport(goodsInspectionDTO.getUploadInstallationReport());
+        //goodsInspection.setUploadInstallationReport(goodsInspectionDTO.getUploadInstallationReport());
+        handleFileUpload(goodsInspection, goodsInspectionDTO.getUploadInstallationReport(),
+                goodsInspection::setUploadInstallationReport);
         goodsInspection.setAcceptedQuantity(goodsInspectionDTO.getAcceptedQuantity());
         goodsInspection.setRejectedQuantity(goodsInspectionDTO.getRejectedQuantity());
         goodsInspection.setGoodsReturnPermamentOrReplacement(goodsInspectionDTO.getGoodsReturnPermamentOrReplacement());
@@ -50,6 +57,7 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
         goodsInspection.setPoAmendmentNotified(goodsInspectionDTO.getPoAmendmentNotified());
         goodsInspection.setUpdatedBy(goodsInspectionDTO.getUpdatedBy());
         goodsInspection.setCreatedBy(goodsInspectionDTO.getCreatedBy());
+        goodsInspection.setUploadInstallationReportFileName(uploadInstallationReportFileName);
         GoodsInspection saved = repository.save(goodsInspection);
         return mapToResponseDTO(saved);
     }
@@ -58,11 +66,12 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
         GoodsInspectionResponseDto  goodsInspectionResponseDto = new GoodsInspectionResponseDto();
 
         goodsInspectionResponseDto.setGoodsInspectionNo(saved.getGoodsInspectionNo());
+        goodsInspectionResponseDto.setReceiptInspectionNo(saved.getReceiptInspectionNo());
       LocalDate InstallationDate=saved.getInstallationDate();
         goodsInspectionResponseDto.setInstallationDate(CommonUtils.convertDateToString(InstallationDate));
        LocalDate CommissioningDate= saved.getCommissioningDate();
         goodsInspectionResponseDto.setCommissioningDate(CommonUtils.convertDateToString(CommissioningDate));
-        goodsInspectionResponseDto.setUploadInstallationReport(saved.getUploadInstallationReport());
+       //goodsInspectionResponseDto.setUploadInstallationReport(saved.getUploadInstallationReport());
         goodsInspectionResponseDto.setAcceptedQuantity(saved.getAcceptedQuantity());
         goodsInspectionResponseDto.setRejectedQuantity(saved.getRejectedQuantity());
         goodsInspectionResponseDto.setGoodsReturnPermamentOrReplacement(saved.getGoodsReturnPermamentOrReplacement());
@@ -74,11 +83,12 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
         goodsInspectionResponseDto.setCreatedBy(saved.getCreatedBy());
         goodsInspectionResponseDto.setCreatedDate(saved.getCreatedDate());
         goodsInspectionResponseDto.setUpdatedDate(saved.getUpdatedDate());
+        goodsInspectionResponseDto.setUploadInstallationReportFileName(saved.getUploadInstallationReportFileName());
         return goodsInspectionResponseDto;
     }
 
     @Override
-    public GoodsInspectionResponseDto updateGoodsInspection(String goodsInspectionNo, GoodsInspectionRequestDto goodsInspectionDTO) {
+    public GoodsInspectionResponseDto updateGoodsInspection(String goodsInspectionNo, GoodsInspectionRequestDto goodsInspectionDTO, String uploadInstallationReportFileName) {
         GoodsInspection existing = repository.findById(goodsInspectionNo)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
@@ -90,9 +100,12 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
 
         String InstallationDate=goodsInspectionDTO.getInstallationDate();
         existing.setInstallationDate(CommonUtils.convertStringToDateObject(InstallationDate));
+        existing.setReceiptInspectionNo(goodsInspectionDTO.getReceiptInspectionNo());
         String CommissioningDate= goodsInspectionDTO.getCommissioningDate();
         existing.setCommissioningDate(CommonUtils.convertStringToDateObject(CommissioningDate));
-        existing.setUploadInstallationReport(goodsInspectionDTO.getUploadInstallationReport());
+       // existing.setUploadInstallationReport(goodsInspectionDTO.getUploadInstallationReport());
+        handleFileUpload(existing, goodsInspectionDTO.getUploadInstallationReport(),
+                existing::setUploadInstallationReport);
         existing.setAcceptedQuantity(goodsInspectionDTO.getAcceptedQuantity());
         existing.setRejectedQuantity(goodsInspectionDTO.getRejectedQuantity());
         existing.setGoodsReturnPermamentOrReplacement(goodsInspectionDTO.getGoodsReturnPermamentOrReplacement());
@@ -102,6 +115,7 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
         existing.setMaterialRejectionAdviceSent(goodsInspectionDTO.getMaterialRejectionAdviceSent());
         existing.setUpdatedBy(goodsInspectionDTO.getUpdatedBy());
         existing.setCreatedBy(goodsInspectionDTO.getCreatedBy());
+        existing.setUploadInstallationReportFileName(uploadInstallationReportFileName);
         GoodsInspection updated = repository.save(existing);
         return mapToResponseDTO(updated);
     }
@@ -152,6 +166,20 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
         }
     }
 
+    public void handleFileUpload(GoodsInspection goodsInspection, MultipartFile file, Consumer<byte[]> fileSetter) {
+        if (file != null) {
+            try (InputStream inputStream = file.getInputStream()) {
+                byte[] fileBytes = inputStream.readAllBytes();
+                fileSetter.accept(fileBytes); // Set file content (byte[])
+
+            } catch (IOException e) {
+                throw new InvalidInputException(new ErrorDetails(500, 3, "File Processing Error",
+                        "Error while processing the uploaded file. Please try again."));
+            }
+        } else {
+            fileSetter.accept(null);  // Handle gracefully if no file is uploaded
+        }
+    }
 
 
 }

@@ -3,6 +3,7 @@ package com.astro.controller.ProcurementModuleController;
 import com.astro.dto.workflow.ProcurementDtos.TenderRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.TenderResponseDto;
 
+import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.service.TenderRequestService;
 
 import com.astro.util.ResponseBuilder;
@@ -90,7 +91,9 @@ public class TenderRequestController {
     @GetMapping("/{tenderId}")
     public ResponseEntity<Object> getTenderRequestById(@PathVariable String tenderId) {
 
-        TenderResponseDto tenderRequest = TRService.getTenderRequestById(tenderId);
+        TenderWithIndentResponseDTO tenderRequest = TRService.getTenderRequestById(tenderId);
+
+
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(tenderRequest), HttpStatus.OK);
     }
 

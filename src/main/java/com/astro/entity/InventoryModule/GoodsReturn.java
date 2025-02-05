@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "goods_return")
 public class GoodsReturn {
 
-     @Id
+    @Id
     @Column(name = "goods_return_id")
     private String goodsReturnId;
 
