@@ -27,7 +27,7 @@ public class MaterialMasterController {
     private ObjectMapper mapper;
     @PostMapping
     public ResponseEntity<Object> createMaterialMaster(
-        @RequestPart("materialMasterRequestDto") String materialMasterRequestDTO,
+        @RequestPart("materialMasterRequestDTO") String materialMasterRequestDTO,
         @RequestPart(value = "uploadImage") MultipartFile uploadImage) throws JsonProcessingException {
 
         MaterialMasterRequestDto materialMasterRequestDto = mapper.readValue(materialMasterRequestDTO, MaterialMasterRequestDto.class);
@@ -46,7 +46,7 @@ public class MaterialMasterController {
     @PutMapping("/{materialCode}")
     public ResponseEntity<Object> updateMaterialMaster(
             @PathVariable String materialCode,
-            @RequestPart("materialMasterRequestDto") String materialMasterRequestDTO,
+            @RequestPart("materialMasterRequestDTO") String materialMasterRequestDTO,
             @RequestPart(value = "uploadImage") MultipartFile uploadImage) throws JsonProcessingException {
         MaterialMasterRequestDto materialMasterRequestDto = mapper.readValue(materialMasterRequestDTO,MaterialMasterRequestDto.class);
             materialMasterRequestDto.setUploadImage(uploadImage);

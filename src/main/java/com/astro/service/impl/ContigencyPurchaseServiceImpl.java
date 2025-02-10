@@ -1,6 +1,7 @@
 package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseReportDto;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseResponseDto;
 import com.astro.entity.InventoryModule.GoodsInspection;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Consumer;
@@ -144,6 +146,26 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
                     ex
             );
         }
+    }
+
+    @Override
+    public List<ContigencyPurchaseReportDto> getContigencyPurchaseReport(String startDate, String endDate) {
+        List<Object[]> results = CPrepo.findContigencyPurchaseReport(CommonUtils.convertStringToDateObject(startDate), CommonUtils.convertStringToDateObject(endDate));
+
+        return results.stream().map(row -> {
+            ContigencyPurchaseReportDto dto = new ContigencyPurchaseReportDto();
+            dto.setId((String) row[0]);
+            dto.setMaterial((String) row[1]);
+            dto.setMaterialCategory((String) row[2]);
+            dto.setMaterialSubCategory((String) row[3]);
+            dto.setEndUser((String) row[4]);
+            dto.setValue((BigDecimal) row[5]);
+            dto.setPaidTo((String) row[6]);
+            dto.setVendorName((String) row[7]);
+            dto.setProject((String) row[8]);
+            return dto;
+        }).collect(Collectors.toList());
+
     }
 
     private ContigencyPurchaseResponseDto mapToResponseDTO(ContigencyPurchase contigencyPurchase) {

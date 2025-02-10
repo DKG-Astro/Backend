@@ -177,6 +177,7 @@ com\astro\service\GoodsInspectionService.class
 com\astro\repository\InventoryModule\GoodsReturnRepository.class
 com\astro\controller\InventoryModule\GoodsTransferController.class
 com\astro\dto\workflow\InventoryModule\GprnDto\GprnMaterialsResponseDto.class
+com\astro\dto\workflow\ProcurementDtos\ContigencyPurchaseReportDto.class
 com\astro\dto\workflow\InventoryModule\GoodsInspectionRequestDto.class
 com\astro\dto\workflow\RoleRequestDto.class
 com\astro\dto\workflow\ProcurementDtos\TenderWithIndentResponseDTO.class

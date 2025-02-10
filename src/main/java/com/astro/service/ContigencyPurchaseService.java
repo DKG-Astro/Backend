@@ -1,5 +1,6 @@
 package com.astro.service;
 
+import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseReportDto;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseResponseDto;
 import com.astro.entity.ProcurementModule.ContigencyPurchase;
@@ -15,5 +16,7 @@ public interface ContigencyPurchaseService {
     public ContigencyPurchaseResponseDto getContigencyPurchaseById(String contigencyId);
     public List<ContigencyPurchaseResponseDto> getAllContigencyPurchase();
     public void deleteContigencyPurchase(String contigencyId);
+
+    public List<ContigencyPurchaseReportDto> getContigencyPurchaseReport(String startDate, String endDate);
 
 }

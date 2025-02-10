@@ -12,7 +12,7 @@ public class MaterialDetailsRequestDTO {
     private BigDecimal quantity;
     private BigDecimal unitPrice;
     private String uom;
-    private BigDecimal totalPrice;
+   // private BigDecimal totalPrice;
     private String budgetCode;
     private String materialCategory;
     private String materialSubCategory;

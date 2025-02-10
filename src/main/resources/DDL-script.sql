@@ -129,7 +129,7 @@ CREATE TABLE gprn_materials (
     serial_no VARCHAR(255),
     warranty VARCHAR(255),
     note VARCHAR(255),
-    photograph_path VARCHAR(255),
+    photograph_path BLOB,
     gprn_id VARCHAR(255),
     FOREIGN KEY (gprn_id) REFERENCES GPRN(gprn_no)
 );
@@ -254,7 +254,7 @@ CREATE TABLE contigency_purchase (
 );
 
 CREATE TABLE indent_creation (
-    indentor_id VARCHAR(255) PRIMARY KEY,
+    indent_id VARCHAR(255) PRIMARY KEY,
     indentor_name VARCHAR(255) NOT NULL,
     indentor_mobile_no VARCHAR(20),
     indentor_email_address VARCHAR(255),

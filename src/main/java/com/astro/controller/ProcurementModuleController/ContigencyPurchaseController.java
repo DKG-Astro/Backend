@@ -1,5 +1,6 @@
 package com.astro.controller.ProcurementModuleController;
 
+import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseReportDto;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseResponseDto;
 import com.astro.dto.workflow.WorkflowTransitionDto;
@@ -78,6 +79,12 @@ public class ContigencyPurchaseController {
     }
 
 
+    @GetMapping("/report")
+    public List<ContigencyPurchaseReportDto> getContigencyPurchaseReport(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+        return CPservice.getContigencyPurchaseReport(startDate, endDate);
+    }
 
 
 
