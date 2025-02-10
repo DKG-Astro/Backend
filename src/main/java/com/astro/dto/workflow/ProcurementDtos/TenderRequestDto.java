@@ -4,6 +4,7 @@ package com.astro.dto.workflow.ProcurementDtos;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 
 
 @Data
@@ -13,7 +14,7 @@ public class TenderRequestDto {
     private String titleOfTender;
     private String openingDate;
     private String closingDate;
-    private String indentId;
+   // private String indentId;
     private String indentMaterials;
     private String modeOfProcurement;
     private String bidType;
@@ -36,6 +37,9 @@ public class TenderRequestDto {
     private String preBidDisscussions;
     private String updatedBy;
     private String createdBy;
+    private List<String> indentIds; // Updated
+
+
 
 
 }

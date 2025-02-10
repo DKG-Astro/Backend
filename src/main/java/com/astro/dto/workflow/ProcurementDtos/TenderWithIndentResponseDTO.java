@@ -15,7 +15,7 @@ public class TenderWithIndentResponseDTO {
     private String titleOfTender;
     private String openingDate;
     private String closingDate;
-    private String indentId;
+   // private String indentId;
     private String indentMaterials;
     private String modeOfProcurement;
     private String bidType;
@@ -37,7 +37,9 @@ public class TenderWithIndentResponseDTO {
     private String createdBy;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
-    private IndentCreationResponseDTO indentResponseDTO;
+    private List<IndentCreationResponseDTO> indentResponseDTO;
+    private BigDecimal totalTenderValue;
+ //   private List<IndentIdDto> indentIds;
 
 
 

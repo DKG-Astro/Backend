@@ -3,8 +3,10 @@ package com.astro.dto.workflow.ProcurementDtos;
 import lombok.Data;
 
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class TenderResponseDto {
@@ -12,7 +14,7 @@ public class TenderResponseDto {
     private String titleOfTender;
     private String openingDate;
     private String closingDate;
-    private String indentId;
+   // private String indentId;
     private String indentMaterials;
     private String modeOfProcurement;
     private String bidType;
@@ -30,8 +32,11 @@ public class TenderResponseDto {
     private String uploadGeneralTermsAndConditions;
     private String uploadSpecificTermsAndConditions;
     private String preBidDisscussions;
+    private BigDecimal totalTenderValue;
     private String updatedBy;
     private String createdBy;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
+
+   // private List<String> indentIds;
 }

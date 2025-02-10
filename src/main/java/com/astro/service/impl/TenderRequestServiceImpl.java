@@ -7,6 +7,7 @@ import com.astro.dto.workflow.ProcurementDtos.TenderRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.TenderResponseDto;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.entity.ProcurementModule.IndentCreation;
+import com.astro.entity.ProcurementModule.IndentId;
 import com.astro.entity.ProcurementModule.ServiceOrder;
 import com.astro.entity.ProcurementModule.TenderRequest;
 import com.astro.exception.BusinessException;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Consumer;
@@ -54,7 +56,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         tenderRequest.setOpeningDate(CommonUtils.convertStringToDateObject(openingDate));
         String closeingDate = tenderRequestDto.getClosingDate();
         tenderRequest.setClosingDate(CommonUtils.convertStringToDateObject(closeingDate));
-        tenderRequest.setIndentId(tenderRequestDto.getIndentId());
+      //  tenderRequest.setIndentId(tenderRequestDto.getIndentId());
+
         tenderRequest.setIndentMaterials(tenderRequestDto.getIndentMaterials());
         tenderRequest.setModeOfProcurement(tenderRequestDto.getModeOfProcurement());
         tenderRequest.setBidType(tenderRequestDto.getBidType());
@@ -82,6 +85,16 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         handleFileUpload(tenderRequest, tenderRequestDto.getUploadSpecificTermsAndConditions(),
                 tenderRequest::setUploadSpecificTermsAndConditions);
 
+        // Convert List<String> indentIds from DTO into List<IndentId> entities
+        List<IndentId> indentIdList = tenderRequestDto.getIndentIds().stream().map(indentIdStr -> {
+            IndentId indentId = new IndentId();
+            indentId.setIndentId(indentIdStr); // Directly assign the string value
+            indentId.setTenderRequest(tenderRequest);
+            return indentId;
+        }).collect(Collectors.toList());
+
+// Set indentIds in TenderRequest
+        tenderRequest.setIndentIds(indentIdList);
 
         TRrepo.save(tenderRequest);
 
@@ -105,7 +118,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         existingTR.setOpeningDate(CommonUtils.convertStringToDateObject(openingDate));
         String closeingDate = tenderRequestDto.getClosingDate();
         existingTR.setClosingDate(CommonUtils.convertStringToDateObject(closeingDate));
-        existingTR.setIndentId(tenderRequestDto.getIndentId());
+      //  existingTR.setIndentId(tenderRequestDto.getIndentId());
         existingTR.setIndentMaterials(tenderRequestDto.getIndentMaterials());
         existingTR.setModeOfProcurement(tenderRequestDto.getModeOfProcurement());
         existingTR.setBidType(tenderRequestDto.getBidType());
@@ -132,6 +145,27 @@ public class TenderRequestServiceImpl implements TenderRequestService {
                 existingTR::setUploadGeneralTermsAndConditions);
         handleFileUpload(existingTR, tenderRequestDto.getUploadSpecificTermsAndConditions(),
                 existingTR::setUploadSpecificTermsAndConditions);
+    // Update Indent IDs
+        List<String> newIndentIds = tenderRequestDto.getIndentIds();
+
+        // Remove old indent IDs that are no longer in the updated list
+        existingTR.getIndentIds().removeIf(indentId -> !newIndentIds.contains(indentId.getIndentId()));
+
+        // Add only new indent IDs that are not already in the existing list
+        List<String> existingIndentIdStrings = existingTR.getIndentIds().stream()
+                .map(IndentId::getIndentId)
+                .collect(Collectors.toList());
+
+        List<IndentId> indentIdList = newIndentIds.stream()
+                .filter(id -> !existingIndentIdStrings.contains(id)) // Avoid duplicates
+                .map(id -> {
+                    IndentId indentId = new IndentId();
+                    indentId.setIndentId(id);
+                    indentId.setTenderRequest(existingTR);
+                    return indentId;
+                }).collect(Collectors.toList());
+
+        existingTR.getIndentIds().addAll(indentIdList);
          TRrepo.save(existingTR);
 
         return mapToResponseDTO(existingTR);
@@ -148,9 +182,15 @@ public class TenderRequestServiceImpl implements TenderRequestService {
                                 "Tender not found for the provided asset ID.")
                 ));
 
-        // Fetch Indent Data using indentId from TenderRequest
-        IndentCreationResponseDTO indentData = indentCreationService.getIndentById(tenderRequest.getIndentId());
+        // Fetch Indent Data
+        List<IndentCreationResponseDTO> indentDataList = tenderRequest.getIndentIds().stream()
+                .map(indentId -> indentCreationService.getIndentById(indentId.getIndentId()))
+                .collect(Collectors.toList());
 
+        // Calculate totalTenderValue
+        BigDecimal totalTenderValue = indentDataList.stream()
+                .map(IndentCreationResponseDTO::getTotalPriceOfAllMaterials)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
         // Combine both Tender and Indent data into a single response DTO
         TenderWithIndentResponseDTO responseDTO = new TenderWithIndentResponseDTO();
         // Set Tender Details
@@ -160,7 +200,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         responseDTO.setOpeningDate(CommonUtils.convertDateToString(openingDate));
         LocalDate closeingDate = tenderRequest.getClosingDate();
         responseDTO.setClosingDate(CommonUtils.convertDateToString(closeingDate));
-        responseDTO.setIndentId(tenderRequest.getIndentId());
+        //responseDTO.setIndentId(tenderRequest.getIndentId());
         responseDTO.setIndentMaterials(tenderRequest.getIndentMaterials());
         responseDTO.setModeOfProcurement(tenderRequest.getModeOfProcurement());
         responseDTO.setBidType(tenderRequest.getBidType());
@@ -183,7 +223,10 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         responseDTO.setCreatedBy(tenderRequest.getCreatedBy());
         responseDTO.setCreatedDate(tenderRequest.getCreatedDate());
         responseDTO.setUpdatedDate(tenderRequest.getUpdatedDate());
-        responseDTO.setIndentResponseDTO(indentData);
+      //  responseDTO.setIndentResponseDTO(indentData);
+        responseDTO.setIndentResponseDTO(indentDataList); //Updated to list
+        responseDTO.setTotalTenderValue(totalTenderValue); // Calculated total
+       // responseDTO.setTotalTenderValue(totalTenderValue);
 
         return responseDTO;
 
@@ -235,7 +278,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         tenderResponseDto.setOpeningDate(CommonUtils.convertDateToString(openingDate));
         LocalDate closeingDate = tenderRequest.getClosingDate();
         tenderResponseDto.setClosingDate(CommonUtils.convertDateToString(closeingDate));
-        tenderResponseDto.setIndentId(tenderRequest.getIndentId());
+      //  tenderResponseDto.setIndentId(tenderRequest.getIndentId());
         tenderResponseDto.setIndentMaterials(tenderRequest.getIndentMaterials());
         tenderResponseDto.setModeOfProcurement(tenderRequest.getModeOfProcurement());
         tenderResponseDto.setBidType(tenderRequest.getBidType());
@@ -254,13 +297,24 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         tenderResponseDto.setUploadGeneralTermsAndConditions(tenderRequest.getUploadGeneralTermsAndConditionsFileName());
         tenderResponseDto.setUploadSpecificTermsAndConditions(tenderRequest.getUploadSpecificTermsAndConditionsFileName());
         tenderResponseDto.setPreBidDisscussions(tenderRequest.getPreBidDisscussions());
+
         tenderResponseDto.setUpdatedBy(tenderRequest.getUpdatedBy());
         tenderResponseDto.setCreatedBy(tenderRequest.getCreatedBy());
         tenderResponseDto.setCreatedDate(tenderRequest.getCreatedDate());
         tenderResponseDto.setUpdatedDate(tenderRequest.getUpdatedDate());
+        // Convert indentIds to List<String> and set in response
+        List<String> indentIds = tenderRequest.getIndentIds().stream()
+               .map(IndentId::getIndentId)
+                .collect(Collectors.toList());
+      //  tenderResponseDto.setIndentIds(indentIds);
+        // Calculate total tender value by summing totalPriceOfAllMaterials of all indents
+        BigDecimal totalTenderValue = indentIds.stream()
+                .map(indentCreationService::getIndentById) // Fetch Indent data
+                .map(IndentCreationResponseDTO::getTotalPriceOfAllMaterials) // Extract total price
+                .reduce(BigDecimal.ZERO, BigDecimal::add); // Sum up values
+        tenderResponseDto.setTotalTenderValue(totalTenderValue);
+
         return tenderResponseDto;
-
-
 
     }
 

@@ -3,9 +3,11 @@ package com.astro.entity.ProcurementModule;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.sql.Blob;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -20,8 +22,10 @@ public class TenderRequest {
     private LocalDate openingDate;
     @Column(name = "closing_date")
     private LocalDate closingDate;
-    @Column(name = "indent_id")
-    private String indentId;
+    @OneToMany(mappedBy = "tenderRequest", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IndentId> indentIds;
+  //  @Column(name = "indent_id")
+  //  private String indentId;
     @Column(name = "indent_materials")
     private String indentMaterials;
     @Column(name = "mode_of_procurement")
@@ -66,6 +70,8 @@ public class TenderRequest {
     private byte[] uploadSpecificTermsAndConditions;
     @Column(name = "pre_bid_disscussions")
     private String preBidDisscussions;
+    @Column(name = "total_tender_value")
+    private BigDecimal totalTenderValue;
     @Column(name = "updated_by")
     private String updatedBy;
     @Column(name = "created_by")
