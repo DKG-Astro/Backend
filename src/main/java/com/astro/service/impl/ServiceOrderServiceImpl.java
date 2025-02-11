@@ -1,11 +1,9 @@
 package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
-import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderMaterialRequestDTO;
-import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderMaterialResponseDTO;
-import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderRequestDTO;
-import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.*;
 
+import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderAttributesDTO;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.ServiceOrder;
@@ -15,7 +13,9 @@ import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrderMaterialRepository;
 import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrderRepository;
+import com.astro.service.IndentCreationService;
 import com.astro.service.ServiceOrderService;
+import com.astro.service.TenderRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +30,10 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
     private ServiceOrderRepository serviceOrderRepository;
     @Autowired
     private ServiceOrderMaterialRepository serviceOrderMaterialRepository;
+    @Autowired
+    private IndentCreationService indentCreationService;
+    @Autowired
+    private TenderRequestService tenderRequestService;
     public ServiceOrderResponseDTO createServiceOrder(ServiceOrderRequestDTO serviceOrderRequestDTO) {
         // Check if the indentorId already exists
         if (serviceOrderRepository.existsById(serviceOrderRequestDTO.getSoId())) {
@@ -61,7 +65,7 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         serviceOrder.setVendorsAccountNo(serviceOrderRequestDTO.getVendorsAccountNo());
         serviceOrder.setVendorsZRSCCode(serviceOrderRequestDTO.getVendorsZRSCCode());
         serviceOrder.setVendorsAccountName(serviceOrderRequestDTO.getVendorsAccountName());
-        serviceOrder.setTotalValueOfSo(serviceOrderRequestDTO.getTotalValueOfSo());
+      //  serviceOrder.setTotalValueOfSo(serviceOrderRequestDTO.getTotalValueOfSo());
         serviceOrder.setProjectName(serviceOrderRequestDTO.getProjectName());
         serviceOrder.setCreatedBy(serviceOrderRequestDTO.getCreatedBy());
         serviceOrder.setUpdatedBy(serviceOrderRequestDTO.getUpdatedBy());
@@ -109,7 +113,7 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         existingServiceOrder.setVendorsZRSCCode(serviceOrderRequestDTO.getVendorsZRSCCode());
         existingServiceOrder.setVendorsAccountName(serviceOrderRequestDTO.getVendorsAccountName());
         existingServiceOrder.setProjectName(serviceOrderRequestDTO.getProjectName());
-        existingServiceOrder.setTotalValueOfSo(serviceOrderRequestDTO.getTotalValueOfSo());
+      //  existingServiceOrder.setTotalValueOfSo(serviceOrderRequestDTO.getTotalValueOfSo());
 
         existingServiceOrder.setUpdatedBy(serviceOrderRequestDTO.getUpdatedBy());
         existingServiceOrder.setCreatedBy(serviceOrderRequestDTO.getCreatedBy());
@@ -144,7 +148,7 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
                 .collect(Collectors.toList());
     }
 
-    public ServiceOrderResponseDTO getServiceOrderById(String soId) {
+    public soWithTenderAndIndentResponseDTO getServiceOrderById(String soId) {
         ServiceOrder serviceOrder = serviceOrderRepository.findById(soId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
@@ -153,7 +157,48 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
                                 AppConstant.ERROR_TYPE_RESOURCE,
                                 "service order not found for the provided soId.")
                 ));
-        return mapToResponseDTO(serviceOrder);
+        // Fetch related Tender & Indent
+        TenderWithIndentResponseDTO tenderWithIndent = tenderRequestService.getTenderRequestById(serviceOrder.getTenderId());
+        soWithTenderAndIndentResponseDTO  response = new soWithTenderAndIndentResponseDTO();
+
+        response.setSoId(serviceOrder.getSoId());
+        response.setTenderId(serviceOrder.getTenderId());
+        response.setConsignesAddress(serviceOrder.getConsignesAddress());
+        response.setBillingAddress(serviceOrder.getBillingAddress());
+        response.setJobCompletionPeriod(serviceOrder.getJobCompletionPeriod());
+        response.setIfLdClauseApplicable(serviceOrder.getIfLdClauseApplicable());
+        response.setIncoTerms(serviceOrder.getIncoTerms());
+        response.setPaymentTerms(serviceOrder.getPaymentTerms());
+        response.setVendorName(serviceOrder.getVendorName());
+        response.setVendorAddress(serviceOrder.getVendorAddress());
+        response.setApplicablePBGToBeSubmitted(serviceOrder.getApplicablePBGToBeSubmitted());
+        response.setVendorsAccountNo(serviceOrder.getVendorsAccountNo());
+        response.setVendorsZRSCCode(serviceOrder.getVendorsZRSCCode());
+        response.setVendorsAccountName(serviceOrder.getVendorsAccountName());
+        // response.setTotalValueOfSo(ServiceOrder.getTotalValueOfSo());
+        response.setProjectName(serviceOrder.getProjectName());
+        response.setCreatedBy(serviceOrder.getCreatedBy());
+        response.setUpdatedBy(serviceOrder.getUpdatedBy());
+        response.setCreatedDate(serviceOrder.getCreatedDate());
+        response.setUpdatedDate(serviceOrder.getUpdatedDate());
+        response.setTotalValueOfSo(tenderWithIndent.getTotalTenderValue());
+        response.setMaterials(serviceOrder.getMaterials().stream()
+                .map(dto -> {
+                    ServiceOrderMaterialResponseDTO material = new ServiceOrderMaterialResponseDTO();
+                    material.setMaterialCode(dto.getMaterialCode());
+                    material.setMaterialDescription(dto.getMaterialDescription());
+                    material.setQuantity(dto.getQuantity());
+                    material.setRate(dto.getRate());
+                    material.setExchangeRate(dto.getExchangeRate());
+                    material.setCurrency(dto.getCurrency());
+                    material.setGst(dto.getGst());
+                    material.setDuties(dto.getDuties());
+                    material.setBudgetCode(dto.getBudgetCode()); // Associate with PurchaseOrder
+                    return material;
+                })
+                .collect(Collectors.toList()));
+        response.setTenderDetails(tenderWithIndent);
+        return response;
     }
 
     public void deleteServiceOrder(String soId) {
@@ -200,7 +245,7 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         response.setVendorsAccountNo(ServiceOrder.getVendorsAccountNo());
         response.setVendorsZRSCCode(ServiceOrder.getVendorsZRSCCode());
         response.setVendorsAccountName(ServiceOrder.getVendorsAccountName());
-        response.setTotalValueOfSo(ServiceOrder.getTotalValueOfSo());
+       // response.setTotalValueOfSo(ServiceOrder.getTotalValueOfSo());
         response.setProjectName(ServiceOrder.getProjectName());
         response.setCreatedBy(ServiceOrder.getCreatedBy());
         response.setUpdatedBy(ServiceOrder.getUpdatedBy());

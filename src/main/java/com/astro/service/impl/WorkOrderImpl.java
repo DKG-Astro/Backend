@@ -5,10 +5,8 @@ package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsRequestDTO;
-import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.WorkOrderMaterialRequestDTO;
-import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.WorkOrderMaterialResponseDTO;
-import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.WorkOrderRequestDTO;
-import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.WorkOrderResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.*;
 import com.astro.entity.ProcurementModule.ServiceOrder;
 import com.astro.entity.ProcurementModule.WorkOrder;
 import com.astro.entity.ProcurementModule.WorkOrderMaterial;
@@ -17,6 +15,8 @@ import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.ProcurementModule.WorkOrder.WorkOrderMaterialRepository;
 import com.astro.repository.ProcurementModule.WorkOrder.WorkOrderRepository;
+import com.astro.service.IndentCreationService;
+import com.astro.service.TenderRequestService;
 import com.astro.service.WorkOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +31,10 @@ public class WorkOrderImpl implements WorkOrderService {
     private WorkOrderRepository workOrderRepository;
     @Autowired
     private WorkOrderMaterialRepository workOrderMaterialRepository;
+    @Autowired
+    private IndentCreationService indentCreationService;
+    @Autowired
+    private TenderRequestService tenderRequestService;
     public WorkOrderResponseDTO createWorkOrder(WorkOrderRequestDTO workOrderRequestDTO) {
 
         // Check if the indentorId already exists
@@ -140,7 +144,7 @@ public class WorkOrderImpl implements WorkOrderService {
                 .collect(Collectors.toList());
     }
 
-    public WorkOrderResponseDTO getWorkOrderById(String woId) {
+    public woWithTenderAndIndentResponseDTO getWorkOrderById(String woId) {
         WorkOrder workOrder = workOrderRepository.findById(woId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
@@ -149,7 +153,47 @@ public class WorkOrderImpl implements WorkOrderService {
                                 AppConstant.ERROR_TYPE_RESOURCE,
                                 "work order not found for the provided asset ID.")
                 ));
-        return mapToResponseDTO(workOrder);
+
+        // Fetch related Tender & Indent
+        TenderWithIndentResponseDTO tenderWithIndent = tenderRequestService.getTenderRequestById(workOrder.getTenderId());
+      woWithTenderAndIndentResponseDTO response = new woWithTenderAndIndentResponseDTO();
+        response.setWoId(workOrder.getWoId());
+        response.setTenderId(workOrder.getTenderId());
+        response.setConsignesAddress(workOrder.getConsignesAddress());
+        response.setBillingAddress(workOrder.getBillingAddress());
+        response.setJobCompletionPeriod(workOrder.getJobCompletionPeriod());
+        response.setIfLdClauseApplicable(workOrder.getIfLdClauseApplicable());
+        response.setIncoTerms(workOrder.getIncoTerms());
+        response.setPaymentTerms(workOrder.getPaymentTerms());
+        response.setVendorName(workOrder.getVendorName());
+        response.setVendorAddress(workOrder.getVendorAddress());
+        response.setApplicablePBGToBeSubmitted(workOrder.getApplicablePBGToBeSubmitted());
+        response.setVendorsAccountNo(workOrder.getVendorsAccountNo());
+        response.setVendorsZRSCCode(workOrder.getVendorsZRSCCode());
+        response.setVendorsAccountName(workOrder.getVendorsAccountName());
+        response.setTotalValueOfWo(tenderWithIndent.getTotalTenderValue());
+        response.setCreatedBy(workOrder.getCreatedBy());
+        response.setUpdatedBy(workOrder.getUpdatedBy());
+        response.setCreatedDate(workOrder.getCreatedDate());
+        response.setUpdatedDate(workOrder.getUpdatedDate());
+        response.setMaterials(workOrder.getMaterials().stream()
+                .map(dto -> {
+                    WorkOrderMaterialResponseDTO material = new WorkOrderMaterialResponseDTO();
+
+                    material.setWorkCode(dto.getWorkCode());
+                    material.setWorkDescription(dto.getWorkDescription());
+                    material.setQuantity(dto.getQuantity());
+                    material.setRate(dto.getRate());
+                    material.setExchangeRate(dto.getExchangeRate());
+                    material.setCurrency(dto.getCurrency());
+                    material.setGst(dto.getGst());
+                    material.setDuties(dto.getDuties());
+                    material.setBudgetCode(dto.getBudgetCode()); // Associate with PurchaseOrder
+                    return material;
+                })
+                .collect(Collectors.toList()));
+        response.setTenderDetails(tenderWithIndent);
+        return response;
     }
 
     public void deleteWorkOrder(String woId) {

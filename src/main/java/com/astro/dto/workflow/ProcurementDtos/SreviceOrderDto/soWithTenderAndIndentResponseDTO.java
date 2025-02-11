@@ -1,14 +1,14 @@
 package com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto;
 
+import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import lombok.Data;
 
-import javax.persistence.Column;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class ServiceOrderRequestDTO {
-
+public class soWithTenderAndIndentResponseDTO {
     private String soId;
     private String tenderId;
     private String consignesAddress;
@@ -23,10 +23,14 @@ public class ServiceOrderRequestDTO {
     private String vendorsAccountNo;
     private String vendorsZRSCCode;
     private String vendorsAccountName;
-  //private BigDecimal totalValueOfSo;
+    private BigDecimal totalValueOfSo;
     private String projectName;
-    private List<ServiceOrderMaterialRequestDTO> materials;
+    private LocalDateTime createdDate;
+    private LocalDateTime updatedDate;
+    private List<ServiceOrderMaterialResponseDTO> materials;
     private String createdBy;
     private String updatedBy;
+    private TenderWithIndentResponseDTO tenderDetails;
+
 
 }

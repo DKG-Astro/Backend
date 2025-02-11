@@ -1,15 +1,15 @@
-package com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto;
+package com.astro.dto.workflow.ProcurementDtos.WorkOrderDto;
 
+import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import lombok.Data;
 
-import javax.persistence.Column;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class ServiceOrderRequestDTO {
-
-    private String soId;
+public class woWithTenderAndIndentResponseDTO {
+    private String woId;
     private String tenderId;
     private String consignesAddress;
     private String billingAddress;
@@ -23,10 +23,12 @@ public class ServiceOrderRequestDTO {
     private String vendorsAccountNo;
     private String vendorsZRSCCode;
     private String vendorsAccountName;
-  //private BigDecimal totalValueOfSo;
-    private String projectName;
-    private List<ServiceOrderMaterialRequestDTO> materials;
+    private BigDecimal totalValueOfWo;
+    private LocalDateTime createdDate;
+    private LocalDateTime updatedDate;
+    private List<WorkOrderMaterialResponseDTO> materials;
     private String createdBy;
     private String updatedBy;
+    private TenderWithIndentResponseDTO tenderDetails;
 
 }

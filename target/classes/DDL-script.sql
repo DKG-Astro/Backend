@@ -210,7 +210,7 @@ CREATE TABLE tender_request (
     title_of_tender VARCHAR(255) NOT NULL,
     opening_date DATE,
     closing_date DATE,
-    indent_id VARCHAR(255),
+    --indent_id VARCHAR(255),
     indent_materials VARCHAR(200),
     mode_of_procurement VARCHAR(255),
     bid_type VARCHAR(255),
@@ -228,11 +228,18 @@ CREATE TABLE tender_request (
     upload_general_terms_and_conditions BLOB,
     upload_specific_terms_and_conditions BLOB,
     pre_bid_disscussions TEXT,
+    total_tender_value DECIMAL(10,2),
     created_by VARCHAR(200),
     updated_by VARCHAR(255),
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+CREATE TABLE indent_id (
+    indent_id VARCHAR(255) PRIMARY KEY,
+    tender_id VARCHAR(255) NOT NULL,
+    FOREIGN KEY (tender_id) REFERENCES tender_request(tender_id) ON DELETE CASCADE
+);
+
 CREATE TABLE contigency_purchase (
     contigency_id VARCHAR(255) PRIMARY KEY,
     vendors_name VARCHAR(255),

@@ -13,7 +13,6 @@ public class GoodsTransfer {
     @Column(name = "goods_transfer_id")
     private String goodsTransferID;
     private String consignorDetails;
-
     private String consigneeDetails;
     private String fieldStationName;
     private String materialCode;
@@ -29,6 +28,4 @@ public class GoodsTransfer {
     private LocalDateTime createdDate = LocalDateTime.now();
     @Column(name = "updated_date", nullable = false)
     private LocalDateTime updatedDate = LocalDateTime.now();
-
-
 }

@@ -3,6 +3,7 @@ package com.astro.controller.ProcurementModuleController;
 
 import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.WorkOrderRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.WorkOrderResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.woWithTenderAndIndentResponseDTO;
 import com.astro.dto.workflow.WorkflowTransitionDto;
 import com.astro.entity.UserMaster;
 import com.astro.service.UserService;
@@ -57,7 +58,7 @@ public class WorkOrderController {
 
     @GetMapping("/{woId}")
     public ResponseEntity<Object> getWorkOrderById(@PathVariable String woId) {
-        WorkOrderResponseDTO responseDTO = workOrder.getWorkOrderById(woId);
+        woWithTenderAndIndentResponseDTO responseDTO = workOrder.getWorkOrderById(woId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 

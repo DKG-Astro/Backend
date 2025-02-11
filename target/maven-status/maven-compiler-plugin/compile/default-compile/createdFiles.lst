@@ -7,6 +7,7 @@ com\astro\dto\workflow\InventoryModule\AssetRequestDTO.class
 com\astro\dto\workflow\ProcurementDtos\ContigencyPurchaseResponseDto.class
 com\astro\controller\JobMasterController.class
 com\astro\repository\VendorMasterRepository.class
+com\astro\dto\workflow\ProcurementDtos\SreviceOrderDto\soWithTenderAndIndentResponseDTO.class
 com\astro\controller\MaterialCreationController.class
 com\astro\entity\InventoryModule\Gprn.class
 com\astro\repository\InventoryModule\GprnRepository\GprnRepository.class
@@ -29,6 +30,7 @@ com\astro\dto\workflow\InventoryModule\GoodsReceiptInspectionRequestDto.class
 com\astro\service\GoodsReturnService.class
 com\astro\service\EmployeeDepartmentMasterService.class
 com\astro\service\impl\EmployeeDepartmentMasterServiceImpl.class
+com\astro\dto\workflow\ProcurementDtos\WorkOrderDto\woWithTenderAndIndentResponseDTO.class
 com\astro\controller\MaterialMasterController.class
 com\astro\dto\workflow\StateDto.class
 com\astro\exception\InvalidInputException.class
@@ -70,6 +72,7 @@ com\astro\service\impl\TenderRequestServiceImpl.class
 com\astro\service\JobMasterService.class
 com\astro\controller\UserMasterController.class
 com\astro\repository\StateMasterRepository.class
+com\astro\dto\workflow\ProcurementDtos\IndentDto\IndentReportDetailsDTO.class
 com\astro\util\ResponseBuilder.class
 com\astro\entity\ProcurementModule\ServiceOrderMaterial.class
 com\astro\exception\ExceptionHelper.class
@@ -162,6 +165,7 @@ com\astro\dto\workflow\UserRoleDto.class
 com\astro\entity\ProcurementModule\IndentCreation.class
 com\astro\repository\InventoryModule\GoodsReceiptInspectionRepository.class
 com\astro\service\VendorMasterService.class
+com\astro\entity\ProcurementModule\IndentId.class
 com\astro\dto\workflow\EmployeeDepartmentMasterResponseDto.class
 com\astro\service\impl\MaterialMasterServiceImpl.class
 com\astro\service\impl\RoleMasterServiceImpl.class
@@ -177,6 +181,7 @@ com\astro\service\GoodsInspectionService.class
 com\astro\repository\InventoryModule\GoodsReturnRepository.class
 com\astro\controller\InventoryModule\GoodsTransferController.class
 com\astro\dto\workflow\InventoryModule\GprnDto\GprnMaterialsResponseDto.class
+com\astro\dto\workflow\ProcurementDtos\IndentIdDto.class
 com\astro\dto\workflow\ProcurementDtos\ContigencyPurchaseReportDto.class
 com\astro\dto\workflow\InventoryModule\GoodsInspectionRequestDto.class
 com\astro\dto\workflow\RoleRequestDto.class
