@@ -6,6 +6,7 @@ import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.*;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderAttributesDTO;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
+import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
 import com.astro.entity.ProcurementModule.ServiceOrder;
 import com.astro.entity.ProcurementModule.ServiceOrderMaterial;
 import com.astro.exception.BusinessException;
@@ -40,7 +41,7 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
             ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Service Order ID", "SO ID " + serviceOrderRequestDTO.getSoId() + " already exists.");
             throw new InvalidInputException(errorDetails);
         }
-
+/*
         // Iterate over materialDetails and check if materialCode already exists
         for (ServiceOrderMaterialRequestDTO materialRequest : serviceOrderRequestDTO.getMaterials()) {
             if (serviceOrderMaterialRepository.existsById(materialRequest.getMaterialCode())) {
@@ -49,6 +50,8 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
                 throw new InvalidInputException(errorDetails);
             }
         }
+
+ */
 
         ServiceOrder serviceOrder = new ServiceOrder();
         serviceOrder.setSoId(serviceOrderRequestDTO.getSoId());
@@ -71,7 +74,10 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         serviceOrder.setUpdatedBy(serviceOrderRequestDTO.getUpdatedBy());
         List<ServiceOrderMaterial> serviceOrderMaterials = serviceOrderRequestDTO.getMaterials().stream()
             .map(dto -> {
-                    ServiceOrderMaterial material = new ServiceOrderMaterial();
+                // Fetch existing attribute or create a new one
+                ServiceOrderMaterial material = serviceOrderMaterialRepository.findByMaterialCode(dto.getMaterialCode())
+                        .orElse(new ServiceOrderMaterial());
+                   // ServiceOrderMaterial material = new ServiceOrderMaterial();
                     material.setMaterialCode(dto.getMaterialCode());
                     material.setMaterialDescription(dto.getMaterialDescription());
                     material.setQuantity(dto.getQuantity());
@@ -85,7 +91,11 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
                 })
                 .collect(Collectors.toList());
 
+      //  serviceOrder.setMaterials(serviceOrderMaterials);
+      //  serviceOrderRepository.save(serviceOrder);
+        serviceOrderMaterialRepository.saveAll(serviceOrderMaterials);
         serviceOrder.setMaterials(serviceOrderMaterials);
+        serviceOrderMaterials.forEach(material->material.getServiceOrders().add(serviceOrder));
         serviceOrderRepository.save(serviceOrder);
 
         return mapToResponseDTO(serviceOrder);
@@ -117,6 +127,13 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
 
         existingServiceOrder.setUpdatedBy(serviceOrderRequestDTO.getUpdatedBy());
         existingServiceOrder.setCreatedBy(serviceOrderRequestDTO.getCreatedBy());
+        // Remove old material details from service order**
+        for (ServiceOrderMaterial oldMaterial : existingServiceOrder.getMaterials()) {
+            oldMaterial.getServiceOrders().remove(existingServiceOrder);
+        }
+
+        // **Delete old material mappings**
+        serviceOrderMaterialRepository.deleteAll(existingServiceOrder.getMaterials());
         // Update materials
         List<ServiceOrderMaterial> updatedMaterials = serviceOrderRequestDTO.getMaterials().stream()
                 .map(dto -> {
@@ -134,8 +151,19 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
                 })
                 .collect(Collectors.toList());
 
-        serviceOrderMaterialRepository.deleteAll(existingServiceOrder.getMaterials());
+
+      //  existingServiceOrder.setMaterials(updatedMaterials);
+      //  serviceOrderRepository.save(existingServiceOrder);
+        // Save materials first
+        serviceOrderMaterialRepository.saveAll(updatedMaterials);
+
+        // Set materials to service order
         existingServiceOrder.setMaterials(updatedMaterials);
+
+        //Ensure mapping between service order and materials**
+        updatedMaterials.forEach(material -> material.getServiceOrders().add(existingServiceOrder));
+
+        //Save updated service order
         serviceOrderRepository.save(existingServiceOrder);
 
         return mapToResponseDTO(existingServiceOrder);

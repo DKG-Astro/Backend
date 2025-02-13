@@ -5,6 +5,8 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -32,7 +34,9 @@ public class PurchaseOrderAttributes {
     private BigDecimal freightCharge;
     @Column(name = "budget_code")
     private String budgetCode;
-    @ManyToOne
-    @JoinColumn(name = "purchase_order_id", referencedColumnName = "po_id")
-    private PurchaseOrder purchaseOrder;
+   // @ManyToOne
+   // @JoinColumn(name = "purchase_order_id", referencedColumnName = "po_id")
+   // private PurchaseOrder purchaseOrder;
+   @ManyToMany(mappedBy = "purchaseOrderAttributes")
+   private List<PurchaseOrder> purchaseOrders = new ArrayList<>();;
 }

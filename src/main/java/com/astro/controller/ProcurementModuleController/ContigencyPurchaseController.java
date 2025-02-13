@@ -79,7 +79,7 @@ public class ContigencyPurchaseController {
     }
 
 
-    @GetMapping("/report")
+    @GetMapping("/cp/report")
     public List<ContigencyPurchaseReportDto> getContigencyPurchaseReport(
             @RequestParam String startDate,
             @RequestParam String endDate) {

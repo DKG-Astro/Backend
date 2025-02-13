@@ -6,6 +6,7 @@ import com.astro.constant.AppConstant;
 
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.*;
+import com.astro.entity.ProcurementModule.MaterialDetails;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
 import com.astro.exception.BusinessException;
@@ -41,12 +42,14 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
 
     public PurchaseOrderResponseDTO createPurchaseOrder(PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
 
-        // Check if the indentorId already exists
+       // Check if the indentorId already exists
         if (purchaseOrderRepository.existsById(purchaseOrderRequestDTO.getPoId())) {
             ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Purchase Order ID", "PO ID " + purchaseOrderRequestDTO.getPoId() + " already exists.");
             throw new InvalidInputException(errorDetails);
         }
 
+
+/*
         // Iterate over materialDetails and check if materialCode already exists
         for (PurchaseOrderAttributesDTO materialRequest : purchaseOrderRequestDTO.getPurchaseOrderAttributes()) {
             if (purchaseOrderAttributesRepository.existsById(materialRequest.getMaterialCode())) {
@@ -55,6 +58,8 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                 throw new InvalidInputException(errorDetails);
             }
         }
+
+ */
         PurchaseOrder purchaseOrder = new PurchaseOrder();
         purchaseOrder.setPoId(purchaseOrderRequestDTO.getPoId());
         purchaseOrder.setTenderId(purchaseOrderRequestDTO.getTenderId());
@@ -78,8 +83,11 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setCreatedBy(purchaseOrderRequestDTO.getCreatedBy());
         purchaseOrder.setUpdatedBy(purchaseOrderRequestDTO.getUpdatedBy());
         List<PurchaseOrderAttributes> purchaseOrderAttributes = purchaseOrderRequestDTO.getPurchaseOrderAttributes().stream()
-                .map(dto -> {
-                    PurchaseOrderAttributes attribute = new PurchaseOrderAttributes();
+                .map(dto ->{
+                    // Fetch existing attribute or create a new one
+                    PurchaseOrderAttributes attribute = purchaseOrderAttributesRepository.findByMaterialCode(dto.getMaterialCode())
+                            .orElse(new PurchaseOrderAttributes());
+                   // PurchaseOrderAttributes attribute = new PurchaseOrderAttributes();
                     attribute.setMaterialCode(dto.getMaterialCode());
                     attribute.setMaterialDescription(dto.getMaterialDescription());
                     attribute.setQuantity(dto.getQuantity());
@@ -90,13 +98,20 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                     attribute.setDuties(dto.getDuties());
                     attribute.setFreightCharge(dto.getFreightCharge());
                     attribute.setBudgetCode(dto.getBudgetCode());
-                    attribute.setPurchaseOrder(purchaseOrder);  // Associate with PurchaseOrder
+                 //   attribute.setPurchaseOrder(purchaseOrder);  // Associate with PurchaseOrder
                     return attribute;
                 })
                 .collect(Collectors.toList());
-
+       // purchaseOrder.setPurchaseOrderAttributes(purchaseOrderAttributes);
+       // purchaseOrderRepository.save(purchaseOrder);
+        // Set attributes and save order
+        purchaseOrderAttributesRepository.saveAll(purchaseOrderAttributes);
         purchaseOrder.setPurchaseOrderAttributes(purchaseOrderAttributes);
-        purchaseOrderRepository.save(purchaseOrder);
+
+
+        // Ensure purchase_order_attributes_mapping is updated
+        purchaseOrderAttributes.forEach(attr -> attr.getPurchaseOrders().add(purchaseOrder));
+        purchaseOrderRepository.save(purchaseOrder); // Save Purchase Order first
 
         return mapToResponseDTO(purchaseOrder);
     }
@@ -131,9 +146,19 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
      //   purchaseOrder.setTotalValueOfPo(purchaseOrderRequestDTO.getTotalValueOfPo());
         purchaseOrder.setUpdatedBy(purchaseOrderRequestDTO.getUpdatedBy());
         purchaseOrder.setCreatedBy(purchaseOrderRequestDTO.getCreatedBy());
+        // Remove old material details from purchase order
+        for (PurchaseOrderAttributes oldAttribute : purchaseOrder.getPurchaseOrderAttributes()) {
+            oldAttribute.getPurchaseOrders().remove(purchaseOrder);
+        }
+
+        // Delete old material details
+        purchaseOrderAttributesRepository.deleteAll(purchaseOrder.getPurchaseOrderAttributes());
         List<PurchaseOrderAttributes> purchaseOrderAttributes = purchaseOrderRequestDTO.getPurchaseOrderAttributes().stream()
                 .map(dto -> {
-                    PurchaseOrderAttributes attribute = new PurchaseOrderAttributes();
+                    PurchaseOrderAttributes attribute = purchaseOrderAttributesRepository
+                            .findByMaterialCode(dto.getMaterialCode())
+                            .orElse(new PurchaseOrderAttributes());
+                    //PurchaseOrderAttributes attribute = new PurchaseOrderAttributes();
                     attribute.setMaterialCode(dto.getMaterialCode());
                     attribute.setMaterialDescription(dto.getMaterialDescription());
                     attribute.setQuantity(dto.getQuantity());
@@ -144,12 +169,24 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                     attribute.setDuties(dto.getDuties());
                     attribute.setFreightCharge(dto.getFreightCharge());
                     attribute.setBudgetCode(dto.getBudgetCode());
-                    attribute.setPurchaseOrder(purchaseOrder);  // Associate with PurchaseOrder
+                   // attribute.setPurchaseOrder(purchaseOrder);  // Associate with PurchaseOrder
                     return attribute;
                 })
                 .collect(Collectors.toList());
 
+       // purchaseOrder.setPurchaseOrderAttributes(purchaseOrderAttributes);
+       // purchaseOrderRepository.save(purchaseOrder);
+
+        // Save attributes first
+        purchaseOrderAttributesRepository.saveAll(purchaseOrderAttributes);
+
+        // Set attributes to Purchase Order
         purchaseOrder.setPurchaseOrderAttributes(purchaseOrderAttributes);
+
+        // Ensure mapping between Purchase Order and Attributes
+        purchaseOrderAttributes.forEach(attr -> attr.getPurchaseOrders().add(purchaseOrder));
+
+        // Save Purchase Order
         purchaseOrderRepository.save(purchaseOrder);
 
         return mapToResponseDTO(purchaseOrder);

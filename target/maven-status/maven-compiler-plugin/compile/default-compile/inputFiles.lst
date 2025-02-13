@@ -91,6 +91,7 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\Inve
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\ContigencyPurchaseResponseDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\MaterialCreationServiceImpl.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\exception\ErrorDetails.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\VendorContractReportDTO.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\ContigencyPurchaseServiceImpl.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\RoleMasterService.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\EmployeeDepartmentMaster.java
@@ -160,6 +161,7 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller\RoleMa
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\InventoryModule\GoodsReceiptInspection.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\WorkflowMasterRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\WorkOrderService.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\ProcurementModule\IndentCreation\IndentMaterialMappingRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\InventoryModule\GoodsInspection.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\InventoryModule\GoodsTransferRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\ProcurementModule\IndentCreation\MaterialDetailsRepository.java
@@ -199,6 +201,7 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\GprnServi
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller\InventoryModule\AssetController.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller\ProcurementModuleController\IndentCreationController.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\constant\AppConstant.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\ProcurementModule\IndentMaterialMapping.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\UserRoleDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\JobMasterServiceImpl.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\WorkflowService.java

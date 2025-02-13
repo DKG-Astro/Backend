@@ -40,8 +40,14 @@ public class WorkOrder {
     @Column(name = "vendors_account_name")
     private String vendorsAccountName;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "work_order_id")
+  //  @OneToMany(cascade = CascadeType.ALL)
+   // @JoinColumn(name = "work_order_id")
+  @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  @JoinTable(
+          name = "work_order_material_mapping",
+          joinColumns = @JoinColumn(name = "wo_id"),
+          inverseJoinColumns = @JoinColumn(name = "work_code")
+  )
     private List<WorkOrderMaterial> materials;
     @Column(name = "created_by")
     private String createdBy;

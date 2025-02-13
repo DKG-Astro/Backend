@@ -7,6 +7,7 @@ import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.*;
+import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
 import com.astro.entity.ProcurementModule.ServiceOrder;
 import com.astro.entity.ProcurementModule.WorkOrder;
 import com.astro.entity.ProcurementModule.WorkOrderMaterial;
@@ -43,7 +44,7 @@ public class WorkOrderImpl implements WorkOrderService {
             throw new InvalidInputException(errorDetails);
         }
 
-        // Iterate over materialDetails and check if materialCode already exists
+     /*   // Iterate over materialDetails and check if materialCode already exists
         for (WorkOrderMaterialRequestDTO materialRequest : workOrderRequestDTO.getMaterials()) {
             if (workOrderMaterialRepository.existsById(materialRequest.getWorkCode())) {
                 ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Material Code",
@@ -51,6 +52,8 @@ public class WorkOrderImpl implements WorkOrderService {
                 throw new InvalidInputException(errorDetails);
             }
         }
+
+      */
         WorkOrder workOrder = new WorkOrder();
         workOrder.setWoId(workOrderRequestDTO.getWoId());
         workOrder.setTenderId(workOrderRequestDTO.getTenderId());
@@ -68,9 +71,11 @@ public class WorkOrderImpl implements WorkOrderService {
         workOrder.setVendorsAccountName(workOrderRequestDTO.getVendorsAccountName());
         workOrder.setCreatedBy(workOrderRequestDTO.getCreatedBy());
         workOrder.setUpdatedBy(workOrderRequestDTO.getUpdatedBy());
-        List<WorkOrderMaterial>workOrderMaterials = workOrderRequestDTO.getMaterials().stream()
+        List<WorkOrderMaterial> workOrderMaterials = workOrderRequestDTO.getMaterials().stream()
                 .map(dto -> {
-                    WorkOrderMaterial material = new WorkOrderMaterial();
+                    WorkOrderMaterial material = workOrderMaterialRepository.findByWorkCode(dto.getWorkCode())
+                            .orElse(new WorkOrderMaterial());
+                  //  WorkOrderMaterial material = new WorkOrderMaterial();
                     material.setWorkCode(dto.getWorkCode());
                     material.setWorkDescription(dto.getWorkDescription());
                     material.setQuantity(dto.getQuantity());
@@ -83,8 +88,13 @@ public class WorkOrderImpl implements WorkOrderService {
                     return material;
                 })
                 .collect(Collectors.toList());
+      //  workOrder.setMaterials(workOrderMaterials);
+      //  workOrderRepository.save(workOrder);
+        workOrderMaterialRepository.saveAll(workOrderMaterials);
         workOrder.setMaterials(workOrderMaterials);
+        workOrderMaterials.forEach(attr->attr.getWorkOrder().add(workOrder));
         workOrderRepository.save(workOrder);
+
 
         return mapToResponseDTO(workOrder);
     }
@@ -113,10 +123,19 @@ public class WorkOrderImpl implements WorkOrderService {
 
         existingWorkOrder.setUpdatedBy(workOrderRequestDTO.getUpdatedBy());
         existingWorkOrder.setCreatedBy(workOrderRequestDTO.getCreatedBy());
+        // **Remove old material details from work order**
+        for (WorkOrderMaterial oldMaterial : existingWorkOrder.getMaterials()) {
+            oldMaterial.getWorkOrder().remove(existingWorkOrder);
+        }
+
+        // **Delete old material mappings**
+        workOrderMaterialRepository.deleteAll(existingWorkOrder.getMaterials());
         // Update materials
         List<WorkOrderMaterial> updatedWorkMaterials = workOrderRequestDTO.getMaterials().stream()
                 .map(dto -> {
-                    WorkOrderMaterial material = new WorkOrderMaterial();
+                    WorkOrderMaterial material = workOrderMaterialRepository.findById(dto.getWorkCode())
+                            .orElse(new WorkOrderMaterial());
+                  //  WorkOrderMaterial material = new WorkOrderMaterial();
                     material.setWorkCode(dto.getWorkCode());
                     material.setWorkDescription(dto.getWorkDescription());
                     material.setQuantity(dto.getQuantity());
@@ -130,9 +149,21 @@ public class WorkOrderImpl implements WorkOrderService {
                 })
                 .collect(Collectors.toList());
 
-        workOrderMaterialRepository.deleteAll(existingWorkOrder.getMaterials());
+      //  workOrderMaterialRepository.deleteAll(existingWorkOrder.getMaterials());
+       // existingWorkOrder.setMaterials(updatedWorkMaterials);
+       // workOrderRepository.save(existingWorkOrder);
+        // Save updated materials first**
+        workOrderMaterialRepository.saveAll(updatedWorkMaterials);
+
+        //Ensure mapping between work order and materials**
+        updatedWorkMaterials.forEach(material -> material.getWorkOrder().add(existingWorkOrder));
+
+        //Set updated materials to work order**
         existingWorkOrder.setMaterials(updatedWorkMaterials);
+
+        //Save updated work order**
         workOrderRepository.save(existingWorkOrder);
+
 
         return mapToResponseDTO(existingWorkOrder);
     }

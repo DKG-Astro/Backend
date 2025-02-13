@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Data
@@ -30,8 +31,11 @@ public class WorkOrderMaterial {
     @Column(name = "budget_code ")
     private String budgetCode;
 
-    @ManyToOne
-    @JoinColumn(name = "work_order_id", nullable = false)
-    private WorkOrder workOrder;
+   // @ManyToOne
+  //  @JoinColumn(name = "work_order_id", nullable = false)
+   // private WorkOrder workOrder;
+
+    @ManyToMany(mappedBy = "materials")
+    private List<WorkOrder> workOrder;
 
 }

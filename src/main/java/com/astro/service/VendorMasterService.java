@@ -2,6 +2,7 @@ package com.astro.service;
 
 
 
+import com.astro.dto.workflow.VendorContractReportDTO;
 import com.astro.dto.workflow.VendorMasterRequestDto;
 import com.astro.dto.workflow.VendorMasterResponseDto;
 
@@ -17,4 +18,5 @@ public interface VendorMasterService {
     public void deleteVendorMaster(String vendorId);
 
 
+    List<VendorContractReportDTO> getVendorContracts(String startDate, String endDate);
 }

@@ -1,5 +1,6 @@
 package com.astro.controller;
 
+import com.astro.dto.workflow.VendorContractReportDTO;
 import com.astro.dto.workflow.VendorMasterRequestDto;
 import com.astro.dto.workflow.VendorMasterResponseDto;
 import com.astro.service.VendorMasterService;
@@ -47,6 +48,14 @@ public class VendorMasterController {
     public ResponseEntity<String> deleteVendorMaster(@PathVariable String vendorId) {
         vendorMasterService.deleteVendorMaster(vendorId);
         return ResponseEntity.ok("material master deleted successfully. materialCode:"+" " +vendorId);
+    }
+
+
+    @GetMapping("/vendorContracts/reports")
+    public List<VendorContractReportDTO> getVendorContracts(
+            @RequestParam("startDate") String startDate,
+            @RequestParam("endDate") String endDate) {
+        return vendorMasterService.getVendorContracts(startDate,endDate);
     }
 
 

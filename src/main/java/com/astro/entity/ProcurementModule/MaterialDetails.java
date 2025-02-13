@@ -2,12 +2,19 @@ package com.astro.entity.ProcurementModule;
 
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
+@Getter
+@Setter
 public class MaterialDetails {
 
 
@@ -47,9 +54,15 @@ public class MaterialDetails {
     private String materialAndJob;
 
 
-    @ManyToOne
-    @JoinColumn(name = "indent_creation_id", nullable = false)
-    private IndentCreation indentCreation;
+  //  @ManyToOne
+  //  @JoinColumn(name = "indent_creation_id", nullable = false)
+   // @ManyToMany(mappedBy = "materialDetails")
+  // Many-to-Many Relationship with IndentCreation
+
+   // private IndentCreation indentCreation;
+    @ManyToMany(mappedBy = "materialDetails")
+    private List<IndentCreation> indentCreations = new ArrayList<>();
+
 
 
 }

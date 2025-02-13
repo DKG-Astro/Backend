@@ -1,16 +1,20 @@
 package com.astro.entity.ProcurementModule;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Data
-
+@Getter
+@Setter
 public class IndentCreation {
 
 
@@ -79,8 +83,15 @@ public class IndentCreation {
         @Column(name = "upload_pac_or_brand_pac_file_name")
         private String uploadPACOrBrandPACFileName;
 
-        @OneToMany(mappedBy = "indentCreation", cascade = CascadeType.ALL, orphanRemoval = true)
-        private List<MaterialDetails> materialDetails;
+      //  @OneToMany(mappedBy = "indentCreation", cascade = CascadeType.ALL, orphanRemoval = true)
+      @ManyToMany(cascade = CascadeType.PERSIST)
+      @JoinTable(
+              name = "indent_material_mapping",
+              joinColumns = @JoinColumn(name = "indent_id"),
+              inverseJoinColumns = @JoinColumn(name = "material_code")
+      )
+      private List<MaterialDetails> materialDetails = new ArrayList<>();
+
 
         @Column(name = "created_by")
         private String createdBy;

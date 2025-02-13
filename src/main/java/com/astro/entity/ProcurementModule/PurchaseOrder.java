@@ -55,8 +55,14 @@ public class PurchaseOrder {
     @Column(name = "project_name")
     private String projectName;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "purchase_order_id")
+   // @OneToMany(cascade = CascadeType.ALL)
+   // @JoinColumn(name = "purchase_order_id")
+   @ManyToMany(cascade = CascadeType.PERSIST)
+   @JoinTable(
+           name = "purchase_order_attributes_mapping",
+           joinColumns = @JoinColumn(name = "po_id"),
+           inverseJoinColumns = @JoinColumn(name = "material_code")
+   )
     private List<PurchaseOrderAttributes> purchaseOrderAttributes;
     @Column(name = "created_by")
     private String createdBy;
@@ -64,6 +70,5 @@ public class PurchaseOrder {
     private String updatedBy;
     private LocalDateTime createdDate = LocalDateTime.now();
     private LocalDateTime updatedDate = LocalDateTime.now();
-
 
 }

@@ -7,6 +7,7 @@ com\astro\dto\workflow\InventoryModule\AssetRequestDTO.class
 com\astro\dto\workflow\ProcurementDtos\ContigencyPurchaseResponseDto.class
 com\astro\controller\JobMasterController.class
 com\astro\repository\VendorMasterRepository.class
+com\astro\entity\ProcurementModule\IndentMaterialMapping.class
 com\astro\dto\workflow\ProcurementDtos\SreviceOrderDto\soWithTenderAndIndentResponseDTO.class
 com\astro\controller\MaterialCreationController.class
 com\astro\entity\InventoryModule\Gprn.class
@@ -30,6 +31,7 @@ com\astro\dto\workflow\InventoryModule\GoodsReceiptInspectionRequestDto.class
 com\astro\service\GoodsReturnService.class
 com\astro\service\EmployeeDepartmentMasterService.class
 com\astro\service\impl\EmployeeDepartmentMasterServiceImpl.class
+com\astro\dto\workflow\VendorContractReportDTO.class
 com\astro\dto\workflow\ProcurementDtos\WorkOrderDto\woWithTenderAndIndentResponseDTO.class
 com\astro\controller\MaterialMasterController.class
 com\astro\dto\workflow\StateDto.class
@@ -179,6 +181,7 @@ com\astro\dto\workflow\ProcurementDtos\IndentDto\IndentCreationRequestDTO.class
 com\astro\service\impl\AssetServiceImpl.class
 com\astro\service\GoodsInspectionService.class
 com\astro\repository\InventoryModule\GoodsReturnRepository.class
+com\astro\repository\ProcurementModule\IndentCreation\IndentMaterialMappingRepository.class
 com\astro\controller\InventoryModule\GoodsTransferController.class
 com\astro\dto\workflow\InventoryModule\GprnDto\GprnMaterialsResponseDto.class
 com\astro\dto\workflow\ProcurementDtos\IndentIdDto.class

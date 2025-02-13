@@ -46,8 +46,14 @@ public class ServiceOrder {
     @Column(name = "project_name")
     private String projectName;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "service_order_id")
+  //  @OneToMany(cascade = CascadeType.ALL)
+   // @JoinColumn(name = "service_order_id")
+  @ManyToMany(cascade = CascadeType.ALL)
+  @JoinTable(
+          name = "service_order_material_mapping",
+          joinColumns = @JoinColumn(name = "so_id"),
+          inverseJoinColumns = @JoinColumn(name = "material_code")
+  )
     private List<ServiceOrderMaterial> materials;
     @Column(name = "created_by")
     private String createdBy;

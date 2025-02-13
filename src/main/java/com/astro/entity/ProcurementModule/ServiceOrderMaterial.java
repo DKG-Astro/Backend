@@ -5,6 +5,8 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "service_order_material")
@@ -31,9 +33,12 @@ public class ServiceOrderMaterial {
     @Column(name = "budget_code")
     private String budgetCode;
 
-    @ManyToOne
-    @JoinColumn(name = "service_order_id")
-    private ServiceOrder serviceOrder;
+   // @ManyToOne
+    //@JoinColumn(name = "service_order_id")
+    //private ServiceOrder serviceOrder;
+
+    @ManyToMany(mappedBy = "materials")
+    private List<ServiceOrder> serviceOrders = new ArrayList<>();
 
 
 
