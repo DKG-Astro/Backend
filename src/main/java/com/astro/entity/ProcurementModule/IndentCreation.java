@@ -84,7 +84,8 @@ public class IndentCreation {
         private String uploadPACOrBrandPACFileName;
 
       //  @OneToMany(mappedBy = "indentCreation", cascade = CascadeType.ALL, orphanRemoval = true)
-      @ManyToMany(cascade = CascadeType.PERSIST)
+      //@ManyToMany(cascade = CascadeType.PERSIST)
+      @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
       @JoinTable(
               name = "indent_material_mapping",
               joinColumns = @JoinColumn(name = "indent_id"),

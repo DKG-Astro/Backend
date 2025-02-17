@@ -123,6 +123,9 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             material.setMaterialCategory(materialRequest.getMaterialCategory());
             material.setMaterialSubCategory(materialRequest.getMaterialSubCategory());
             material.setMaterialAndJob(materialRequest.getMaterialAndJob());
+            // Establish bidirectional relationship
+            indentCreation.getMaterialDetails().add(material);  // Add material to indent
+            material.getIndentCreations().add(indentCreation);
             // ADD Indent to Material
           //  material.setIndentCreations(indentCreation);  // Associate with the current indentCreation
             return material;
@@ -132,6 +135,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
 
         //indentCreation.setMaterialDetails(materialDetailsList);  // Set the list of material details on indentCreation
         // Save MaterialDetails with updated Many-to-Many relation
+        indentCreationRepository.save(indentCreation);
         materialDetailsRepository.saveAll(materialDetailsList);
         indentCreation.setMaterialDetails(materialDetailsList);
         for (MaterialDetails material : materialDetailsList) {
