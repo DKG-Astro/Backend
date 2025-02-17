@@ -5,11 +5,13 @@ import com.astro.dto.workflow.UserDto;
 import com.astro.dto.workflow.UserRoleDto;
 
 import com.astro.dto.workflow.userRequestDto;
+import com.astro.entity.RoleMaster;
 import com.astro.entity.UserMaster;
 import com.astro.exception.BusinessException;
 import com.astro.entity.UserRoleMaster;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
+import com.astro.repository.RoleMasterRepository;
 import com.astro.repository.UserMasterRepository;
 import com.astro.repository.UserRoleMasterRepository;
 import com.astro.service.UserService;
@@ -32,6 +34,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     UserRoleMasterRepository userRoleMasterRepository;
 
+    @Autowired
+    RoleMasterRepository roleMasterRepository;
+
     @Override
     public void validateUser(Integer userId) {
        UserMaster userMaster = userMasterRepository.findById(userId).orElseThrow(() -> new InvalidInputException(new ErrorDetails(AppConstant.USER_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
@@ -51,6 +56,7 @@ public class UserServiceImpl implements UserService {
             }
 
             UserRoleMaster userRoleMaster = userRoleMasterRepository.findByUserId(userMaster.getUserId());
+
             userRoleDto = new UserRoleDto();
             userRoleDto.setUserId(userRoleMaster.getUserId());
             userRoleDto.setUserRoleId(userRoleMaster.getUserRoleId());
@@ -59,12 +65,21 @@ public class UserServiceImpl implements UserService {
             userRoleDto.setCreatedBy(userRoleMaster.getCreatedBy());
             userRoleDto.setReadPermission(userRoleMaster.getReadPermission());
             userRoleDto.setWritePermission(userRoleMaster.getWritePermission());
+            userRoleDto.setRole(roleNameById(userRoleMaster.getRoleId()));
         }else{
             throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid input."));
         }
 
         return userRoleDto;
+    }
+
+    private String roleNameById(Integer roleId) {
+        if(Objects.nonNull(roleId)) {
+            return roleMasterRepository.findById(roleId).orElse(new RoleMaster()).getRoleName();
+        }else{
+            return null;
+        }
     }
 
     @Override

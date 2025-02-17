@@ -1,16 +1,17 @@
 package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
+import com.astro.constant.WorkflowName;
 import com.astro.dto.workflow.*;
+import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseResponseDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.entity.*;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.*;
-import com.astro.service.IndentCreationService;
-import com.astro.service.UserService;
-import com.astro.service.WorkflowService;
+import com.astro.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +47,12 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     @Autowired
     IndentCreationService indentCreationService;
+
+    @Autowired
+    ContigencyPurchaseService contigencyPurchaseService;
+
+    @Autowired
+    TenderRequestService tenderRequestService;
 
     @Override
     public WorkflowDto workflowByWorkflowName(String workflowName) {
@@ -522,6 +529,7 @@ public class WorkflowServiceImpl implements WorkflowService {
     }
 
     private void approveTransition(WorkflowTransition currentWorkflowTransition, TransitionMaster currentTransition, TransitionActionReqDto transitionActionReqDto) {
+
         if(Objects.isNull(currentTransition.getNextRoleId())){
             currentWorkflowTransition.setNextAction(AppConstant.COMPLETED_TYPE);
             workflowTransitionRepository.save(currentWorkflowTransition);
@@ -550,6 +558,11 @@ public class WorkflowServiceImpl implements WorkflowService {
                 throw new InvalidInputException(new ErrorDetails(AppConstant.NEXT_TRANSITION_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                         AppConstant.ERROR_TYPE_VALIDATION, "Error occurred at approval. No next transition found."));
             }
+            //validation for tender workflow
+            if(WorkflowName.TENDER.getValue().equalsIgnoreCase(currentWorkflowTransition.getWorkflowName())) {
+                validateTenderWorkFlow(nextTransition, currentWorkflowTransition);
+            }
+
             //update currentWorkflowTransition nextSatus and save
             currentWorkflowTransition.setNextAction(AppConstant.COMPLETED_TYPE);
             workflowTransitionRepository.save(currentWorkflowTransition);
@@ -584,6 +597,16 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     }
 
+    private void validateTenderWorkFlow(TransitionDto nextTransition, WorkflowTransition currentWorkflowTransition) {
+        if(currentWorkflowTransition.getCurrentRole().equalsIgnoreCase("Tender Evaluator")){
+            TenderWithIndentResponseDTO tenderWithIndentResponseDTO = tenderRequestService.getTenderRequestById(currentWorkflowTransition.getRequestId());
+            if(Objects.nonNull(tenderWithIndentResponseDTO) && Objects.nonNull(tenderWithIndentResponseDTO.getIndentResponseDTO()) && !tenderWithIndentResponseDTO.getIndentResponseDTO().isEmpty()){
+                List<IndentCreationResponseDTO> indentResponseDTO = tenderWithIndentResponseDTO.getIndentResponseDTO();
+                //indentResponseDTO.stream().map(e -> e.get)
+            }
+        }
+    }
+
     private void validateUserRole(Integer actionBy, Integer roleId) {
         if(Objects.nonNull(roleId)) {
             UserRoleMaster userRoleMaster = userRoleMasterRepository.findByRoleIdAndUserId(roleId, actionBy);
@@ -602,7 +625,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         if (conditionIdList.isEmpty() && nextTransitionDtoList.size() == 1) {
             return nextTransitionDtoList.get(0);
         } else {
-            List<TransitionConditionMaster> transitionConditionMasterList = transitionConditionMasterRepository.findAllById(conditionIdList);
+                                                                                                                                        List<TransitionConditionMaster> transitionConditionMasterList = transitionConditionMasterRepository.findAllById(conditionIdList);
 
             switch (workflowName.toUpperCase()) {
                 case "INDENT WORKFLOW":
@@ -636,6 +659,56 @@ public class WorkflowServiceImpl implements WorkflowService {
                         }
                     }
                     break;
+                case "CONTINGENCY PURCHASE WORKFLOW":
+                    ContigencyPurchaseResponseDto contigencyPurchaseResponseDto = contigencyPurchaseService.getContigencyPurchaseById(requestId);
+                    for(TransitionDto dto : nextTransitionDtoList){
+                        Integer conditionId = dto.getConditionId();
+                        if (Objects.nonNull(conditionId)) {
+                            TransitionConditionMaster transitionConditionMaster = transitionConditionMasterList.stream().filter(f -> f.getConditionId().equals(dto.getConditionId())).findFirst().get();
+                            String conditionKey = transitionConditionMaster.getConditionKey();
+                            String conditionValue = transitionConditionMaster.getConditionValue();
+                            Object dataValue = null;
+                            boolean conditionCheckFlag = Boolean.FALSE;
+                            if(conditionKey.equalsIgnoreCase("ProjectName")){
+                                dataValue =  contigencyPurchaseResponseDto.getProjectName();
+                                if("Empty".equalsIgnoreCase(conditionValue)){
+                                    conditionCheckFlag = Objects.isNull(dataValue);
+                                }else if("Not Empty".equalsIgnoreCase(conditionValue)) {
+                                    conditionCheckFlag = Objects.nonNull(dataValue);
+                                }
+                            }
+
+                            if(conditionCheckFlag){
+                                transitionDto = dto;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                    case "TENDER WORKFLOW":
+                        TenderWithIndentResponseDTO tenderWithIndentResponseDTO = tenderRequestService.getTenderRequestById(requestId);
+                        for(TransitionDto dto : nextTransitionDtoList){
+                            Integer conditionId = dto.getConditionId();
+                            if (Objects.nonNull(conditionId)) {
+                                TransitionConditionMaster transitionConditionMaster = transitionConditionMasterList.stream().filter(f -> f.getConditionId().equals(dto.getConditionId())).findFirst().get();
+                                String conditionKey = transitionConditionMaster.getConditionKey();
+                                String conditionValue = transitionConditionMaster.getConditionValue();
+                                Object dataValue = null;
+                                boolean conditionCheckFlag = Boolean.FALSE;
+                                if(conditionKey.equalsIgnoreCase("totalTenderValue")){
+                                    dataValue =  tenderWithIndentResponseDTO.getTotalTenderValue();
+                                    conditionCheckFlag = ((BigDecimal) dataValue).doubleValue() <= Double.valueOf(conditionValue);
+                                }else if(conditionKey.equalsIgnoreCase("bidType")){
+                                    dataValue =  tenderWithIndentResponseDTO.getBidType();
+                                    conditionCheckFlag = ((String) dataValue).equalsIgnoreCase(conditionValue);
+                                }
+                                if(conditionCheckFlag){
+                                    transitionDto = dto;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
                     //add more case here
 
             }
