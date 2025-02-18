@@ -20,6 +20,7 @@ import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.List;
@@ -84,13 +85,55 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(userRequestDto userDto) {
-        UserMaster userMaster = new UserMaster();
+      /*  UserMaster userMaster = new UserMaster();
 
         userMaster.setUserName(userDto.getUserName());
         userMaster.setMobileNumber(userDto.getMobileNumber());
         userMaster.setPassword(userDto.getPassword());
         userMaster.setCreatedBy(userDto.getCreatedBy());
         userMasterRepository.save(userMaster);
+        return mapToResponseDTO(userMaster);
+
+       */
+        UserMaster userMaster = new UserMaster();
+     /*   Optional<UserMaster> existingUser = userMasterRepository.findByUserName(userDto.getUserName());
+        if (existingUser.isPresent()) {
+            throw new BusinessException(
+                    new ErrorDetails(
+                            AppConstant.ERROR_CODE_RESOURCE,
+                            AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                            AppConstant.ERROR_TYPE_VALIDATION,
+                            "User with username '" + userDto.getUserName() + "' already exists.")
+            );
+        }
+
+      */
+        userMaster.setUserName(userDto.getUserName());
+        userMaster.setRoleName(userDto.getRoleName());
+        userMaster.setMobileNumber(userDto.getMobileNumber());
+        userMaster.setPassword(userDto.getPassword());
+        userMaster.setEmail(userDto.getEmail());
+        userMaster.setCreatedBy(userDto.getCreatedBy());
+        userMasterRepository.save(userMaster);
+        // Step 2: Fetch the role where roleName matches userName
+        RoleMaster role = roleMasterRepository.findByRoleName(userDto.getRoleName())
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "Role with name '" + userDto.getUserName() + "' not found.")
+                ));
+        // Step 3: Save the user-role mapping in user_role_master
+        UserRoleMaster userRole = new UserRoleMaster();
+        userRole.setUserId(userMaster.getUserId());
+        userRole.setRoleId(role.getRoleId());
+        userRole.setReadPermission(true);
+        userRole.setWritePermission(true);
+        userRole.setCreatedBy(userDto.getCreatedBy());
+        userRole.setCreatedDate(new Date());
+
+        userRoleMasterRepository.save(userRole);
         return mapToResponseDTO(userMaster);
     }
 
@@ -177,7 +220,7 @@ public class UserServiceImpl implements UserService {
         userDto.setUserName(userMaster.getUserName());
         userDto.setPassword(userMaster.getPassword());
         userDto.setMobileNumber(userMaster.getMobileNumber());
-
+        userDto.setRoleName(userMaster.getRoleName());
         userDto.setCreatedDate(userMaster.getCreatedDate());
         userDto.setCreatedBy(userMaster.getCreatedBy());
         return userDto;

@@ -12,6 +12,7 @@ public class UserDto {
     private String password;
     private String userName;
     private String mobileNumber;
+    private String roleName;
     private String createdBy;
     private LocalDateTime createdDate;
 }

@@ -5,8 +5,10 @@ import com.astro.entity.RoleMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 
 @Repository
 public interface RoleMasterRepository extends JpaRepository<RoleMaster, Integer> {
-    RoleMaster findByRoleName(String roleName);
+    Optional<RoleMaster> findByRoleName(String roleName);
 }

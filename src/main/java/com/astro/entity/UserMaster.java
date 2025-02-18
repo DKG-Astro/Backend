@@ -19,6 +19,8 @@ public class UserMaster {
 
     @Column(name = "USERNAME")
     private String userName;
+    @Column(name = "role_name")
+    private String roleName;
 
     @Column(name = "PASSWORD")
     private String password;
