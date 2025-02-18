@@ -6,13 +6,17 @@
   <component name="ChangeListManager">
     <list default="true" id="ff5636e0-402f-4a63-8653-94f411351cbb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/UserDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/UserDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/userRequestDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/userRequestDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/UserMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/UserMaster.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/RoleMasterRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/RoleMasterRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/TenderRequestDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/TenderRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/TenderResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/TenderResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/TenderWithIndentResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/TenderWithIndentResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/TenderRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/TenderRequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/TenderRequestDto.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/TenderRequestDto.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/TenderResponseDto.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/TenderResponseDto.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/TenderWithIndentResponseDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/TenderWithIndentResponseDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/ProcurementModule/TenderRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/entity/ProcurementModule/TenderRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/TenderRequestServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/service/impl/TenderRequestServiceImpl.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

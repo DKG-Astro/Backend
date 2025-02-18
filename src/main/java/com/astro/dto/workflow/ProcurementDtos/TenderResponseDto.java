@@ -34,7 +34,7 @@ public class TenderResponseDto {
     private String preBidDisscussions;
     private BigDecimal totalTenderValue;
     private String updatedBy;
-    private String createdBy;
+    private Integer createdBy;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
 
