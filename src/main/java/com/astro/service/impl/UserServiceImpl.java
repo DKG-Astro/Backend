@@ -85,16 +85,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(userRequestDto userDto) {
-      /*  UserMaster userMaster = new UserMaster();
 
-        userMaster.setUserName(userDto.getUserName());
-        userMaster.setMobileNumber(userDto.getMobileNumber());
-        userMaster.setPassword(userDto.getPassword());
-        userMaster.setCreatedBy(userDto.getCreatedBy());
-        userMasterRepository.save(userMaster);
-        return mapToResponseDTO(userMaster);
-
-       */
         UserMaster userMaster = new UserMaster();
      /*   Optional<UserMaster> existingUser = userMasterRepository.findByUserName(userDto.getUserName());
         if (existingUser.isPresent()) {
