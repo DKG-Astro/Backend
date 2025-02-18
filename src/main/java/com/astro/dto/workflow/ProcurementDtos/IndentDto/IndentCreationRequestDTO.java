@@ -40,6 +40,6 @@ public class IndentCreationRequestDTO {
     private String singleAndMultipleJob;
     private List<MaterialDetailsRequestDTO> materialDetails;
     private String updatedBy;
-    private String createdBy;
+    private Integer createdBy;
 
 }

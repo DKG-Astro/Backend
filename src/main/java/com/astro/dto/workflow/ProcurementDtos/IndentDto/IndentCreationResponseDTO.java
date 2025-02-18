@@ -34,7 +34,7 @@ public class IndentCreationResponseDTO {
     private String materialCategory;
     private BigDecimal totalPriceOfAllMaterials;
     private List<MaterialDetailsResponseDTO> materialDetails;
-    private String createdBy;
+    private Integer createdBy;
     private String updatedBy;
 
 }

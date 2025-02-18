@@ -363,7 +363,10 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                     .map(MaterialDetails::getMaterialCategory)
                     .findFirst()
                     .orElse(null);
-
+            // Converting "Capital" or "Consumable" to "Normal"
+            if ("Capital".equalsIgnoreCase(materialCategory) || "Consumable".equalsIgnoreCase(materialCategory)) {
+                materialCategory = "Normal";
+            }
             response.setMaterialCategory(materialCategory);  //set material category to indent response
 
             // Map material details
