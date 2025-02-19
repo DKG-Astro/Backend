@@ -608,10 +608,7 @@ public class WorkflowServiceImpl implements WorkflowService {
             TenderWithIndentResponseDTO tenderWithIndentResponseDTO = tenderRequestService.getTenderRequestById(currentWorkflowTransition.getRequestId());
             if(Objects.nonNull(tenderWithIndentResponseDTO) && Objects.nonNull(tenderWithIndentResponseDTO.getIndentResponseDTO()) && !tenderWithIndentResponseDTO.getIndentResponseDTO().isEmpty()){
                 List<IndentCreationResponseDTO> indentResponseDTO = tenderWithIndentResponseDTO.getIndentResponseDTO();
-                List<Integer> indenterList =  new ArrayList<>(); //indentResponseDTO.stream().map(e -> e.getCreatedBy()).collect(Collectors.toList());
-                indenterList.add(1);
-                indenterList.add(2);
-                indenterList.add(3);
+                List<Integer> indenterList = indentResponseDTO.stream().map(e -> e.getCreatedBy()).collect(Collectors.toList());
                 if(Objects.nonNull(indenterList) && !indenterList.isEmpty()){
                     AtomicInteger seq = new AtomicInteger(1);
                     indenterList.forEach(e -> {
