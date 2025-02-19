@@ -95,7 +95,7 @@ public class IndentCreation {
 
 
         @Column(name = "created_by")
-        private String createdBy;
+        private Integer createdBy;
 
         @Column(name = "updated_by")
         private String updatedBy;

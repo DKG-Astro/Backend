@@ -69,15 +69,15 @@ public class IndentCreationController {
      IndentCreationResponseDTO responseDTO = indentCreationService.createIndent(indentRequestDTO,uploadingPriorApprovalsFileName,
           uploadTenderDocumentsFileName,uploadGOIOrRFPFileName,uploadPACOrBrandPACFileName );
 
-     // Initiateing the workflow after saving the indent
+
      String requestId = responseDTO.getIndentId(); // Useing the indent ID as the request ID
      String workflowName = "Indent Workflow";
-     String createdBy = indentRequestDTO.getCreatedBy();
-     Optional<UserMaster> userMaster = userService.getUserMasterByCreatedBy(createdBy);
-     Integer userId = userMaster.get().getUserId();
+   //String createdBy = indentRequestDTO.getCreatedBy();
+   //Optional<UserMaster> userMaster = userService.getUserMasterByCreatedBy(createdBy);
+    //nteger userId = userMaster.get().getUserId();
+     Integer userId = indentRequestDTO.getCreatedBy();
 
-
-     // Call initiateWorkflow API
+     //initiateing Workflow API
     WorkflowTransitionDto workflowTransitionDto = workflowService.initiateWorkflow(requestId, workflowName, userId);
 /*
     // action approve

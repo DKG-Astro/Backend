@@ -22,14 +22,17 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\Proc
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\UomMasterServiceImpl.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\TransitionMasterRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\RoleDto.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\SubWorkflowTransitionRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller\ProjectMasterController.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\SreviceOrderDto\ServiceOrderResponseDTO.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\SubWorkflowTransitionDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\UserService.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\JobMasterService.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\SreviceOrderDto\ServiceOrderMaterialRequestDTO.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\InventoryModule\GoodsInspectionRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\TenderRequestService.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\WorkflowTransitionRepository.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\SubWorkflowTransition.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\purchaseOrder\PurchaseOrderAttributesDTO.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\RoleMaster.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\UomMaster.java

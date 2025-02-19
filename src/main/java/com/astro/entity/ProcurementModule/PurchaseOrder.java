@@ -70,5 +70,4 @@ public class PurchaseOrder {
     private String updatedBy;
     private LocalDateTime createdDate = LocalDateTime.now();
     private LocalDateTime updatedDate = LocalDateTime.now();
-
 }

@@ -1,10 +1,7 @@
 package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationRequestDTO;
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsRequestDTO;
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.*;
 import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.entity.ProcurementModule.IndentMaterialMapping;
 import com.astro.entity.ProcurementModule.MaterialDetails;
@@ -26,6 +23,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -150,77 +148,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreationRepository.save(indentCreation);
         return mapToResponseDTO(indentCreation);
     }
-/*
 
-    public IndentCreationResponseDTO createIndent(IndentCreationRequestDTO indentRequestDTO, String uploadingPriorApprovalsFileName,
-                                                 String uploadTenderDocumentsFileName, String uploadGOIOrRFPFileName, String uploadPACOrBrandPACFileName) {
-        // Check if the indentId already exists
-        if (indentCreationRepository.existsById(indentRequestDTO.getIndentId())) {
-            throw new InvalidInputException(new ErrorDetails(400, 1, "Duplicate Indent ID", "Indent ID " + indentRequestDTO.getIndentId() + " already exists."));
-        }
-
-        // Validate material category consistency
-        String materialCategory = null;
-        for (MaterialDetailsRequestDTO materialRequest : indentRequestDTO.getMaterialDetails()) {
-            if (materialCategory == null) {
-                materialCategory = materialRequest.getMaterialCategory();
-            } else if (!materialCategory.equals(materialRequest.getMaterialCategory())) {
-                throw new InvalidInputException(new ErrorDetails(400, 2, "Inconsistent Material Category", "All materials must have the same material category."));
-            }
-        }
-
-        // Create and populate IndentCreation entity
-        IndentCreation indentCreation = new IndentCreation();
-        indentCreation.setIndentId(indentRequestDTO.getIndentId());
-        indentCreation.setIndentorName(indentRequestDTO.getIndentorName());
-        indentCreation.setIndentorMobileNo(indentRequestDTO.getIndentorMobileNo());
-        indentCreation.setIndentorEmailAddress(indentRequestDTO.getIndentorEmailAddress());
-        indentCreation.setConsignesLocation(indentRequestDTO.getConsignesLocation());
-        indentCreation.setProjectName(indentRequestDTO.getProjectName());
-        indentCreation.setIsPreBitMeetingRequired(indentRequestDTO.getIsPreBidMeetingRequired());
-        indentCreation.setPreBidMeetingDate(CommonUtils.convertStringToDateObject(indentRequestDTO.getPreBidMeetingDate()));
-        indentCreation.setPreBidMeetingVenue(indentRequestDTO.getPreBidMeetingVenue());
-        indentCreation.setIsItARateContractIndent(indentRequestDTO.getIsItARateContractIndent());
-        indentCreation.setEstimatedRate(indentRequestDTO.getEstimatedRate());
-        indentCreation.setPeriodOfContract(indentRequestDTO.getPeriodOfContract());
-        indentCreation.setSingleAndMultipleJob(indentRequestDTO.getSingleAndMultipleJob());
-        indentCreation.setCreatedBy(indentRequestDTO.getCreatedBy());
-        indentCreation.setUpdatedBy(indentRequestDTO.getUpdatedBy());
-        indentCreation.setUploadingPriorApprovalsFileName(uploadingPriorApprovalsFileName);
-        indentCreation.setUploadTenderDocumentsFileName(uploadTenderDocumentsFileName);
-        indentCreation.setUploadGOIOrRFPFileName(uploadGOIOrRFPFileName);
-        indentCreation.setUploadPACOrBrandPACFileName(uploadPACOrBrandPACFileName);
-
-        indentCreationRepository.save(indentCreation);
-
-        // Process MaterialDetails and create mappings
-        List<IndentMaterialMapping> mappings = indentRequestDTO.getMaterialDetails().stream().map(materialRequest -> {
-            MaterialDetails material = materialDetailsRepository.findById(materialRequest.getMaterialCode())
-                    .orElse(new MaterialDetails());
-
-            material.setMaterialCode(materialRequest.getMaterialCode());
-            material.setMaterialDescription(materialRequest.getMaterialDescription());
-            material.setUom(materialRequest.getUom());
-            material.setBudgetCode(materialRequest.getBudgetCode());
-            material.setMaterialCategory(materialRequest.getMaterialCategory());
-            material.setMaterialSubCategory(materialRequest.getMaterialSubCategory());
-            material.setMaterialAndJob(materialRequest.getMaterialAndJob());
-
-            materialDetailsRepository.save(material); // Save updated or new MaterialDetails
-
-            // Create IndentMaterialMapping
-            IndentMaterialMapping mapping = new IndentMaterialMapping();
-            mapping.setIndentCreation(indentCreation);
-            mapping.setMaterialDetails(material);
-            mapping.setQuantity(materialRequest.getQuantity());
-            mapping.setTotalPrice(materialRequest.getQuantity().multiply(materialRequest.getUnitPrice()));
-            return mapping;
-        }).collect(Collectors.toList());
-
-        indentMaterialMappingRepository.saveAll(mappings); // Save mappings
-        return mapToResponseDTO(indentCreation);
-    }
-*/
     public IndentCreationResponseDTO updateIndent(String indentId, IndentCreationRequestDTO indentRequestDTO,String uploadingPriorApprovalsFileName,
                                                   String uploadTenderDocumentsFileName,String uploadGOIOrRFPFileName,String uploadPACOrBrandPACFileName) {
         IndentCreation indentCreation = indentCreationRepository.findById(indentId)
@@ -363,7 +291,10 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                     .map(MaterialDetails::getMaterialCategory)
                     .findFirst()
                     .orElse(null);
-
+            // Converting "Capital" or "Consumable" to "Normal"
+            if ("Capital".equalsIgnoreCase(materialCategory) || "Consumable".equalsIgnoreCase(materialCategory)) {
+                materialCategory = "Normal";
+            }
             response.setMaterialCategory(materialCategory);  //set material category to indent response
 
             // Map material details
@@ -418,6 +349,12 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                     ex
             );
         }
+    }
+
+    @Override
+    public List<IndentReportDetailsDTO> getIndentReport(String startDate, String endDate) {
+
+      return indentCreationRepository.fetchIndentReportDetails(CommonUtils.convertStringToDateObject(startDate),CommonUtils.convertStringToDateObject(endDate));
     }
 
     public void handleFileUpload(IndentCreation indentCreation, MultipartFile file, Consumer<byte[]> fileSetter) {

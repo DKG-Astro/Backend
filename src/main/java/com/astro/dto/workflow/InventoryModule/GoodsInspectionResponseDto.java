@@ -12,7 +12,7 @@ public class GoodsInspectionResponseDto {
 
 
     private String goodsInspectionNo;
-    private String receiptInspectionNo;
+    private String griId;
     private String installationDate;
 
     private String commissioningDate;

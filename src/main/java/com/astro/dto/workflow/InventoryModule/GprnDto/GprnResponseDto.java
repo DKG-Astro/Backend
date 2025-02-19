@@ -10,7 +10,7 @@ import java.util.List;
 public class GprnResponseDto {
 
     private String gprnNo;
-    private String poNo;
+    private String poId;
     private String date;
     private String deliveryChallanNo;
     private String deliveryChallanDate;

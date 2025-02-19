@@ -13,7 +13,7 @@ import java.util.List;
 public class GprnRequestDto {
 
     private String gprnNo;
-    private String poNo;
+    private String poId;
     private String date;
     private String deliveryChallanNo;
     private String deliveryChallanDate;

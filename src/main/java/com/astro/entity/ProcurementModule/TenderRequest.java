@@ -75,7 +75,7 @@ public class TenderRequest {
     @Column(name = "updated_by")
     private String updatedBy;
     @Column(name = "created_by")
-    private String createdBy;
+    private Integer createdBy;
     @Column(name = "created_date", nullable = false)
     private LocalDateTime createdDate = LocalDateTime.now();
     @Column(name = "updated_date", nullable = false)

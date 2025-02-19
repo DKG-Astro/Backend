@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class GoodsReceiptInspectionResponseDto {
 
 
-    private String receiptInspectionNo;
+    private String griId;
 
     private String installationDate;
 

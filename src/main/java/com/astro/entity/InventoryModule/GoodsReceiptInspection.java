@@ -16,8 +16,8 @@ public class GoodsReceiptInspection {
   //  private String griId;
 
     @Id
-    @Column(name = "receipt_inspection_no")
-    private String receiptInspectionNo;
+    @Column(name = "gri_id")
+    private String griId;
 
     @Column(name = "installation_date")
     private LocalDate installationDate;

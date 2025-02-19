@@ -36,7 +36,7 @@ public class TenderRequestDto {
     private MultipartFile uploadSpecificTermsAndConditions;
     private String preBidDisscussions;
     private String updatedBy;
-    private String createdBy;
+    private Integer createdBy;
     private List<String> indentIds; // Updated
 
 

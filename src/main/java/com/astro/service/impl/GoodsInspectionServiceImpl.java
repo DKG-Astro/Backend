@@ -40,7 +40,7 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
 
          GoodsInspection goodsInspection = new GoodsInspection();
          goodsInspection.setGoodsInspectionNo(goodsInspectionDTO.getGoodsInspectionNo());
-         goodsInspection.setReceiptInspectionNo(goodsInspectionDTO.getReceiptInspectionNo());
+         goodsInspection.setGriId(goodsInspectionDTO.getGriId());
         String InstallationDate=goodsInspectionDTO.getInstallationDate();
         goodsInspection.setInstallationDate(CommonUtils.convertStringToDateObject(InstallationDate));
         String CommissioningDate= goodsInspectionDTO.getCommissioningDate();
@@ -66,7 +66,7 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
         GoodsInspectionResponseDto  goodsInspectionResponseDto = new GoodsInspectionResponseDto();
 
         goodsInspectionResponseDto.setGoodsInspectionNo(saved.getGoodsInspectionNo());
-        goodsInspectionResponseDto.setReceiptInspectionNo(saved.getReceiptInspectionNo());
+        goodsInspectionResponseDto.setGriId(saved.getGriId());
       LocalDate InstallationDate=saved.getInstallationDate();
         goodsInspectionResponseDto.setInstallationDate(CommonUtils.convertDateToString(InstallationDate));
        LocalDate CommissioningDate= saved.getCommissioningDate();
@@ -100,7 +100,7 @@ public class GoodsInspectionServiceImpl implements GoodsInspectionService {
 
         String InstallationDate=goodsInspectionDTO.getInstallationDate();
         existing.setInstallationDate(CommonUtils.convertStringToDateObject(InstallationDate));
-        existing.setReceiptInspectionNo(goodsInspectionDTO.getReceiptInspectionNo());
+        existing.setGriId(goodsInspectionDTO.getGriId());
         String CommissioningDate= goodsInspectionDTO.getCommissioningDate();
         existing.setCommissioningDate(CommonUtils.convertStringToDateObject(CommissioningDate));
        // existing.setUploadInstallationReport(goodsInspectionDTO.getUploadInstallationReport());

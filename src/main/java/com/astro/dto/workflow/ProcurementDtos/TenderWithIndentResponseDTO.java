@@ -2,6 +2,7 @@ package com.astro.dto.workflow.ProcurementDtos;
 
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsResponseDTO;
+import io.swagger.models.auth.In;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -34,7 +35,7 @@ public class TenderWithIndentResponseDTO {
     private String uploadSpecificTermsAndConditions;
     private String preBidDisscussions;
     private String updatedBy;
-    private String createdBy;
+    private Integer createdBy;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
     private List<IndentCreationResponseDTO> indentResponseDTO;

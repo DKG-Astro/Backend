@@ -16,6 +16,7 @@ com\astro\entity\ProcurementModule\ServiceOrder.class
 com\astro\entity\MaterialMaster.class
 com\astro\entity\ProcurementModule\WorkOrder.class
 com\astro\service\MaterialCreationService.class
+com\astro\dto\workflow\SubWorkflowTransitionDto.class
 com\astro\service\WorkOrderService.class
 com\astro\dto\workflow\JobMasterRequestDto.class
 com\astro\repository\EmployeeDepartmentMasterRepository.class
@@ -205,8 +206,10 @@ com\astro\controller\UomMasterController.class
 com\astro\entity\ProjectMaster.class
 com\astro\entity\InventoryModule\GoodsInspection.class
 com\astro\dto\workflow\ProcurementDtos\SreviceOrderDto\ServiceOrderMaterialRequestDTO.class
+com\astro\repository\SubWorkflowTransitionRepository.class
 com\astro\repository\TransitionMasterRepository.class
 com\astro\dto\workflow\MaterialMasterRequestDto.class
+com\astro\entity\SubWorkflowTransition.class
 com\astro\dto\workflow\InventoryModule\GoodsReturnResponseDto.class
 com\astro\service\AssetService.class
 com\astro\dto\workflow\ProcurementDtos\WorkOrderDto\WorkOrderRequestDTO.class
