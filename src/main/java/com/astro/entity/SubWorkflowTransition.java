@@ -21,8 +21,8 @@ public class SubWorkflowTransition {
     @Column(name = "WORKFLOWNAME")
     private String workflowName;
 
-    @Column(name = "TRANSITIONID")
-    private Integer transitionId;
+    @Column(name = "WORKFLOWTRANSITIONID")
+    private Integer workflowTransitionId;
 
     @Column(name = "REQUESTID")
     private String requestId;

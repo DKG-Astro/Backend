@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.logging.Logger;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,6 +53,9 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     @Autowired
     TenderRequestService tenderRequestService;
+
+    @Autowired
+    SubWorkflowTransitionRepository subWorkflowTransitionRepository;
 
     @Override
     public WorkflowDto workflowByWorkflowName(String workflowName) {
@@ -529,12 +532,14 @@ public class WorkflowServiceImpl implements WorkflowService {
     }
 
     private void approveTransition(WorkflowTransition currentWorkflowTransition, TransitionMaster currentTransition, TransitionActionReqDto transitionActionReqDto) {
+        TransitionDto nextTransition = null;
+        WorkflowTransition nextWorkflowTransition = null;
 
         if(Objects.isNull(currentTransition.getNextRoleId())){
             currentWorkflowTransition.setNextAction(AppConstant.COMPLETED_TYPE);
             workflowTransitionRepository.save(currentWorkflowTransition);
 
-            WorkflowTransition nextWorkflowTransition = new WorkflowTransition();
+            nextWorkflowTransition = new WorkflowTransition();
             nextWorkflowTransition.setWorkflowId(currentWorkflowTransition.getWorkflowId());
             nextWorkflowTransition.setTransitionId(currentWorkflowTransition.getTransitionId());
             nextWorkflowTransition.setTransitionOrder(currentWorkflowTransition.getTransitionOrder());
@@ -553,21 +558,17 @@ public class WorkflowServiceImpl implements WorkflowService {
 
             workflowTransitionRepository.save(nextWorkflowTransition);
         }else{
-           TransitionDto nextTransition =  nextTransition(currentTransition.getWorkflowId(), currentWorkflowTransition.getWorkflowName() ,roleNameByUserId(transitionActionReqDto.getActionBy()), currentWorkflowTransition.getRequestId());
+            nextTransition =  nextTransition(currentTransition.getWorkflowId(), currentWorkflowTransition.getWorkflowName() ,roleNameByUserId(transitionActionReqDto.getActionBy()), currentWorkflowTransition.getRequestId());
             if(Objects.isNull(nextTransition)){
                 throw new InvalidInputException(new ErrorDetails(AppConstant.NEXT_TRANSITION_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                         AppConstant.ERROR_TYPE_VALIDATION, "Error occurred at approval. No next transition found."));
-            }
-            //validation for tender workflow
-            if(WorkflowName.TENDER.getValue().equalsIgnoreCase(currentWorkflowTransition.getWorkflowName())) {
-                validateTenderWorkFlow(nextTransition, currentWorkflowTransition);
             }
 
             //update currentWorkflowTransition nextSatus and save
             currentWorkflowTransition.setNextAction(AppConstant.COMPLETED_TYPE);
             workflowTransitionRepository.save(currentWorkflowTransition);
 
-            WorkflowTransition nextWorkflowTransition = new WorkflowTransition();
+            nextWorkflowTransition = new WorkflowTransition();
             nextWorkflowTransition.setWorkflowId(nextTransition.getWorkflowId());
             nextWorkflowTransition.setTransitionId(nextTransition.getTransitionId());
             nextWorkflowTransition.setTransitionOrder(nextTransition.getTransitionOrder());
@@ -595,15 +596,50 @@ public class WorkflowServiceImpl implements WorkflowService {
             workflowTransitionRepository.save(nextWorkflowTransition);
         }
 
+        //validation for tender workflow
+        if(WorkflowName.TENDER.getValue().equalsIgnoreCase(currentWorkflowTransition.getWorkflowName())) {
+            validateTenderWorkFlow(nextTransition, currentWorkflowTransition, nextWorkflowTransition);
+        }
+
     }
 
-    private void validateTenderWorkFlow(TransitionDto nextTransition, WorkflowTransition currentWorkflowTransition) {
-        if(currentWorkflowTransition.getCurrentRole().equalsIgnoreCase("Tender Evaluator")){
+    private void validateTenderWorkFlow(TransitionDto nextTransition, WorkflowTransition currentWorkflowTransition, WorkflowTransition nextWorkflowTransition ) {
+        if((nextWorkflowTransition.getCurrentRole().equalsIgnoreCase("Tender Evaluator")) || (nextWorkflowTransition.getCurrentRole().equalsIgnoreCase("Purchase Dept") && nextWorkflowTransition.getNextRole().equalsIgnoreCase("Purchase Dept"))){
             TenderWithIndentResponseDTO tenderWithIndentResponseDTO = tenderRequestService.getTenderRequestById(currentWorkflowTransition.getRequestId());
             if(Objects.nonNull(tenderWithIndentResponseDTO) && Objects.nonNull(tenderWithIndentResponseDTO.getIndentResponseDTO()) && !tenderWithIndentResponseDTO.getIndentResponseDTO().isEmpty()){
                 List<IndentCreationResponseDTO> indentResponseDTO = tenderWithIndentResponseDTO.getIndentResponseDTO();
-                //indentResponseDTO.stream().map(e -> e.get)
+                List<Integer> indenterList =  new ArrayList<>(); //indentResponseDTO.stream().map(e -> e.getCreatedBy()).collect(Collectors.toList());
+                indenterList.add(1);
+                indenterList.add(2);
+                indenterList.add(3);
+                if(Objects.nonNull(indenterList) && !indenterList.isEmpty()){
+                    AtomicInteger seq = new AtomicInteger(1);
+                    indenterList.forEach(e -> {
+                        SubWorkflowTransition subWorkflowTransition = new SubWorkflowTransition();
+                        subWorkflowTransition.setWorkflowId(currentWorkflowTransition.getWorkflowId());
+                        subWorkflowTransition.setWorkflowTransitionId(nextWorkflowTransition.getWorkflowTransitionId());
+                        subWorkflowTransition.setAction(AppConstant.PENDING_TYPE);
+                        subWorkflowTransition.setWorkflowName(nextWorkflowTransition.getWorkflowName());
+                        subWorkflowTransition.setActionOn(e);
+                        subWorkflowTransition.setCreatedBy(nextWorkflowTransition.getModifiedBy());
+                        subWorkflowTransition.setWorkflowSequence(seq.get());
+                        subWorkflowTransition.setRequestId(nextWorkflowTransition.getRequestId());
+                        subWorkflowTransition.setStatus(AppConstant.PENDING_TYPE);
+                        subWorkflowTransition.setCreatedDate(new Date());
+                        seq.getAndIncrement();
+
+                        subWorkflowTransitionRepository.save(subWorkflowTransition);
+                    });
+                }
             }
+        }
+        if(nextWorkflowTransition.getCurrentRole().equalsIgnoreCase("Purchase Dept") && Objects.isNull(nextWorkflowTransition.getNextRole())){
+            List<SubWorkflowTransition> subWorkflowTransitionList = subWorkflowTransitionRepository.findByWorkflowTransitionIdAndStatus(currentWorkflowTransition.getWorkflowTransitionId(), AppConstant.PENDING_TYPE);
+            if(Objects.nonNull(subWorkflowTransitionList) && !subWorkflowTransitionList.isEmpty()){
+                throw new InvalidInputException(new ErrorDetails(AppConstant.NEXT_TRANSITION_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                        AppConstant.ERROR_TYPE_VALIDATION, "Error occurred at approval. All indenter not performed action for this workflow to approve."));
+            }
+
         }
     }
 
