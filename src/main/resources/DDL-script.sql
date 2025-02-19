@@ -133,6 +133,24 @@ CREATE TABLE gprn_materials (
     gprn_id VARCHAR(255),
     FOREIGN KEY (gprn_id) REFERENCES GPRN(gprn_no)
 );
+CREATE TABLE material_disposal (
+    material_disposal_code VARCHAR(255) primary key,
+    disposal_category VARCHAR(255),
+    disposal_mode VARCHAR(255),
+    vendor_details VARCHAR(255),
+    disposal_date DATE,
+    current_book_value DECIMAL(19,2),
+    edit_reserve_value DECIMAL(19,2),
+    final_bid_value DECIMAL(19,2),
+    sale_note LONGBLOB,
+    sale_note_file_name VARCHAR(255),
+    edit_quantity DECIMAL(19,2),
+    edit_value_materials DECIMAL(19,2),
+    created_by VARCHAR(255),
+    updated_by VARCHAR(255),
+    created_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
 
 

@@ -1,10 +1,12 @@
 package com.astro.entity.InventoryModule;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,59 +17,51 @@ public class Gprn {
     @Id
     @Column(name = "gprn_no")
     private String gprnNo;
-
-    @Column(nullable = false)
-    private String poNo;
-
-    @Column(nullable = false)
+    @Column(name = "po_Id")
+    private String poId;
     private LocalDate date;
-
-    @Column(nullable = false)
+    @Column(name="delivery_challan_no")
     private String deliveryChallanNo;
-
-    @Column(nullable = false)
+    @Column(name = "delivery_challan_date")
     private LocalDate deliveryChallanDate;
-
-    @Column(nullable = false)
+    @Column(name="vendor_id")
     private String vendorId;
-
-    @Column(nullable = false)
+    @Column(name = "vendor_name")
     private String vendorName;
-
     private String vendorEmail;
-
     private Long vendorContactNo;
-
-    @Column(nullable = false)
+    @Column(name = "field_station")
     private String fieldStation;
-
-    @Column(nullable = false)
+    @Column(name="indentor_name")
     private String indentorName;
-
-    @Column(nullable = false)
+    @Column(name="expected_supply_date")
     private LocalDate expectedSupplyDate;
-
-    @Column(nullable = false)
+    @Column(name = "consignee_detail")
     private String consigneeDetail;
-
     private Integer warrantyYears;
-
     private String project;
-
     private String receivedQty;
-
     private String pendingQty;
     private String acceptedQty;
-
     @Lob
     private byte[] provisionalReceiptCertificate;
 
    // @Column(name = "")
     private String provisionalReceiptCertificateFileName;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "gprn_id")  // Updated to reflect the new column name in the GprnMaterials table
-    private List<GprnMaterials> gprnMaterials;
+ //   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+  //  @JoinColumn(name = "gprn_id")  // Updated to reflect the new column name in the GprnMaterials table
+ /*   @ManyToMany
+    @JoinTable(
+         name = "gprn_gprn_materials",
+         joinColumns = @JoinColumn(name = "gprn_id"),
+         inverseJoinColumns = @JoinColumn(name = "material_code")
+    )
+
+  */
+    @OneToMany(mappedBy = "gprn", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<GprnMaterials> gprnMaterials = new ArrayList<>();
 
     @Column(name = "received_by")
     private String receivedBy;

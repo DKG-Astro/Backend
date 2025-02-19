@@ -2,6 +2,7 @@ package com.astro.service;
 
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentReportDetailsDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -21,5 +22,8 @@ public interface IndentCreationService {
     public List<IndentCreationResponseDTO> getAllIndents();
 
     void deleteIndent(String indentId);
+
+
+    List<IndentReportDetailsDTO> getIndentReport(String startDate, String endDate);
 
 }

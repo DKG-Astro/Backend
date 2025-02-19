@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class GoodsReceiptInspectionRequestDto {
 
-    private String receiptInspectionNo;
+    private String gprId;
     private String installationDate;
     private String commissioningDate;
     private String assetCode;

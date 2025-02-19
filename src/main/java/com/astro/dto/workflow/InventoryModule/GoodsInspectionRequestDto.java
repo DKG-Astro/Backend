@@ -8,7 +8,7 @@ import javax.persistence.Column;
 @Data
 public class GoodsInspectionRequestDto {
     private String goodsInspectionNo;
-    private String receiptInspectionNo;
+    private String griId;
     private String installationDate;
     private String commissioningDate;
     private MultipartFile uploadInstallationReport;

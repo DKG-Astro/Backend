@@ -29,14 +29,14 @@ public class GoodsReceiptInspectionServiceImpl implements GoodsReceiptInspection
     public GoodsReceiptInspectionResponseDto createGoodsReceiptInspection(GoodsReceiptInspectionRequestDto dto) {
 
         // Check if the indentorId already exists
-        if (GRIrepository.existsById(dto.getReceiptInspectionNo())) {
-            ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate GRI ID", "GRI ID " + dto.getReceiptInspectionNo() + " already exists.");
+        if (GRIrepository.existsById(dto.getGprId())) {
+            ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate GRI ID", "GRI ID " + dto.getGprId() + " already exists.");
             throw new InvalidInputException(errorDetails);
         }
 
         GoodsReceiptInspection entity = new GoodsReceiptInspection();
 
-        entity.setReceiptInspectionNo(dto.getReceiptInspectionNo());
+        entity.setGriId(dto.getGprId());
         String InstallationDate = dto.getInstallationDate();
         entity.setInstallationDate(CommonUtils.convertStringToDateObject(InstallationDate));
         String CommissioningDate = dto.getCommissioningDate();
@@ -67,7 +67,7 @@ public class GoodsReceiptInspectionServiceImpl implements GoodsReceiptInspection
                                 "Goods Receipt not found for the provided asset ID.")
                 ));
         //entity.setReceiptInspectionNo(dto.getReceiptInspectionNo());
-        entity.setReceiptInspectionNo(dto.getReceiptInspectionNo());
+        entity.setGriId(dto.getGprId());
         String InstallationDate = dto.getInstallationDate();
         entity.setInstallationDate(CommonUtils.convertStringToDateObject(InstallationDate));
         String CommissioningDate = dto.getCommissioningDate();
@@ -135,7 +135,7 @@ public class GoodsReceiptInspectionServiceImpl implements GoodsReceiptInspection
     private GoodsReceiptInspectionResponseDto mapToResponseDTO(GoodsReceiptInspection entity) {
         GoodsReceiptInspectionResponseDto goodsReceiptInspectionResponseDto = new GoodsReceiptInspectionResponseDto();
 
-        goodsReceiptInspectionResponseDto.setReceiptInspectionNo(entity.getReceiptInspectionNo());
+        goodsReceiptInspectionResponseDto.setGriId(entity.getGriId());
         LocalDate InstallationDate = entity.getInstallationDate();
         goodsReceiptInspectionResponseDto.setInstallationDate(CommonUtils.convertDateToString(InstallationDate));
         LocalDate CommissioningDate = entity.getCommissioningDate();

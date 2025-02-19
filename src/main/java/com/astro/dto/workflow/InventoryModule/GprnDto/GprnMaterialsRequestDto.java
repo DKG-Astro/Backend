@@ -6,7 +6,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class GprnMaterialsRequestDto {
-
    private String materialCode;
    private String description;
    private String uom;

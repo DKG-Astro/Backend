@@ -27,6 +27,11 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
     private MaterialMasterRepository materialMasterRepository;
     @Override
     public MaterialMasterResponseDto createMaterialMaster(MaterialMasterRequestDto materialMasterRequestDto,String uploadImageFileName) {
+        // Check if the indentorId already exists
+        if (materialMasterRepository.existsById(materialMasterRequestDto.getMaterialCode())) {
+            ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Material code", "Material  code " + materialMasterRequestDto.getMaterialCode() + " already exists.");
+            throw new InvalidInputException(errorDetails);
+        }
         MaterialMaster materialMaster= new MaterialMaster();
         materialMaster.setMaterialCode(materialMasterRequestDto.getMaterialCode());
         materialMaster.setCategory(materialMasterRequestDto.getCategory());

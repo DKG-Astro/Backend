@@ -15,8 +15,8 @@ public class GoodsInspection {
     @Column(name = "goods_inspection_no")
     private String goodsInspectionNo;
 
-    @Column(name = "receipt_inspection_no")
-    private String receiptInspectionNo; // Foreign key to Good Provisional Receipt entity
+    @Column(name = "gri_id")
+    private String griId; // Foreign key to Good Provisional Receipt entity
 
     @Column(name = "installation_date")
     private LocalDate installationDate;
