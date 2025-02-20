@@ -12,7 +12,7 @@ public class IndentId {
     @Column(name = "indent_id")
     private String indentId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tender_id", nullable = false)
     private TenderRequest tenderRequest;
 }

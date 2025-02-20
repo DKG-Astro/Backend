@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @Table(name = "employee_department_master")
 public class EmployeeDepartmentMaster {
 
-
     @Id
     @Column(name = "employee_id")
     private String employeeId;

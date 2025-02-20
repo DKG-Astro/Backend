@@ -217,6 +217,7 @@ com\astro\exception\BusinessException.class
 com\astro\repository\ProjectMasterRepository.class
 com\astro\controller\ProcurementModuleController\IndentCreationController.class
 com\astro\controller\UomMasterController.class
+com\astro\repository\ProcurementModule\IndentIdRepository.class
 com\astro\entity\ProjectMaster.class
 com\astro\entity\InventoryModule\GoodsInspection.class
 com\astro\dto\workflow\ProcurementDtos\SreviceOrderDto\ServiceOrderMaterialRequestDTO.class

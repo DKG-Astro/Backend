@@ -22,7 +22,7 @@ public class TenderRequest {
     private LocalDate openingDate;
     @Column(name = "closing_date")
     private LocalDate closingDate;
-    @OneToMany(mappedBy = "tenderRequest", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "tenderRequest", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
     private List<IndentId> indentIds;
   //  @Column(name = "indent_id")
   //  private String indentId;

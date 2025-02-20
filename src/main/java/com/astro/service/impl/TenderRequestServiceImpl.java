@@ -13,6 +13,7 @@ import com.astro.entity.ProcurementModule.TenderRequest;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
+import com.astro.repository.ProcurementModule.IndentIdRepository;
 import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.service.IndentCreationService;
 import com.astro.service.TenderRequestService;
@@ -26,7 +27,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -37,6 +41,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     private TenderRequestRepository TRrepo;
     @Autowired
     private IndentCreationService indentCreationService;
+    @Autowired
+    private IndentIdRepository indentIdRepository;
     @Override
     public TenderResponseDto createTenderRequest(TenderRequestDto tenderRequestDto,String uploadTenderDocumentsFileName,String uploadGeneralTermsAndConditionsFileName
             , String uploadSpecificTermsAndConditionsFileName) {
@@ -303,10 +309,13 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         tenderResponseDto.setCreatedDate(tenderRequest.getCreatedDate());
         tenderResponseDto.setUpdatedDate(tenderRequest.getUpdatedDate());
         // Convert indentIds to List<String> and set in response
-        List<String> indentIds = tenderRequest.getIndentIds().stream()
-               .map(IndentId::getIndentId)
-                .collect(Collectors.toList());
-      //  tenderResponseDto.setIndentIds(indentIds);
+      //  List<String> indentIds = tenderRequest.getIndentIds().stream()
+             //  .map(IndentId::getIndentId)
+              //  .collect(Collectors.toList());
+        // Fetch indent IDs based on tenderId
+        List<String> indentIds = indentIdRepository.findTenderWithIndent(tenderRequest.getTenderId());
+
+          tenderResponseDto.setIndentIds(indentIds);
         // Calculate total tender value by summing totalPriceOfAllMaterials of all indents
         BigDecimal totalTenderValue = indentIds.stream()
                 .map(indentCreationService::getIndentById) // Fetch Indent data

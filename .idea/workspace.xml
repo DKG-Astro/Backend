@@ -6,15 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="ff5636e0-402f-4a63-8653-94f411351cbb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/ServiceOrder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/ServiceOrder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/ServiceOrderMaterial.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/ServiceOrderMaterial.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/WorkOrder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/WorkOrder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/WorkOrderMaterial.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/WorkOrderMaterial.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/ServiceOrderRepository/ServiceOrderMaterialRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/ServiceOrderRepository/ServiceOrderMaterialRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/WorkOrder/WorkOrderMaterialRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/WorkOrder/WorkOrderMaterialRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/ServiceOrderServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/ServiceOrderServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkOrderImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkOrderImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/TenderResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/TenderResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/EmployeeDepartmentMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/EmployeeDepartmentMaster.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/IndentId.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/IndentId.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/TenderRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/TenderRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/TenderRequestServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/TenderRequestServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,8 +22,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Enum" />
-        <option value="Interface" />
         <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>
@@ -215,21 +212,5 @@
     <MESSAGE value="workflow related change" />
     <MESSAGE value="workflow related chnage" />
     <option name="LAST_COMMIT_MESSAGE" value="workflow related chnage" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java</url>
-          <line>522</line>
-          <option name="timeStamp" value="12" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java</url>
-          <line>492</line>
-          <option name="timeStamp" value="14" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

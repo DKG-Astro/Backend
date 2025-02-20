@@ -37,6 +37,5 @@ public class TenderResponseDto {
     private Integer createdBy;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
-
-   // private List<String> indentIds;
+    private List<String> indentIds;
 }
