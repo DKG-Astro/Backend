@@ -6,14 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="ff5636e0-402f-4a63-8653-94f411351cbb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/IndentCreation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/IndentCreation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/MaterialDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/MaterialDetails.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/PurchaseOrder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/PurchaseOrder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/PurchaseOrderAttributes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/PurchaseOrderAttributes.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/IndentCreation/MaterialDetailsRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/IndentCreation/MaterialDetailsRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/PurchaseOrder/PurchaseOrderAttributesRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/PurchaseOrder/PurchaseOrderAttributesRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/IndentCreationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/IndentCreationServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/PurchaseOrderImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/PurchaseOrderImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/ServiceOrder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/ServiceOrder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/ServiceOrderMaterial.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/ServiceOrderMaterial.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/WorkOrder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/WorkOrder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/WorkOrderMaterial.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/WorkOrderMaterial.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/ServiceOrderRepository/ServiceOrderMaterialRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/ServiceOrderRepository/ServiceOrderMaterialRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/WorkOrder/WorkOrderMaterialRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/WorkOrder/WorkOrderMaterialRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/ServiceOrderServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/ServiceOrderServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkOrderImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkOrderImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

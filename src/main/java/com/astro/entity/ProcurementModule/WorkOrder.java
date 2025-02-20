@@ -42,12 +42,7 @@ public class WorkOrder {
 
   //  @OneToMany(cascade = CascadeType.ALL)
    // @JoinColumn(name = "work_order_id")
-  @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @JoinTable(
-          name = "work_order_material_mapping",
-          joinColumns = @JoinColumn(name = "wo_id"),
-          inverseJoinColumns = @JoinColumn(name = "work_code")
-  )
+    @OneToMany(mappedBy = "workOrder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WorkOrderMaterial> materials;
     @Column(name = "created_by")
     private String createdBy;

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface WorkOrderMaterialRepository extends JpaRepository<WorkOrderMaterial,String> {
+public interface WorkOrderMaterialRepository extends JpaRepository<WorkOrderMaterial,Long> {
 
-    Optional<WorkOrderMaterial> findByWorkCode(String workCode);
 }

@@ -13,9 +13,14 @@ import java.util.List;
 @Data
 public class ServiceOrderMaterial {
 
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @Column(name = "material_code")
     private String materialCode;
+    @Column(name = "so_id")
+    private String soId;
     @Column(name = "material_description")
     private String materialDescription;
     @Column(name = "quantity")
@@ -36,9 +41,9 @@ public class ServiceOrderMaterial {
    // @ManyToOne
     //@JoinColumn(name = "service_order_id")
     //private ServiceOrder serviceOrder;
-
-    @ManyToMany(mappedBy = "materials")
-    private List<ServiceOrder> serviceOrders = new ArrayList<>();
+   @ManyToOne
+   @JoinColumn(name = "so_id", nullable = false, referencedColumnName = "so_id", insertable = false, updatable = false)
+   private ServiceOrder serviceOrder;
 
 
 

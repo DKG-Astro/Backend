@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ServiceOrderMaterialRepository extends JpaRepository<ServiceOrderMaterial,String> {
-    Optional<ServiceOrderMaterial> findByMaterialCode(String materialCode);
+public interface ServiceOrderMaterialRepository extends JpaRepository<ServiceOrderMaterial,Long> {
+
 }

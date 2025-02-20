@@ -48,12 +48,7 @@ public class ServiceOrder {
 
   //  @OneToMany(cascade = CascadeType.ALL)
    // @JoinColumn(name = "service_order_id")
-  @ManyToMany(cascade = CascadeType.ALL)
-  @JoinTable(
-          name = "service_order_material_mapping",
-          joinColumns = @JoinColumn(name = "so_id"),
-          inverseJoinColumns = @JoinColumn(name = "material_code")
-  )
+    @OneToMany(mappedBy = "serviceOrder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ServiceOrderMaterial> materials;
     @Column(name = "created_by")
     private String createdBy;

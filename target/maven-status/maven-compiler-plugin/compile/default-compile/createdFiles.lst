@@ -5,6 +5,7 @@ com\astro\entity\EmployeeDepartmentMaster.class
 com\astro\service\impl\WorkflowServiceImpl.class
 com\astro\dto\workflow\InventoryModule\AssetRequestDTO.class
 com\astro\dto\workflow\ProcurementDtos\ContigencyPurchaseResponseDto.class
+com\astro\service\GatepassService.class
 com\astro\controller\JobMasterController.class
 com\astro\repository\VendorMasterRepository.class
 com\astro\entity\ProcurementModule\IndentMaterialMapping.class
@@ -18,17 +19,20 @@ com\astro\entity\ProcurementModule\WorkOrder.class
 com\astro\service\MaterialCreationService.class
 com\astro\dto\workflow\SubWorkflowTransitionDto.class
 com\astro\service\WorkOrderService.class
+com\astro\dto\workflow\InventoryModule\MaterialDisposalResponseDTO.class
 com\astro\dto\workflow\JobMasterRequestDto.class
 com\astro\repository\EmployeeDepartmentMasterRepository.class
 com\astro\repository\RoleMasterRepository.class
 com\astro\dto\workflow\InventoryModule\GoodsReturnRequestDto.class
 com\astro\dto\workflow\InventoryModule\GprnDto\GprnResponseDto.class
+com\astro\dto\workflow\InventoryModule\GatepassResponseDTO.class
 com\astro\entity\WorkflowMaster.class
 com\astro\controller\ProjectMasterController.class
 com\astro\dto\workflow\EmployeeDepartmentMasterRequestDto.class
 com\astro\dto\workflow\InventoryModule\GoodsTransferRequestDto.class
 com\astro\repository\UserRoleMasterRepository.class
 com\astro\dto\workflow\InventoryModule\GoodsReceiptInspectionRequestDto.class
+com\astro\repository\InventoryModule\MaterialDisposalRepository.class
 com\astro\service\GoodsReturnService.class
 com\astro\service\EmployeeDepartmentMasterService.class
 com\astro\service\impl\EmployeeDepartmentMasterServiceImpl.class
@@ -48,6 +52,7 @@ com\astro\service\impl\VendorMasterServiceImpl.class
 com\astro\service\MaterialMasterService.class
 com\astro\dto\workflow\MaterialCreationRequestDto.class
 com\astro\controller\VendorMasterController.class
+com\astro\dto\workflow\InventoryModule\GatepassRequestDTO.class
 com\astro\service\impl\ContigencyPurchaseServiceImpl.class
 com\astro\controller\InventoryModule\GprnController.class
 com\astro\dto\workflow\TransitionActionReqDto.class
@@ -71,6 +76,7 @@ com\astro\entity\InventoryModule\Asset.class
 com\astro\dto\workflow\InventoryModule\GprnDto\GprnMaterialsRequestDto.class
 com\astro\dto\workflow\ProcurementDtos\purchaseOrder\PurchaseOrderRequestDTO.class
 com\astro\controller\InventoryModule\GoodsInspectionController.class
+com\astro\entity\InventoryModule\GprnMaterialsId.class
 com\astro\service\impl\TenderRequestServiceImpl.class
 com\astro\service\JobMasterService.class
 com\astro\controller\UserMasterController.class
@@ -121,11 +127,14 @@ com\astro\service\UserService.class
 com\astro\dto\workflow\ProcurementDtos\SreviceOrderDto\ServiceOrderResponseDTO.class
 com\astro\entity\WorkflowTransition.class
 com\astro\repository\ActionMasterRepository.class
+com\astro\entity\InventoryModule\GatepassOutAndIn.class
 com\astro\service\PurchaseOrderService.class
 com\astro\repository\ProcurementModule\ContigencyPurchaseRepository.class
 com\astro\dto\workflow\InventoryModule\GoodsReceiptInspectionResponseDto.class
 com\astro\service\ContigencyPurchaseService.class
+com\astro\controller\InventoryModule\MaterialDisposalController.class
 com\astro\entity\JobMaster.class
+com\astro\controller\Reports.class
 com\astro\exception\ErrorDetails.class
 com\astro\dto\workflow\InventoryModule\GoodsInspectionResponseDto.class
 com\astro\repository\WorkflowMasterRepository.class
@@ -135,6 +144,8 @@ com\astro\entity\MaterialCreation.class
 com\astro\util\Base64ToByteArrayConverter.class
 com\astro\dto\workflow\ProjectMaster\ProjectMasterRequestDTO.class
 com\astro\service\WorkflowService.class
+com\astro\entity\InventoryModule\MaterialDisposal.class
+com\astro\repository\InventoryModule\GatePassRepository.class
 com\astro\repository\TransitionConditionMasterRepository.class
 com\astro\controller\InventoryModule\AssetController.class
 com\astro\entity\ActionMaster.class
@@ -143,6 +154,7 @@ com\astro\entity\InventoryModule\GoodsReturn.class
 com\astro\dto\workflow\InventoryModule\GprnDto\GprnRequestDto.class
 com\astro\dto\workflow\ProjectMaster\ProjectMasterResponseDto.class
 com\astro\service\GoodsTransferService.class
+com\astro\service\impl\MaterialDisposalServiceImpl.class
 com\astro\service\impl\IndentCreationServiceImpl.class
 com\astro\service\impl\MaterialCreationServiceImpl.class
 com\astro\service\impl\JobMasterServiceImpl.class
@@ -171,9 +183,11 @@ com\astro\service\VendorMasterService.class
 com\astro\entity\ProcurementModule\IndentId.class
 com\astro\dto\workflow\EmployeeDepartmentMasterResponseDto.class
 com\astro\service\impl\MaterialMasterServiceImpl.class
+com\astro\service\impl\GatepassServiceImpl.class
 com\astro\service\impl\RoleMasterServiceImpl.class
 com\astro\entity\StateMaster.class
 com\astro\dto\workflow\JobMasterResponseDto.class
+com\astro\dto\workflow\InventoryModule\MaterialDisposalRequestDTO.class
 com\astro\dto\workflow\ProcurementDtos\WorkOrderDto\WorkOrderResponseDTO.class
 com\astro\repository\WorkflowTransitionRepository.class
 com\astro\service\ServiceOrderService.class
@@ -208,6 +222,7 @@ com\astro\entity\InventoryModule\GoodsInspection.class
 com\astro\dto\workflow\ProcurementDtos\SreviceOrderDto\ServiceOrderMaterialRequestDTO.class
 com\astro\repository\SubWorkflowTransitionRepository.class
 com\astro\repository\TransitionMasterRepository.class
+com\astro\service\MaterialDisposalService.class
 com\astro\dto\workflow\MaterialMasterRequestDto.class
 com\astro\entity\SubWorkflowTransition.class
 com\astro\dto\workflow\InventoryModule\GoodsReturnResponseDto.class
@@ -220,6 +235,7 @@ com\astro\entity\InventoryModule\GoodsTransfer.class
 com\astro\entity\VendorMaster.class
 com\astro\repository\ProcurementModule\ServiceOrderRepository\ServiceOrderMaterialRepository.class
 com\astro\dto\workflow\UserDto.class
+com\astro\controller\InventoryModule\GatepassController.class
 com\astro\dto\workflow\VendorMasterResponseDto.class
 com\astro\dto\workflow\ProcurementDtos\ContigencyPurchaseRequestDto.class
 com\astro\entity\LocationMaster.class
