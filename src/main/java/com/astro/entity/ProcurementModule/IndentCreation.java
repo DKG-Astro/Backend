@@ -85,14 +85,16 @@ public class IndentCreation {
 
       //  @OneToMany(mappedBy = "indentCreation", cascade = CascadeType.ALL, orphanRemoval = true)
       //@ManyToMany(cascade = CascadeType.PERSIST)
-      @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  /*    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
       @JoinTable(
               name = "indent_material_mapping",
               joinColumns = @JoinColumn(name = "indent_id"),
               inverseJoinColumns = @JoinColumn(name = "material_code")
       )
-      private List<MaterialDetails> materialDetails = new ArrayList<>();
 
+   */
+      @OneToMany(mappedBy = "indentCreation", cascade = CascadeType.ALL, orphanRemoval = true)
+      private List<MaterialDetails> materialDetails = new ArrayList<>();
 
         @Column(name = "created_by")
         private Integer createdBy;

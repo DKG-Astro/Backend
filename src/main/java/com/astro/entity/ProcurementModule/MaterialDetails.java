@@ -18,13 +18,14 @@ import java.util.List;
 public class MaterialDetails {
 
 
-  //  @Id
-  //  @GeneratedValue(strategy = GenerationType.IDENTITY)
-   // private Long id;
-
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "material_code", nullable = false, unique = true)
     private String materialCode;
+    @Column(name = "indent_id")
+    private String indentId;
 
     @Column(name = "material_description")
     private String materialDescription;
@@ -60,8 +61,9 @@ public class MaterialDetails {
   // Many-to-Many Relationship with IndentCreation
 
    // private IndentCreation indentCreation;
-    @ManyToMany(mappedBy = "materialDetails")
-    private List<IndentCreation> indentCreations = new ArrayList<>();
+   @ManyToOne
+   @JoinColumn(name = "indent_id", referencedColumnName = "indent_id", insertable = false, updatable = false)
+   private IndentCreation indentCreation;
 
 
 

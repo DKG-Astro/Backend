@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface MaterialDetailsRepository extends JpaRepository<MaterialDetails,String> {
-    Optional<MaterialDetails> findByMaterialCode(String materialCode);
+public interface MaterialDetailsRepository extends JpaRepository<MaterialDetails,Long> {
+
 }

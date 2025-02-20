@@ -105,11 +105,10 @@ public class IndentCreationServiceImpl implements IndentCreationService {
 
         // Save MaterialDetails entities and link them to the indentCreation
         List<MaterialDetails> materialDetailsList = indentRequestDTO.getMaterialDetails().stream().map(materialRequest -> {
-            MaterialDetails material = materialDetailsRepository.findByMaterialCode(materialRequest.getMaterialCode())
-                    .orElse(new MaterialDetails());  // Fetch existing or create a new MaterialDetails object
 
-           // MaterialDetails material = new MaterialDetails();
+            MaterialDetails material = new MaterialDetails();
             material.setMaterialCode(materialRequest.getMaterialCode());
+            material.setIndentId(indentRequestDTO.getIndentId());
             material.setMaterialDescription(materialRequest.getMaterialDescription());
             material.setQuantity(materialRequest.getQuantity());
             material.setUnitPrice(materialRequest.getUnitPrice());
@@ -122,30 +121,17 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             material.setMaterialSubCategory(materialRequest.getMaterialSubCategory());
             material.setMaterialAndJob(materialRequest.getMaterialAndJob());
             // Establish bidirectional relationship
-            indentCreation.getMaterialDetails().add(material);  // Add material to indent
-            material.getIndentCreations().add(indentCreation);
+          //  indentCreation.getMaterialDetails().add(material);  // Add material to indent
+           // material.getIndentCreations().add(indentCreation);
             // ADD Indent to Material
+            material.setIndentCreation(indentCreation);
           //  material.setIndentCreations(indentCreation);  // Associate with the current indentCreation
             return material;
         }).collect(Collectors.toList());
 
-       // materialDetailsRepository.saveAll(materialDetailsList);  // Save all material details
-
-        //indentCreation.setMaterialDetails(materialDetailsList);  // Set the list of material details on indentCreation
-        // Save MaterialDetails with updated Many-to-Many relation
-        indentCreationRepository.save(indentCreation);
-        materialDetailsRepository.saveAll(materialDetailsList);
         indentCreation.setMaterialDetails(materialDetailsList);
-        for (MaterialDetails material : materialDetailsList) {
-            material.getIndentCreations().add(indentCreation);
-        }
-        // Associate materials with the indent
-      //  indentCreation.setMaterialDetails(materialDetailsList);
-        // Add the materials to the indent creation entity
-       // indentCreation.getMaterialDetails().addAll(materialDetailsList);
-
-        // Save IndentCreation again with updated material relationship
         indentCreationRepository.save(indentCreation);
+
         return mapToResponseDTO(indentCreation);
     }
 
@@ -187,17 +173,6 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                 indentCreation::setUploadPACOrBrandPAC);
         indentCreation.setUpdatedBy(indentRequestDTO.getUpdatedBy());
         indentCreation.setCreatedBy(indentRequestDTO.getCreatedBy());
-       // indentCreationRepository.save(indentCreation);
-
-        // Update MaterialDetails
-       // List<MaterialDetails> existingMaterialDetails = indentCreation.getMaterialDetails();
-
-        // Remove old material details
-        //materialDetailsRepository.deleteAll(existingMaterialDetails);
-        //  Remove old material relationships before deleting
-        for (MaterialDetails material : indentCreation.getMaterialDetails()) {
-            material.getIndentCreations().remove(indentCreation);
-        }
 
         //  Delete old material details
         materialDetailsRepository.deleteAll(indentCreation.getMaterialDetails());
@@ -206,6 +181,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         List<MaterialDetails> materialDetailsList = indentRequestDTO.getMaterialDetails().stream().map(materialRequest -> {
             MaterialDetails material = new MaterialDetails();
             material.setMaterialCode(materialRequest.getMaterialCode());
+            material.setIndentId(indentRequestDTO.getIndentId());
             material.setMaterialDescription(materialRequest.getMaterialDescription());
             material.setQuantity(materialRequest.getQuantity());
             material.setUnitPrice(materialRequest.getUnitPrice());
@@ -217,19 +193,13 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             material.setMaterialCategory(materialRequest.getMaterialCategory());
             material.setMaterialSubCategory(materialRequest.getMaterialSubCategory());
             material.setMaterialAndJob(materialRequest.getMaterialAndJob());
-         //   material.setIndentCreation(indentCreation);
+            material.setIndentCreation(indentCreation);
             return material;
         }).collect(Collectors.toList());
 
-      //  materialDetailsRepository.saveAll(materialDetailsList);  // Save all material details
-      //  indentCreation.setMaterialDetails(materialDetailsList);  // Set the list of material details on indentCreation
-        materialDetailsList = materialDetailsRepository.saveAll(materialDetailsList); // Save materials
+        indentCreation.getMaterialDetails().clear();
+        indentCreation.getMaterialDetails().addAll(materialDetailsList);
 
-        // Re-establish relationship
-        indentCreation.setMaterialDetails(materialDetailsList);
-        for (MaterialDetails material : materialDetailsList) {
-            material.getIndentCreations().add(indentCreation);
-        }
 
         // Save indent with updated materials
         indentCreationRepository.save(indentCreation);

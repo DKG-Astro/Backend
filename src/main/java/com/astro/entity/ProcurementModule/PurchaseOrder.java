@@ -57,12 +57,15 @@ public class PurchaseOrder {
 
    // @OneToMany(cascade = CascadeType.ALL)
    // @JoinColumn(name = "purchase_order_id")
-   @ManyToMany(cascade = CascadeType.PERSIST)
+  /* @ManyToMany(cascade = CascadeType.PERSIST)
    @JoinTable(
            name = "purchase_order_attributes_mapping",
            joinColumns = @JoinColumn(name = "po_id"),
            inverseJoinColumns = @JoinColumn(name = "material_code")
    )
+
+   */
+    @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PurchaseOrderAttributes> purchaseOrderAttributes;
     @Column(name = "created_by")
     private String createdBy;
