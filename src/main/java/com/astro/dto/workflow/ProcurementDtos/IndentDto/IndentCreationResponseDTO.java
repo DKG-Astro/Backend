@@ -10,19 +10,15 @@ import java.util.List;
 @Data
 public class IndentCreationResponseDTO {
 
-
     private String indentorName;
     private String indentId;
     private String indentorMobileNo;
     private String indentorEmailAddress;
     private String consignesLocation;
-
-    // newly added fields to hold filenames
     private String uploadingPriorApprovalsFileName;
     private String uploadTenderDocumentsFileName;
     private String uploadGOIOrRFPFileName;
     private String uploadPACOrBrandPACFileName;
-
     private String projectName;
     private Boolean isPreBidMeetingRequired;
     private String preBidMeetingDate;
@@ -33,6 +29,7 @@ public class IndentCreationResponseDTO {
     private String singleAndMultipleJob;
     private String materialCategory;
     private BigDecimal totalPriceOfAllMaterials;
+    private BigDecimal projectLimit;
     private List<MaterialDetailsResponseDTO> materialDetails;
     private Integer createdBy;
     private String updatedBy;

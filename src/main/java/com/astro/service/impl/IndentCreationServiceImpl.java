@@ -1,16 +1,19 @@
 package com.astro.service.impl;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.*;
 import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.entity.ProcurementModule.IndentMaterialMapping;
 import com.astro.entity.ProcurementModule.MaterialDetails;
+import com.astro.entity.ProjectMaster;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
 import com.astro.repository.ProcurementModule.IndentCreation.IndentMaterialMappingRepository;
 import com.astro.repository.ProcurementModule.IndentCreation.MaterialDetailsRepository;
+import com.astro.repository.ProjectMasterRepository;
 import com.astro.service.IndentCreationService;
 import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +42,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         private MaterialDetailsRepository materialDetailsRepository;
         @Autowired
         private IndentMaterialMappingRepository indentMaterialMappingRepository;
+        @Autowired
+        private ProjectMasterRepository projectMasterRepository;
 
     public IndentCreationResponseDTO createIndent(IndentCreationRequestDTO indentRequestDTO,String uploadingPriorApprovalsFileName,
                                                   String uploadTenderDocumentsFileName,String uploadGOIOrRFPFileName,String uploadPACOrBrandPACFileName) {
@@ -288,6 +293,13 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                     .map(MaterialDetailsResponseDTO::getTotalPrice)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+            String projectName = indentCreation.getProjectName();
+            BigDecimal allocatedAmount = projectMasterRepository
+                    .findByProjectNameDescription(projectName)
+                    .map(ProjectMaster::getAllocatedAmount)
+                    .orElse(BigDecimal.ZERO);
+            response.setProjectLimit(allocatedAmount);
+            System.out.println("allocatedAmount: " + allocatedAmount);
             response.setTotalPriceOfAllMaterials(totalPriceOfAllMaterials);
 
             response.setMaterialDetails(materialDetailsResponse);

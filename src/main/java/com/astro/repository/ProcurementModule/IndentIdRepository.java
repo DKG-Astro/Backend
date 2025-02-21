@@ -1,8 +1,6 @@
 package com.astro.repository.ProcurementModule;
 
 import com.astro.entity.ProcurementModule.IndentId;
-import com.astro.entity.ProcurementModule.TenderRequest;
-import org.springframework.beans.PropertyValues;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

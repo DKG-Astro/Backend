@@ -45,6 +45,7 @@ public class ProjectMaster {
 
     @Column(name = "project_head")
     private String projectHead;
+
     @Column(name = "created_by")
     private String createdBy;
     @Column(name = "updated_by")

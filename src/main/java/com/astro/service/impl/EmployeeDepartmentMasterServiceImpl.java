@@ -37,6 +37,7 @@ public class EmployeeDepartmentMasterServiceImpl implements EmployeeDepartmentMa
         EmployeeDepartmentMaster employee = new EmployeeDepartmentMaster();
         employee.setEmployeeId(employeeRequestDto.getEmployeeId());
         employee.setEmployeeName(employeeRequestDto.getEmployeeName());
+        employee.setLocation(employeeRequestDto.getLocation());
         employee.setDepartmentName(employeeRequestDto.getDepartmentName());
         employee.setDesignation(employeeRequestDto.getDesignation());
         employee.setContactDetails(employeeRequestDto.getContactDetails());
@@ -51,6 +52,7 @@ public class EmployeeDepartmentMasterServiceImpl implements EmployeeDepartmentMa
 
         EmployeeDepartmentMasterResponseDto responseDto = new EmployeeDepartmentMasterResponseDto();
         responseDto.setEmployeeId(employee.getEmployeeId());
+        responseDto.setLocation(employee.getLocation());
         responseDto.setEmployeeName(employee.getEmployeeName());
         responseDto.setDepartmentName(employee.getDepartmentName());
         responseDto.setDesignation(employee.getDesignation());
@@ -79,6 +81,7 @@ public class EmployeeDepartmentMasterServiceImpl implements EmployeeDepartmentMa
         //employee.setEmployeeId(employeeRequestDto.getEmployeeId());
         employee.setEmployeeName(employeeRequestDto.getEmployeeName());
         employee.setDepartmentName(employeeRequestDto.getDepartmentName());
+        employee.setLocation(employeeRequestDto.getLocation());
         employee.setDesignation(employeeRequestDto.getDesignation());
         employee.setContactDetails(employeeRequestDto.getContactDetails());
         employee.setCreatedBy(employeeRequestDto.getCreatedBy());

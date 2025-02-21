@@ -10,6 +10,7 @@ public class EmployeeDepartmentMasterRequestDto {
 
     private String employeeId;
     private String employeeName;
+    private String location;
     private String departmentName;
     private String designation;
     private String contactDetails;

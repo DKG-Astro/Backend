@@ -11,6 +11,7 @@ public class EmployeeDepartmentMasterResponseDto {
     private String employeeId;
     private String employeeName;
     private String departmentName;
+    private String location;
     private String designation;
     private String contactDetails;
     private String createdBy;

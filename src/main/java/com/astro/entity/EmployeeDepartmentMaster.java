@@ -20,6 +20,8 @@ public class EmployeeDepartmentMaster {
     private String employeeName;
     @Column(name = "department_name")
     private String departmentName;
+    @Column(name="location")
+    private String location;
     @Column(name = "designation")
     private String designation;
     @Column(name = "contact_details")
