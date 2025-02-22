@@ -19,6 +19,9 @@ public class GprnMaterialsRequestDto {
     private String serialNo;
     private String warranty;
     private String note;
-    private MultipartFile photographPath;
+    private String photographPath;
 
 }
+
+
+

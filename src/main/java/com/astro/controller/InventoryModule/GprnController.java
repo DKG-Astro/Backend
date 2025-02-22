@@ -1,5 +1,6 @@
 package com.astro.controller.InventoryModule;
 
+import com.astro.dto.workflow.InventoryModule.GprnDto.GprnMaterialsRequestDto;
 import com.astro.dto.workflow.InventoryModule.GprnDto.GprnRequestDto;
 import com.astro.dto.workflow.InventoryModule.GprnDto.GprnResponseDto;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseRequestDto;
@@ -20,7 +21,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/gprns")
@@ -34,7 +42,7 @@ public class GprnController {
     @Autowired
     private ObjectMapper mapper;
     private static final Logger log = LoggerFactory.getLogger(GprnServiceImpl.class);
-
+/*
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> createGprn(
             @RequestPart("gprnRequestDTO") String gprnRequestDTO,
@@ -48,6 +56,86 @@ public class GprnController {
         GprnResponseDto savedGprn = gprnService.createGprnWithMaterialDetails(gprnRequestDto, provisionalReceiptCertificateFileName,photoFileName);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(savedGprn), HttpStatus.OK);
     }
+
+
+ */
+
+@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+public ResponseEntity<Object> createGprn(
+        @RequestPart("gprnRequestDTO") String gprnRequestDTO,
+        @RequestPart(value = "provisionalReceiptCertificate", required = false) MultipartFile provisionalReceiptCertificate,
+        @RequestPart(value = "materialFiles", required = false) List<MultipartFile> materialFiles
+) throws IOException {
+
+    GprnRequestDto gprnRequestDto = mapper.readValue(gprnRequestDTO, GprnRequestDto.class);
+
+    // Set GPRN file
+    if (provisionalReceiptCertificate != null) {
+        gprnRequestDto.setProvisionalReceiptCertificate(provisionalReceiptCertificate);
+    }
+    System.out.println("Received files: " + materialFiles);
+
+    Map<String, String> materialFileMap = new HashMap<>();
+    if (materialFiles != null) {
+        for (MultipartFile file : materialFiles) {
+            String fileName = file.getOriginalFilename(); // Get filename
+            String materialCode = extractMaterialCodeFromFileName(fileName); // Extract materialCode
+            String filePath = saveFile(file); // Save file & get path
+            materialFileMap.put(materialCode, filePath); // Store filePath with materialCode key
+        }
+    }
+
+// Assign file paths to materials based on materialCode
+    for (GprnMaterialsRequestDto material : gprnRequestDto.getGprnMaterials()) {
+        if (materialFileMap.containsKey(material.getMaterialCode())) {
+            material.setPhotographPath(materialFileMap.get(material.getMaterialCode())); // Assign file path
+        }
+    }
+
+
+    for (GprnMaterialsRequestDto material : gprnRequestDto.getGprnMaterials()) {
+        if (materialFileMap.containsKey(material.getMaterialCode())) {
+            material.setPhotographPath(materialFileMap.get(material.getMaterialCode()));
+        } else {
+            log.warn("No file found for material code: " + material.getMaterialCode());
+        }
+    }
+
+
+    // Call service layer
+    GprnResponseDto savedGprn = gprnService.createGprnWithMaterialDetails(gprnRequestDto);
+
+    return ResponseEntity.ok(ResponseBuilder.getSuccessResponse(savedGprn));
+}
+    private String saveFile(MultipartFile file) throws IOException {
+        String uploadDir = "/uploads/";
+        File directory = new File(uploadDir);
+
+        // Ensure the directory exists
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
+        String fileName = file.getOriginalFilename();
+        if (fileName == null || fileName.isEmpty()) {
+            throw new IOException("Invalid file name");
+        }
+
+        String filePath = uploadDir + fileName;
+        Path path = Paths.get(filePath);
+        Files.write(path, file.getBytes());
+
+        return filePath;
+    }
+
+    private String extractMaterialCodeFromFileName(String fileName) {
+        if (fileName == null || !fileName.contains("_")) {
+            throw new IllegalArgumentException("Invalid file name format: " + fileName);
+        }
+        return fileName.split("_")[0]; // Extract materialCode safely
+    }
+
+
 
     @PutMapping("/{gprnId}")
     public ResponseEntity<Object> updateGprnById(

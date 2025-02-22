@@ -1,6 +1,7 @@
 package com.astro.dto.workflow.InventoryModule.GprnDto;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.math.BigDecimal;

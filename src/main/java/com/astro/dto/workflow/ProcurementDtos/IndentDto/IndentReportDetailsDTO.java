@@ -12,27 +12,27 @@ public class IndentReportDetailsDTO {
     private String indentId;
     private LocalDate approvedDate;
     private String assignedTo;
-    private Long tenderRequest;
-    private String modeOfProcurement;
-    private Long poId;
-    private String poStatus;
+    private String tenderRequest;
+    private String modeOfTendering;
+    private String correspondingPoSo;
+    private String statusOfPoSo;
     private LocalDate submittedDate;
     private String pendingApprovalWith;
-    private LocalDate poApprovedDate;
+    private LocalDate poSoApprovedDate;
     private String material;
     private String materialCategory;
     private String materialSubCategory;
     private String vendorName;
     private String indentorName;
-    private BigDecimal valueOfIndent;
-    private BigDecimal valueOfPo;
+    private Double valueOfIndent;
+    private Double valueOfPo;
     private String project;
     private String grinNo;
     private String invoiceNo;
     private String gissNo;
-    private BigDecimal pendingPaymentValue;
+    private Double valuePendingToBePaid;
     private String currentStageOfIndent;
-    private String shortClosed;
+    private String shortClosedAndCancelled;
     private String reasonForShortClosure;
 
 }

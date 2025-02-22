@@ -27,10 +27,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -49,7 +52,8 @@ public class GprnServiceImpl implements GprnService {
     private static final Logger log = LoggerFactory.getLogger(GprnServiceImpl.class);
 
         @Transactional
-        public GprnResponseDto createGprnWithMaterialDetails(GprnRequestDto gprnRequestDto, String provisionalReceiptCertificateFileName, String photoFileName) {
+        public GprnResponseDto createGprnWithMaterialDetails(GprnRequestDto gprnRequestDto){
+                //, String provisionalReceiptCertificateFileName, String photoFileName) {
             // Check if the GPRN ID already exists
             if (gprnRepository.existsById(gprnRequestDto.getGprnNo())) {
                 throw new InvalidInputException(new ErrorDetails(400, 1, "Duplicate GPRN ID", "GPRN ID " + gprnRequestDto.getGprnNo() + " already exists."));
@@ -79,8 +83,9 @@ public class GprnServiceImpl implements GprnService {
             handleFileUpload(gprn, gprnRequestDto.getProvisionalReceiptCertificate(), gprn::setProvisionalReceiptCertificate);
             gprn.setUpdatedBy(gprnRequestDto.getUpdatedBy());
             gprn.setCreatedBy(gprnRequestDto.getCreatedBy());
-            gprn.setProvisionalReceiptCertificateFileName(provisionalReceiptCertificateFileName);
+           // gprn.setProvisionalReceiptCertificateFileName(provisionalReceiptCertificateFileName);
 
+             gprn.setProvisionalReceiptCertificateFileName(gprnRequestDto.getProvisionalReceiptCertificate().getOriginalFilename());
          //   gprnRepository.save(gprn);
 
             // Process Material Details
@@ -104,24 +109,29 @@ public class GprnServiceImpl implements GprnService {
                 gprnMaterial.setSerialNo(materialRequest.getSerialNo());
                 gprnMaterial.setWarranty(materialRequest.getWarranty());
                 gprnMaterial.setNote(materialRequest.getNote());
-                gprnMaterial.setPhotoFileName(photoFileName);
-                handleFileUploadMaterial(gprnMaterial, materialRequest.getPhotographPath(), gprnMaterial::setPhotographPath);
+             //   gprnMaterial.setPhotoFileName(materialRequest.getPhotographPath());
+               // handleFileUploadMaterial(gprnMaterial, materialRequest.getPhotographPath(), gprnMaterial::setPhotographPath);
+                String storedFilePaths = materialRequest.getPhotographPath();
+                String fileName = storedFilePaths != null && !storedFilePaths.isEmpty() ? new File(storedFilePaths).getName() : null;
+
+                gprnMaterial.setPhotoFileName(fileName);
+                String storedFilePath = materialRequest.getPhotographPath(); // Ensure this holds the correct file path
+                if (storedFilePath != null && !storedFilePath.isEmpty()) {
+                    gprnMaterial.setPhotographPath(storedFilePath);
+                } else {
+                    log.warn("Photograph path is missing for material: " + materialRequest.getMaterialCode());
+                }
+
                 gprnMaterial.setGprn(gprn);
                 return gprnMaterial;
             }).collect(Collectors.toList());
 
-           // gprnMaterials = gprnMaterialsRepository.saveAll(gprnMaterials);
-           // gprn.setGprnMaterials(gprnMaterials);
-          //  gprnRepository.save(gprn);
-            // Establish bi-directional relationship
             gprn.setGprnMaterials(gprnMaterials);
 
-            // Save parent first, then materials in one transaction
             gprnRepository.save(gprn);
 
             return mapToResponseDTO(gprn);
 
-          //  return mapToResponseDTO(gprn);
         }
 
 
@@ -200,9 +210,11 @@ public class GprnServiceImpl implements GprnService {
                     gprnMaterial.setWarranty(materialRequestDto.getWarranty());
                     gprnMaterial.setNote(materialRequestDto.getNote());
                     gprnMaterial.setPhotoFileName(photoFileName);
-                    handleFileUploadMaterial(gprnMaterial, materialRequestDto.getPhotographPath(),
-                            gprnMaterial::setPhotographPath);
-                   gprnMaterial.setGprn(gprn); // Ensure the Gprn reference is set
+                   // handleFileUploadMaterial(gprnMaterial, materialRequestDto.getPhotographPath(),
+                   //        gprnMaterial::setPhotographPath);
+                   // handleFileUploadMaterial(gprnMaterial, materialRequestDto.getPhotographPath(), gprnMaterial::setPhotographPath);
+
+                    gprnMaterial.setGprn(gprn); // Ensure the Gprn reference is set
 
                     return gprnMaterial;
                 })
@@ -308,7 +320,8 @@ public class GprnServiceImpl implements GprnService {
             gprnMaterialsResponsetDto.setSerialNo(material.getSerialNo());
             gprnMaterialsResponsetDto.setWarranty(material.getWarranty());
             gprnMaterialsResponsetDto.setNote(material.getNote());
-            gprnMaterialsResponsetDto.setPhotoFileName(material.getPhotoFileName());
+          //  gprnMaterialsResponsetDto.setPhotoFileName(material.getPhotoFileName());
+            gprnMaterialsResponsetDto.setPhotoFileName(material.getPhotoFileName() != null ? material.getPhotoFileName() : "No File Uploaded");
             return gprnMaterialsResponsetDto;
         }).collect(Collectors.toList());
 
@@ -344,6 +357,11 @@ public class GprnServiceImpl implements GprnService {
             fileSetter.accept(null);  // Handle gracefully if no file is uploaded
         }
     }
+
+
+
+
+
 
 
 

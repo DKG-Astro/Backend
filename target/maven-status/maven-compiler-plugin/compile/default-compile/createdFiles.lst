@@ -117,6 +117,7 @@ com\astro\dto\workflow\ProcurementDtos\purchaseOrder\PurchaseOrderAttributesResp
 com\astro\service\ProjectMasterService.class
 com\astro\dto\workflow\InventoryModule\GoodsTransferResponseDto.class
 com\astro\repository\JobMasterRepository.class
+com\astro\dto\workflow\ProcurementDtos\TechnoMomReportDTO.class
 com\astro\dto\workflow\TransitionConditionDto.class
 com\astro\controller\WorkflowController.class
 com\astro\constant\WorkflowName.class

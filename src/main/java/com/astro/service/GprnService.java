@@ -9,7 +9,8 @@ import java.util.List;
 public interface GprnService {
 
 
-    public GprnResponseDto createGprnWithMaterialDetails(GprnRequestDto gprnRequestDto, String provisionalReceiptCertificateFileName,String photoFileName);
+   //public GprnResponseDto createGprnWithMaterialDetails(GprnRequestDto gprnRequestDto, String provisionalReceiptCertificateFileName,String photoFileName);
+ public GprnResponseDto createGprnWithMaterialDetails(GprnRequestDto gprnRequestDto);
     GprnResponseDto updateGprn(String gprnId, GprnRequestDto gprnRequestDto,String provisionalReceiptCertificateFileName, String photoFileName);
 
 

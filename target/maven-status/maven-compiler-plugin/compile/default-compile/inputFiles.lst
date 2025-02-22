@@ -84,6 +84,7 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\Inde
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\GprnServiceImpl.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\GoodsReceiptInspectionServiceImpl.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller\ProcurementModuleController\TenderRequestController.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\TechnoMomReportDTO.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\ProcurementModule\ServiceOrder.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\BackendServiceApplication.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\UserMasterRepository.java

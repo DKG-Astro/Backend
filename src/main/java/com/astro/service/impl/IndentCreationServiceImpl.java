@@ -3,6 +3,7 @@ package com.astro.service.impl;
 import ch.qos.logback.core.net.SyslogOutputStream;
 import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.*;
+import com.astro.dto.workflow.ProcurementDtos.TechnoMomReportDTO;
 import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.entity.ProcurementModule.IndentMaterialMapping;
 import com.astro.entity.ProcurementModule.MaterialDetails;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -336,7 +338,54 @@ public class IndentCreationServiceImpl implements IndentCreationService {
     @Override
     public List<IndentReportDetailsDTO> getIndentReport(String startDate, String endDate) {
 
-      return indentCreationRepository.fetchIndentReportDetails(CommonUtils.convertStringToDateObject(startDate),CommonUtils.convertStringToDateObject(endDate));
+        List<Object[]> results = indentCreationRepository.fetchIndentReportDetails(
+                CommonUtils.convertStringToDateObject(startDate),
+                CommonUtils.convertStringToDateObject(endDate)
+        );
+
+        return results.stream().map(result -> {
+            IndentReportDetailsDTO dto = new IndentReportDetailsDTO();
+            dto.setIndentId((String) result[0]);
+            dto.setApprovedDate(result[1] != null ? ((java.sql.Date) result[1]).toLocalDate() : null);
+            dto.setAssignedTo((String) result[2]);
+            dto.setTenderRequest((String) result[3]);
+            dto.setModeOfTendering((String) result[4]);
+            dto.setCorrespondingPoSo((String) result[5]);
+            dto.setStatusOfPoSo((String) result[6]);
+            dto.setSubmittedDate(result[7] != null ? ((java.sql.Date) result[7]).toLocalDate() : null);
+            dto.setPendingApprovalWith((String) result[8]);
+            dto.setPoSoApprovedDate(result[9] != null ? ((java.sql.Date) result[9]).toLocalDate() : null);
+            dto.setMaterial((String) result[10]);
+            dto.setMaterialCategory((String) result[11]);
+            dto.setMaterialSubCategory((String) result[12]);
+            dto.setVendorName((String) result[13]);
+            dto.setIndentorName((String) result[14]);
+            dto.setValueOfIndent(result[15] != null ? ((BigDecimal) result[15]).doubleValue() : null);
+            dto.setValueOfPo(result[16] != null ? ((BigDecimal) result[16]).doubleValue() : null);
+            dto.setProject((String) result[17]);
+            dto.setGrinNo((String) result[18]);
+            dto.setInvoiceNo((String) result[19]);
+            dto.setGissNo((String) result[20]);
+            dto.setValuePendingToBePaid(result[21] != null ? ((BigDecimal) result[21]).doubleValue() : null);
+            dto.setCurrentStageOfIndent((String) result[22]);
+            dto.setShortClosedAndCancelled((String) result[23]);
+            dto.setReasonForShortClosure((String) result[24]);
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    public List<TechnoMomReportDTO> getTechnoMomReport(String startDate, String endDate) {
+        List<Object[]> results =indentCreationRepository.getTechnoMomReport(CommonUtils.convertStringToDateObject(startDate), CommonUtils.convertStringToDateObject(endDate));
+
+        return results.stream().map(obj -> new TechnoMomReportDTO(
+                (Date) obj[0],
+                (String) obj[1],
+                (String) obj[2],
+                obj[3] != null ? new BigDecimal(obj[3].toString()) : BigDecimal.ZERO, // value
+                (String) obj[4]
+        )).collect(Collectors.toList());
+
     }
 
     public void handleFileUpload(IndentCreation indentCreation, MultipartFile file, Consumer<byte[]> fileSetter) {
