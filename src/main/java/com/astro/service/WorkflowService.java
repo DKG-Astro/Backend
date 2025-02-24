@@ -1,9 +1,6 @@
 package com.astro.service;
 
-import com.astro.dto.workflow.TransitionActionReqDto;
-import com.astro.dto.workflow.TransitionDto;
-import com.astro.dto.workflow.WorkflowDto;
-import com.astro.dto.workflow.WorkflowTransitionDto;
+import com.astro.dto.workflow.*;
 
 import java.util.List;
 
@@ -21,4 +18,6 @@ public interface WorkflowService {
     public WorkflowTransitionDto performTransitionAction(TransitionActionReqDto transitionActionReqDto);
     public WorkflowTransitionDto submitWorkflow(Integer workflowTransitionId, Integer actionBy, String remarks);
     public List<WorkflowTransitionDto> approvedWorkflowTransition(Integer modifiedBy);
+    public List<SubWorkflowTransitionDto> getSubWorkflowTransition(Integer modifiedBy);
+    public void approveSubWorkflow(Integer subWorkflowTransitionId);
 }

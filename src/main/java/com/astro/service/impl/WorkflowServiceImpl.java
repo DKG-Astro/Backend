@@ -446,6 +446,57 @@ public class WorkflowServiceImpl implements WorkflowService {
         return workflowTransitionDtoList;
     }
 
+    @Override
+    public List<SubWorkflowTransitionDto> getSubWorkflowTransition(Integer modifiedBy) {
+        List<SubWorkflowTransitionDto> workflowTransitionDtoList = new ArrayList<>();
+
+        List<SubWorkflowTransition> subWorkflowTransitionList = subWorkflowTransitionRepository.findByActionOn(modifiedBy);
+        if(Objects.nonNull(subWorkflowTransitionList) && !subWorkflowTransitionList.isEmpty()){
+            workflowTransitionDtoList =  subWorkflowTransitionList.stream().map(e -> {
+                SubWorkflowTransitionDto subWorkflowTransitionDto = new SubWorkflowTransitionDto();
+                subWorkflowTransitionDto.setSubWorkflowTransitionId(e.getSubWorkflowTransitionId());
+                subWorkflowTransitionDto.setWorkflowId(e.getWorkflowId());
+                subWorkflowTransitionDto.setWorkflowName(e.getWorkflowName());
+                subWorkflowTransitionDto.setModifiedBy(e.getModifiedBy());
+                subWorkflowTransitionDto.setWorkflowSequence(e.getWorkflowSequence());
+                subWorkflowTransitionDto.setStatus(e.getStatus());
+                subWorkflowTransitionDto.setRemarks(e.getRemarks());
+                subWorkflowTransitionDto.setAction(e.getAction());
+                subWorkflowTransitionDto.setActionOn(e.getActionOn());
+                subWorkflowTransitionDto.setRequestId(e.getRequestId());
+                subWorkflowTransitionDto.setCreatedBy(e.getCreatedBy());
+                subWorkflowTransitionDto.setCreatedDate(e.getCreatedDate());
+                subWorkflowTransitionDto.setModificationDate(e.getModificationDate());
+
+                return subWorkflowTransitionDto;
+            }).collect(Collectors.toList());
+        }
+        return workflowTransitionDtoList;
+    }
+
+    @Override
+    @Transactional
+    public void approveSubWorkflow(Integer subWorkflowTransitionId) {
+        if(Objects.nonNull(subWorkflowTransitionId)){
+            Optional<SubWorkflowTransition> subWorkflowTransitionOptional = subWorkflowTransitionRepository.findById(subWorkflowTransitionId);
+            if(subWorkflowTransitionOptional.isPresent()){
+                SubWorkflowTransition subWorkflowTransition = subWorkflowTransitionOptional.get();
+                subWorkflowTransition.setStatus(AppConstant.APPROVE_TYPE);
+                subWorkflowTransition.setAction(AppConstant.COMPLETED_TYPE);
+                subWorkflowTransition.setModificationDate(new Date());
+
+                subWorkflowTransitionRepository.save(subWorkflowTransition);
+
+            }else{
+                throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                        AppConstant.ERROR_TYPE_VALIDATION, "Invalid sub workflow transition id."));
+            }
+        }else{
+            throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION, "Invalid sub workflow transition id."));
+        }
+    }
+
     private void requestChangeTransition(WorkflowTransition currentWorkflowTransition, TransitionMaster currentTransition, TransitionActionReqDto transitionActionReqDto) {
         if(Objects.nonNull(transitionActionReqDto.getAssignmentRole())){
             validateAssignmentRole(transitionActionReqDto.getAssignmentRole(), currentWorkflowTransition);
@@ -646,7 +697,7 @@ public class WorkflowServiceImpl implements WorkflowService {
             List<SubWorkflowTransition> subWorkflowTransitionList = subWorkflowTransitionRepository.findByWorkflowTransitionIdAndStatus(currentWorkflowTransition.getWorkflowTransitionId(), AppConstant.PENDING_TYPE);
             if(Objects.nonNull(subWorkflowTransitionList) && !subWorkflowTransitionList.isEmpty()){
                 throw new InvalidInputException(new ErrorDetails(AppConstant.NEXT_TRANSITION_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
-                        AppConstant.ERROR_TYPE_VALIDATION, "Error occurred at approval. All indenter not performed action for this workflow to approve."));
+                        AppConstant.ERROR_TYPE_VALIDATION, "Error occurred at approval. All indentor not performed action for this workflow to approve."));
             }
 
         }

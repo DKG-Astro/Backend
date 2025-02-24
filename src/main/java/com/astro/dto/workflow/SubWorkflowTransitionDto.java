@@ -9,7 +9,6 @@ public class SubWorkflowTransitionDto {
     private Integer subWorkflowTransitionId;
     private Integer workflowId;
     private String workflowName;
-    private Integer transitionId;
     private String requestId;
     private Integer createdBy;
     private Integer modifiedBy;

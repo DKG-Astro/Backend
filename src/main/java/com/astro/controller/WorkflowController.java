@@ -82,6 +82,17 @@ public class WorkflowController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.approvedWorkflowTransition(modifiedBy)), HttpStatus.OK);
     }
 
+    @GetMapping("/getSubWorkflowTransition")
+    public ResponseEntity<Object> getSubWorkflowTransition(@RequestParam Integer modifiedBy)  {
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.getSubWorkflowTransition(modifiedBy)), HttpStatus.OK);
+    }
+
+    @PostMapping("/approveSubWorkflow")
+    public ResponseEntity<Object> approveSubWorkflow(@RequestParam Integer subWorkflowTransitionId)  {
+        workflowService.approveSubWorkflow(subWorkflowTransitionId);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(), HttpStatus.OK);
+    }
+
    /* @Autowired
     private UserService userService;
 

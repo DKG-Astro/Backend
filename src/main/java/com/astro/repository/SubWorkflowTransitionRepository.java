@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface SubWorkflowTransitionRepository extends JpaRepository<SubWorkflowTransition, Integer> {
     List<SubWorkflowTransition> findByWorkflowTransitionIdAndStatus(Integer workflowTransitionId, String pendingType);
+
+    List<SubWorkflowTransition> findByActionOn(Integer modifiedBy);
 }
