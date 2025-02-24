@@ -30,5 +30,6 @@ public class woWithTenderAndIndentResponseDTO {
     private String createdBy;
     private String updatedBy;
     private TenderWithIndentResponseDTO tenderDetails;
+    private String projectName;
 
 }

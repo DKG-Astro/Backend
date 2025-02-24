@@ -4,7 +4,9 @@ public enum WorkflowName {
 
     INDENT("IndentWorkflow", "INDENT WORKFLOW"),
     CP("ContingencyPurchaseWorkflow", "CONTINGENCY PURCHASE WORKFLOW"),
-    PO("PO/SO/WO-Workflow", "PO/SO/WO WORKFLOW"),
+    PO("PO Workflow", "PO WORKFLOW"),
+    SO("SO Workflow", "SO WORKFLOW"),
+    WO("WO Workflow", "WO WORKFLOW"),
     TENDER("TenderWorkflow", "TENDER WORKFLOW");
 
     private final String key;

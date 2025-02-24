@@ -5,7 +5,10 @@ import com.astro.constant.WorkflowName;
 import com.astro.dto.workflow.*;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseResponseDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.soWithTenderAndIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.woWithTenderAndIndentResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.poWithTenderAndIndentResponseDTO;
 import com.astro.entity.*;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
@@ -53,6 +56,15 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     @Autowired
     TenderRequestService tenderRequestService;
+
+    @Autowired
+    ServiceOrderService serviceOrderService;
+
+    @Autowired
+    WorkOrderService workOrderService;
+
+    @Autowired
+    PurchaseOrderService purchaseOrderService;
 
     @Autowired
     SubWorkflowTransitionRepository subWorkflowTransitionRepository;
@@ -742,6 +754,78 @@ public class WorkflowServiceImpl implements WorkflowService {
                             }
                         }
                         break;
+                    case "SO WORKFLOW":
+                        soWithTenderAndIndentResponseDTO soWithTenderAndIndentResponseDTO = serviceOrderService.getServiceOrderById(requestId);
+                        for(TransitionDto dto : nextTransitionDtoList){
+                            Integer conditionId = dto.getConditionId();
+                            if (Objects.nonNull(conditionId)) {
+                                TransitionConditionMaster transitionConditionMaster = transitionConditionMasterList.stream().filter(f -> f.getConditionId().equals(dto.getConditionId())).findFirst().get();
+                                String conditionKey = transitionConditionMaster.getConditionKey();
+                                String conditionValue = transitionConditionMaster.getConditionValue();
+                                Object dataValue = null;
+                                boolean conditionCheckFlag = Boolean.FALSE;
+                                if(conditionKey.equalsIgnoreCase("ProjectName")){
+                                    dataValue =  soWithTenderAndIndentResponseDTO.getProjectName();
+                                    conditionCheckFlag = Objects.nonNull(dataValue);
+                                }else if(conditionKey.equalsIgnoreCase("TotalPriceOfAllMaterials")){
+                                    dataValue =  soWithTenderAndIndentResponseDTO.getTotalValueOfSo();
+                                    conditionCheckFlag = ((BigDecimal) dataValue).doubleValue() <= Double.valueOf(conditionValue);
+                                }
+                                if(conditionCheckFlag){
+                                    transitionDto = dto;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                case "WO WORKFLOW":
+                    woWithTenderAndIndentResponseDTO woWithTenderAndIndentResponseDTO = workOrderService.getWorkOrderById(requestId);
+                    for(TransitionDto dto : nextTransitionDtoList){
+                        Integer conditionId = dto.getConditionId();
+                        if (Objects.nonNull(conditionId)) {
+                            TransitionConditionMaster transitionConditionMaster = transitionConditionMasterList.stream().filter(f -> f.getConditionId().equals(dto.getConditionId())).findFirst().get();
+                            String conditionKey = transitionConditionMaster.getConditionKey();
+                            String conditionValue = transitionConditionMaster.getConditionValue();
+                            Object dataValue = null;
+                            boolean conditionCheckFlag = Boolean.FALSE;
+                            if(conditionKey.equalsIgnoreCase("ProjectName")){
+                                dataValue =  woWithTenderAndIndentResponseDTO.getProjectName();
+                                conditionCheckFlag = Objects.nonNull(dataValue);
+                            }else if(conditionKey.equalsIgnoreCase("TotalPriceOfAllMaterials")){
+                                dataValue =  woWithTenderAndIndentResponseDTO.getTotalValueOfWo();
+                                conditionCheckFlag = ((BigDecimal) dataValue).doubleValue() <= Double.valueOf(conditionValue);
+                            }
+                            if(conditionCheckFlag){
+                                transitionDto = dto;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case "PO WORKFLOW":
+                    poWithTenderAndIndentResponseDTO poWithTenderAndIndentResponseDTO = purchaseOrderService.getPurchaseOrderById(requestId);
+                    for(TransitionDto dto : nextTransitionDtoList){
+                        Integer conditionId = dto.getConditionId();
+                        if (Objects.nonNull(conditionId)) {
+                            TransitionConditionMaster transitionConditionMaster = transitionConditionMasterList.stream().filter(f -> f.getConditionId().equals(dto.getConditionId())).findFirst().get();
+                            String conditionKey = transitionConditionMaster.getConditionKey();
+                            String conditionValue = transitionConditionMaster.getConditionValue();
+                            Object dataValue = null;
+                            boolean conditionCheckFlag = Boolean.FALSE;
+                            if(conditionKey.equalsIgnoreCase("ProjectName")){
+                                dataValue =  poWithTenderAndIndentResponseDTO.getProjectName();
+                                conditionCheckFlag = Objects.nonNull(dataValue);
+                            }else if(conditionKey.equalsIgnoreCase("TotalPriceOfAllMaterials")){
+                                dataValue =  poWithTenderAndIndentResponseDTO.getTotalValueOfPo();
+                                conditionCheckFlag = ((BigDecimal) dataValue).doubleValue() <= Double.valueOf(conditionValue);
+                            }
+                            if(conditionCheckFlag){
+                                transitionDto = dto;
+                                break;
+                            }
+                        }
+                    }
+                    break;
                     //add more case here
 
             }
