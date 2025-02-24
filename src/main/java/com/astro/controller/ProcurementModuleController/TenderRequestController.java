@@ -4,8 +4,10 @@ import com.astro.dto.workflow.ProcurementDtos.TenderRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.TenderResponseDto;
 
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
+import com.astro.dto.workflow.WorkflowTransitionDto;
 import com.astro.service.TenderRequestService;
 
+import com.astro.service.WorkflowService;
 import com.astro.util.ResponseBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +32,8 @@ public class TenderRequestController {
     @Autowired
     private TenderRequestService TRService;
     @Autowired
+    private WorkflowService workflowService;
+    @Autowired
     private ObjectMapper mapper;
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> createTenderRequest(
@@ -50,6 +54,12 @@ public class TenderRequestController {
 
         TenderResponseDto created = TRService.createTenderRequest(tenderRequestDTO,uploadTenderDocumentsFileName,uploadGeneralTermsAndConditionsFileName
         ,uploadSpecificTermsAndConditionsFileName);
+
+        String requestId = created.getTenderId(); // Useing the indent ID as the request ID
+        String workflowName = "Tender Workflow";
+        Integer userId = created.getCreatedBy();
+        //initiateing Workflow API
+        WorkflowTransitionDto workflowTransitionDto = workflowService.initiateWorkflow(requestId, workflowName, userId);
 
 
 

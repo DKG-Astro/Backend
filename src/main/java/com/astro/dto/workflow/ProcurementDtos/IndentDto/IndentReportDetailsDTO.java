@@ -1,24 +1,22 @@
 package com.astro.dto.workflow.ProcurementDtos.IndentDto;
 
-import com.astro.entity.ProcurementModule.IndentCreation;
-import lombok.Data;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import lombok.Data;
+import java.util.Date;
 
 @Data
 public class IndentReportDetailsDTO {
 
     private String indentId;
-    private LocalDate approvedDate;
+    private Date approvedDate;
     private String assignedTo;
     private String tenderRequest;
     private String modeOfTendering;
     private String correspondingPoSo;
     private String statusOfPoSo;
-    private LocalDate submittedDate;
+    private Date submittedDate;
     private String pendingApprovalWith;
-    private LocalDate poSoApprovedDate;
+    private Date poSoApprovedDate;
     private String material;
     private String materialCategory;
     private String materialSubCategory;

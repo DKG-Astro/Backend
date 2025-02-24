@@ -27,6 +27,6 @@ public class WorkOrderResponseDTO{
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
     private List<WorkOrderMaterialResponseDTO> materials;
-    private String createdBy;
+    private Integer createdBy;
     private String updatedBy;
 }

@@ -48,7 +48,7 @@ public class ContigencyPurchase {
     @Column(name = "created_by")
     private String updatedBy;
     @Column(name = "updated_by")
-    private String createdBy;
+    private Integer createdBy;
 
     private LocalDateTime createdDate = LocalDateTime.now();
 

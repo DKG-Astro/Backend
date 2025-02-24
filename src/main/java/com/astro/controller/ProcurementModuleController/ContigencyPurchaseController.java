@@ -53,10 +53,10 @@ public class ContigencyPurchaseController {
         // Initiateing the workflow after saving the indent
         String requestId = created.getContigencyId(); // Useing the indent ID as the request ID
         String workflowName = "Contingency Purchase Workflow";
-        String createdBy = contigencyPurchaseDTO.getCreatedBy();
-        Optional<UserMaster> userMaster = userService.getUserMasterByCreatedBy(createdBy);
-        Integer userId = userMaster.get().getUserId();
-
+       // String createdBy = contigencyPurchaseDTO.getCreatedBy();
+      //  Optional<UserMaster> userMaster = userService.getUserMasterByCreatedBy(createdBy);
+      //  Integer userId = userMaster.get().getUserId();
+        Integer userId = created.getCreatedBy();
 
         // Call initiateWorkflow API
         WorkflowTransitionDto workflowTransitionDto = workflowService.initiateWorkflow(requestId, workflowName, userId);

@@ -35,10 +35,11 @@ public class ServiceOrderController {
         // Initiateing the workflow after saving the indent
         String requestId = responseDTO.getSoId(); // Useing the indent ID as the request ID
         String workflowName = "PO/SO/WO Workflow";
-        String createdBy = responseDTO.getCreatedBy();
-        Optional<UserMaster> userMaster = userService.getUserMasterByCreatedBy(createdBy);
-        Integer userId = userMaster.get().getUserId();
+     //   String createdBy = responseDTO.getCreatedBy();
+      //  Optional<UserMaster> userMaster = userService.getUserMasterByCreatedBy(createdBy);
+       // Integer userId = userMaster.get().getUserId();
 
+        Integer userId = requestDTO.getCreatedBy();
 
         // Call initiateWorkflow API
         WorkflowTransitionDto workflowTransitionDto = workflowService.initiateWorkflow(requestId, workflowName, userId);

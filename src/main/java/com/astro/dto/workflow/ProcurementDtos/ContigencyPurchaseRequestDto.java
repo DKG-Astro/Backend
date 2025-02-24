@@ -25,5 +25,5 @@ public class ContigencyPurchaseRequestDto {
     private String projectName;
     private String updatedBy;
 
-    private String createdBy;
+    private Integer createdBy;
 }

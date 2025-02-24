@@ -346,15 +346,15 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         return results.stream().map(result -> {
             IndentReportDetailsDTO dto = new IndentReportDetailsDTO();
             dto.setIndentId((String) result[0]);
-            dto.setApprovedDate(result[1] != null ? ((java.sql.Date) result[1]).toLocalDate() : null);
+            dto.setApprovedDate((Date) result[1]);
             dto.setAssignedTo((String) result[2]);
             dto.setTenderRequest((String) result[3]);
             dto.setModeOfTendering((String) result[4]);
             dto.setCorrespondingPoSo((String) result[5]);
             dto.setStatusOfPoSo((String) result[6]);
-            dto.setSubmittedDate(result[7] != null ? ((java.sql.Date) result[7]).toLocalDate() : null);
+            dto.setSubmittedDate((Date) result[7]);
             dto.setPendingApprovalWith((String) result[8]);
-            dto.setPoSoApprovedDate(result[9] != null ? ((java.sql.Date) result[9]).toLocalDate() : null);
+            dto.setPoSoApprovedDate((Date) result[9] );
             dto.setMaterial((String) result[10]);
             dto.setMaterialCategory((String) result[11]);
             dto.setMaterialSubCategory((String) result[12]);

@@ -30,7 +30,7 @@ public class PurchaseOrderRequestDTO{
         private String projectName;
         private List<PurchaseOrderAttributesDTO> purchaseOrderAttributes;
         private String updatedBy;
-        private String createdBy;
+        private Integer createdBy;
 
 
 
