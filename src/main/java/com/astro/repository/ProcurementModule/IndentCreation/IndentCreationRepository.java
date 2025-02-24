@@ -72,9 +72,7 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation,S
                ic.material_name AS `Material`,
                ic.material_category AS `Material Category`,
                ic.material_sub_category AS `Material Sub-Category`,
-             --  NULL As `Material`,
-              -- NULL AS `Material Category`,
-             --  Null AS `Material Sub-Category`,
+            
              
                 -- Vendor Name (latest from PO/SO)
                 (SELECT COALESCE(po.vendor_name, so.vendor_name)

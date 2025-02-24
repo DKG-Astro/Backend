@@ -38,7 +38,7 @@ public class PurchaseOrderController {
         PurchaseOrderResponseDTO createdPO = poService.createPurchaseOrder(purchaseOrderRequestDTO);
       // Initiateing the workflow after saving the indent
         String requestId = createdPO.getPoId(); // Useing the indent ID as the request ID
-        String workflowName = "PO/SO/WO Workflow";
+        String workflowName = "PO Workflow";
       //  String createdBy = purchaseOrderRequestDTO.getCreatedBy();
       //  Optional<UserMaster> userMaster = userService.getUserMasterByCreatedBy(createdBy);
       //  Integer userId = userMaster.get().getUserId();

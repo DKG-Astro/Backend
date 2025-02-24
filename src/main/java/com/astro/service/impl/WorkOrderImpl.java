@@ -4,6 +4,7 @@ package com.astro.service.impl;
 
 
 import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.*;
@@ -14,6 +15,7 @@ import com.astro.entity.ProcurementModule.WorkOrderMaterial;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
+import com.astro.repository.ProcurementModule.IndentIdRepository;
 import com.astro.repository.ProcurementModule.WorkOrder.WorkOrderMaterialRepository;
 import com.astro.repository.ProcurementModule.WorkOrder.WorkOrderRepository;
 import com.astro.service.IndentCreationService;
@@ -22,6 +24,7 @@ import com.astro.service.WorkOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +39,8 @@ public class WorkOrderImpl implements WorkOrderService {
     private IndentCreationService indentCreationService;
     @Autowired
     private TenderRequestService tenderRequestService;
+    @Autowired
+    private IndentIdRepository indentIdRepository;
     public WorkOrderResponseDTO createWorkOrder(WorkOrderRequestDTO workOrderRequestDTO) {
 
         // Check if the indentorId already exists
@@ -269,6 +274,15 @@ public class WorkOrderImpl implements WorkOrderService {
                     return material;
                 })
                 .collect(Collectors.toList()));
+        List<String> indentIds = indentIdRepository.findTenderWithIndent(workOrder.getTenderId());
+
+        // Calculate total tender value by summing totalPriceOfAllMaterials of all indents
+        BigDecimal totalTenderValue = indentIds.stream()
+                .map(indentCreationService::getIndentById) // Fetch Indent data
+                .map(IndentCreationResponseDTO::getTotalPriceOfAllMaterials) // Extract total price
+                .reduce(BigDecimal.ZERO, BigDecimal::add); // Sum up values
+        response.setTotalValueOfWo(totalTenderValue);
+        System.out.println("tottalTenderValue"+ totalTenderValue);
         return response;
     }
 

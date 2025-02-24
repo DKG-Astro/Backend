@@ -29,7 +29,7 @@ public class IndentCreationResponseDTO {
     private String singleAndMultipleJob;
     private String materialCategory;
     private BigDecimal totalPriceOfAllMaterials;
-    private BigDecimal projectLimit;
+   // private BigDecimal projectLimit;
     private List<MaterialDetailsResponseDTO> materialDetails;
     private Integer createdBy;
     private String updatedBy;

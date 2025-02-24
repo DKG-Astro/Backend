@@ -26,6 +26,7 @@ public class WorkOrderResponseDTO{
     private String vendorsAccountName;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
+    private BigDecimal totalValueOfWo;
     private List<WorkOrderMaterialResponseDTO> materials;
     private Integer createdBy;
     private String updatedBy;
