@@ -26,8 +26,7 @@ public class ContigencyPurchaseResponseDto {
     private String projectDetail;
     private String projectName;
     private String updatedBy;
-    private String createdBy;
-
+    private Integer createdBy;
     private LocalDateTime createdDate;
 
     private LocalDateTime updatedDate;

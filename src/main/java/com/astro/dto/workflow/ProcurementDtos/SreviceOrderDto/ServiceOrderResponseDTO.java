@@ -23,12 +23,12 @@ public class ServiceOrderResponseDTO {
     private String vendorsAccountNo;
     private String vendorsZRSCCode;
     private String vendorsAccountName;
-   // private BigDecimal totalValueOfSo;
+    private BigDecimal totalValue;
     private String projectName;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
     private List<ServiceOrderMaterialResponseDTO> materials;
-    private String createdBy;
+    private Integer createdBy;
     private String updatedBy;
 
 }

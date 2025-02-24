@@ -42,9 +42,9 @@ public class IndentCreationController {
     @Autowired
     private ObjectMapper mapper;
     @Autowired
-   private WorkflowService workflowService;
+    private WorkflowService workflowService;
     @Autowired
-   private UserService userService;
+    private UserService userService;
     private static final Logger log = LoggerFactory.getLogger(IndentCreationController.class);
 
 
@@ -74,7 +74,7 @@ public class IndentCreationController {
      String workflowName = "Indent Workflow";
    //String createdBy = indentRequestDTO.getCreatedBy();
    //Optional<UserMaster> userMaster = userService.getUserMasterByCreatedBy(createdBy);
-    //nteger userId = userMaster.get().getUserId();
+    //Integer userId = userMaster.get().getUserId();
      Integer userId = indentRequestDTO.getCreatedBy();
 
      //initiateing Workflow API

@@ -3,13 +3,13 @@ package com.astro.service;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentReportDetailsDTO;
+import com.astro.dto.workflow.ProcurementDtos.TechnoMomReportDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
 
 public interface IndentCreationService {
-
 
     public IndentCreationResponseDTO createIndent(IndentCreationRequestDTO indentRequestDTO,String uploadingPriorApprovalsFileName,
                                                   String uploadTenderDocumentsFileName,String uploadGOIOrRFPFileName,String uploadPACOrBrandPACFileName );
@@ -25,5 +25,7 @@ public interface IndentCreationService {
 
 
     List<IndentReportDetailsDTO> getIndentReport(String startDate, String endDate);
+
+    public List<TechnoMomReportDTO> getTechnoMomReport(String startDate, String endDate);
 
 }

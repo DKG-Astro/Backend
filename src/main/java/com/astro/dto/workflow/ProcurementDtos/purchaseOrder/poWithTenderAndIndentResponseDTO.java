@@ -30,7 +30,7 @@ public class poWithTenderAndIndentResponseDTO {
  private BigDecimal totalValueOfPo;
  private String projectName;
  private List<PurchaseOrderAttributesResponseDTO> purchaseOrderAttributes;
- private String createdBy;
+ private Integer createdBy;
  private String updatedBy;
  private LocalDateTime createdDate;
  private LocalDateTime updatedDate;

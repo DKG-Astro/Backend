@@ -38,16 +38,14 @@ public class PurchaseOrderController {
         PurchaseOrderResponseDTO createdPO = poService.createPurchaseOrder(purchaseOrderRequestDTO);
       // Initiateing the workflow after saving the indent
         String requestId = createdPO.getPoId(); // Useing the indent ID as the request ID
-        String workflowName = "PO/SO/WO Workflow";
-        String createdBy = purchaseOrderRequestDTO.getCreatedBy();
-        Optional<UserMaster> userMaster = userService.getUserMasterByCreatedBy(createdBy);
-        Integer userId = userMaster.get().getUserId();
-
+        String workflowName = "PO Workflow";
+      //  String createdBy = purchaseOrderRequestDTO.getCreatedBy();
+      //  Optional<UserMaster> userMaster = userService.getUserMasterByCreatedBy(createdBy);
+      //  Integer userId = userMaster.get().getUserId();
+        Integer userId = purchaseOrderRequestDTO.getCreatedBy();
 
         // Call initiateWorkflow API
         WorkflowTransitionDto workflowTransitionDto = workflowService.initiateWorkflow(requestId, workflowName, userId);
-
-
 
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(createdPO), HttpStatus.OK);
     }

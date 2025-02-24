@@ -43,8 +43,8 @@ public class GprnMaterials {
 
     private String note;
 
-    @Lob
-    private byte[] photographPath;
+   // @Lob
+    private String photographPath;
 
     private String photoFileName;
 

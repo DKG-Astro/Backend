@@ -4,6 +4,7 @@ package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
 
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.*;
 import com.astro.entity.ProcurementModule.MaterialDetails;
@@ -12,6 +13,7 @@ import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
+import com.astro.repository.ProcurementModule.IndentIdRepository;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;
 
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderRepository;
@@ -23,6 +25,7 @@ import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +42,8 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
     private IndentCreationService indentCreationService;
     @Autowired
     private TenderRequestService tenderRequestService;
+    @Autowired
+    private IndentIdRepository indentIdRepository;
 
     public PurchaseOrderResponseDTO createPurchaseOrder(PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
 
@@ -313,6 +318,15 @@ public List<PurchaseOrderResponseDTO> getAllPurchaseOrders() {
                     return attributeDTO;
                 })
                 .collect(Collectors.toList()));
+        List<String> indentIds = indentIdRepository.findTenderWithIndent(purchaseOrder.getTenderId());
+
+        // Calculate total tender value by summing totalPriceOfAllMaterials of all indents
+        BigDecimal totalTenderValue = indentIds.stream()
+                .map(indentCreationService::getIndentById) // Fetch Indent data
+                .map(IndentCreationResponseDTO::getTotalPriceOfAllMaterials) // Extract total price
+                .reduce(BigDecimal.ZERO, BigDecimal::add); // Sum up values
+        responseDTO.setTotalValue(totalTenderValue);
+        System.out.println("tottalTenderValue"+ totalTenderValue);
 
         return responseDTO;
     }

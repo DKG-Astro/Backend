@@ -27,10 +27,10 @@ public class PurchaseOrderResponseDTO {
     private String vendorAccountNumber;
     private String vendorsZfscCode;
     private String vendorAccountName;
-   // private BigDecimal totalValueOfPo;
+    private BigDecimal totalValue;
     private String projectName;
     private List<PurchaseOrderAttributesResponseDTO> purchaseOrderAttributes;
-    private String createdBy;
+    private Integer createdBy;
     private String updatedBy;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;

@@ -46,19 +46,8 @@ public class Gprn {
     @Lob
     private byte[] provisionalReceiptCertificate;
 
-   // @Column(name = "")
     private String provisionalReceiptCertificateFileName;
 
- //   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-  //  @JoinColumn(name = "gprn_id")  // Updated to reflect the new column name in the GprnMaterials table
- /*   @ManyToMany
-    @JoinTable(
-         name = "gprn_gprn_materials",
-         joinColumns = @JoinColumn(name = "gprn_id"),
-         inverseJoinColumns = @JoinColumn(name = "material_code")
-    )
-
-  */
     @OneToMany(mappedBy = "gprn", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<GprnMaterials> gprnMaterials = new ArrayList<>();

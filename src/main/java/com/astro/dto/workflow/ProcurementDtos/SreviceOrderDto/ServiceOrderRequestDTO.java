@@ -26,7 +26,7 @@ public class ServiceOrderRequestDTO {
   //private BigDecimal totalValueOfSo;
     private String projectName;
     private List<ServiceOrderMaterialRequestDTO> materials;
-    private String createdBy;
+    private Integer createdBy;
     private String updatedBy;
 
 }

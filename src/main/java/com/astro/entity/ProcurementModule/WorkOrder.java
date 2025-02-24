@@ -45,7 +45,7 @@ public class WorkOrder {
     @OneToMany(mappedBy = "workOrder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WorkOrderMaterial> materials;
     @Column(name = "created_by")
-    private String createdBy;
+    private Integer createdBy;
     @Column(name = "updated_by")
     private String updatedBy;
 

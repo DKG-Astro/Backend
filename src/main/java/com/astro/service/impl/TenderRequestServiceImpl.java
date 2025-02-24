@@ -316,12 +316,14 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         List<String> indentIds = indentIdRepository.findTenderWithIndent(tenderRequest.getTenderId());
 
           tenderResponseDto.setIndentIds(indentIds);
+
         // Calculate total tender value by summing totalPriceOfAllMaterials of all indents
         BigDecimal totalTenderValue = indentIds.stream()
                 .map(indentCreationService::getIndentById) // Fetch Indent data
                 .map(IndentCreationResponseDTO::getTotalPriceOfAllMaterials) // Extract total price
                 .reduce(BigDecimal.ZERO, BigDecimal::add); // Sum up values
         tenderResponseDto.setTotalTenderValue(totalTenderValue);
+        System.out.println("tottalTenderValue"+ totalTenderValue);
 
         return tenderResponseDto;
 

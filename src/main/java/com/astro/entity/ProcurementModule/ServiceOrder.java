@@ -51,7 +51,7 @@ public class ServiceOrder {
     @OneToMany(mappedBy = "serviceOrder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ServiceOrderMaterial> materials;
     @Column(name = "created_by")
-    private String createdBy;
+    private Integer createdBy;
     @Column(name = "updated_by")
     private String updatedBy;
 

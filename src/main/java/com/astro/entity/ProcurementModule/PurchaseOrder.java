@@ -68,7 +68,7 @@ public class PurchaseOrder {
     @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PurchaseOrderAttributes> purchaseOrderAttributes;
     @Column(name = "created_by")
-    private String createdBy;
+    private Integer createdBy;
     @Column(name = "updated_by")
     private String updatedBy;
     private LocalDateTime createdDate = LocalDateTime.now();
