@@ -281,7 +281,7 @@ public class WorkOrderImpl implements WorkOrderService {
                 .map(indentCreationService::getIndentById) // Fetch Indent data
                 .map(IndentCreationResponseDTO::getTotalPriceOfAllMaterials) // Extract total price
                 .reduce(BigDecimal.ZERO, BigDecimal::add); // Sum up values
-        response.setTotalValueOfWo(totalTenderValue);
+        response.setTotalValue(totalTenderValue);
         System.out.println("tottalTenderValue"+ totalTenderValue);
         return response;
     }

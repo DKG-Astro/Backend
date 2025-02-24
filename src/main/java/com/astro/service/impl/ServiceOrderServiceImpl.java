@@ -293,7 +293,7 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
                 .map(indentCreationService::getIndentById) // Fetch Indent data
                 .map(IndentCreationResponseDTO::getTotalPriceOfAllMaterials) // Extract total price
                 .reduce(BigDecimal.ZERO, BigDecimal::add); // Sum up values
-        response.setTotalValueOfSo(totalTenderValue);
+        response.setTotalValue(totalTenderValue);
         System.out.println("tottalTenderValue"+ totalTenderValue);
         return response;
     }

@@ -325,7 +325,7 @@ public List<PurchaseOrderResponseDTO> getAllPurchaseOrders() {
                 .map(indentCreationService::getIndentById) // Fetch Indent data
                 .map(IndentCreationResponseDTO::getTotalPriceOfAllMaterials) // Extract total price
                 .reduce(BigDecimal.ZERO, BigDecimal::add); // Sum up values
-        responseDTO.setTotalValueOfPo(totalTenderValue);
+        responseDTO.setTotalValue(totalTenderValue);
         System.out.println("tottalTenderValue"+ totalTenderValue);
 
         return responseDTO;
