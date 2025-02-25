@@ -72,6 +72,8 @@ public class TenderRequest {
     private String preBidDisscussions;
     @Column(name = "total_tender_value")
     private BigDecimal totalTenderValue;
+    @Column
+    private String projectName;
     @Column(name = "updated_by")
     private String updatedBy;
     @Column(name = "created_by")

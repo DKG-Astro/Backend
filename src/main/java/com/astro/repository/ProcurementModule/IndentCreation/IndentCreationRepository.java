@@ -14,6 +14,9 @@ import java.util.List;
 @Repository
 public interface IndentCreationRepository extends JpaRepository<IndentCreation,String> {
 
+    @Query("SELECT DISTINCT i.projectName FROM IndentCreation i WHERE i.indentId IN :indentIds")
+    List<String> findDistinctProjectNames(@Param("indentIds") List<String> indentIds);
+
     @Query(value = """
             SELECT
                 ic.indent_id AS `Indent Id`,

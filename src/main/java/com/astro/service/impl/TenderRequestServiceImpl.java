@@ -10,11 +10,14 @@ import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.entity.ProcurementModule.IndentId;
 import com.astro.entity.ProcurementModule.ServiceOrder;
 import com.astro.entity.ProcurementModule.TenderRequest;
+import com.astro.entity.ProjectMaster;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
+import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
 import com.astro.repository.ProcurementModule.IndentIdRepository;
 import com.astro.repository.ProcurementModule.TenderRequestRepository;
+import com.astro.repository.ProjectMasterRepository;
 import com.astro.service.IndentCreationService;
 import com.astro.service.TenderRequestService;
 import com.astro.util.CommonUtils;
@@ -43,6 +46,10 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     private IndentCreationService indentCreationService;
     @Autowired
     private IndentIdRepository indentIdRepository;
+    @Autowired
+    private IndentCreationRepository indentCreationRepository;
+    @Autowired
+    private ProjectMasterRepository projectMasterRepository;
     @Override
     public TenderResponseDto createTenderRequest(TenderRequestDto tenderRequestDto,String uploadTenderDocumentsFileName,String uploadGeneralTermsAndConditionsFileName
             , String uploadSpecificTermsAndConditionsFileName) {
@@ -101,6 +108,14 @@ public class TenderRequestServiceImpl implements TenderRequestService {
 
 // Set indentIds in TenderRequest
         tenderRequest.setIndentIds(indentIdList);
+        List<String> projectNames = indentCreationRepository.findDistinctProjectNames(tenderRequestDto.getIndentIds());
+        //at least one project name exists, assign the first one. If no project name exists, set it to null
+        if (!projectNames.isEmpty()) {
+            tenderRequest.setProjectName(projectNames.get(0));
+        } else {
+            tenderRequest.setProjectName(null); // No project name found, set as null
+        }
+        
 
         TRrepo.save(tenderRequest);
 
@@ -316,6 +331,12 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         List<String> indentIds = indentIdRepository.findTenderWithIndent(tenderRequest.getTenderId());
 
           tenderResponseDto.setIndentIds(indentIds);
+       // List<String> projectNames = indentCreationRepository.findDistinctProjectNames(indentIds);
+       // if (!projectNames.isEmpty()) {
+        //    tenderResponseDto.setProjectName(projectNames.get(0)); // Assign only the first project name
+       // }
+        tenderResponseDto.setProjectName(tenderRequest.getProjectName());
+        System.out.println(tenderRequest.getProjectName());
 
         // Calculate total tender value by summing totalPriceOfAllMaterials of all indents
         BigDecimal totalTenderValue = indentIds.stream()
@@ -324,6 +345,13 @@ public class TenderRequestServiceImpl implements TenderRequestService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add); // Sum up values
         tenderResponseDto.setTotalTenderValue(totalTenderValue);
         System.out.println("tottalTenderValue"+ totalTenderValue);
+        String projectName = tenderRequest.getProjectName();
+        BigDecimal allocatedAmount = projectMasterRepository
+                .findByProjectNameDescription(projectName)
+                .map(ProjectMaster::getAllocatedAmount)
+                .orElse(BigDecimal.ZERO);
+        tenderResponseDto.setProjectLimit(allocatedAmount);
+        System.out.println("allocatedAmount: " + allocatedAmount);
 
         return tenderResponseDto;
 

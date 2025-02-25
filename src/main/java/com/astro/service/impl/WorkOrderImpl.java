@@ -8,16 +8,16 @@ import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDT
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.*;
-import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
-import com.astro.entity.ProcurementModule.ServiceOrder;
-import com.astro.entity.ProcurementModule.WorkOrder;
-import com.astro.entity.ProcurementModule.WorkOrderMaterial;
+import com.astro.entity.ProcurementModule.*;
+import com.astro.entity.ProjectMaster;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.ProcurementModule.IndentIdRepository;
+import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.repository.ProcurementModule.WorkOrder.WorkOrderMaterialRepository;
 import com.astro.repository.ProcurementModule.WorkOrder.WorkOrderRepository;
+import com.astro.repository.ProjectMasterRepository;
 import com.astro.service.IndentCreationService;
 import com.astro.service.TenderRequestService;
 import com.astro.service.WorkOrderService;
@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,6 +42,10 @@ public class WorkOrderImpl implements WorkOrderService {
     private TenderRequestService tenderRequestService;
     @Autowired
     private IndentIdRepository indentIdRepository;
+    @Autowired
+    private TenderRequestRepository tenderRequestRepository;
+    @Autowired
+    private ProjectMasterRepository projectMasterRepository;
     public WorkOrderResponseDTO createWorkOrder(WorkOrderRequestDTO workOrderRequestDTO) {
 
         // Check if the indentorId already exists
@@ -283,6 +288,17 @@ public class WorkOrderImpl implements WorkOrderService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add); // Sum up values
         response.setTotalValue(totalTenderValue);
         System.out.println("tottalTenderValue"+ totalTenderValue);
+        Optional<TenderRequest> tenderRequest = tenderRequestRepository.findByTenderId(workOrder.getTenderId());
+
+        String projectName =tenderRequest.map(TenderRequest::getProjectName).orElse(null);
+        response.setProjectName(projectName);
+        System.out.println("projectName:"+projectName);
+        BigDecimal allocatedAmount = projectMasterRepository
+                .findByProjectNameDescription(projectName)
+                .map(ProjectMaster::getAllocatedAmount)
+                .orElse(BigDecimal.ZERO);
+        response.setProjectLimit(allocatedAmount);
+        System.out.println("allocatedAmount: " + allocatedAmount);
         return response;
     }
 

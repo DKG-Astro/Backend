@@ -25,7 +25,7 @@ public class IndentCreationRequestDTO {
     private String indentorEmailAddress;
     private String consignesLocation;
 
-   private MultipartFile uploadingPriorApprovals;
+    private MultipartFile uploadingPriorApprovals;
     private MultipartFile uploadTenderDocuments;
     private MultipartFile uploadGOIOrRFP;
     private MultipartFile uploadPACOrBrandPAC;

@@ -33,6 +33,8 @@ public class TenderResponseDto {
     private String uploadSpecificTermsAndConditions;
     private String preBidDisscussions;
     private BigDecimal totalTenderValue;
+    private String projectName;
+    private BigDecimal projectLimit;
     private String updatedBy;
     private Integer createdBy;
     private LocalDateTime createdDate;

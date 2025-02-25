@@ -295,13 +295,13 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                     .map(MaterialDetailsResponseDTO::getTotalPrice)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-         //   String projectName = indentCreation.getProjectName();
-          //  BigDecimal allocatedAmount = projectMasterRepository
-               //     .findByProjectNameDescription(projectName)
-               //     .map(ProjectMaster::getAllocatedAmount)
-                //    .orElse(BigDecimal.ZERO);
-           // response.setProjectLimit(allocatedAmount);
-          //  System.out.println("allocatedAmount: " + allocatedAmount);
+            String projectName = indentCreation.getProjectName();
+            BigDecimal allocatedAmount = projectMasterRepository
+                    .findByProjectNameDescription(projectName)
+                    .map(ProjectMaster::getAllocatedAmount)
+                    .orElse(BigDecimal.ZERO);
+            response.setProjectLimit(allocatedAmount);
+            System.out.println("allocatedAmount: " + allocatedAmount);
             response.setTotalPriceOfAllMaterials(totalPriceOfAllMaterials);
 
             response.setMaterialDetails(materialDetailsResponse);

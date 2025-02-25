@@ -10,6 +10,8 @@ import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.*;
 import com.astro.entity.ProcurementModule.MaterialDetails;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
+import com.astro.entity.ProcurementModule.TenderRequest;
+import com.astro.entity.ProjectMaster;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
@@ -18,6 +20,8 @@ import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttribu
 
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderRepository;
 
+import com.astro.repository.ProcurementModule.TenderRequestRepository;
+import com.astro.repository.ProjectMasterRepository;
 import com.astro.service.IndentCreationService;
 import com.astro.service.PurchaseOrderService;
 import com.astro.service.TenderRequestService;
@@ -28,6 +32,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,6 +49,10 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
     private TenderRequestService tenderRequestService;
     @Autowired
     private IndentIdRepository indentIdRepository;
+    @Autowired
+    private TenderRequestRepository tenderRequestRepository;
+    @Autowired
+    private ProjectMasterRepository projectMasterRepository;
 
     public PurchaseOrderResponseDTO createPurchaseOrder(PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
 
@@ -327,6 +336,19 @@ public List<PurchaseOrderResponseDTO> getAllPurchaseOrders() {
                 .reduce(BigDecimal.ZERO, BigDecimal::add); // Sum up values
         responseDTO.setTotalValue(totalTenderValue);
         System.out.println("tottalTenderValue"+ totalTenderValue);
+
+        Optional<TenderRequest> tenderRequest = tenderRequestRepository.findByTenderId(purchaseOrder.getTenderId());
+
+   String projectName =tenderRequest.map(TenderRequest::getProjectName).orElse(null);
+        responseDTO.setProjectName(projectName);
+        System.out.println("projectName:"+projectName);
+        BigDecimal allocatedAmount = projectMasterRepository
+                .findByProjectNameDescription(projectName)
+                .map(ProjectMaster::getAllocatedAmount)
+                .orElse(BigDecimal.ZERO);
+       responseDTO.setProjectLimit(allocatedAmount);
+        System.out.println("allocatedAmount: " + allocatedAmount);
+
 
         return responseDTO;
     }
