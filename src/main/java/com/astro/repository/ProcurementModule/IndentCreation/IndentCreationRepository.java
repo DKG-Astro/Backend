@@ -72,10 +72,9 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation,S
                                         ORDER BY po.created_date DESC, so.created_date DESC LIMIT 1)
                  ORDER BY wt.createdDate ASC LIMIT 1 OFFSET 1) AS `PO/ SO Approved Date`,
               
-               ic.material_name AS `Material`,
-               ic.material_category AS `Material Category`,
-               ic.material_sub_category AS `Material Sub-Category`,
-            
+              md.material_description AS `Material`,
+              md.material_category AS `Material Category`,
+              md.material_sub_category AS `Material Sub-Category`,
              
                 -- Vendor Name (latest from PO/SO)
                 (SELECT COALESCE(po.vendor_name, so.vendor_name)
@@ -87,15 +86,26 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation,S
                 ic.indentor_name AS `Indentor Name`,
            
                 -- Sum of value of all materials in indent
-              (SELECT SUM(ic2.value) FROM indent_creation ic2 WHERE ic2.indent_id = ic.indent_id) AS `Value of Indent`,
+            --  (SELECT SUM(ic2.value) FROM indent_creation ic2 WHERE ic2.indent_id = ic.indent_id) AS `Value of Indent`,
+              (SELECT SUM(md.total_price) FROM material_details md WHERE md.indent_id = ic.indent_id) AS `Value of Indent`,
               
                 -- Value of PO (linked via Tender)
-                (SELECT po.value FROM purchase_order po WHERE po.tender_id = tr.tender_id ORDER BY po.created_date DESC LIMIT 1) AS `Value of PO`,
+               -- (SELECT po.value FROM purchase_order po WHERE po.tender_id = tr.tender_id ORDER BY po.created_date DESC LIMIT 1) AS `Value of PO`,
+               -- Sum the total_price from material_details per indent and then sum across all indents of a tender
+              (SELECT SUM(md.total_price)
+                                    FROM indent_creation ic2
+                                    JOIN material_details md ON ic2.indent_id = md.indent_id
+                                    WHERE ic2.indent_id IN (                            \s
+                                              SELECT ic2.indent_id                            \s
+                                              FROM indent_creation ic2                            \s
+                                              JOIN tender_request tr2 ON ic2.indent_id = tr2.indent_id                            \s
+                                              WHERE tr2.tender_id = tr.tender_id                        \s
+                                          )) AS `Value of PO`,
                
                 ic.project_name AS `Project`,
                
                 -- GRIN No (latest GRIN entry)
-                (SELECT gr.gri_id FROM goods_receipt_inspection gr WHERE gr.indent_id = ic.indent_id ORDER BY gr.created_date DESC LIMIT 1) AS `GRIN No`,
+             --   (SELECT gr.gri_id FROM goods_receipt_inspection gr WHERE gr.indent_id = ic.indent_id ORDER BY gr.created_date DESC LIMIT 1) AS `GRIN No`,
                
                 NULL AS `Invoice No`,
                 NULL AS `GISS No`,
@@ -120,7 +130,8 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation,S
                  ORDER BY wt.createdDate DESC LIMIT 1) AS `Reason for Short-Closure & Cancellation`
                              
             FROM indent_creation ic
-            LEFT JOIN tender_request tr ON ic.indent_id = tr.indent_id;
+            LEFT JOIN tender_request tr ON ic.indent_id = tr.indent_id
+            LEFT JOIN material_details md ON ic.indent_id = md.indent_id;
                    """, nativeQuery = true)
     List<Object[]> fetchIndentReportDetails(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
     @Query(value = """

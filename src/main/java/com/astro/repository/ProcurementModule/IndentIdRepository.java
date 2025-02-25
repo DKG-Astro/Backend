@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface IndentIdRepository extends JpaRepository<IndentId,String> {
+public interface IndentIdRepository extends JpaRepository<IndentId,Long> {
     @Query("SELECT i.indentId FROM IndentId i WHERE i.tenderRequest.tenderId = :tenderId")
  List<String> findTenderWithIndent(@Param("tenderId") String tenderId);
 
