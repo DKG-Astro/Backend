@@ -96,8 +96,9 @@ public class WorkflowController {
     }
 
     @GetMapping("/approved-indents")
-    public List<String> getApprovedIndents() {
-        return workflowService.getApprovedIndents();
+    public ResponseEntity<Object>  getApprovedIndents() {
+        List<String> response= workflowService.getApprovedIndents();
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
 
    /* @Autowired

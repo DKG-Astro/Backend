@@ -5,18 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ff5636e0-402f-4a63-8653-94f411351cbb" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/controller/WorkflowController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/controller/WorkflowController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/IndentCreation/IndentCreationRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/IndentCreation/IndentCreationRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/WorkflowTransitionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/WorkflowTransitionRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/WorkflowService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/WorkflowService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/DDL-script.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/DDL-script.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/WorkflowController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/controller/WorkflowController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/ProcurementModule/IndentCreation/IndentCreationRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/repository/ProcurementModule/IndentCreation/IndentCreationRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/WorkflowTransitionRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/repository/WorkflowTransitionRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/WorkflowService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/service/WorkflowService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/WorkflowServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/service/impl/WorkflowServiceImpl.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
