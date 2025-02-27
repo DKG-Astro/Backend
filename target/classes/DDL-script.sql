@@ -252,10 +252,12 @@ CREATE TABLE tender_request (
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
 CREATE TABLE indent_id (
-    indent_id VARCHAR(255) PRIMARY KEY,
-    tender_id VARCHAR(255) NOT NULL,
-    FOREIGN KEY (tender_id) REFERENCES tender_request(tender_id) ON DELETE CASCADE
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    indent_id VARCHAR(255),
+    tender_id Varchar(255),
+	FOREIGN KEY (tender_id) REFERENCES tender_request(tender_id)
 );
 
 CREATE TABLE contigency_purchase (

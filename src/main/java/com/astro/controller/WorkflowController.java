@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 public class WorkflowController {
@@ -91,6 +93,11 @@ public class WorkflowController {
     public ResponseEntity<Object> approveSubWorkflow(@RequestParam Integer subWorkflowTransitionId)  {
         workflowService.approveSubWorkflow(subWorkflowTransitionId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(), HttpStatus.OK);
+    }
+
+    @GetMapping("/approved-indents")
+    public List<String> getApprovedIndents() {
+        return workflowService.getApprovedIndents();
     }
 
    /* @Autowired

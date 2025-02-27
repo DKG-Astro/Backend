@@ -20,4 +20,5 @@ public interface WorkflowService {
     public List<WorkflowTransitionDto> approvedWorkflowTransition(Integer modifiedBy);
     public List<SubWorkflowTransitionDto> getSubWorkflowTransition(Integer modifiedBy);
     public void approveSubWorkflow(Integer subWorkflowTransitionId);
+    public List<String> getApprovedIndents();
 }

@@ -883,5 +883,8 @@ public class WorkflowServiceImpl implements WorkflowService {
         }
         return transitionDto;
     }
+    public List<String> getApprovedIndents() {
+        return workflowTransitionRepository.findApprovedIndentRequestIds();
+    }
 
 }
