@@ -88,17 +88,17 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation,S
                 -- Sum of value of all materials in indent
             --  (SELECT SUM(ic2.value) FROM indent_creation ic2 WHERE ic2.indent_id = ic.indent_id) AS `Value of Indent`,
               (SELECT SUM(md.total_price) FROM material_details md WHERE md.indent_id = ic.indent_id) AS `Value of Indent`,
-              
-                -- Value of PO (linked via Tender)
-             --   (SELECT po.value FROM purchase_order po WHERE po.tender_id = tr.tender_id ORDER BY po.created_date DESC LIMIT 1) AS `Value of PO`,
-             
+              -- Value of PO (linked via Tender)
+              (SELECT po.total_value_of_po FROM purchase_order po WHERE po.tender_id = tr.tender_id ORDER BY po.created_date DESC LIMIT 1) AS `Value of PO`,
+              -- GRIN No (latest GRIN entry)
+              -- (SELECT gr.grin_no FROM goods_receipt_inspection gr WHERE gr.indent_id = ic.indent_id ORDER BY gr.create_date DESC LIMIT 1) AS `GRIN No`,
+              ic.project_name AS `Project`,
+           
+              CAST(NULL AS CHAR) AS 'invoiceNo',
+              CAST(NULL AS CHAR) AS 'gissNo',
+              CAST(NULL AS DECIMAL(19, 2)) AS 'valuePendingToBePaid',
                
-                -- GRIN No (latest GRIN entry)
-             --   (SELECT gr.gri_id FROM goods_receipt_inspection gr WHERE gr.indent_id = ic.indent_id ORDER BY gr.created_date DESC LIMIT 1) AS `GRIN No`,
                
-                NULL AS `Invoice No`,
-                NULL AS `GISS No`,
-                NULL AS `Value Pending to be Paid`,
             
                 -- Current Stage of Indent (latest next role)
                 (SELECT wt.nextRole
@@ -117,11 +117,14 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation,S
                  FROM workflow_transition wt
                  WHERE wt.requestId = ic.indent_id AND wt.action = 'Rejected'
                  ORDER BY wt.createdDate DESC LIMIT 1) AS `Reason for Short-Closure & Cancellation`
-                             
-            FROM indent_creation ic
-            LEFT JOIN tender_request tr ON ic.indent_id = tr.indent_id
-            LEFT JOIN material_details md ON ic.indent_id = md.indent_id;
-                   """, nativeQuery = true)
+                        
+           FROM indent_creation ic
+              LEFT JOIN indent_id iid ON ic.indent_id = iid.indent_id
+              LEFT JOIN tender_request tr ON iid.tender_id = tr.tender_id
+              LEFT JOIN  material_details md ON ic.indent_id = md.indent_id
+              WHERE ic.created_date BETWEEN :startDate AND :endDate
+                 
+                 """, nativeQuery = true)
     List<Object[]> fetchIndentReportDetails(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
     @Query(value = """
             SELECT

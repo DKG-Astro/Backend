@@ -115,6 +115,17 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         } else {
             tenderRequest.setProjectName(null); // No project name found, set as null
         }
+        // Fetch Indent Data
+        List<IndentCreationResponseDTO> indentDataList = tenderRequest.getIndentIds().stream()
+                .map(indentId -> indentCreationService.getIndentById(indentId.getIndentId()))
+                .collect(Collectors.toList());
+
+        // Calculate totalTenderValue
+        BigDecimal totalTenderValue = indentDataList.stream()
+                .map(IndentCreationResponseDTO::getTotalPriceOfAllMaterials)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        tenderRequest.setTotalTenderValue(totalTenderValue);
+
         
 
         TRrepo.save(tenderRequest);

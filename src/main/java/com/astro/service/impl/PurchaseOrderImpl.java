@@ -119,8 +119,16 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
        // purchaseOrderRepository.save(purchaseOrder);
         // Set attributes and save order
         purchaseOrder.setPurchaseOrderAttributes(purchaseOrderAttributes);
-        purchaseOrderRepository.save(purchaseOrder);
+        List<String> indentIds = indentIdRepository.findTenderWithIndent(purchaseOrder.getTenderId());
 
+        // Calculate total tender value by summing totalPriceOfAllMaterials of all indents
+        BigDecimal totalTenderValue = indentIds.stream()
+                .map(indentCreationService::getIndentById) // Fetch Indent data
+                .map(IndentCreationResponseDTO::getTotalPriceOfAllMaterials) // Extract total price
+                .reduce(BigDecimal.ZERO, BigDecimal::add); // Sum up values
+        purchaseOrder.setTotalValueOfPo(totalTenderValue);
+        System.out.println("tottalTenderValue"+ totalTenderValue);
+        purchaseOrderRepository.save(purchaseOrder);
         return mapToResponseDTO(purchaseOrder);
     }
 

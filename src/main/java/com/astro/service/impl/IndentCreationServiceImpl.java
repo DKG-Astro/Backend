@@ -334,7 +334,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             );
         }
     }
-
+/*
     @Override
     public List<IndentReportDetailsDTO> getIndentReport(String startDate, String endDate) {
 
@@ -375,6 +375,50 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         }).collect(Collectors.toList());
     }
 
+
+ */
+@Override
+public List<IndentReportDetailsDTO> getIndentReport(String startDate, String endDate) {
+    // Convert String dates to LocalDate
+    LocalDate startLocalDate = CommonUtils.convertStringToDateObject(startDate);
+    LocalDate endLocalDate = CommonUtils.convertStringToDateObject(endDate);
+
+    // Fetch results from the repository
+    List<Object[]> results = indentCreationRepository.fetchIndentReportDetails(startLocalDate, endLocalDate);
+
+    // Map results to DTO
+    return results.stream().map(result -> {
+
+        // Map each column to the DTO fields
+        return new IndentReportDetailsDTO(
+                (String) result[0],                          // indentId
+                result[1] != null ? (Date) result[1] : null, // approvedDate
+                (String) result[2],                          // assignedTo
+                (String) result[3],                          // tenderRequest
+                (String) result[4],                          // modeOfTendering
+                (String) result[5],                          // correspondingPoSo
+                (String) result[6],                          // statusOfPoSo
+                result[7] != null ? (Date) result[7] : null, // submittedDate
+                (String) result[8],                          // pendingApprovalWith
+                result[9] != null ? (Date) result[9] : null, // poSoApprovedDate
+                (String) result[10],                         // material
+                (String) result[11],                         // materialCategory
+                (String) result[12],                         // materialSubCategory
+                (String) result[13],                         // vendorName
+                (String) result[14],                         // indentorName
+                result[15] != null ? ((BigDecimal) result[15]).doubleValue() : null, // valueOfIndent
+                result[16] != null ? ((BigDecimal) result[16]).doubleValue() : null, // valueOfPo
+                (String) result[17],                        // project
+              //  (String) result[18],                        // grinNo
+                (String) result[18],                         // invoiceNo
+                (String) result[19],                        // gissNo
+                result[20] != null ? ((BigDecimal) result[20]).doubleValue() : null, // valuePendingToBePaid
+                (String) result[21],                        // currentStageOfIndent
+                (String) result[22],                        // shortClosedAndCancelled
+                (String) result[23]                          // reasonForShortClosure
+        );
+    }).collect(Collectors.toList());
+}
     public List<TechnoMomReportDTO> getTechnoMomReport(String startDate, String endDate) {
         List<Object[]> results =indentCreationRepository.getTechnoMomReport(CommonUtils.convertStringToDateObject(startDate), CommonUtils.convertStringToDateObject(endDate));
 
