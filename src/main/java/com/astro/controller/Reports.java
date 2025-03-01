@@ -3,9 +3,10 @@ package com.astro.controller;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseReportDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentReportDetailsDTO;
 import com.astro.dto.workflow.ProcurementDtos.TechnoMomReportDTO;
-import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
+import com.astro.dto.workflow.VendorContractReportDTO;
 import com.astro.service.ContigencyPurchaseService;
 import com.astro.service.IndentCreationService;
+import com.astro.service.PurchaseOrderService;
 import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,8 @@ public class Reports {
 
     @Autowired
     private ContigencyPurchaseService CPservice;
+    @Autowired
+    private PurchaseOrderService purchaseOrderService;
 
     @GetMapping("/indent")
     public ResponseEntity<Object> getIndentReport(
@@ -49,6 +52,15 @@ public class Reports {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
 
+
+    @GetMapping("/vendor-contracts/report")
+    public ResponseEntity<Object>  getVendorContracts(
+            @RequestParam String startDate,
+            @RequestParam String endDate
+    ) {
+        List<VendorContractReportDTO> response = purchaseOrderService.getVendorContractDetails(startDate, endDate);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+    }
 
 
 }

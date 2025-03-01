@@ -20,6 +20,7 @@ import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
 import java.io.IOException;
@@ -241,7 +242,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             response.setIndentorMobileNo(indentCreation.getIndentorMobileNo());
             response.setIndentorEmailAddress(indentCreation.getIndentorEmailAddress());
             response.setConsignesLocation(indentCreation.getConsignesLocation());
-        response.setUploadingPriorApprovalsFileName(indentCreation.getUploadingPriorApprovalsFileName());
+            response.setUploadingPriorApprovalsFileName(indentCreation.getUploadingPriorApprovalsFileName());
             response.setProjectName(indentCreation.getProjectName());
             response.setIsPreBidMeetingRequired(indentCreation.getIsPreBitMeetingRequired());
             LocalDate Date = indentCreation.getPreBidMeetingDate();
@@ -254,6 +255,30 @@ public class IndentCreationServiceImpl implements IndentCreationService {
          response.setUploadTenderDocumentsFileName(indentCreation.getUploadTenderDocumentsFileName());
          response.setUploadGOIOrRFPFileName(indentCreation.getUploadGOIOrRFPFileName());
            response.setUploadPACOrBrandPACFileName(indentCreation.getUploadPACOrBrandPACFileName());
+          /*  String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
+            response.setUploadingPriorApprovalsFile(
+                    indentCreation.getUploadingPriorApprovalsFileName() != null ?
+                            baseUrl + "/api/indents/download-file/" + indentCreation.getIndentId() + "/priorApproval" : null
+            );
+
+            response.setUploadTenderDocumentsFile(
+                    indentCreation.getUploadTenderDocumentsFileName() != null ?
+                            baseUrl + "/api/indents/download-file/" + indentCreation.getIndentId() + "/tenderDocument" : null
+            );
+
+            response.setUploadGOIOrRFPFile(
+                    indentCreation.getUploadGOIOrRFPFileName() != null ?
+                            baseUrl + "/api/indents/download-file/" + indentCreation.getIndentId() + "/goiOrRFP" : null
+            );
+
+            response.setUploadPACOrBrandPACFile(
+                    indentCreation.getUploadPACOrBrandPACFileName() != null ?
+                            baseUrl + "/api/indents/download-file/" + indentCreation.getIndentId() + "/pacOrBrandPAC" : null
+            );
+
+
+
+           */
             response.setCreatedBy(indentCreation.getCreatedBy());
             response.setUpdatedBy(indentCreation.getUpdatedBy());
 

@@ -51,12 +51,6 @@ public class VendorMasterController {
     }
 
 
-    @GetMapping("/vendorContracts/reports")
-    public List<VendorContractReportDTO> getVendorContracts(
-            @RequestParam("startDate") String startDate,
-            @RequestParam("endDate") String endDate) {
-        return vendorMasterService.getVendorContracts(startDate,endDate);
-    }
 
 
 }

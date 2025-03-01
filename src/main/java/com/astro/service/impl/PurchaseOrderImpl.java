@@ -7,7 +7,7 @@ import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.*;
-import com.astro.entity.ProcurementModule.MaterialDetails;
+import com.astro.dto.workflow.VendorContractReportDTO;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
 import com.astro.entity.ProcurementModule.TenderRequest;
@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -293,6 +292,8 @@ public List<PurchaseOrderResponseDTO> getAllPurchaseOrders() {
 
     }
 
+
+
     private PurchaseOrderResponseDTO mapToResponseDTO(PurchaseOrder purchaseOrder) {
         PurchaseOrderResponseDTO responseDTO = new PurchaseOrderResponseDTO();
         responseDTO.setPoId(purchaseOrder.getPoId());
@@ -361,5 +362,30 @@ public List<PurchaseOrderResponseDTO> getAllPurchaseOrders() {
         return responseDTO;
     }
 
+    @Override
+    public List<VendorContractReportDTO> getVendorContractDetails(String startDate, String endDate) {
+        List<Object[]> results = purchaseOrderRepository.getVendorContractDetails(
+                CommonUtils.convertStringToDateObject(startDate),
+                CommonUtils.convertStringToDateObject(endDate)
+        );
+
+        return results.stream().map(row -> new VendorContractReportDTO(
+                (row[0] != null) ? row[0].toString() : "",  // orderId
+                (row[1] != null) ? row[1].toString() : "",  // modeOfProcurement
+                (row[2] != null) ? row[2].toString() : "",  // underAMC
+                (row[3] != null) ? row[3].toString() : "",  // amcFor
+                (row[4] != null) ? row[4].toString() : "",  // endUser
+                (row[5] != null) ? ((Number) row[5]).intValue() : null,  // noOfParticipants
+                (row[6] != null) ? ((Number) row[6]).doubleValue() : null,  // value
+                (row[7] != null) ? row[7].toString() : "",  // location
+                (row[8] != null) ? row[8].toString() : "",  // vendorName
+                (row[9] != null) ? row[9].toString() : "",  // previouslyRenewedAMCs
+                (row[10] != null) ? row[10].toString() : "",  // categoryOfSecurity
+                (row[11] != null) ? row[11].toString() : ""  // validityOfSecurity
+        )).collect(Collectors.toList());
+    }
 
 }
+
+
+
