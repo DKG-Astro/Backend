@@ -1,5 +1,6 @@
 package com.astro.repository.ProcurementModule.PurchaseOrder;
 
+import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,7 +23,7 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, St
                      CAST(NULL AS UNSIGNED) AS noOfParticipants,
                     po.total_value_of_po AS value,
                     po.consignes_address AS location,
-                    po.vendor_account_name AS vendorName,
+                    po.vendor_name AS vendorName,
                     '' AS previouslyRenewedAMCs,
                     '' AS categoryOfSecurity,
                     '' AS validityOfSecurity
@@ -32,5 +33,25 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, St
         ORDER BY po.created_date
     """, nativeQuery = true)
     List<Object[]> getVendorContractDetails(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    @Query(value = """
+            SELECT
+            po.po_id AS 'Order Id',
+            CASE
+            WHEN vm.registered_platform = 'Yes' THEN 'GeM'
+            WHEN vm.registered_platform = 'No' THEN 'Non-GeM'
+            ELSE 'Unknown'
+            END AS 'GeM / Non-GeM',
+            '' As 'Indentor',
+            po.total_value_of_po AS 'Value',
+            '' AS 'Description of goods/services',
+            vm.vendor_name AS 'Vendor Name'
+            FROM purchase_order AS po
+            LEFT JOIN vendor_master AS vm ON po.vendor_name = vm.vendor_name
+            WHERE po.created_date BETWEEN :startDate AND :endDate
+        ORDER BY po.created_date
+             """, nativeQuery = true)
+    List<Object[]> getProcurementActivityReport(@Param("startDate") LocalDate startDate,
+                                                                         @Param("endDate") LocalDate endDate);
 
 }

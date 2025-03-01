@@ -2,6 +2,7 @@ package com.astro.service;
 
 
 
+import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.poWithTenderAndIndentResponseDTO;
@@ -22,4 +23,6 @@ public interface PurchaseOrderService {
     public void deletePurchaseOrder(String poId);
 
     List<VendorContractReportDTO> getVendorContractDetails(String startDate, String endDate);
+
+    List<ProcurementActivityReportResponse> getProcurementActivityReport(String startDate, String endDate);
 }

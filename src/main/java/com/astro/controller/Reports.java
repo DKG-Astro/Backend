@@ -2,6 +2,7 @@ package com.astro.controller;
 
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseReportDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentReportDetailsDTO;
+import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
 import com.astro.dto.workflow.ProcurementDtos.TechnoMomReportDTO;
 import com.astro.dto.workflow.VendorContractReportDTO;
 import com.astro.service.ContigencyPurchaseService;
@@ -62,5 +63,14 @@ public class Reports {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
 
+    @GetMapping
+    public ResponseEntity<Object> getProcurementActivityReport(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+
+        List<ProcurementActivityReportResponse> response = purchaseOrderService.getProcurementActivityReport(startDate, endDate);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+
+    }
 
 }

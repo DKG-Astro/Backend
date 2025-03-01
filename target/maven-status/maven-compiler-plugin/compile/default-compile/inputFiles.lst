@@ -69,6 +69,7 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\ActionMast
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\JobMasterRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\AssetService.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\IndentDto\MaterialDetailsRequestDTO.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\ProcurementActivityReportResponse.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\VendorMasterServiceImpl.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\UserMaster.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller\InventoryModule\GoodsTransferController.java

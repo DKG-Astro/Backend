@@ -34,6 +34,7 @@ com\astro\repository\UserRoleMasterRepository.class
 com\astro\dto\workflow\InventoryModule\GoodsReceiptInspectionRequestDto.class
 com\astro\repository\InventoryModule\MaterialDisposalRepository.class
 com\astro\service\GoodsReturnService.class
+com\astro\dto\workflow\ProcurementDtos\ProcurementActivityReportResponse.class
 com\astro\service\EmployeeDepartmentMasterService.class
 com\astro\service\impl\EmployeeDepartmentMasterServiceImpl.class
 com\astro\dto\workflow\VendorContractReportDTO.class
