@@ -38,6 +38,9 @@ public class AppConstant {
     public static final int INVALID_TRANSITION_ACTION = 1008;
     public static final int NEXT_TRANSITION_NOT_FOUND = 1009;
     public static final int INVALID_ACTION = 1010;
+    public static final int INVALID_FILE_TYPE = 1011;
+    public static final int FILE_NOT_FOUND = 1012;
+    public static final int FILE_UPLOAD_ERROR = 1013;
 
 
     //Folder Path

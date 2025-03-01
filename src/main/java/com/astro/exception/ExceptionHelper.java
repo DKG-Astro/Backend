@@ -37,7 +37,11 @@ public class ExceptionHelper {
         return new ResponseEntity<Object>(ResponseBuilder.getErrorResponse(ex.getErrorDetails()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    
+    @ExceptionHandler(value = { FilesNotFoundException.class })
+    public ResponseEntity<Object> handleFilesNotFoundException(BusinessException ex,  WebRequest request) {
+        ex.printStackTrace();
+        return new ResponseEntity<Object>(ResponseBuilder.getErrorResponse(ex.getErrorDetails()), HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(value = { Exception.class })
     public ResponseEntity<Object> handleException(Exception ex,  WebRequest request) {
