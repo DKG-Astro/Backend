@@ -5,9 +5,10 @@ package com.astro.service.impl;
 import com.astro.constant.AppConstant;
 
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.*;
-import com.astro.entity.ProcurementModule.MaterialDetails;
+import com.astro.dto.workflow.VendorContractReportDTO;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
 import com.astro.entity.ProcurementModule.TenderRequest;
@@ -30,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -56,7 +56,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
 
     public PurchaseOrderResponseDTO createPurchaseOrder(PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
 
-       // Check if the indentorId already exists
+        // Check if the indentorId already exists
         if (purchaseOrderRepository.existsById(purchaseOrderRequestDTO.getPoId())) {
             ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Purchase Order ID", "PO ID " + purchaseOrderRequestDTO.getPoId() + " already exists.");
             throw new InvalidInputException(errorDetails);
@@ -92,12 +92,12 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setVendorAccountNumber(purchaseOrderRequestDTO.getVendorAccountNumber());
         purchaseOrder.setVendorsZfscCode(purchaseOrderRequestDTO.getVendorsZfscCode());
         purchaseOrder.setVendorAccountName(purchaseOrderRequestDTO.getVendorAccountName());
-      //  purchaseOrder.setTotalValueOfPo(purchaseOrderRequestDTO.getTotalValueOfPo());
+        //  purchaseOrder.setTotalValueOfPo(purchaseOrderRequestDTO.getTotalValueOfPo());
         purchaseOrder.setProjectName(purchaseOrderRequestDTO.getProjectName());
         purchaseOrder.setCreatedBy(purchaseOrderRequestDTO.getCreatedBy());
         purchaseOrder.setUpdatedBy(purchaseOrderRequestDTO.getUpdatedBy());
         List<PurchaseOrderAttributes> purchaseOrderAttributes = purchaseOrderRequestDTO.getPurchaseOrderAttributes().stream()
-                .map(dto ->{
+                .map(dto -> {
 
                     PurchaseOrderAttributes attribute = new PurchaseOrderAttributes();
                     attribute.setMaterialCode(dto.getMaterialCode());
@@ -115,8 +115,8 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                     return attribute;
                 })
                 .collect(Collectors.toList());
-       // purchaseOrder.setPurchaseOrderAttributes(purchaseOrderAttributes);
-       // purchaseOrderRepository.save(purchaseOrder);
+        // purchaseOrder.setPurchaseOrderAttributes(purchaseOrderAttributes);
+        // purchaseOrderRepository.save(purchaseOrder);
         // Set attributes and save order
         purchaseOrder.setPurchaseOrderAttributes(purchaseOrderAttributes);
         List<String> indentIds = indentIdRepository.findTenderWithIndent(purchaseOrder.getTenderId());
@@ -127,7 +127,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                 .map(IndentCreationResponseDTO::getTotalPriceOfAllMaterials) // Extract total price
                 .reduce(BigDecimal.ZERO, BigDecimal::add); // Sum up values
         purchaseOrder.setTotalValueOfPo(totalTenderValue);
-        System.out.println("tottalTenderValue"+ totalTenderValue);
+        System.out.println("tottalTenderValue" + totalTenderValue);
         purchaseOrderRepository.save(purchaseOrder);
         return mapToResponseDTO(purchaseOrder);
     }
@@ -159,7 +159,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setVendorsZfscCode(purchaseOrderRequestDTO.getVendorsZfscCode());
         purchaseOrder.setVendorAccountName(purchaseOrderRequestDTO.getVendorAccountName());
         purchaseOrder.setProjectName(purchaseOrderRequestDTO.getProjectName());
-     //   purchaseOrder.setTotalValueOfPo(purchaseOrderRequestDTO.getTotalValueOfPo());
+        //   purchaseOrder.setTotalValueOfPo(purchaseOrderRequestDTO.getTotalValueOfPo());
         purchaseOrder.setUpdatedBy(purchaseOrderRequestDTO.getUpdatedBy());
         purchaseOrder.setCreatedBy(purchaseOrderRequestDTO.getCreatedBy());
         // Update attributes
@@ -188,8 +188,8 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                 })
                 .collect(Collectors.toList());
 
-       // purchaseOrder.setPurchaseOrderAttributes(purchaseOrderAttributes);
-       // purchaseOrderRepository.save(purchaseOrder);
+        // purchaseOrder.setPurchaseOrderAttributes(purchaseOrderAttributes);
+        // purchaseOrderRepository.save(purchaseOrder);
 
         existingAttributes.addAll(purchaseOrderAttributes);
         // purchaseOrder.setPurchaseOrderAttributes(purchaseOrderAttributes);
@@ -211,7 +211,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         // Fetch related Tender & Indent
         TenderWithIndentResponseDTO tenderWithIndent = tenderRequestService.getTenderRequestById(purchaseOrder.getTenderId());
 
-        poWithTenderAndIndentResponseDTO responseDTO  = new poWithTenderAndIndentResponseDTO();
+        poWithTenderAndIndentResponseDTO responseDTO = new poWithTenderAndIndentResponseDTO();
         responseDTO.setPoId(purchaseOrder.getPoId());
         responseDTO.setTenderId(purchaseOrder.getTenderId());
         responseDTO.setIndentId(purchaseOrder.getIndentId());
@@ -260,15 +260,15 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
 
 
     @Override
-public List<PurchaseOrderResponseDTO> getAllPurchaseOrders() {
-    List<PurchaseOrder> purchaseOrders = purchaseOrderRepository.findAll();
-    return purchaseOrders.stream().map(this::mapToResponseDTO).collect(Collectors.toList());  // Map each PurchaseOrder to its DTO
-}
+    public List<PurchaseOrderResponseDTO> getAllPurchaseOrders() {
+        List<PurchaseOrder> purchaseOrders = purchaseOrderRepository.findAll();
+        return purchaseOrders.stream().map(this::mapToResponseDTO).collect(Collectors.toList());  // Map each PurchaseOrder to its DTO
+    }
 
 
     public void deletePurchaseOrder(String poId) {
 
-        PurchaseOrder purchaseOrder=purchaseOrderRepository.findById(poId)
+        PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(poId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -293,6 +293,7 @@ public List<PurchaseOrderResponseDTO> getAllPurchaseOrders() {
 
     }
 
+
     private PurchaseOrderResponseDTO mapToResponseDTO(PurchaseOrder purchaseOrder) {
         PurchaseOrderResponseDTO responseDTO = new PurchaseOrderResponseDTO();
         responseDTO.setPoId(purchaseOrder.getPoId());
@@ -313,7 +314,7 @@ public List<PurchaseOrderResponseDTO> getAllPurchaseOrders() {
         responseDTO.setVendorsZfscCode(purchaseOrder.getVendorsZfscCode());
         responseDTO.setVendorAccountName(purchaseOrder.getVendorAccountName());
         responseDTO.setProjectName(purchaseOrder.getProjectName());
-      //  responseDTO.setTotalValueOfPo(purchaseOrder.getTotalValueOfPo());
+        //  responseDTO.setTotalValueOfPo(purchaseOrder.getTotalValueOfPo());
         responseDTO.setCreatedBy(purchaseOrder.getCreatedBy());
         responseDTO.setUpdatedBy(purchaseOrder.getUpdatedBy());
         responseDTO.setCreatedDate(purchaseOrder.getCreatedDate());
@@ -343,23 +344,64 @@ public List<PurchaseOrderResponseDTO> getAllPurchaseOrders() {
                 .map(IndentCreationResponseDTO::getTotalPriceOfAllMaterials) // Extract total price
                 .reduce(BigDecimal.ZERO, BigDecimal::add); // Sum up values
         responseDTO.setTotalValue(totalTenderValue);
-        System.out.println("tottalTenderValue"+ totalTenderValue);
+        System.out.println("tottalTenderValue" + totalTenderValue);
 
         Optional<TenderRequest> tenderRequest = tenderRequestRepository.findByTenderId(purchaseOrder.getTenderId());
 
-   String projectName =tenderRequest.map(TenderRequest::getProjectName).orElse(null);
+        String projectName = tenderRequest.map(TenderRequest::getProjectName).orElse(null);
         responseDTO.setProjectName(projectName);
-        System.out.println("projectName:"+projectName);
+        System.out.println("projectName:" + projectName);
         BigDecimal allocatedAmount = projectMasterRepository
                 .findByProjectNameDescription(projectName)
                 .map(ProjectMaster::getAllocatedAmount)
                 .orElse(BigDecimal.ZERO);
-       responseDTO.setProjectLimit(allocatedAmount);
+        responseDTO.setProjectLimit(allocatedAmount);
         System.out.println("allocatedAmount: " + allocatedAmount);
 
 
         return responseDTO;
     }
 
+    @Override
+    public List<VendorContractReportDTO> getVendorContractDetails(String startDate, String endDate) {
+        List<Object[]> results = purchaseOrderRepository.getVendorContractDetails(
+                CommonUtils.convertStringToDateObject(startDate),
+                CommonUtils.convertStringToDateObject(endDate)
+        );
 
+        return results.stream().map(row -> new VendorContractReportDTO(
+                (row[0] != null) ? row[0].toString() : "",  // orderId
+                (row[1] != null) ? row[1].toString() : "",  // modeOfProcurement
+                (row[2] != null) ? row[2].toString() : "",  // underAMC
+                (row[3] != null) ? row[3].toString() : "",  // amcFor
+                (row[4] != null) ? row[4].toString() : "",  // endUser
+                (row[5] != null) ? ((Number) row[5]).intValue() : null,  // noOfParticipants
+                (row[6] != null) ? ((Number) row[6]).doubleValue() : null,  // value
+                (row[7] != null) ? row[7].toString() : "",  // location
+                (row[8] != null) ? row[8].toString() : "",  // vendorName
+                (row[9] != null) ? row[9].toString() : "",  // previouslyRenewedAMCs
+                (row[10] != null) ? row[10].toString() : "",  // categoryOfSecurity
+                (row[11] != null) ? row[11].toString() : ""  // validityOfSecurity
+        )).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProcurementActivityReportResponse> getProcurementActivityReport(String startDate, String endDate) {
+        List<Object[]> results = purchaseOrderRepository.getProcurementActivityReport(CommonUtils.convertStringToDateObject(startDate),
+                CommonUtils.convertStringToDateObject(endDate));
+
+        return results.stream().map(row ->
+                new ProcurementActivityReportResponse(
+                        (String) row[0],
+                        (String) row[1],
+                        (String) row[2],
+                        (BigDecimal) row[3],
+                        (String) row[4],
+                        (String) row[5]
+                )
+        ).collect(Collectors.toList());
+    }
 }
+
+
+

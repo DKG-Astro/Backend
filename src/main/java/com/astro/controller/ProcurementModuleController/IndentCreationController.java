@@ -5,6 +5,7 @@ import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationRequestDTO
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 
 import com.astro.dto.workflow.WorkflowTransitionDto;
+import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.entity.UserMaster;
 import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
 import com.astro.repository.UserMasterRepository;
@@ -19,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -157,8 +159,39 @@ public class IndentCreationController {
         indentCreationService.deleteIndent(indentId);
         return ResponseEntity.ok("indent deleted successfully. Id:"+" " +indentId);
     }
+    /*
+    @GetMapping("/download-file/{indentId}/{fileType}")
+    public ResponseEntity<byte[]> downloadFile(@PathVariable String indentId, @PathVariable String fileType) {
+        IndentCreation indent = indentCreationRepository.findById(indentId).orElseThrow();
+        byte[] fileData = null;
+        String filename = "";
 
+        switch (fileType) {
+            case "priorApproval":
+                fileData = indent.getUploadingPriorApprovals();
+                filename = indent.getUploadingPriorApprovalsFileName();
+                break;
+            case "tenderDocument":
+                fileData = indent.getUploadTenderDocuments();
+                filename = indent.getUploadTenderDocumentsFileName();
+                break;
+            case "goiOrRFP":
+                fileData = indent.getUploadGOIOrRFP();
+                filename = indent.getUploadGOIOrRFPFileName();
+                break;
+            case "pacOrBrandPAC":
+                fileData = indent.getUploadPACOrBrandPAC();
+                filename = indent.getUploadPACOrBrandPACFileName();
+                break;
+        }
 
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(fileData);
+    }
+
+     */
 
 
 }

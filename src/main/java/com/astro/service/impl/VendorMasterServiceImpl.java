@@ -152,28 +152,7 @@ public class VendorMasterServiceImpl implements VendorMasterService {
 
     }
 
-    @Override
-    public List<VendorContractReportDTO> getVendorContracts(String startDate, String endDate) {
-        List<Object[]> results    =vendorMasterRepository.findVendorContracts(CommonUtils.convertStringToDateObject(startDate),CommonUtils.convertStringToDateObject(endDate));
-        return results.stream().map(row -> {
-          VendorContractReportDTO dto =  new VendorContractReportDTO();
-                   dto.setOrderId ((Integer) row[0]); // orderId
-                    dto.setModeOfProcurement((String) row[1]);  // modeOfProcurement
-                    dto.setUnderAmc((String) row[2]); // underAmc
-                    dto.setAmcExpiryDate((String) row[3]);  // amcExpiryDate
-                    dto.setAmcFor((String) row[4]); // amcFor
-                   dto.setEndUser((String) row[5]);  // endUser
-                    dto.setNoOfParticipants((row[6] != null) ? ((Number) row[6]).intValue() : null); // noOfParticipants
-                    dto.setValue((Double) row[7]);  // value
-                    dto.setLocation((String) row[8]);  // location
-                    dto.setVendorName((String) row[9]);  // vendorName
-                    dto.setPreviouslyRenewedAmcs((String) row[10]); // previouslyRenewedAmcs
-                    dto.setCategoryOfSecurity((String) row[11]); // categoryOfSecurity
-                    dto.setValidityOfSecurity((String) row[12]); // validityOfSecurity
-            return dto;
-        }).collect(Collectors.toList());
 
-    }
 
     private VendorMasterResponseDto mapToResponseDTO(VendorMaster vendorMaster) {
 
