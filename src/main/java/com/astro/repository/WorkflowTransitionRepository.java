@@ -27,4 +27,7 @@ public interface WorkflowTransitionRepository extends JpaRepository<WorkflowTran
     @Query("SELECT wt.requestId FROM WorkflowTransition wt WHERE wt.workflowName = 'Indent Workflow' AND wt.status = 'Completed' AND wt.nextAction IS NULL")
     List<String> findApprovedIndentRequestIds();
 
+    @Query("SELECT wt.requestId FROM WorkflowTransition wt WHERE wt.workflowName = 'Tender Approver Workflow' AND wt.status = 'Completed' AND wt.nextAction IS NULL")
+    List<String> findApprovedTenderRequestIds();
+
 }

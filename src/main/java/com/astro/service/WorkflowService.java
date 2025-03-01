@@ -21,4 +21,5 @@ public interface WorkflowService {
     public List<SubWorkflowTransitionDto> getSubWorkflowTransition(Integer modifiedBy);
     public void approveSubWorkflow(Integer subWorkflowTransitionId);
     public List<String> getApprovedIndents();
+    public List<String> getApprovedTender();
 }

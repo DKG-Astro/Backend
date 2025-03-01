@@ -660,7 +660,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         }
 
         //validation for tender workflow
-        if(WorkflowName.TENDER.getValue().equalsIgnoreCase(currentWorkflowTransition.getWorkflowName())) {
+        if(WorkflowName.TENDER_EVALUATOR.getValue().equalsIgnoreCase(currentWorkflowTransition.getWorkflowName())) {
             validateTenderWorkFlow(nextTransition, currentWorkflowTransition, nextWorkflowTransition);
         }
 
@@ -747,6 +747,10 @@ public class WorkflowServiceImpl implements WorkflowService {
                             }else if(conditionKey.equalsIgnoreCase("TotalPriceOfAllMaterials")){
                                 dataValue =  indentCreationResponseDTO.getTotalPriceOfAllMaterials();
                                 conditionCheckFlag = ((BigDecimal) dataValue).doubleValue() <= Double.valueOf(conditionValue);
+                            }else if(conditionKey.equalsIgnoreCase("projectLimit")){
+                                dataValue =  indentCreationResponseDTO.getTotalPriceOfAllMaterials();
+                                BigDecimal projectLimit = indentCreationResponseDTO.getProjectLimit();
+                                conditionCheckFlag = ((BigDecimal) dataValue).doubleValue() <= ((BigDecimal) projectLimit).doubleValue();
                             }
                             if(conditionCheckFlag){
                                 transitionDto = dto;
@@ -781,7 +785,7 @@ public class WorkflowServiceImpl implements WorkflowService {
                         }
                     }
                     break;
-                    case "TENDER WORKFLOW":
+                    case "TENDER EVALUATOR WORKFLOW":
                         TenderWithIndentResponseDTO tenderWithIndentResponseDTO = tenderRequestService.getTenderRequestById(requestId);
                         for(TransitionDto dto : nextTransitionDtoList){
                             Integer conditionId = dto.getConditionId();
@@ -885,6 +889,10 @@ public class WorkflowServiceImpl implements WorkflowService {
     }
     public List<String> getApprovedIndents() {
         return workflowTransitionRepository.findApprovedIndentRequestIds();
+    }
+
+    public List<String> getApprovedTender() {
+        return workflowTransitionRepository.findApprovedTenderRequestIds();
     }
 
 }

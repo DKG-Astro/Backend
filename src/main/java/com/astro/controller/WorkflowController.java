@@ -101,6 +101,11 @@ public class WorkflowController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
 
+    @GetMapping("/getApprovedTender")
+    public ResponseEntity<Object> getApprovedTender()  {
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.getApprovedTender()), HttpStatus.OK);
+    }
+
    /* @Autowired
     private UserService userService;
 

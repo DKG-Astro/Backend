@@ -7,7 +7,8 @@ public enum WorkflowName {
     PO("PO Workflow", "PO WORKFLOW"),
     SO("SO Workflow", "SO WORKFLOW"),
     WO("WO Workflow", "WO WORKFLOW"),
-    TENDER("TenderWorkflow", "TENDER WORKFLOW");
+    TENDER_APPROVER("Tender Approver Workflow", "TENDER APPROVER WORKFLOW"),
+    TENDER_EVALUATOR("Tender Evaluator Workflow", "TENDER EVALUATOR WORKFLOW");
 
     private final String key;
     private final String value;
