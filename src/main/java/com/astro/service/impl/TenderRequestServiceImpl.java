@@ -52,7 +52,6 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     private ProjectMasterRepository projectMasterRepository;
     @Override
     public TenderResponseDto createTenderRequest(TenderRequestDto tenderRequestDto){
-            //,String uploadTenderDocumentsFileName,String uploadGeneralTermsAndConditionsFileName, String uploadSpecificTermsAndConditionsFileName) {
 
         // Check if the indentorId already exists
         if (TRrepo.existsById(tenderRequestDto.getTenderId())) {
@@ -92,15 +91,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         tenderRequest.setUploadSpecificTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
         tenderRequest.setUploadGeneralTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
         tenderRequest.setFileType(tenderRequestDto.getFileType());
-      /*
-        handleFileUpload(tenderRequest, tenderRequestDto.getUploadTenderDocuments(),
-                tenderRequest::setUploadTenderDocuments);
-        handleFileUpload(tenderRequest, tenderRequestDto.getUploadGeneralTermsAndConditions(),
-                tenderRequest::setUploadGeneralTermsAndConditions);
-        handleFileUpload(tenderRequest, tenderRequestDto.getUploadSpecificTermsAndConditions(),
-                tenderRequest::setUploadSpecificTermsAndConditions);
 
-       */
 
         // Convert List<String> indentIds from DTO into List<IndentId> entities
         List<IndentId> indentIdList = tenderRequestDto.getIndentIds().stream().map(indentIdStr -> {
@@ -176,14 +167,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         existingTR.setUploadSpecificTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
         existingTR.setUploadGeneralTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
         existingTR.setFileType(tenderRequestDto.getFileType());
-        /*  handleFileUpload(existingTR, tenderRequestDto.getUploadTenderDocuments(),
-                existingTR::setUploadTenderDocuments);
-        handleFileUpload(existingTR, tenderRequestDto.getUploadGeneralTermsAndConditions(),
-                existingTR::setUploadGeneralTermsAndConditions);
-        handleFileUpload(existingTR, tenderRequestDto.getUploadSpecificTermsAndConditions(),
-                existingTR::setUploadSpecificTermsAndConditions);
 
-       */
     // Update Indent IDs
         List<String> newIndentIds = tenderRequestDto.getIndentIds();
 
@@ -376,18 +360,6 @@ public class TenderRequestServiceImpl implements TenderRequestService {
 
     }
 
-    public void handleFileUpload(TenderRequest tenderRequest, MultipartFile file, Consumer<byte[]> fileSetter) {
-        if (file != null) {
-            try (InputStream inputStream = file.getInputStream()) {
-                byte[] fileBytes = inputStream.readAllBytes();
-                fileSetter.accept(fileBytes);
-            } catch (IOException e) {
-                throw new InvalidInputException(new ErrorDetails(500, 3, "File Processing Error",
-                        "Error while processing the uploaded file. Please try again."));
-            }
-        } else {
-            fileSetter.accept(null);  // Handle gracefully if no file is uploaded
-        }
-    }
+
 
 }

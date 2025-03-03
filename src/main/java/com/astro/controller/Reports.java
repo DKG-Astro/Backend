@@ -63,7 +63,7 @@ public class Reports {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
 
-    @GetMapping
+    @GetMapping("procurement-activity-report")
     public ResponseEntity<Object> getProcurementActivityReport(
             @RequestParam String startDate,
             @RequestParam String endDate) {

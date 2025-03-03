@@ -36,65 +36,25 @@ public class TenderRequestController {
     @Autowired
     private ObjectMapper mapper;
     @PostMapping
-    public ResponseEntity<Object> createTenderRequest(
-          @RequestBody TenderRequestDto tenderRequestDTO
-          /*  @RequestPart("tenderRequestDto") String tenderRequestDto,
-            @RequestPart(value = "uploadTenderDocuments") MultipartFile uploadTenderDocuments,
-            @RequestPart(value = "uploadGeneralTermsAndConditions") MultipartFile uploadGeneralTermsAndConditions,
-            @RequestPart(value = "uploadSpecificTermsAndConditions") MultipartFile uploadSpecificTermsAndConditions
+    public ResponseEntity<Object> createTenderRequest(@RequestBody TenderRequestDto tenderRequestDTO) {
 
-           */
-    ) throws JsonProcessingException {
-      //  TenderRequestDto tenderRequestDTO = mapper.readValue(tenderRequestDto, TenderRequestDto.class);
-       /* // Set files in DTO
-        tenderRequestDTO.setUploadTenderDocuments(uploadTenderDocuments);
-        tenderRequestDTO.setUploadGeneralTermsAndConditions(uploadGeneralTermsAndConditions);
-        tenderRequestDTO.setUploadSpecificTermsAndConditions(uploadSpecificTermsAndConditions);
-
-        String uploadTenderDocumentsFileName= uploadTenderDocuments.getOriginalFilename();
-        String uploadGeneralTermsAndConditionsFileName=uploadGeneralTermsAndConditions.getOriginalFilename();
-        String uploadSpecificTermsAndConditionsFileName=uploadSpecificTermsAndConditions.getOriginalFilename();
-
-
-        */
         TenderResponseDto created = TRService.createTenderRequest(tenderRequestDTO);
-              //  ,uploadTenderDocumentsFileName,uploadGeneralTermsAndConditionsFileName,uploadSpecificTermsAndConditionsFileName);
 
         String requestId = created.getTenderId(); // Useing the indent ID as the request ID
-        String workflowName = "Tender Workflow";
+        String workflowName = "Tender Approver Workflow";
         Integer userId = created.getCreatedBy();
         //initiateing Workflow API
         WorkflowTransitionDto workflowTransitionDto = workflowService.initiateWorkflow(requestId, workflowName, userId);
 
-
-
-        // Return success response
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(created), HttpStatus.OK);
     }
 
 
     @PutMapping(value = "/{tenderId}")
-    public ResponseEntity<Object> updateTenderRequest(
-            @PathVariable String tenderId, @RequestBody TenderRequestDto tenderRequestDTO
-
-          /*  @RequestPart("tenderRequestDto") String tenderRequestDto,
-            @RequestPart(value = "uploadTenderDocuments") MultipartFile uploadTenderDocuments,
-            @RequestPart(value = "uploadGeneralTermsAndConditions") MultipartFile uploadGeneralTermsAndConditions,
-            @RequestPart(value = "uploadSpecificTermsAndConditions") MultipartFile uploadSpecificTermsAndConditions
-
-           */
-    ) throws JsonProcessingException {// Set files in DTO if provided
-       // TenderRequestDto tenderRequestDTO = mapper.readValue(tenderRequestDto,TenderRequestDto.class);
-        //    tenderRequestDTO.setUploadTenderDocuments(uploadTenderDocuments);
-        //    tenderRequestDTO.setUploadGeneralTermsAndConditions(uploadGeneralTermsAndConditions);
-        //    tenderRequestDTO.setUploadSpecificTermsAndConditions(uploadSpecificTermsAndConditions);
-      //  String uploadTenderDocumentsFileName= uploadTenderDocuments.getOriginalFilename();
-    //    String uploadGeneralTermsAndConditionsFileName=uploadGeneralTermsAndConditions.getOriginalFilename();
-      //  String uploadSpecificTermsAndConditionsFileName=uploadSpecificTermsAndConditions.getOriginalFilename();
+    public ResponseEntity<Object> updateTenderRequest(@PathVariable String tenderId, @RequestBody TenderRequestDto tenderRequestDTO) {// Set files in DTO if provided
 
         // Call service to update tender request
         TenderResponseDto updated = TRService.updateTenderRequest(tenderId, tenderRequestDTO);
-              //  ,uploadTenderDocumentsFileName,uploadGeneralTermsAndConditionsFileName,uploadSpecificTermsAndConditionsFileName);
 
         // Return success response
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(updated), HttpStatus.OK);

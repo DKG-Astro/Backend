@@ -1,0 +1,149 @@
+package com.astro.service.impl;
+
+import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.ProcurementDtos.TenderEvaluationRequestDto;
+import com.astro.dto.workflow.ProcurementDtos.TenderEvaluationResponseDto;
+import com.astro.entity.ProcurementModule.TenderEvaluation;
+import com.astro.exception.BusinessException;
+import com.astro.exception.ErrorDetails;
+import com.astro.exception.InvalidInputException;
+import com.astro.repository.ProcurementModule.TenderEvaluationRepository;
+import com.astro.service.TenderEvaluationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class TenderEvaluationServiceImpl implements TenderEvaluationService {
+
+    @Autowired
+    private TenderEvaluationRepository tenderEvaluationRepository;
+
+    @Override
+    public TenderEvaluationResponseDto createTenderEvaluation(TenderEvaluationRequestDto tenderEvaluationRequestDto) {
+
+        if (tenderEvaluationRepository.existsById(tenderEvaluationRequestDto.getTenderId())) {
+            ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Tender Evaluation ID", "Tender ID " + tenderEvaluationRequestDto.getTenderId() + " already exists.");
+            throw new InvalidInputException(errorDetails);
+        }
+        TenderEvaluation tenderEvaluation = new TenderEvaluation();
+        tenderEvaluation.setTenderId(tenderEvaluationRequestDto.getTenderId());
+        tenderEvaluation.setUploadQualifiedVendorsFileName(tenderEvaluationRequestDto.getUploadQualifiedVendorsFileName());
+        tenderEvaluation.setUploadTechnicallyQualifiedVendorsFileName(tenderEvaluationRequestDto.getUploadTechnicallyQualifiedVendorsFileName());
+        tenderEvaluation.setUploadCommeriallyQualifiedVendorsFileName(tenderEvaluationRequestDto.getUploadCommeriallyQualifiedVendorsFileName());
+        tenderEvaluation.setFormationOfTechnoCommerialComitee(tenderEvaluationRequestDto.getFormationOfTechnoCommerialComitee());
+        tenderEvaluation.setResponseFileName(tenderEvaluationRequestDto.getResponseFileName());
+        tenderEvaluation.setResponseForTechnicallyQualifiedVendorsFileName(tenderEvaluationRequestDto.getResponseForTechnicallyQualifiedVendorsFileName());
+        tenderEvaluation.setResponseForCommeriallyQualifiedVendorsFileName(tenderEvaluationRequestDto.getResponseForCommeriallyQualifiedVendorsFileName());
+
+        tenderEvaluation.setFileType(tenderEvaluationRequestDto.getFileType());
+        tenderEvaluation.setCreatedBy(tenderEvaluationRequestDto.getCreatedBy());
+        tenderEvaluation.setUpdatedBy(tenderEvaluationRequestDto.getUpdatedBy());
+
+        tenderEvaluationRepository.save(tenderEvaluation);
+
+        return mapToResponseDTO(tenderEvaluation);
+    }
+
+    private TenderEvaluationResponseDto mapToResponseDTO(TenderEvaluation tenderEvaluation) {
+
+        TenderEvaluationResponseDto responseDto = new TenderEvaluationResponseDto();
+        responseDto.setTenderId(tenderEvaluation.getTenderId());
+        responseDto.setUploadQualifiedVendorsFileName(tenderEvaluation.getUploadQualifiedVendorsFileName());
+        responseDto.setUploadTechnicallyQualifiedVendorsFileName(tenderEvaluation.getUploadTechnicallyQualifiedVendorsFileName());
+        responseDto.setUploadCommeriallyQualifiedVendorsFileName(tenderEvaluation.getUploadCommeriallyQualifiedVendorsFileName());
+        responseDto.setFormationOfTechnoCommerialComitee(tenderEvaluation.getFormationOfTechnoCommerialComitee());
+        responseDto.setResponseFileName(tenderEvaluation.getResponseFileName());
+        responseDto.setResponseForTechnicallyQualifiedVendorsFileName(tenderEvaluation.getResponseForTechnicallyQualifiedVendorsFileName());
+        responseDto.setResponseForCommeriallyQualifiedVendorsFileName(tenderEvaluation.getResponseForCommeriallyQualifiedVendorsFileName());
+
+        responseDto.setFileType(tenderEvaluation.getFileType());
+        responseDto.setCreatedBy(tenderEvaluation.getCreatedBy());
+        responseDto.setUpdatedBy(tenderEvaluation.getUpdatedBy());
+        responseDto.setCreatedDate(tenderEvaluation.getCreatedDate());
+        responseDto.setUpdatedDate(tenderEvaluation.getUpdatedDate());
+
+        return responseDto;
+
+
+    }
+
+    @Override
+    public TenderEvaluationResponseDto updateTenderEvaluation(String tenderId, TenderEvaluationRequestDto tenderEvaluationRequestDto) {
+       TenderEvaluation tenderEvaluation = tenderEvaluationRepository.findById(tenderId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "Tender eavaluation request not found for the provided tender ID.")
+                ));
+
+        tenderEvaluation.setTenderId(tenderEvaluationRequestDto.getTenderId());
+        tenderEvaluation.setUploadQualifiedVendorsFileName(tenderEvaluationRequestDto.getUploadQualifiedVendorsFileName());
+        tenderEvaluation.setUploadTechnicallyQualifiedVendorsFileName(tenderEvaluationRequestDto.getUploadTechnicallyQualifiedVendorsFileName());
+        tenderEvaluation.setUploadCommeriallyQualifiedVendorsFileName(tenderEvaluationRequestDto.getUploadCommeriallyQualifiedVendorsFileName());
+        tenderEvaluation.setFormationOfTechnoCommerialComitee(tenderEvaluationRequestDto.getFormationOfTechnoCommerialComitee());
+        tenderEvaluation.setResponseFileName(tenderEvaluationRequestDto.getResponseFileName());
+        tenderEvaluation.setResponseForTechnicallyQualifiedVendorsFileName(tenderEvaluationRequestDto.getResponseForTechnicallyQualifiedVendorsFileName());
+        tenderEvaluation.setResponseForCommeriallyQualifiedVendorsFileName(tenderEvaluationRequestDto.getResponseForCommeriallyQualifiedVendorsFileName());
+        tenderEvaluation.setFileType(tenderEvaluationRequestDto.getFileType());
+        tenderEvaluation.setCreatedBy(tenderEvaluationRequestDto.getCreatedBy());
+        tenderEvaluation.setUpdatedBy(tenderEvaluationRequestDto.getUpdatedBy());
+        tenderEvaluationRepository.save(tenderEvaluation);
+
+        return mapToResponseDTO(tenderEvaluation);
+
+    }
+
+    @Override
+    public TenderEvaluationResponseDto getTenderEvaluationById(String tenderId) {
+        TenderEvaluation tenderEvaluation =tenderEvaluationRepository.findById(tenderId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Tender Evaluation not found for the provided tendeer ID.")
+                ));
+
+        return mapToResponseDTO(tenderEvaluation);
+    }
+
+    @Override
+    public List<TenderEvaluationResponseDto> getAllTenderEvaluations() {
+        List<TenderEvaluation> tenderEvaluations= tenderEvaluationRepository.findAll();
+        return tenderEvaluations.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
+
+    }
+
+    @Override
+    public void deleteTenderEvaluation(String tenderId) {
+
+        TenderEvaluation tenderEvaluation=tenderEvaluationRepository.findById(tenderId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Tender evalualation not found for the provided tender id."
+                        )
+                ));
+        try {
+            tenderEvaluationRepository.delete(tenderEvaluation);
+        } catch (Exception ex) {
+            throw new BusinessException(
+                    new ErrorDetails(
+                            AppConstant.INTER_SERVER_ERROR,
+                            AppConstant.ERROR_TYPE_CODE_INTERNAL,
+                            AppConstant.ERROR_TYPE_ERROR,
+                            "An error occurred while deleting the Tender Evalulation."
+                    ),
+                    ex
+            );
+        }
+
+    }
+}
