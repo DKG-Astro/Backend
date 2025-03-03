@@ -27,10 +27,11 @@ public class TenderResponseDto {
     private String applicablePerformance;
     private Boolean bidSecurityDeclaration;
     private Boolean mllStatusDeclaration;
-    private String uploadTenderDocuments;
     private String singleAndMultipleVendors;
+    private String uploadTenderDocuments;
     private String uploadGeneralTermsAndConditions;
     private String uploadSpecificTermsAndConditions;
+    private String fileType;
     private String preBidDisscussions;
     private BigDecimal totalTenderValue;
     private String projectName;

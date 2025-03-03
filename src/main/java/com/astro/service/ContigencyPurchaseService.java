@@ -11,8 +11,10 @@ import java.util.List;
 public interface ContigencyPurchaseService {
 
 
-    public ContigencyPurchaseResponseDto createContigencyPurchase(ContigencyPurchaseRequestDto contigencyPurchaseDto,String uploadCopyOfInvoiceFileName);
-    public ContigencyPurchaseResponseDto updateContigencyPurchase(String contigencyId, ContigencyPurchaseRequestDto contigencyPurchaseDto,String uploadCopyOfInvoiceFileName);
+    public ContigencyPurchaseResponseDto createContigencyPurchase(ContigencyPurchaseRequestDto contigencyPurchaseDto);
+            //,String uploadCopyOfInvoiceFileName);
+    public ContigencyPurchaseResponseDto updateContigencyPurchase(String contigencyId, ContigencyPurchaseRequestDto contigencyPurchaseDto);
+            //,String uploadCopyOfInvoiceFileName);
     public ContigencyPurchaseResponseDto getContigencyPurchaseById(String contigencyId);
     public List<ContigencyPurchaseResponseDto> getAllContigencyPurchase();
     public void deleteContigencyPurchase(String contigencyId);

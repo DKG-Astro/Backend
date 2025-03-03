@@ -34,6 +34,7 @@ public class TenderWithIndentResponseDTO {
     private String uploadGeneralTermsAndConditions;
     private String uploadSpecificTermsAndConditions;
     private String preBidDisscussions;
+    private String fileType;
     private String updatedBy;
     private Integer createdBy;
     private LocalDateTime createdDate;

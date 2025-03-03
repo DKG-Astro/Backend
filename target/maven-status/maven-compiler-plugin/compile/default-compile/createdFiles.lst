@@ -57,6 +57,7 @@ com\astro\dto\workflow\InventoryModule\GatepassRequestDTO.class
 com\astro\service\impl\ContigencyPurchaseServiceImpl.class
 com\astro\controller\InventoryModule\GprnController.class
 com\astro\dto\workflow\TransitionActionReqDto.class
+com\astro\exception\FilesNotFoundException.class
 com\astro\repository\MaterialCreationRepository.class
 com\astro\entity\ProcurementModule\MaterialDetails.class
 com\astro\entity\UserMaster.class
@@ -117,6 +118,7 @@ com\astro\controller\ProcurementModuleController\WorkOrderController.class
 com\astro\dto\workflow\ProcurementDtos\purchaseOrder\PurchaseOrderAttributesResponseDTO.class
 com\astro\service\ProjectMasterService.class
 com\astro\dto\workflow\InventoryModule\GoodsTransferResponseDto.class
+com\astro\service\FileProcessingService.class
 com\astro\repository\JobMasterRepository.class
 com\astro\dto\workflow\ProcurementDtos\TechnoMomReportDTO.class
 com\astro\dto\workflow\TransitionConditionDto.class
@@ -146,6 +148,7 @@ com\astro\entity\MaterialCreation.class
 com\astro\util\Base64ToByteArrayConverter.class
 com\astro\dto\workflow\ProjectMaster\ProjectMasterRequestDTO.class
 com\astro\service\WorkflowService.class
+com\astro\service\impl\FileProcessingServiceImpl.class
 com\astro\entity\InventoryModule\MaterialDisposal.class
 com\astro\repository\InventoryModule\GatePassRepository.class
 com\astro\repository\TransitionConditionMasterRepository.class
@@ -229,6 +232,7 @@ com\astro\service\MaterialDisposalService.class
 com\astro\dto\workflow\MaterialMasterRequestDto.class
 com\astro\entity\SubWorkflowTransition.class
 com\astro\dto\workflow\InventoryModule\GoodsReturnResponseDto.class
+com\astro\controller\FileProcessingController.class
 com\astro\service\AssetService.class
 com\astro\dto\workflow\ProcurementDtos\WorkOrderDto\WorkOrderRequestDTO.class
 com\astro\repository\InventoryModule\GoodsTransferRepository.class

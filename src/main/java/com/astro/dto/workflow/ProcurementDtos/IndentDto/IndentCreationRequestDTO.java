@@ -24,11 +24,16 @@ public class IndentCreationRequestDTO {
 
     private String indentorEmailAddress;
     private String consignesLocation;
+    private String fileType;
+    private String uploadingPriorApprovalsFileName;
+    private String uploadTenderDocumentsFileName;
+    private String uploadGOIOrRFPFileName;
+    private String uploadPACOrBrandPACFileName;
+    //private MultipartFile uploadingPriorApprovals;
+  //  private MultipartFile uploadTenderDocuments;
+  //  private MultipartFile uploadGOIOrRFP;
+   // private MultipartFile uploadPACOrBrandPAC;
 
-    private MultipartFile uploadingPriorApprovals;
-    private MultipartFile uploadTenderDocuments;
-    private MultipartFile uploadGOIOrRFP;
-    private MultipartFile uploadPACOrBrandPAC;
 
     private String projectName;
     private Boolean isPreBidMeetingRequired;

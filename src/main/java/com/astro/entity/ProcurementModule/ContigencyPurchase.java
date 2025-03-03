@@ -45,6 +45,8 @@ public class ContigencyPurchase {
     private String projectDetail;
     @Column(name = "project_name")
     private String projectName;
+    @Column(name="file_type")
+    private String fileType;
     @Column(name = "created_by")
     private String updatedBy;
     @Column(name = "updated_by")

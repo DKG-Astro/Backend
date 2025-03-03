@@ -35,15 +35,18 @@ public class TenderRequestController {
     private WorkflowService workflowService;
     @Autowired
     private ObjectMapper mapper;
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping
     public ResponseEntity<Object> createTenderRequest(
-            @RequestPart("tenderRequestDto") String tenderRequestDto,
+          @RequestBody TenderRequestDto tenderRequestDTO
+          /*  @RequestPart("tenderRequestDto") String tenderRequestDto,
             @RequestPart(value = "uploadTenderDocuments") MultipartFile uploadTenderDocuments,
             @RequestPart(value = "uploadGeneralTermsAndConditions") MultipartFile uploadGeneralTermsAndConditions,
             @RequestPart(value = "uploadSpecificTermsAndConditions") MultipartFile uploadSpecificTermsAndConditions
+
+           */
     ) throws JsonProcessingException {
-        TenderRequestDto tenderRequestDTO = mapper.readValue(tenderRequestDto, TenderRequestDto.class);
-        // Set files in DTO
+      //  TenderRequestDto tenderRequestDTO = mapper.readValue(tenderRequestDto, TenderRequestDto.class);
+       /* // Set files in DTO
         tenderRequestDTO.setUploadTenderDocuments(uploadTenderDocuments);
         tenderRequestDTO.setUploadGeneralTermsAndConditions(uploadGeneralTermsAndConditions);
         tenderRequestDTO.setUploadSpecificTermsAndConditions(uploadSpecificTermsAndConditions);
@@ -52,8 +55,10 @@ public class TenderRequestController {
         String uploadGeneralTermsAndConditionsFileName=uploadGeneralTermsAndConditions.getOriginalFilename();
         String uploadSpecificTermsAndConditionsFileName=uploadSpecificTermsAndConditions.getOriginalFilename();
 
-        TenderResponseDto created = TRService.createTenderRequest(tenderRequestDTO,uploadTenderDocumentsFileName,uploadGeneralTermsAndConditionsFileName
-        ,uploadSpecificTermsAndConditionsFileName);
+
+        */
+        TenderResponseDto created = TRService.createTenderRequest(tenderRequestDTO);
+              //  ,uploadTenderDocumentsFileName,uploadGeneralTermsAndConditionsFileName,uploadSpecificTermsAndConditionsFileName);
 
         String requestId = created.getTenderId(); // Useing the indent ID as the request ID
         String workflowName = "Tender Workflow";
@@ -68,25 +73,28 @@ public class TenderRequestController {
     }
 
 
-    @PutMapping(value = "/{tenderId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/{tenderId}")
     public ResponseEntity<Object> updateTenderRequest(
-            @PathVariable String tenderId,
-            @RequestPart("tenderRequestDto") String tenderRequestDto,
+            @PathVariable String tenderId, @RequestBody TenderRequestDto tenderRequestDTO
+
+          /*  @RequestPart("tenderRequestDto") String tenderRequestDto,
             @RequestPart(value = "uploadTenderDocuments") MultipartFile uploadTenderDocuments,
             @RequestPart(value = "uploadGeneralTermsAndConditions") MultipartFile uploadGeneralTermsAndConditions,
             @RequestPart(value = "uploadSpecificTermsAndConditions") MultipartFile uploadSpecificTermsAndConditions
+
+           */
     ) throws JsonProcessingException {// Set files in DTO if provided
-        TenderRequestDto tenderRequestDTO = mapper.readValue(tenderRequestDto,TenderRequestDto.class);
-            tenderRequestDTO.setUploadTenderDocuments(uploadTenderDocuments);
-            tenderRequestDTO.setUploadGeneralTermsAndConditions(uploadGeneralTermsAndConditions);
-            tenderRequestDTO.setUploadSpecificTermsAndConditions(uploadSpecificTermsAndConditions);
-        String uploadTenderDocumentsFileName= uploadTenderDocuments.getOriginalFilename();
-        String uploadGeneralTermsAndConditionsFileName=uploadGeneralTermsAndConditions.getOriginalFilename();
-        String uploadSpecificTermsAndConditionsFileName=uploadSpecificTermsAndConditions.getOriginalFilename();
+       // TenderRequestDto tenderRequestDTO = mapper.readValue(tenderRequestDto,TenderRequestDto.class);
+        //    tenderRequestDTO.setUploadTenderDocuments(uploadTenderDocuments);
+        //    tenderRequestDTO.setUploadGeneralTermsAndConditions(uploadGeneralTermsAndConditions);
+        //    tenderRequestDTO.setUploadSpecificTermsAndConditions(uploadSpecificTermsAndConditions);
+      //  String uploadTenderDocumentsFileName= uploadTenderDocuments.getOriginalFilename();
+    //    String uploadGeneralTermsAndConditionsFileName=uploadGeneralTermsAndConditions.getOriginalFilename();
+      //  String uploadSpecificTermsAndConditionsFileName=uploadSpecificTermsAndConditions.getOriginalFilename();
 
         // Call service to update tender request
-        TenderResponseDto updated = TRService.updateTenderRequest(tenderId, tenderRequestDTO,uploadTenderDocumentsFileName,uploadGeneralTermsAndConditionsFileName
-                ,uploadSpecificTermsAndConditionsFileName);
+        TenderResponseDto updated = TRService.updateTenderRequest(tenderId, tenderRequestDTO);
+              //  ,uploadTenderDocumentsFileName,uploadGeneralTermsAndConditionsFileName,uploadSpecificTermsAndConditionsFileName);
 
         // Return success response
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(updated), HttpStatus.OK);

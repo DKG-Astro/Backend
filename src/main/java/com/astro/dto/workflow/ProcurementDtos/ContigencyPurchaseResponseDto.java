@@ -22,6 +22,7 @@ public class ContigencyPurchaseResponseDto {
     private String remarksForPurchase;
     private BigDecimal amountToBePaid;
     private String uploadCopyOfInvoice;
+    private String fileType;
     private String predifinedPurchaseStatement;
     private String projectDetail;
     private String projectName;

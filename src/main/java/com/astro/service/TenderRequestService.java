@@ -11,10 +11,10 @@ import java.util.List;
 public interface TenderRequestService {
 
 
-    public TenderResponseDto createTenderRequest(TenderRequestDto tenderRequestDto,String uploadTenderDocumentsFileName,String uploadGeneralTermsAndConditionsFileName
-            , String uploadSpecificTermsAndConditionsFileName);
-    public TenderResponseDto updateTenderRequest(String tenderId, TenderRequestDto tenderRequestDto,String uploadTenderDocumentsFileName,String uploadGeneralTermsAndConditionsFileName
-            , String uploadSpecificTermsAndConditionsFileName);
+    public TenderResponseDto createTenderRequest(TenderRequestDto tenderRequestDto);
+           // ,String uploadTenderDocumentsFileName,String uploadGeneralTermsAndConditionsFileName, String uploadSpecificTermsAndConditionsFileName);
+    public TenderResponseDto updateTenderRequest(String tenderId, TenderRequestDto tenderRequestDto);
+           // ,String uploadTenderDocumentsFileName,String uploadGeneralTermsAndConditionsFileName , String uploadSpecificTermsAndConditionsFileName);
    public TenderWithIndentResponseDTO getTenderRequestById(String tenderId);
     public List<TenderResponseDto> getAllTenderRequests();
     public void deleteTenderRequest(String tenderId);

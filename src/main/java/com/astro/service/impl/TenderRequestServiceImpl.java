@@ -51,8 +51,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     @Autowired
     private ProjectMasterRepository projectMasterRepository;
     @Override
-    public TenderResponseDto createTenderRequest(TenderRequestDto tenderRequestDto,String uploadTenderDocumentsFileName,String uploadGeneralTermsAndConditionsFileName
-            , String uploadSpecificTermsAndConditionsFileName) {
+    public TenderResponseDto createTenderRequest(TenderRequestDto tenderRequestDto){
+            //,String uploadTenderDocumentsFileName,String uploadGeneralTermsAndConditionsFileName, String uploadSpecificTermsAndConditionsFileName) {
 
         // Check if the indentorId already exists
         if (TRrepo.existsById(tenderRequestDto.getTenderId())) {
@@ -88,15 +88,19 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         tenderRequest.setPreBidDisscussions(tenderRequestDto.getPreBidDisscussions());
         tenderRequest.setUpdatedBy(tenderRequestDto.getUpdatedBy());
         tenderRequest.setCreatedBy(tenderRequestDto.getCreatedBy());
-        tenderRequest.setUploadTenderDocumentsFileName(uploadTenderDocumentsFileName);
-        tenderRequest.setUploadSpecificTermsAndConditionsFileName(uploadSpecificTermsAndConditionsFileName);
-        tenderRequest.setUploadGeneralTermsAndConditionsFileName(uploadGeneralTermsAndConditionsFileName);
+        tenderRequest.setUploadTenderDocumentsFileName(tenderRequestDto.getUploadTenderDocuments());
+        tenderRequest.setUploadSpecificTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
+        tenderRequest.setUploadGeneralTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
+        tenderRequest.setFileType(tenderRequestDto.getFileType());
+      /*
         handleFileUpload(tenderRequest, tenderRequestDto.getUploadTenderDocuments(),
                 tenderRequest::setUploadTenderDocuments);
         handleFileUpload(tenderRequest, tenderRequestDto.getUploadGeneralTermsAndConditions(),
                 tenderRequest::setUploadGeneralTermsAndConditions);
         handleFileUpload(tenderRequest, tenderRequestDto.getUploadSpecificTermsAndConditions(),
                 tenderRequest::setUploadSpecificTermsAndConditions);
+
+       */
 
         // Convert List<String> indentIds from DTO into List<IndentId> entities
         List<IndentId> indentIdList = tenderRequestDto.getIndentIds().stream().map(indentIdStr -> {
@@ -135,8 +139,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
 
 
     @Override
-    public TenderResponseDto updateTenderRequest(String tenderId, TenderRequestDto tenderRequestDto,String uploadTenderDocumentsFileName,String uploadGeneralTermsAndConditionsFileName
-            , String uploadSpecificTermsAndConditionsFileName) {
+    public TenderResponseDto updateTenderRequest(String tenderId, TenderRequestDto tenderRequestDto){
+         //   ,String uploadTenderDocumentsFileName,String uploadGeneralTermsAndConditionsFileName  , String uploadSpecificTermsAndConditionsFileName) {
         TenderRequest existingTR = TRrepo.findById(tenderId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
@@ -168,15 +172,18 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         existingTR.setPreBidDisscussions(tenderRequestDto.getPreBidDisscussions());
         existingTR.setUpdatedBy(tenderRequestDto.getUpdatedBy());
         existingTR.setCreatedBy(tenderRequestDto.getCreatedBy());
-        existingTR.setUploadTenderDocumentsFileName(uploadTenderDocumentsFileName);
-        existingTR.setUploadSpecificTermsAndConditionsFileName(uploadSpecificTermsAndConditionsFileName);
-        existingTR.setUploadGeneralTermsAndConditionsFileName(uploadGeneralTermsAndConditionsFileName);
-        handleFileUpload(existingTR, tenderRequestDto.getUploadTenderDocuments(),
+        existingTR.setUploadTenderDocumentsFileName(tenderRequestDto.getUploadTenderDocuments());
+        existingTR.setUploadSpecificTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
+        existingTR.setUploadGeneralTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
+        existingTR.setFileType(tenderRequestDto.getFileType());
+        /*  handleFileUpload(existingTR, tenderRequestDto.getUploadTenderDocuments(),
                 existingTR::setUploadTenderDocuments);
         handleFileUpload(existingTR, tenderRequestDto.getUploadGeneralTermsAndConditions(),
                 existingTR::setUploadGeneralTermsAndConditions);
         handleFileUpload(existingTR, tenderRequestDto.getUploadSpecificTermsAndConditions(),
                 existingTR::setUploadSpecificTermsAndConditions);
+
+       */
     // Update Indent IDs
         List<String> newIndentIds = tenderRequestDto.getIndentIds();
 
@@ -250,6 +257,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         responseDTO.setSingleAndMultipleVendors(tenderRequest.getSingleAndMultipleVendors());
         responseDTO.setUploadGeneralTermsAndConditions(tenderRequest.getUploadGeneralTermsAndConditionsFileName());
         responseDTO.setUploadSpecificTermsAndConditions(tenderRequest.getUploadSpecificTermsAndConditionsFileName());
+        responseDTO.setFileType(tenderRequest.getFileType());
         responseDTO.setPreBidDisscussions(tenderRequest.getPreBidDisscussions());
         responseDTO.setUpdatedBy(tenderRequest.getUpdatedBy());
         responseDTO.setCreatedBy(tenderRequest.getCreatedBy());
@@ -329,7 +337,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         tenderResponseDto.setUploadGeneralTermsAndConditions(tenderRequest.getUploadGeneralTermsAndConditionsFileName());
         tenderResponseDto.setUploadSpecificTermsAndConditions(tenderRequest.getUploadSpecificTermsAndConditionsFileName());
         tenderResponseDto.setPreBidDisscussions(tenderRequest.getPreBidDisscussions());
-
+        tenderResponseDto.setFileType(tenderRequest.getFileType());
         tenderResponseDto.setUpdatedBy(tenderRequest.getUpdatedBy());
         tenderResponseDto.setCreatedBy(tenderRequest.getCreatedBy());
         tenderResponseDto.setCreatedDate(tenderRequest.getCreatedDate());

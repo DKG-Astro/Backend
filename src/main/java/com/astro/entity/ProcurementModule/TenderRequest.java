@@ -74,6 +74,7 @@ public class TenderRequest {
     private BigDecimal totalTenderValue;
     @Column
     private String projectName;
+    private String fileType;
     @Column(name = "updated_by")
     private String updatedBy;
     @Column(name = "created_by")

@@ -19,6 +19,7 @@ public class IndentCreationResponseDTO {
     private String uploadTenderDocumentsFileName;
     private String uploadGOIOrRFPFileName;
     private String uploadPACOrBrandPACFileName;
+    private String fileType;
    // private String uploadingPriorApprovalsFile;
    // private String uploadTenderDocumentsFile;
    // private String uploadGOIOrRFPFile;

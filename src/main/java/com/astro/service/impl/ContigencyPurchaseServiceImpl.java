@@ -33,7 +33,8 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
     private ContigencyPurchaseRepository CPrepo;
 
     @Override
-    public ContigencyPurchaseResponseDto createContigencyPurchase(ContigencyPurchaseRequestDto contigencyPurchaseDto,String uploadCopyOfInvoiceFileName) {
+    public ContigencyPurchaseResponseDto createContigencyPurchase(ContigencyPurchaseRequestDto contigencyPurchaseDto){
+            //,String uploadCopyOfInvoiceFileName) {
 
         // Check if the indentorId already exists
         if (CPrepo.existsById(contigencyPurchaseDto.getContigencyId())) {
@@ -54,10 +55,11 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
         contigencyPurchase.setUnitPrice(contigencyPurchaseDto.getUnitPrice());
         contigencyPurchase.setRemarksForPurchase(contigencyPurchaseDto.getRemarksForPurchase());
         contigencyPurchase.setAmountToBePaid(contigencyPurchaseDto.getAmountToBePaid());
-        contigencyPurchase.setUploadCopyOfInvoiceFileName(uploadCopyOfInvoiceFileName);
+        contigencyPurchase.setUploadCopyOfInvoiceFileName(contigencyPurchaseDto.getUploadCopyOfInvoice());
+        contigencyPurchase.setFileType(contigencyPurchaseDto.getFileType());
         contigencyPurchase.setProjectName(contigencyPurchaseDto.getProjectName());
-        handleFileUpload(contigencyPurchase, contigencyPurchaseDto.getUploadCopyOfInvoice(),
-                contigencyPurchase::setUploadCopyOfInvoice);
+       // handleFileUpload(contigencyPurchase, contigencyPurchaseDto.getUploadCopyOfInvoice(),
+      //          contigencyPurchase::setUploadCopyOfInvoice);
         contigencyPurchase.setPredifinedPurchaseStatement(contigencyPurchaseDto.getPredifinedPurchaseStatement());
         contigencyPurchase.setProjectDetail(contigencyPurchaseDto.getProjectDetail());
         contigencyPurchase.setUpdatedBy(contigencyPurchaseDto.getUpdatedBy());
@@ -70,7 +72,8 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
 
 
     @Override
-    public ContigencyPurchaseResponseDto updateContigencyPurchase(String contigencyId, ContigencyPurchaseRequestDto contigencyPurchaseDto,String uploadCopyOfInvoiceFileName) {
+    public ContigencyPurchaseResponseDto updateContigencyPurchase(String contigencyId, ContigencyPurchaseRequestDto contigencyPurchaseDto){
+            //,String uploadCopyOfInvoiceFileName) {
         ContigencyPurchase existingCP = CPrepo.findById(contigencyId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
@@ -89,10 +92,11 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
         existingCP.setUnitPrice(contigencyPurchaseDto.getUnitPrice());
         existingCP.setRemarksForPurchase(contigencyPurchaseDto.getRemarksForPurchase());
         existingCP.setAmountToBePaid(contigencyPurchaseDto.getAmountToBePaid());
-        existingCP.setUploadCopyOfInvoiceFileName(uploadCopyOfInvoiceFileName);
+        existingCP.setUploadCopyOfInvoiceFileName(contigencyPurchaseDto.getUploadCopyOfInvoice());
+        existingCP.setFileType(contigencyPurchaseDto.getFileType());
         existingCP.setProjectName(contigencyPurchaseDto.getProjectName());
-        handleFileUpload(existingCP, contigencyPurchaseDto.getUploadCopyOfInvoice(),
-                existingCP::setUploadCopyOfInvoice);
+       // handleFileUpload(existingCP, contigencyPurchaseDto.getUploadCopyOfInvoice(),
+              //  existingCP::setUploadCopyOfInvoice);
         existingCP.setPredifinedPurchaseStatement(contigencyPurchaseDto.getPredifinedPurchaseStatement());
         existingCP.setProjectDetail(contigencyPurchaseDto.getProjectDetail());
         existingCP.setUpdatedBy(contigencyPurchaseDto.getUpdatedBy());
@@ -182,6 +186,7 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
         contigencyPurchaseResponseDto.setRemarksForPurchase(contigencyPurchase.getRemarksForPurchase());
         contigencyPurchaseResponseDto.setAmountToBePaid(contigencyPurchase.getAmountToBePaid());
         contigencyPurchaseResponseDto.setUploadCopyOfInvoice(contigencyPurchase.getUploadCopyOfInvoiceFileName());
+        contigencyPurchaseResponseDto.setFileType(contigencyPurchase.getFileType());
         contigencyPurchaseResponseDto.setPredifinedPurchaseStatement(contigencyPurchase.getPredifinedPurchaseStatement());
         contigencyPurchaseResponseDto.setProjectDetail(contigencyPurchase.getProjectDetail());
         contigencyPurchaseResponseDto.setProjectName(contigencyPurchase.getProjectName());

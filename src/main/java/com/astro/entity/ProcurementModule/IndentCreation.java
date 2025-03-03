@@ -82,6 +82,8 @@ public class IndentCreation {
         private String uploadGOIOrRFPFileName;
         @Column(name = "upload_pac_or_brand_pac_file_name")
         private String uploadPACOrBrandPACFileName;
+        @Column(name="file_type")
+        private String fileType;
 
       //  @OneToMany(mappedBy = "indentCreation", cascade = CascadeType.ALL, orphanRemoval = true)
       //@ManyToMany(cascade = CascadeType.PERSIST)

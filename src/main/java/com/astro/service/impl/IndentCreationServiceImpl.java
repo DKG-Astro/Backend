@@ -48,8 +48,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         @Autowired
         private ProjectMasterRepository projectMasterRepository;
 
-    public IndentCreationResponseDTO createIndent(IndentCreationRequestDTO indentRequestDTO,String uploadingPriorApprovalsFileName,
-                                                  String uploadTenderDocumentsFileName,String uploadGOIOrRFPFileName,String uploadPACOrBrandPACFileName) {
+    public IndentCreationResponseDTO createIndent(IndentCreationRequestDTO indentRequestDTO){
+            //,String uploadingPriorApprovalsFileName, String uploadTenderDocumentsFileName,String uploadGOIOrRFPFileName,String uploadPACOrBrandPACFileName) {
         // Check if the indentorId already exists
         if (indentCreationRepository.existsById(indentRequestDTO.getIndentId())) {
             ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Indent ID", "Indent ID " + indentRequestDTO.getIndentId() + " already exists.");
@@ -84,7 +84,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setIndentorMobileNo(indentRequestDTO.getIndentorMobileNo());
         indentCreation.setIndentorEmailAddress(indentRequestDTO.getIndentorEmailAddress());
         indentCreation.setConsignesLocation(indentRequestDTO.getConsignesLocation());
-        indentCreation.setUploadingPriorApprovalsFileName(uploadingPriorApprovalsFileName);
+        indentCreation.setUploadingPriorApprovalsFileName(indentRequestDTO.getUploadingPriorApprovalsFileName());
         indentCreation.setProjectName(indentRequestDTO.getProjectName());
         indentCreation.setIsPreBitMeetingRequired(indentRequestDTO.getIsPreBidMeetingRequired());
         String Date = indentRequestDTO.getPreBidMeetingDate();
@@ -94,10 +94,11 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setEstimatedRate(indentRequestDTO.getEstimatedRate());
         indentCreation.setPeriodOfContract(indentRequestDTO.getPeriodOfContract());
         indentCreation.setSingleAndMultipleJob(indentRequestDTO.getSingleAndMultipleJob());
-    indentCreation.setUploadTenderDocumentsFileName(uploadTenderDocumentsFileName);
-    indentCreation.setUploadGOIOrRFPFileName(uploadGOIOrRFPFileName);
-    indentCreation.setUploadPACOrBrandPACFileName(uploadPACOrBrandPACFileName);
-
+        indentCreation.setFileType(indentRequestDTO.getFileType());
+    indentCreation.setUploadTenderDocumentsFileName(indentRequestDTO.getUploadTenderDocumentsFileName());
+    indentCreation.setUploadGOIOrRFPFileName(indentRequestDTO.getUploadGOIOrRFPFileName());
+    indentCreation.setUploadPACOrBrandPACFileName(indentRequestDTO.getUploadPACOrBrandPACFileName());
+/*
         handleFileUpload(indentCreation, indentRequestDTO.getUploadingPriorApprovals(),
                 indentCreation::setUploadingPriorApprovals);
         handleFileUpload(indentCreation, indentRequestDTO.getUploadTenderDocuments(),
@@ -106,6 +107,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                 indentCreation::setUploadGOIOrRFP);
         handleFileUpload(indentCreation, indentRequestDTO.getUploadPACOrBrandPAC(),
                 indentCreation::setUploadPACOrBrandPAC);
+
+ */
 
         indentCreation.setCreatedBy(indentRequestDTO.getCreatedBy());
         indentCreation.setUpdatedBy(indentRequestDTO.getUpdatedBy());
@@ -143,8 +146,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         return mapToResponseDTO(indentCreation);
     }
 
-    public IndentCreationResponseDTO updateIndent(String indentId, IndentCreationRequestDTO indentRequestDTO,String uploadingPriorApprovalsFileName,
-                                                  String uploadTenderDocumentsFileName,String uploadGOIOrRFPFileName,String uploadPACOrBrandPACFileName) {
+    public IndentCreationResponseDTO updateIndent(String indentId, IndentCreationRequestDTO indentRequestDTO){
+            //,String uploadingPriorApprovalsFileName,String uploadTenderDocumentsFileName,String uploadGOIOrRFPFileName,String uploadPACOrBrandPACFileName) {
         IndentCreation indentCreation = indentCreationRepository.findById(indentId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
@@ -167,10 +170,12 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setEstimatedRate(indentRequestDTO.getEstimatedRate());
         indentCreation.setPeriodOfContract(indentRequestDTO.getPeriodOfContract());
         indentCreation.setSingleAndMultipleJob(indentRequestDTO.getSingleAndMultipleJob());
-        indentCreation.setUploadTenderDocumentsFileName(uploadTenderDocumentsFileName);
-        indentCreation.setUploadGOIOrRFPFileName(uploadGOIOrRFPFileName);
-        indentCreation.setUploadPACOrBrandPACFileName(uploadPACOrBrandPACFileName);
-        indentCreation.setUploadingPriorApprovalsFileName(uploadingPriorApprovalsFileName);
+        indentCreation.setUploadTenderDocumentsFileName(indentRequestDTO.getUploadTenderDocumentsFileName());
+        indentCreation.setUploadGOIOrRFPFileName(indentRequestDTO.getUploadGOIOrRFPFileName());
+        indentCreation.setUploadPACOrBrandPACFileName(indentRequestDTO.getUploadPACOrBrandPACFileName());
+        indentCreation.setUploadingPriorApprovalsFileName(indentRequestDTO.getUploadingPriorApprovalsFileName());
+        indentCreation.setFileType(indentRequestDTO.getFileType());
+      /*
         handleFileUpload(indentCreation, indentRequestDTO.getUploadingPriorApprovals(),
                 indentCreation::setUploadingPriorApprovals);
         handleFileUpload(indentCreation, indentRequestDTO.getUploadTenderDocuments(),
@@ -179,6 +184,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                 indentCreation::setUploadGOIOrRFP);
         handleFileUpload(indentCreation, indentRequestDTO.getUploadPACOrBrandPAC(),
                 indentCreation::setUploadPACOrBrandPAC);
+       */
         indentCreation.setUpdatedBy(indentRequestDTO.getUpdatedBy());
         indentCreation.setCreatedBy(indentRequestDTO.getCreatedBy());
 
@@ -255,6 +261,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
          response.setUploadTenderDocumentsFileName(indentCreation.getUploadTenderDocumentsFileName());
          response.setUploadGOIOrRFPFileName(indentCreation.getUploadGOIOrRFPFileName());
            response.setUploadPACOrBrandPACFileName(indentCreation.getUploadPACOrBrandPACFileName());
+           response.setFileType(indentCreation.getFileType());
           /*  String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
             response.setUploadingPriorApprovalsFile(
                     indentCreation.getUploadingPriorApprovalsFileName() != null ?

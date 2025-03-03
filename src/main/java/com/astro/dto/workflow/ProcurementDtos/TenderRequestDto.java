@@ -28,12 +28,19 @@ public class TenderRequestDto {
     private Boolean bidSecurityDeclaration;
     private Boolean mllStatusDeclaration;
 
-    private MultipartFile uploadTenderDocuments;
+    //private MultipartFile uploadTenderDocuments;
     private String singleAndMultipleVendors;
+    private String uploadTenderDocuments;
+    private String uploadGeneralTermsAndConditions;
 
-    private MultipartFile uploadGeneralTermsAndConditions;
 
-    private MultipartFile uploadSpecificTermsAndConditions;
+
+
+    private String fileType;
+
+ //   private MultipartFile uploadGeneralTermsAndConditions;
+
+   // private MultipartFile uploadSpecificTermsAndConditions;
     private String preBidDisscussions;
     private String updatedBy;
     private Integer createdBy;

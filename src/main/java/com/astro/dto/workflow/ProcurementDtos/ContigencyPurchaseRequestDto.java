@@ -19,7 +19,9 @@ public class ContigencyPurchaseRequestDto {
     private BigDecimal unitPrice;
     private String remarksForPurchase;
     private BigDecimal amountToBePaid;
-   private MultipartFile uploadCopyOfInvoice;
+   //private MultipartFile uploadCopyOfInvoice;
+    private String uploadCopyOfInvoice;
+    private String fileType;
     private String predifinedPurchaseStatement;
     private String projectDetail;
     private String projectName;
