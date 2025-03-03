@@ -56,7 +56,7 @@ public class FileProcessingServiceImpl implements FileProcessingService {
                         AppConstant.ERROR_TYPE_VALIDATION, "Invalid File type."));
             }
 
-             Path path = Path.of(basePath+ fileType + "//" +fileName);
+             Path path = Path.of(basePath+ fileType + "//" + fileName);
              Files.copy(multipartFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e){
             throw new FilesNotFoundException(new ErrorDetails(AppConstant.FILE_UPLOAD_ERROR, AppConstant.ERROR_TYPE_CODE_VALIDATION,
