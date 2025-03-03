@@ -45,10 +45,7 @@ public class FileProcessingServiceImpl implements FileProcessingService {
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid File type."));
         }
 
-        String currentDate = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
-
-        //multipartFile.getOriginalFilename().replace(multipartFile.getOriginalFilename(), String.valueOf(System.currentTimeMillis()).concat("_" + multipartFile.getOriginalFilename()));
-        String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+        String fileName = System.currentTimeMillis() + "_" + StringUtils.cleanPath(multipartFile.getOriginalFilename());
 
         try {
             if (fileName.contains("..")) {
