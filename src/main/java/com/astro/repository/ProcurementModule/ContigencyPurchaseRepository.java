@@ -41,6 +41,7 @@ public interface ContigencyPurchaseRepository extends JpaRepository<ContigencyPu
     """, nativeQuery = true)
     List<Object[]> findContigencyPurchaseReport(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
+   // ContigencyPurchase findByContigencyId(String contigencyId);
 
-
+   // ContigencyPurchase getByCpId(String contigencyId);
 }

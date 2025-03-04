@@ -48,6 +48,10 @@ public class WorkflowController {
     public ResponseEntity<Object> pendingWorkflowTransition(@RequestParam String roleName)  {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.allPendingWorkflowTransition(roleName)), HttpStatus.OK);
     }
+    @GetMapping("/pendingWorkflowTransitionQueue")
+    public ResponseEntity<Object> pendingWorkflowTransitionQueue(@RequestParam String roleName)  {
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.allPendingWorkflowTransitionINQueue(roleName)), HttpStatus.OK);
+    }
 
     @GetMapping("/allPendingWorkflowTransition")
     public ResponseEntity<Object> allPendingWorkflowTransition(@RequestParam String roleName)  {

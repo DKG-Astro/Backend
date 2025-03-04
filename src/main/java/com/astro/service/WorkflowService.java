@@ -22,4 +22,6 @@ public interface WorkflowService {
     public void approveSubWorkflow(Integer subWorkflowTransitionId);
     public List<String> getApprovedIndents();
     public List<String> getApprovedTender();
+
+    public List<QueueResponse> allPendingWorkflowTransitionINQueue(String roleName);
 }

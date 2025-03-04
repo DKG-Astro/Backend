@@ -54,4 +54,5 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, St
     List<Object[]> getProcurementActivityReport(@Param("startDate") LocalDate startDate,
                                                                          @Param("endDate") LocalDate endDate);
 
+   // PurchaseOrder getByPoId(String poId);
 }

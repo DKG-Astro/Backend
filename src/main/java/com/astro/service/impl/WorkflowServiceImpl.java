@@ -10,10 +10,16 @@ import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.woWithTenderAndIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.poWithTenderAndIndentResponseDTO;
 import com.astro.entity.*;
+import com.astro.entity.ProcurementModule.*;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.*;
+import com.astro.repository.ProcurementModule.ContigencyPurchaseRepository;
+import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
+import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderRepository;
+import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrderRepository;
+import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -69,23 +75,35 @@ public class WorkflowServiceImpl implements WorkflowService {
     @Autowired
     SubWorkflowTransitionRepository subWorkflowTransitionRepository;
 
+    @Autowired
+    private IndentCreationRepository indentCreationRepository;
+    @Autowired
+    private TenderRequestRepository tenderRequestRepository;
+    @Autowired
+    private PurchaseOrderRepository purchaseOrderRepository;
+    @Autowired
+    private ContigencyPurchaseRepository contigencyPurchaseRepository;
+    @Autowired
+    private ServiceOrderRepository serviceOrderRepository;
+
+
     @Override
     public WorkflowDto workflowByWorkflowName(String workflowName) {
         WorkflowDto workflowDto = null;
 
-        if(Objects.nonNull(workflowName)){
+        if (Objects.nonNull(workflowName)) {
             WorkflowMaster workflowMaster = workflowMasterRepository.findByWorkflowName(workflowName);
-            if(Objects.nonNull(workflowMaster)){
+            if (Objects.nonNull(workflowMaster)) {
                 workflowDto = new WorkflowDto();
                 workflowDto.setWorkflowId(workflowMaster.getWorkflowId());
                 workflowDto.setWorkflowName(workflowMaster.getWorkflowName());
                 workflowDto.setCreatedBy(workflowMaster.getCreatedBy());
                 workflowDto.setCreatedDate(workflowMaster.getCreatedDate());
-            }else{
+            } else {
                 throw new InvalidInputException(new ErrorDetails(AppConstant.WORKFLOW_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                         AppConstant.ERROR_TYPE_VALIDATION, "Workflow not found."));
             }
-        }else {
+        } else {
             throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid input."));
         }
@@ -99,7 +117,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         List<TransitionDto> transitionDtoList = new ArrayList<>();
         List<TransitionMaster> transitionMasterList = transitionMasterRepository.findByWorkflowId(workflowId);
 
-        if(Objects.nonNull(transitionMasterList) && !transitionMasterList.isEmpty()){
+        if (Objects.nonNull(transitionMasterList) && !transitionMasterList.isEmpty()) {
             transitionDtoList = transitionMasterList.stream().map(transitionMaster -> {
                 TransitionDto transitionDto = new TransitionDto();
                 transitionDto.setWorkflowId(transitionMaster.getWorkflowId());
@@ -123,7 +141,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 
                 return transitionDto;
             }).collect(Collectors.toList());
-        }else{
+        } else {
             throw new InvalidInputException(new ErrorDetails(AppConstant.WORKFLOW_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Workflow not found."));
         }
@@ -132,43 +150,43 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     private TransitionConditionDto transitionConditionById(Integer conditionId) {
         TransitionConditionDto transitionConditionDto = new TransitionConditionDto();
-        if(Objects.nonNull(conditionId)){
+        if (Objects.nonNull(conditionId)) {
             TransitionConditionMaster transitionConditionMaster = transitionConditionMasterRepository.findById(conditionId).orElse(null);
-                if(Objects.nonNull(transitionConditionMaster)){
-                    transitionConditionDto.setConditionId(transitionConditionMaster.getConditionId());
-                    transitionConditionDto.setConditionKey(transitionConditionMaster.getConditionKey());
-                    transitionConditionDto.setWorkflowId(transitionConditionMaster.getWorkflowId());
-                    transitionConditionDto.setConditionValue(transitionConditionMaster.getConditionValue());
-                    transitionConditionDto.setCreatedDate(transitionConditionMaster.getCreatedDate());
-                    transitionConditionDto.setCreatedBy(transitionConditionMaster.getCreatedBy());
-                }
+            if (Objects.nonNull(transitionConditionMaster)) {
+                transitionConditionDto.setConditionId(transitionConditionMaster.getConditionId());
+                transitionConditionDto.setConditionKey(transitionConditionMaster.getConditionKey());
+                transitionConditionDto.setWorkflowId(transitionConditionMaster.getWorkflowId());
+                transitionConditionDto.setConditionValue(transitionConditionMaster.getConditionValue());
+                transitionConditionDto.setCreatedDate(transitionConditionMaster.getCreatedDate());
+                transitionConditionDto.setCreatedBy(transitionConditionMaster.getCreatedBy());
+            }
         }
 
         return transitionConditionDto;
     }
 
     private String roleNameById(Integer roleId) {
-       if(Objects.nonNull(roleId)) {
-           return roleMasterRepository.findById(roleId).orElse(new RoleMaster()).getRoleName();
-       }else{
-           return null;
-       }
+        if (Objects.nonNull(roleId)) {
+            return roleMasterRepository.findById(roleId).orElse(new RoleMaster()).getRoleName();
+        } else {
+            return null;
+        }
     }
 
     private String roleNameByUserId(Integer userId) {
-        if(Objects.nonNull(userId)) {
-            UserRoleMaster userRoleMaster =  userRoleMasterRepository.findByUserId(userId);
-            if(Objects.nonNull(userRoleMaster)){
+        if (Objects.nonNull(userId)) {
+            UserRoleMaster userRoleMaster = userRoleMasterRepository.findByUserId(userId);
+            if (Objects.nonNull(userRoleMaster)) {
                 return roleMasterRepository.findById(userRoleMaster.getRoleId()).orElse(new RoleMaster()).getRoleName();
             }
         }
-            return null;
+        return null;
     }
 
     private String workflowNameById(Integer workflowId) {
-        if(Objects.nonNull(workflowId)) {
+        if (Objects.nonNull(workflowId)) {
             return workflowMasterRepository.findById(workflowId).orElse(new WorkflowMaster()).getWorkflowName();
-        }else {
+        } else {
             return null;
         }
     }
@@ -176,28 +194,28 @@ public class WorkflowServiceImpl implements WorkflowService {
     @Override
     public TransitionDto transitionsByWorkflowIdAndOrder(Integer workflowId, Integer order, Integer subOrder) {
         TransitionDto transitionDto = null;
-        TransitionMaster transitionMaster  = transitionMasterRepository.findByWorkflowIdAndTransitionOrderAndTransitionSubOrder(workflowId, order, subOrder);
-            if(Objects.nonNull(transitionMaster)){
-                transitionDto = new TransitionDto();
-                transitionDto.setWorkflowId(transitionMaster.getWorkflowId());
-                transitionDto.setTransitionId(transitionMaster.getTransitionId());
-                transitionDto.setTransitionSubOrder(transitionMaster.getTransitionSubOrder());
-                transitionDto.setCreatedDate(transitionMaster.getCreatedDate());
-                transitionDto.setCreatedBy(transitionMaster.getCreatedBy());
-                transitionDto.setTransitionOrder(transitionMaster.getTransitionOrder());
-                transitionDto.setConditionId(transitionMaster.getConditionId());
-                transitionDto.setCurrentRoleId(transitionMaster.getCurrentRoleId());
-                transitionDto.setNextRoleId(transitionMaster.getNextRoleId());
-                transitionDto.setPreviousRoleId(transitionMaster.getPreviousRoleId());
-                transitionDto.setTransitionName(transitionMaster.getTransitionName());
-                transitionDto.setWorkflowName(workflowNameById(transitionMaster.getWorkflowId()));
-                transitionDto.setCurrentRoleName(roleNameById(transitionMaster.getCurrentRoleId()));
-                transitionDto.setNextRoleName(roleNameById(transitionMaster.getNextRoleId()));
-                transitionDto.setPreviousRoleName(roleNameById(transitionMaster.getPreviousRoleId()));
-                TransitionConditionDto transitionConditionDto = transitionConditionById(transitionMaster.getConditionId());
-                transitionDto.setConditionKey(transitionConditionDto.getConditionKey());
-                transitionDto.setConditionValue(transitionConditionDto.getConditionValue());
-            }
+        TransitionMaster transitionMaster = transitionMasterRepository.findByWorkflowIdAndTransitionOrderAndTransitionSubOrder(workflowId, order, subOrder);
+        if (Objects.nonNull(transitionMaster)) {
+            transitionDto = new TransitionDto();
+            transitionDto.setWorkflowId(transitionMaster.getWorkflowId());
+            transitionDto.setTransitionId(transitionMaster.getTransitionId());
+            transitionDto.setTransitionSubOrder(transitionMaster.getTransitionSubOrder());
+            transitionDto.setCreatedDate(transitionMaster.getCreatedDate());
+            transitionDto.setCreatedBy(transitionMaster.getCreatedBy());
+            transitionDto.setTransitionOrder(transitionMaster.getTransitionOrder());
+            transitionDto.setConditionId(transitionMaster.getConditionId());
+            transitionDto.setCurrentRoleId(transitionMaster.getCurrentRoleId());
+            transitionDto.setNextRoleId(transitionMaster.getNextRoleId());
+            transitionDto.setPreviousRoleId(transitionMaster.getPreviousRoleId());
+            transitionDto.setTransitionName(transitionMaster.getTransitionName());
+            transitionDto.setWorkflowName(workflowNameById(transitionMaster.getWorkflowId()));
+            transitionDto.setCurrentRoleName(roleNameById(transitionMaster.getCurrentRoleId()));
+            transitionDto.setNextRoleName(roleNameById(transitionMaster.getNextRoleId()));
+            transitionDto.setPreviousRoleName(roleNameById(transitionMaster.getPreviousRoleId()));
+            TransitionConditionDto transitionConditionDto = transitionConditionById(transitionMaster.getConditionId());
+            transitionDto.setConditionKey(transitionConditionDto.getConditionKey());
+            transitionDto.setConditionValue(transitionConditionDto.getConditionValue());
+        }
         return transitionDto;
     }
 
@@ -205,11 +223,11 @@ public class WorkflowServiceImpl implements WorkflowService {
     @Transactional
     public WorkflowTransitionDto initiateWorkflow(String requestId, String workflowName, Integer createdBy) {
         WorkflowTransitionDto workflowTransitionDto = null;
-        if(Objects.nonNull(requestId) && Objects.nonNull(workflowName) && Objects.nonNull(createdBy)){
+        if (Objects.nonNull(requestId) && Objects.nonNull(workflowName) && Objects.nonNull(createdBy)) {
             userService.validateUser(createdBy);
             WorkflowDto workflowDto = workflowByWorkflowName(workflowName);
             TransitionDto transitionDto = transitionsByWorkflowIdAndOrder(workflowDto.getWorkflowId(), 1, 1);
-            if(Objects.isNull(transitionDto)){
+            if (Objects.isNull(transitionDto)) {
                 throw new InvalidInputException(new ErrorDetails(AppConstant.TRANSITION_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                         AppConstant.ERROR_TYPE_VALIDATION, "Transition not found."));
             }
@@ -219,7 +237,7 @@ public class WorkflowServiceImpl implements WorkflowService {
             workflowTransitionRepository.save(workflowTransition);
             workflowTransitionDto = mapWorkflowTransitionDto(workflowTransition);
 
-        }else{
+        } else {
             throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid input."));
 
@@ -229,7 +247,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     private void validateWorkflowTransition(String requestId, Integer createdBy, Integer workflowId) {
         WorkflowTransition workflowTransition = workflowTransitionRepository.findByWorkflowIdAndCreatedByAndRequestId(workflowId, createdBy, requestId);
-        if(Objects.nonNull(workflowTransition)){
+        if (Objects.nonNull(workflowTransition)) {
             throw new InvalidInputException(new ErrorDetails(AppConstant.WORKFLOW_ALREADY_EXISTS, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Workflow with same request id and created by already exists."));
         }
@@ -241,7 +259,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         List<WorkflowTransitionDto> workflowTransitionDtoList = new ArrayList<>();
         List<WorkflowTransition> workflowTransitionList = null;
         workflowTransitionList = workflowTransitionRepository.findByRequestId(requestId);
-        if(Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()) {
+        if (Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()) {
             workflowTransitionDtoList = workflowTransitionList.stream().sorted(Comparator.comparing(WorkflowTransition::getWorkflowSequence).reversed()).map(e -> {
                 return mapWorkflowTransitionDto(e);
             }).collect(Collectors.toList());
@@ -254,9 +272,9 @@ public class WorkflowServiceImpl implements WorkflowService {
     public List<WorkflowTransitionDto> allWorkflowTransition(String roleName) {
         List<WorkflowTransitionDto> workflowTransitionDtoList = new ArrayList<>();
 
-        List<WorkflowTransition> workflowTransitionList  = workflowTransitionRepository.findByNextRole(roleName);
-        if(Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()){
-            workflowTransitionDtoList = workflowTransitionList.stream().sorted(Comparator.comparing(WorkflowTransition::getRequestId).thenComparing(WorkflowTransition::getCreatedDate)).map(e ->{
+        List<WorkflowTransition> workflowTransitionList = workflowTransitionRepository.findByNextRole(roleName);
+        if (Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()) {
+            workflowTransitionDtoList = workflowTransitionList.stream().sorted(Comparator.comparing(WorkflowTransition::getRequestId).thenComparing(WorkflowTransition::getCreatedDate)).map(e -> {
                 return mapWorkflowTransitionDto(e);
             }).collect(Collectors.toList());
         }
@@ -267,9 +285,9 @@ public class WorkflowServiceImpl implements WorkflowService {
     public List<WorkflowTransitionDto> allPendingWorkflowTransition(String roleName) {
         List<WorkflowTransitionDto> workflowTransitionDtoList = new ArrayList<>();
 
-        List<WorkflowTransition> workflowTransitionList  = workflowTransitionRepository.findByNextActionAndNextRole(AppConstant.PENDING_TYPE, roleName);
-        if(Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()){
-            workflowTransitionDtoList = workflowTransitionList.stream().sorted(Comparator.comparing(WorkflowTransition::getRequestId).thenComparing(WorkflowTransition::getCreatedDate)).map(e ->{
+        List<WorkflowTransition> workflowTransitionList = workflowTransitionRepository.findByNextActionAndNextRole(AppConstant.PENDING_TYPE, roleName);
+        if (Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()) {
+            workflowTransitionDtoList = workflowTransitionList.stream().sorted(Comparator.comparing(WorkflowTransition::getRequestId).thenComparing(WorkflowTransition::getCreatedDate)).map(e -> {
                 return mapWorkflowTransitionDto(e);
             }).collect(Collectors.toList());
         }
@@ -281,9 +299,9 @@ public class WorkflowServiceImpl implements WorkflowService {
     public List<String> allPreviousRoleWorkflowTransition(Integer workflowId, String requestId) {
         List<String> allPreviousRole = new ArrayList<>();
 
-        List<WorkflowTransition> workflowTransitionList  = workflowTransitionRepository.findByWorkflowIdAndRequestId(workflowId, requestId);
-        if(Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty() && workflowTransitionList.size() > 1){
-            allPreviousRole = workflowTransitionList.stream().sorted(Comparator.comparing(WorkflowTransition::getWorkflowTransitionId)).limit(workflowTransitionList.size() -1).map(e ->e.getCurrentRole()).distinct().collect(Collectors.toList());
+        List<WorkflowTransition> workflowTransitionList = workflowTransitionRepository.findByWorkflowIdAndRequestId(workflowId, requestId);
+        if (Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty() && workflowTransitionList.size() > 1) {
+            allPreviousRole = workflowTransitionList.stream().sorted(Comparator.comparing(WorkflowTransition::getWorkflowTransitionId)).limit(workflowTransitionList.size() - 1).map(e -> e.getCurrentRole()).distinct().collect(Collectors.toList());
         }
         return allPreviousRole;
     }
@@ -311,7 +329,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         workflowTransitionDto.setAction(workflowTransition.getAction());
         workflowTransitionDto.setRemarks(workflowTransition.getRemarks());
         TransitionMaster transitionMaster = transitionById(workflowTransition.getTransitionId());
-        if(Objects.nonNull(transitionMaster)) {
+        if (Objects.nonNull(transitionMaster)) {
             workflowTransitionDto.setNextActionId(transitionMaster.getNextRoleId());
             workflowTransitionDto.setNextActionRole(roleNameById(transitionMaster.getNextRoleId()));
         }
@@ -348,10 +366,10 @@ public class WorkflowServiceImpl implements WorkflowService {
     public TransitionDto nextTransition(Integer workflowId, String workflowName, String currentRole, String requestId) {
         TransitionDto transitionDto = null;
 
-        if(Objects.nonNull(workflowId) && Objects.nonNull(currentRole)){
+        if (Objects.nonNull(workflowId) && Objects.nonNull(currentRole)) {
             List<TransitionDto> nextTransitionDtoList = transitionsByWorkflowId(workflowId).stream().filter(e -> currentRole.equalsIgnoreCase(e.getCurrentRoleName())).sorted(Comparator.comparing(s -> s.getTransitionSubOrder())).collect(Collectors.toList());
             transitionDto = nextTransitionDto(nextTransitionDtoList, workflowName, requestId);
-        }else{
+        } else {
             throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid input."));
         }
@@ -363,25 +381,25 @@ public class WorkflowServiceImpl implements WorkflowService {
     public WorkflowTransitionDto performTransitionAction(TransitionActionReqDto transitionActionReqDto) {
         userService.validateUser(transitionActionReqDto.getActionBy());
         WorkflowTransition workflowTransition = workflowTransitionRepository.findByWorkflowTransitionIdAndRequestId(transitionActionReqDto.getWorkflowTransitionId(), transitionActionReqDto.getRequestId());
-        if(Objects.isNull(workflowTransition)){
+        if (Objects.isNull(workflowTransition)) {
             throw new InvalidInputException(new ErrorDetails(AppConstant.INVALID_WORKFLOW_TRANSITION, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Workflow transition not found.With given workflow transition id and request id."));
         }
         TransitionMaster currentTransition = transitionMasterRepository.findById(workflowTransition.getTransitionId()).orElse(null);
 
         validateUserRole(transitionActionReqDto.getActionBy(), currentTransition.getNextRoleId());
-        if(AppConstant.COMPLETED_TYPE.equalsIgnoreCase(workflowTransition.getStatus())){
+        if (AppConstant.COMPLETED_TYPE.equalsIgnoreCase(workflowTransition.getStatus())) {
             throw new BusinessException(new ErrorDetails(AppConstant.INVALID_ACTION, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Workflow already completed."));
         }
 
-        if(AppConstant.APPROVE_TYPE.equalsIgnoreCase(transitionActionReqDto.getAction())){
+        if (AppConstant.APPROVE_TYPE.equalsIgnoreCase(transitionActionReqDto.getAction())) {
             approveTransition(workflowTransition, currentTransition, transitionActionReqDto);
-        }else if(AppConstant.REJECT_TYPE.equalsIgnoreCase(transitionActionReqDto.getAction())){
+        } else if (AppConstant.REJECT_TYPE.equalsIgnoreCase(transitionActionReqDto.getAction())) {
             rejectTransition(workflowTransition, currentTransition, transitionActionReqDto);
-        }else if(AppConstant.CHANGE_REQUEST_TYPE.equalsIgnoreCase(transitionActionReqDto.getAction())){
+        } else if (AppConstant.CHANGE_REQUEST_TYPE.equalsIgnoreCase(transitionActionReqDto.getAction())) {
             requestChangeTransition(workflowTransition, currentTransition, transitionActionReqDto);
-        }else{
+        } else {
             throw new InvalidInputException(new ErrorDetails(AppConstant.INVALID_TRANSITION_ACTION, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid transition action."));
         }
@@ -395,13 +413,13 @@ public class WorkflowServiceImpl implements WorkflowService {
     public WorkflowTransitionDto submitWorkflow(Integer workflowTransitionId, Integer actionBy, String remarks) {
         userService.validateUser(actionBy);
         WorkflowTransition currentWorkflowTransition = workflowTransitionRepository.findById(workflowTransitionId).orElse(null);
-        if(Objects.isNull(currentWorkflowTransition)){
+        if (Objects.isNull(currentWorkflowTransition)) {
             throw new InvalidInputException(new ErrorDetails(AppConstant.INVALID_WORKFLOW_TRANSITION, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Workflow transition not found.With given workflow transition id and request id."));
         }
 
-        TransitionDto nextTransition =  nextTransition(currentWorkflowTransition.getWorkflowId(), currentWorkflowTransition.getWorkflowName() ,roleNameByUserId(actionBy), currentWorkflowTransition.getRequestId());
-        if(Objects.isNull(nextTransition)){
+        TransitionDto nextTransition = nextTransition(currentWorkflowTransition.getWorkflowId(), currentWorkflowTransition.getWorkflowName(), roleNameByUserId(actionBy), currentWorkflowTransition.getRequestId());
+        if (Objects.isNull(nextTransition)) {
             throw new InvalidInputException(new ErrorDetails(AppConstant.NEXT_TRANSITION_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Error occurred at approval. No next transition found."));
         }
@@ -426,7 +444,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         nextWorkflowTransition.setCreatedDate(currentWorkflowTransition.getCreatedDate());
         nextWorkflowTransition.setCurrentRole(nextTransition.getCurrentRoleName());
         nextWorkflowTransition.setNextRole(nextTransition.getNextRoleName());
-        nextWorkflowTransition.setWorkflowSequence(currentWorkflowTransition.getWorkflowSequence()  + 1);
+        nextWorkflowTransition.setWorkflowSequence(currentWorkflowTransition.getWorkflowSequence() + 1);
 
         workflowTransitionRepository.save(nextWorkflowTransition);
 
@@ -438,7 +456,7 @@ public class WorkflowServiceImpl implements WorkflowService {
     public List<WorkflowTransitionDto> approvedWorkflowTransition(Integer modifiedBy) {
         List<WorkflowTransitionDto> workflowTransitionDtoList = new ArrayList<>();
         List<WorkflowTransition> workflowTransitionList = workflowTransitionRepository.findByModifiedBy(modifiedBy);
-        if(Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()) {
+        if (Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()) {
             workflowTransitionDtoList = workflowTransitionList.stream().sorted(Comparator.comparing(WorkflowTransition::getWorkflowSequence).reversed()).map(e -> {
                 return mapWorkflowTransitionDto(e);
             }).collect(Collectors.toList());
@@ -451,8 +469,8 @@ public class WorkflowServiceImpl implements WorkflowService {
         List<SubWorkflowTransitionDto> workflowTransitionDtoList = new ArrayList<>();
 
         List<SubWorkflowTransition> subWorkflowTransitionList = subWorkflowTransitionRepository.findByActionOn(modifiedBy);
-        if(Objects.nonNull(subWorkflowTransitionList) && !subWorkflowTransitionList.isEmpty()){
-            workflowTransitionDtoList =  subWorkflowTransitionList.stream().map(e -> {
+        if (Objects.nonNull(subWorkflowTransitionList) && !subWorkflowTransitionList.isEmpty()) {
+            workflowTransitionDtoList = subWorkflowTransitionList.stream().map(e -> {
                 SubWorkflowTransitionDto subWorkflowTransitionDto = new SubWorkflowTransitionDto();
                 subWorkflowTransitionDto.setSubWorkflowTransitionId(e.getSubWorkflowTransitionId());
                 subWorkflowTransitionDto.setWorkflowId(e.getWorkflowId());
@@ -477,9 +495,9 @@ public class WorkflowServiceImpl implements WorkflowService {
     @Override
     @Transactional
     public void approveSubWorkflow(Integer subWorkflowTransitionId) {
-        if(Objects.nonNull(subWorkflowTransitionId)){
+        if (Objects.nonNull(subWorkflowTransitionId)) {
             Optional<SubWorkflowTransition> subWorkflowTransitionOptional = subWorkflowTransitionRepository.findById(subWorkflowTransitionId);
-            if(subWorkflowTransitionOptional.isPresent()){
+            if (subWorkflowTransitionOptional.isPresent()) {
                 SubWorkflowTransition subWorkflowTransition = subWorkflowTransitionOptional.get();
                 subWorkflowTransition.setStatus(AppConstant.APPROVE_TYPE);
                 subWorkflowTransition.setAction(AppConstant.COMPLETED_TYPE);
@@ -487,18 +505,18 @@ public class WorkflowServiceImpl implements WorkflowService {
 
                 subWorkflowTransitionRepository.save(subWorkflowTransition);
 
-            }else{
+            } else {
                 throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                         AppConstant.ERROR_TYPE_VALIDATION, "Invalid sub workflow transition id."));
             }
-        }else{
+        } else {
             throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid sub workflow transition id."));
         }
     }
 
     private void requestChangeTransition(WorkflowTransition currentWorkflowTransition, TransitionMaster currentTransition, TransitionActionReqDto transitionActionReqDto) {
-        if(Objects.nonNull(transitionActionReqDto.getAssignmentRole())){
+        if (Objects.nonNull(transitionActionReqDto.getAssignmentRole())) {
             validateAssignmentRole(transitionActionReqDto.getAssignmentRole(), currentWorkflowTransition);
 
             currentWorkflowTransition.setNextAction(AppConstant.COMPLETED_TYPE);
@@ -522,15 +540,15 @@ public class WorkflowServiceImpl implements WorkflowService {
             nextWorkflowTransition.setCreatedBy(currentWorkflowTransition.getCreatedBy());
             nextWorkflowTransition.setCreatedDate(currentWorkflowTransition.getCreatedDate());
             nextWorkflowTransition.setCurrentRole(currentWorkflowTransition.getNextRole());
-            if(transitionActionReqDto.getAssignmentRole().equalsIgnoreCase("Request Creator")) {
+            if (transitionActionReqDto.getAssignmentRole().equalsIgnoreCase("Request Creator")) {
                 nextWorkflowTransition.setNextRole(latestWorkflowTransition.getCurrentRole());
-            }else{
+            } else {
                 nextWorkflowTransition.setNextRole(latestWorkflowTransition.getNextRole());
             }
-            nextWorkflowTransition.setWorkflowSequence(currentWorkflowTransition.getWorkflowSequence()  + 1);
+            nextWorkflowTransition.setWorkflowSequence(currentWorkflowTransition.getWorkflowSequence() + 1);
 
             workflowTransitionRepository.save(nextWorkflowTransition);
-        }else{
+        } else {
             throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid assignment role."));
         }
@@ -539,12 +557,12 @@ public class WorkflowServiceImpl implements WorkflowService {
     private WorkflowTransition getLatestWorkflowTransiton(WorkflowTransition currentWorkflowTransition, TransitionActionReqDto transitionActionReqDto) {
         WorkflowTransition workflowTransition = null;
         List<WorkflowTransition> workflowTransitionList = workflowTransitionRepository.findByWorkflowIdAndRequestIdAndNextRole(currentWorkflowTransition.getWorkflowId(), currentWorkflowTransition.getRequestId(), transitionActionReqDto.getAssignmentRole());
-        if(Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()){
-            workflowTransition =  workflowTransitionList.stream().sorted(Comparator.comparing(WorkflowTransition::getWorkflowTransitionId).reversed()).limit(1).collect(Collectors.toList()).get(0);
-        }else if(transitionActionReqDto.getAssignmentRole().equalsIgnoreCase("Request Creator")){
+        if (Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()) {
+            workflowTransition = workflowTransitionList.stream().sorted(Comparator.comparing(WorkflowTransition::getWorkflowTransitionId).reversed()).limit(1).collect(Collectors.toList()).get(0);
+        } else if (transitionActionReqDto.getAssignmentRole().equalsIgnoreCase("Request Creator")) {
             workflowTransitionList = workflowTransitionRepository.findByWorkflowIdAndRequestIdAndCurrentRole(currentWorkflowTransition.getWorkflowId(), currentWorkflowTransition.getRequestId(), transitionActionReqDto.getAssignmentRole());
-            if(Objects.nonNull(workflowTransitionList)){
-                workflowTransition =  workflowTransitionList.get(0);
+            if (Objects.nonNull(workflowTransitionList)) {
+                workflowTransition = workflowTransitionList.get(0);
             }
         }
         return workflowTransition;
@@ -552,8 +570,8 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     private void validateAssignmentRole(String assignmentRole, WorkflowTransition workflowTransition) {
         List<String> allPreviousRole = allPreviousRoleWorkflowTransition(workflowTransition.getWorkflowId(), workflowTransition.getRequestId());
-        if(!allPreviousRole.isEmpty() && allPreviousRole.contains(assignmentRole)){
-        }else{
+        if (!allPreviousRole.isEmpty() && allPreviousRole.contains(assignmentRole)) {
+        } else {
             throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid previous assignment role."));
         }
@@ -580,16 +598,16 @@ public class WorkflowServiceImpl implements WorkflowService {
         nextWorkflowTransition.setNextAction(null);
         nextWorkflowTransition.setRemarks(transitionActionReqDto.getRemarks());
         nextWorkflowTransition.setCurrentRole(currentWorkflowTransition.getNextRole());
-        nextWorkflowTransition.setWorkflowSequence(currentWorkflowTransition.getWorkflowSequence()  + 1);
+        nextWorkflowTransition.setWorkflowSequence(currentWorkflowTransition.getWorkflowSequence() + 1);
 
         workflowTransitionRepository.save(nextWorkflowTransition);
     }
 
     private WorkflowTransition getPrevWorkflowTransition(WorkflowTransition workflowTransition) {
         List<WorkflowTransition> workflowTransitionList = workflowTransitionRepository.findByRequestId(workflowTransition.getRequestId());
-        if(workflowTransitionList.size() == 1){
-             return workflowTransitionList.get(0);
-        }else{
+        if (workflowTransitionList.size() == 1) {
+            return workflowTransitionList.get(0);
+        } else {
             return workflowTransitionList.stream().sorted(Comparator.comparing(WorkflowTransition::getWorkflowTransitionId).reversed()).skip(1).findFirst().get();
         }
     }
@@ -598,7 +616,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         TransitionDto nextTransition = null;
         WorkflowTransition nextWorkflowTransition = null;
 
-        if(Objects.isNull(currentTransition.getNextRoleId())){
+        if (Objects.isNull(currentTransition.getNextRoleId())) {
             currentWorkflowTransition.setNextAction(AppConstant.COMPLETED_TYPE);
             workflowTransitionRepository.save(currentWorkflowTransition);
 
@@ -617,12 +635,12 @@ public class WorkflowServiceImpl implements WorkflowService {
             nextWorkflowTransition.setNextAction(null);
             nextWorkflowTransition.setRemarks(transitionActionReqDto.getRemarks());
             nextWorkflowTransition.setCurrentRole(currentWorkflowTransition.getNextRole());
-            nextWorkflowTransition.setWorkflowSequence(currentWorkflowTransition.getWorkflowSequence()  + 1);
+            nextWorkflowTransition.setWorkflowSequence(currentWorkflowTransition.getWorkflowSequence() + 1);
 
             workflowTransitionRepository.save(nextWorkflowTransition);
-        }else{
-            nextTransition =  nextTransition(currentTransition.getWorkflowId(), currentWorkflowTransition.getWorkflowName() ,roleNameByUserId(transitionActionReqDto.getActionBy()), currentWorkflowTransition.getRequestId());
-            if(Objects.isNull(nextTransition)){
+        } else {
+            nextTransition = nextTransition(currentTransition.getWorkflowId(), currentWorkflowTransition.getWorkflowName(), roleNameByUserId(transitionActionReqDto.getActionBy()), currentWorkflowTransition.getRequestId());
+            if (Objects.isNull(nextTransition)) {
                 throw new InvalidInputException(new ErrorDetails(AppConstant.NEXT_TRANSITION_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                         AppConstant.ERROR_TYPE_VALIDATION, "Error occurred at approval. No next transition found."));
             }
@@ -637,10 +655,10 @@ public class WorkflowServiceImpl implements WorkflowService {
             nextWorkflowTransition.setTransitionOrder(nextTransition.getTransitionOrder());
             nextWorkflowTransition.setTransitionSubOrder(nextTransition.getTransitionSubOrder());
             nextWorkflowTransition.setWorkflowName(nextTransition.getWorkflowName());
-            if(Objects.isNull(nextTransition.getNextRoleId())){
+            if (Objects.isNull(nextTransition.getNextRoleId())) {
                 nextWorkflowTransition.setStatus(AppConstant.COMPLETED_TYPE);
                 nextWorkflowTransition.setNextAction(null);
-            }else{
+            } else {
                 nextWorkflowTransition.setStatus(AppConstant.IN_PROGRESS_TYPE);
                 nextWorkflowTransition.setNextAction(AppConstant.PENDING_TYPE);
             }
@@ -654,25 +672,25 @@ public class WorkflowServiceImpl implements WorkflowService {
             nextWorkflowTransition.setCreatedDate(currentWorkflowTransition.getCreatedDate());
             nextWorkflowTransition.setCurrentRole(nextTransition.getCurrentRoleName());
             nextWorkflowTransition.setNextRole(nextTransition.getNextRoleName());
-            nextWorkflowTransition.setWorkflowSequence(currentWorkflowTransition.getWorkflowSequence()  + 1);
+            nextWorkflowTransition.setWorkflowSequence(currentWorkflowTransition.getWorkflowSequence() + 1);
 
             workflowTransitionRepository.save(nextWorkflowTransition);
         }
 
         //validation for tender workflow
-        if(WorkflowName.TENDER_EVALUATOR.getValue().equalsIgnoreCase(currentWorkflowTransition.getWorkflowName())) {
+        if (WorkflowName.TENDER_EVALUATOR.getValue().equalsIgnoreCase(currentWorkflowTransition.getWorkflowName())) {
             validateTenderWorkFlow(nextTransition, currentWorkflowTransition, nextWorkflowTransition);
         }
 
     }
 
-    private void validateTenderWorkFlow(TransitionDto nextTransition, WorkflowTransition currentWorkflowTransition, WorkflowTransition nextWorkflowTransition ) {
-        if((nextWorkflowTransition.getCurrentRole().equalsIgnoreCase("Tender Evaluator")) || (nextWorkflowTransition.getCurrentRole().equalsIgnoreCase("Purchase Dept") && nextWorkflowTransition.getNextRole().equalsIgnoreCase("Purchase Dept"))){
+    private void validateTenderWorkFlow(TransitionDto nextTransition, WorkflowTransition currentWorkflowTransition, WorkflowTransition nextWorkflowTransition) {
+        if ((nextWorkflowTransition.getCurrentRole().equalsIgnoreCase("Tender Evaluator")) || (nextWorkflowTransition.getCurrentRole().equalsIgnoreCase("Purchase Dept") && nextWorkflowTransition.getNextRole().equalsIgnoreCase("Purchase Dept"))) {
             TenderWithIndentResponseDTO tenderWithIndentResponseDTO = tenderRequestService.getTenderRequestById(currentWorkflowTransition.getRequestId());
-            if(Objects.nonNull(tenderWithIndentResponseDTO) && Objects.nonNull(tenderWithIndentResponseDTO.getIndentResponseDTO()) && !tenderWithIndentResponseDTO.getIndentResponseDTO().isEmpty()){
+            if (Objects.nonNull(tenderWithIndentResponseDTO) && Objects.nonNull(tenderWithIndentResponseDTO.getIndentResponseDTO()) && !tenderWithIndentResponseDTO.getIndentResponseDTO().isEmpty()) {
                 List<IndentCreationResponseDTO> indentResponseDTO = tenderWithIndentResponseDTO.getIndentResponseDTO();
                 List<Integer> indenterList = indentResponseDTO.stream().map(e -> e.getCreatedBy()).collect(Collectors.toList());
-                if(Objects.nonNull(indenterList) && !indenterList.isEmpty()){
+                if (Objects.nonNull(indenterList) && !indenterList.isEmpty()) {
                     AtomicInteger seq = new AtomicInteger(1);
                     indenterList.forEach(e -> {
                         SubWorkflowTransition subWorkflowTransition = new SubWorkflowTransition();
@@ -693,9 +711,9 @@ public class WorkflowServiceImpl implements WorkflowService {
                 }
             }
         }
-        if(nextWorkflowTransition.getCurrentRole().equalsIgnoreCase("Purchase Dept") && Objects.isNull(nextWorkflowTransition.getNextRole())){
+        if (nextWorkflowTransition.getCurrentRole().equalsIgnoreCase("Purchase Dept") && Objects.isNull(nextWorkflowTransition.getNextRole())) {
             List<SubWorkflowTransition> subWorkflowTransitionList = subWorkflowTransitionRepository.findByWorkflowTransitionIdAndStatus(currentWorkflowTransition.getWorkflowTransitionId(), AppConstant.PENDING_TYPE);
-            if(Objects.nonNull(subWorkflowTransitionList) && !subWorkflowTransitionList.isEmpty()){
+            if (Objects.nonNull(subWorkflowTransitionList) && !subWorkflowTransitionList.isEmpty()) {
                 throw new InvalidInputException(new ErrorDetails(AppConstant.NEXT_TRANSITION_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                         AppConstant.ERROR_TYPE_VALIDATION, "Error occurred at approval. All indentor not performed action for this workflow to approve."));
             }
@@ -704,9 +722,9 @@ public class WorkflowServiceImpl implements WorkflowService {
     }
 
     private void validateUserRole(Integer actionBy, Integer roleId) {
-        if(Objects.nonNull(roleId)) {
+        if (Objects.nonNull(roleId)) {
             UserRoleMaster userRoleMaster = userRoleMasterRepository.findByRoleIdAndUserId(roleId, actionBy);
-            if(Objects.isNull(userRoleMaster)){
+            if (Objects.isNull(userRoleMaster)) {
                 throw new InvalidInputException(new ErrorDetails(AppConstant.UNAUTHORIZED_ACTION, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                         AppConstant.ERROR_TYPE_VALIDATION, "Unauthorized user."));
             }
@@ -721,13 +739,13 @@ public class WorkflowServiceImpl implements WorkflowService {
         if (conditionIdList.isEmpty() && nextTransitionDtoList.size() == 1) {
             return nextTransitionDtoList.get(0);
         } else {
-                                                                                                                                        List<TransitionConditionMaster> transitionConditionMasterList = transitionConditionMasterRepository.findAllById(conditionIdList);
+            List<TransitionConditionMaster> transitionConditionMasterList = transitionConditionMasterRepository.findAllById(conditionIdList);
 
             switch (workflowName.toUpperCase()) {
                 case "INDENT WORKFLOW":
                     //get indent data here
                     IndentCreationResponseDTO indentCreationResponseDTO = indentCreationService.getIndentById(requestId);
-                    for(TransitionDto dto : nextTransitionDtoList){
+                    for (TransitionDto dto : nextTransitionDtoList) {
                         Integer conditionId = dto.getConditionId();
                         if (Objects.nonNull(conditionId)) {
                             TransitionConditionMaster transitionConditionMaster = transitionConditionMasterList.stream().filter(f -> f.getConditionId().equals(dto.getConditionId())).findFirst().get();
@@ -735,24 +753,24 @@ public class WorkflowServiceImpl implements WorkflowService {
                             String conditionValue = transitionConditionMaster.getConditionValue();
                             Object dataValue = null;
                             boolean conditionCheckFlag = Boolean.FALSE;
-                            if(conditionKey.equalsIgnoreCase("ProjectName")){
-                                dataValue =  indentCreationResponseDTO.getProjectName();
+                            if (conditionKey.equalsIgnoreCase("ProjectName")) {
+                                dataValue = indentCreationResponseDTO.getProjectName();
                                 conditionCheckFlag = Objects.nonNull(dataValue);
-                            }else if(conditionKey.equalsIgnoreCase("MaterialCategory")){
-                                dataValue =  indentCreationResponseDTO.getMaterialCategory();
+                            } else if (conditionKey.equalsIgnoreCase("MaterialCategory")) {
+                                dataValue = indentCreationResponseDTO.getMaterialCategory();
                                 conditionCheckFlag = ((String) dataValue).equalsIgnoreCase(conditionValue);
-                            }else if(conditionKey.equalsIgnoreCase("ConsignesLocation")){
-                                dataValue =  indentCreationResponseDTO.getConsignesLocation();
+                            } else if (conditionKey.equalsIgnoreCase("ConsignesLocation")) {
+                                dataValue = indentCreationResponseDTO.getConsignesLocation();
                                 conditionCheckFlag = ((String) dataValue).equalsIgnoreCase(conditionValue);
-                            }else if(conditionKey.equalsIgnoreCase("TotalPriceOfAllMaterials")){
-                                dataValue =  indentCreationResponseDTO.getTotalPriceOfAllMaterials();
+                            } else if (conditionKey.equalsIgnoreCase("TotalPriceOfAllMaterials")) {
+                                dataValue = indentCreationResponseDTO.getTotalPriceOfAllMaterials();
                                 conditionCheckFlag = ((BigDecimal) dataValue).doubleValue() <= Double.valueOf(conditionValue);
-                            }else if(conditionKey.equalsIgnoreCase("projectLimit")){
-                                dataValue =  indentCreationResponseDTO.getTotalPriceOfAllMaterials();
+                            } else if (conditionKey.equalsIgnoreCase("projectLimit")) {
+                                dataValue = indentCreationResponseDTO.getTotalPriceOfAllMaterials();
                                 BigDecimal projectLimit = indentCreationResponseDTO.getProjectLimit();
                                 conditionCheckFlag = ((BigDecimal) dataValue).doubleValue() <= ((BigDecimal) projectLimit).doubleValue();
                             }
-                            if(conditionCheckFlag){
+                            if (conditionCheckFlag) {
                                 transitionDto = dto;
                                 break;
                             }
@@ -761,7 +779,7 @@ public class WorkflowServiceImpl implements WorkflowService {
                     break;
                 case "CONTINGENCY PURCHASE WORKFLOW":
                     ContigencyPurchaseResponseDto contigencyPurchaseResponseDto = contigencyPurchaseService.getContigencyPurchaseById(requestId);
-                    for(TransitionDto dto : nextTransitionDtoList){
+                    for (TransitionDto dto : nextTransitionDtoList) {
                         Integer conditionId = dto.getConditionId();
                         if (Objects.nonNull(conditionId)) {
                             TransitionConditionMaster transitionConditionMaster = transitionConditionMasterList.stream().filter(f -> f.getConditionId().equals(dto.getConditionId())).findFirst().get();
@@ -769,73 +787,25 @@ public class WorkflowServiceImpl implements WorkflowService {
                             String conditionValue = transitionConditionMaster.getConditionValue();
                             Object dataValue = null;
                             boolean conditionCheckFlag = Boolean.FALSE;
-                            if(conditionKey.equalsIgnoreCase("ProjectName")){
-                                dataValue =  contigencyPurchaseResponseDto.getProjectName();
-                                if("Empty".equalsIgnoreCase(conditionValue)){
+                            if (conditionKey.equalsIgnoreCase("ProjectName")) {
+                                dataValue = contigencyPurchaseResponseDto.getProjectName();
+                                if ("Empty".equalsIgnoreCase(conditionValue)) {
                                     conditionCheckFlag = Objects.isNull(dataValue);
-                                }else if("Not Empty".equalsIgnoreCase(conditionValue)) {
+                                } else if ("Not Empty".equalsIgnoreCase(conditionValue)) {
                                     conditionCheckFlag = Objects.nonNull(dataValue);
                                 }
                             }
 
-                            if(conditionCheckFlag){
+                            if (conditionCheckFlag) {
                                 transitionDto = dto;
                                 break;
                             }
                         }
                     }
                     break;
-                    case "TENDER EVALUATOR WORKFLOW":
-                        TenderWithIndentResponseDTO tenderWithIndentResponseDTO = tenderRequestService.getTenderRequestById(requestId);
-                        for(TransitionDto dto : nextTransitionDtoList){
-                            Integer conditionId = dto.getConditionId();
-                            if (Objects.nonNull(conditionId)) {
-                                TransitionConditionMaster transitionConditionMaster = transitionConditionMasterList.stream().filter(f -> f.getConditionId().equals(dto.getConditionId())).findFirst().get();
-                                String conditionKey = transitionConditionMaster.getConditionKey();
-                                String conditionValue = transitionConditionMaster.getConditionValue();
-                                Object dataValue = null;
-                                boolean conditionCheckFlag = Boolean.FALSE;
-                                if(conditionKey.equalsIgnoreCase("totalTenderValue")){
-                                    dataValue =  tenderWithIndentResponseDTO.getTotalTenderValue();
-                                    conditionCheckFlag = ((BigDecimal) dataValue).doubleValue() <= Double.valueOf(conditionValue);
-                                }else if(conditionKey.equalsIgnoreCase("bidType")){
-                                    dataValue =  tenderWithIndentResponseDTO.getBidType();
-                                    conditionCheckFlag = ((String) dataValue).equalsIgnoreCase(conditionValue);
-                                }
-                                if(conditionCheckFlag){
-                                    transitionDto = dto;
-                                    break;
-                                }
-                            }
-                        }
-                        break;
-                    case "SO WORKFLOW":
-                        soWithTenderAndIndentResponseDTO soWithTenderAndIndentResponseDTO = serviceOrderService.getServiceOrderById(requestId);
-                        for(TransitionDto dto : nextTransitionDtoList){
-                            Integer conditionId = dto.getConditionId();
-                            if (Objects.nonNull(conditionId)) {
-                                TransitionConditionMaster transitionConditionMaster = transitionConditionMasterList.stream().filter(f -> f.getConditionId().equals(dto.getConditionId())).findFirst().get();
-                                String conditionKey = transitionConditionMaster.getConditionKey();
-                                String conditionValue = transitionConditionMaster.getConditionValue();
-                                Object dataValue = null;
-                                boolean conditionCheckFlag = Boolean.FALSE;
-                                if(conditionKey.equalsIgnoreCase("ProjectName")){
-                                    dataValue =  soWithTenderAndIndentResponseDTO.getProjectName();
-                                    conditionCheckFlag = Objects.nonNull(dataValue);
-                                }else if(conditionKey.equalsIgnoreCase("TotalPriceOfAllMaterials")){
-                                    dataValue =  soWithTenderAndIndentResponseDTO.getTotalValueOfSo();
-                                    conditionCheckFlag = ((BigDecimal) dataValue).doubleValue() <= Double.valueOf(conditionValue);
-                                }
-                                if(conditionCheckFlag){
-                                    transitionDto = dto;
-                                    break;
-                                }
-                            }
-                        }
-                        break;
-                case "WO WORKFLOW":
-                    woWithTenderAndIndentResponseDTO woWithTenderAndIndentResponseDTO = workOrderService.getWorkOrderById(requestId);
-                    for(TransitionDto dto : nextTransitionDtoList){
+                case "TENDER EVALUATOR WORKFLOW":
+                    TenderWithIndentResponseDTO tenderWithIndentResponseDTO = tenderRequestService.getTenderRequestById(requestId);
+                    for (TransitionDto dto : nextTransitionDtoList) {
                         Integer conditionId = dto.getConditionId();
                         if (Objects.nonNull(conditionId)) {
                             TransitionConditionMaster transitionConditionMaster = transitionConditionMasterList.stream().filter(f -> f.getConditionId().equals(dto.getConditionId())).findFirst().get();
@@ -843,14 +813,62 @@ public class WorkflowServiceImpl implements WorkflowService {
                             String conditionValue = transitionConditionMaster.getConditionValue();
                             Object dataValue = null;
                             boolean conditionCheckFlag = Boolean.FALSE;
-                            if(conditionKey.equalsIgnoreCase("ProjectName")){
-                                dataValue =  woWithTenderAndIndentResponseDTO.getProjectName();
+                            if (conditionKey.equalsIgnoreCase("totalTenderValue")) {
+                                dataValue = tenderWithIndentResponseDTO.getTotalTenderValue();
+                                conditionCheckFlag = ((BigDecimal) dataValue).doubleValue() <= Double.valueOf(conditionValue);
+                            } else if (conditionKey.equalsIgnoreCase("bidType")) {
+                                dataValue = tenderWithIndentResponseDTO.getBidType();
+                                conditionCheckFlag = ((String) dataValue).equalsIgnoreCase(conditionValue);
+                            }
+                            if (conditionCheckFlag) {
+                                transitionDto = dto;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case "SO WORKFLOW":
+                    soWithTenderAndIndentResponseDTO soWithTenderAndIndentResponseDTO = serviceOrderService.getServiceOrderById(requestId);
+                    for (TransitionDto dto : nextTransitionDtoList) {
+                        Integer conditionId = dto.getConditionId();
+                        if (Objects.nonNull(conditionId)) {
+                            TransitionConditionMaster transitionConditionMaster = transitionConditionMasterList.stream().filter(f -> f.getConditionId().equals(dto.getConditionId())).findFirst().get();
+                            String conditionKey = transitionConditionMaster.getConditionKey();
+                            String conditionValue = transitionConditionMaster.getConditionValue();
+                            Object dataValue = null;
+                            boolean conditionCheckFlag = Boolean.FALSE;
+                            if (conditionKey.equalsIgnoreCase("ProjectName")) {
+                                dataValue = soWithTenderAndIndentResponseDTO.getProjectName();
                                 conditionCheckFlag = Objects.nonNull(dataValue);
-                            }else if(conditionKey.equalsIgnoreCase("TotalPriceOfAllMaterials")){
-                                dataValue =  woWithTenderAndIndentResponseDTO.getTotalValueOfWo();
+                            } else if (conditionKey.equalsIgnoreCase("TotalPriceOfAllMaterials")) {
+                                dataValue = soWithTenderAndIndentResponseDTO.getTotalValueOfSo();
                                 conditionCheckFlag = ((BigDecimal) dataValue).doubleValue() <= Double.valueOf(conditionValue);
                             }
-                            if(conditionCheckFlag){
+                            if (conditionCheckFlag) {
+                                transitionDto = dto;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case "WO WORKFLOW":
+                    woWithTenderAndIndentResponseDTO woWithTenderAndIndentResponseDTO = workOrderService.getWorkOrderById(requestId);
+                    for (TransitionDto dto : nextTransitionDtoList) {
+                        Integer conditionId = dto.getConditionId();
+                        if (Objects.nonNull(conditionId)) {
+                            TransitionConditionMaster transitionConditionMaster = transitionConditionMasterList.stream().filter(f -> f.getConditionId().equals(dto.getConditionId())).findFirst().get();
+                            String conditionKey = transitionConditionMaster.getConditionKey();
+                            String conditionValue = transitionConditionMaster.getConditionValue();
+                            Object dataValue = null;
+                            boolean conditionCheckFlag = Boolean.FALSE;
+                            if (conditionKey.equalsIgnoreCase("ProjectName")) {
+                                dataValue = woWithTenderAndIndentResponseDTO.getProjectName();
+                                conditionCheckFlag = Objects.nonNull(dataValue);
+                            } else if (conditionKey.equalsIgnoreCase("TotalPriceOfAllMaterials")) {
+                                dataValue = woWithTenderAndIndentResponseDTO.getTotalValueOfWo();
+                                conditionCheckFlag = ((BigDecimal) dataValue).doubleValue() <= Double.valueOf(conditionValue);
+                            }
+                            if (conditionCheckFlag) {
                                 transitionDto = dto;
                                 break;
                             }
@@ -859,7 +877,7 @@ public class WorkflowServiceImpl implements WorkflowService {
                     break;
                 case "PO WORKFLOW":
                     poWithTenderAndIndentResponseDTO poWithTenderAndIndentResponseDTO = purchaseOrderService.getPurchaseOrderById(requestId);
-                    for(TransitionDto dto : nextTransitionDtoList){
+                    for (TransitionDto dto : nextTransitionDtoList) {
                         Integer conditionId = dto.getConditionId();
                         if (Objects.nonNull(conditionId)) {
                             TransitionConditionMaster transitionConditionMaster = transitionConditionMasterList.stream().filter(f -> f.getConditionId().equals(dto.getConditionId())).findFirst().get();
@@ -867,26 +885,27 @@ public class WorkflowServiceImpl implements WorkflowService {
                             String conditionValue = transitionConditionMaster.getConditionValue();
                             Object dataValue = null;
                             boolean conditionCheckFlag = Boolean.FALSE;
-                            if(conditionKey.equalsIgnoreCase("ProjectName")){
-                                dataValue =  poWithTenderAndIndentResponseDTO.getProjectName();
+                            if (conditionKey.equalsIgnoreCase("ProjectName")) {
+                                dataValue = poWithTenderAndIndentResponseDTO.getProjectName();
                                 conditionCheckFlag = Objects.nonNull(dataValue);
-                            }else if(conditionKey.equalsIgnoreCase("TotalPriceOfAllMaterials")){
-                                dataValue =  poWithTenderAndIndentResponseDTO.getTotalValueOfPo();
+                            } else if (conditionKey.equalsIgnoreCase("TotalPriceOfAllMaterials")) {
+                                dataValue = poWithTenderAndIndentResponseDTO.getTotalValueOfPo();
                                 conditionCheckFlag = ((BigDecimal) dataValue).doubleValue() <= Double.valueOf(conditionValue);
                             }
-                            if(conditionCheckFlag){
+                            if (conditionCheckFlag) {
                                 transitionDto = dto;
                                 break;
                             }
                         }
                     }
                     break;
-                    //add more case here
+                //add more case here
 
             }
         }
         return transitionDto;
     }
+
     public List<String> getApprovedIndents() {
         return workflowTransitionRepository.findApprovedIndentRequestIds();
     }
@@ -895,4 +914,154 @@ public class WorkflowServiceImpl implements WorkflowService {
         return workflowTransitionRepository.findApprovedTenderRequestIds();
     }
 
+    @Override
+    public List<QueueResponse> allPendingWorkflowTransitionINQueue(String roleName) {
+        List<QueueResponse> queueResponseList = new ArrayList<>();
+
+        // Fetch Workflow Transitions based on role and pending action
+        List<WorkflowTransition> workflowTransitionList = workflowTransitionRepository.findByNextActionAndNextRole(AppConstant.PENDING_TYPE, roleName);
+
+        if (Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()) {
+            queueResponseList = workflowTransitionList.stream()
+                    .sorted(Comparator.comparing(WorkflowTransition::getRequestId).thenComparing(WorkflowTransition::getCreatedDate))
+                    .map(this::mapToQueueResponse)
+                    .collect(Collectors.toList());
+        }
+
+        return queueResponseList;
+    }
+
+    // Mapping function to convert WorkflowTransition to QueueResponse
+    private QueueResponse mapToQueueResponse(WorkflowTransition workflowTransition) {
+        QueueResponse queueResponse = new QueueResponse();
+
+
+        // Mapping existing attributes
+        queueResponse.setWorkflowTransitionId(workflowTransition.getWorkflowTransitionId());
+        queueResponse.setWorkflowId(workflowTransition.getWorkflowId());
+        queueResponse.setWorkflowName(workflowTransition.getWorkflowName());
+        queueResponse.setTransitionId(workflowTransition.getTransitionId());
+        queueResponse.setRequestId(workflowTransition.getRequestId());
+        queueResponse.setCreatedBy(workflowTransition.getCreatedBy());
+        //  queueResponse.setCreatedRole(workflowTransition.getCreatedRole());
+        queueResponse.setModifiedBy(workflowTransition.getModifiedBy());
+        // queueResponse.setModifiedRole(workflowTransition.getModifiedRole());
+        queueResponse.setStatus(workflowTransition.getStatus());
+        queueResponse.setNextAction(workflowTransition.getNextAction());
+        queueResponse.setAction(workflowTransition.getAction());
+        queueResponse.setRemarks(workflowTransition.getRemarks());
+        //    queueResponse.setNextActionId(workflowTransition.getNextActionId());
+        //   queueResponse.setNextActionRole(workflowTransition.getNextActionRole());
+        queueResponse.setTransitionOrder(workflowTransition.getTransitionOrder());
+        queueResponse.setTransitionSubOrder(workflowTransition.getTransitionSubOrder());
+        queueResponse.setCurrentRole(workflowTransition.getCurrentRole());
+        queueResponse.setNextRole(workflowTransition.getNextRole());
+        queueResponse.setWorkflowSequence(workflowTransition.getWorkflowSequence());
+        queueResponse.setModificationDate(workflowTransition.getModificationDate());
+        queueResponse.setCreatedDate(workflowTransition.getCreatedDate());
+
+        String requestId = workflowTransition.getRequestId();
+       // boolean isMatched = false;
+
+        if (requestId.startsWith("IND")) {
+            // Fetch data from IndentCreation entity
+            String indentId = requestId;
+          //  IndentCreationResponseDTO indentCreations = indentCreationService.getIndentById(indentId);
+            IndentCreation indentCreation = indentCreationRepository.getByIndentId(indentId);
+            if (indentCreation != null) {
+                queueResponse.setIndentorName(indentCreation.getIndentorName());
+                queueResponse.setProjectName(indentCreation.getProjectName());
+              //  queueResponse.setAmount(indentCreations.getTotalPriceOfAllMaterials());
+                //  queueResponse.setBudgetName();
+                //   queueResponse.setIndentTitle("NUll");
+                //   queueResponse.setModeOfProcurement("NUll");
+                queueResponse.setConsignee(indentCreation.getConsignesLocation());
+            }
+        } else if (requestId.startsWith("T")) {
+            String tenderId = requestId;
+           TenderRequest tenderRequest = tenderRequestRepository.findById(tenderId).orElse(null);
+
+            // Fetch data from TenderRequest entity
+          //  TenderWithIndentResponseDTO tenderRequest = tenderRequestService.getTenderRequestById(tenderId);
+          //  TenderRequest tenderRequest = tenderRequestRepository.getByTenderId(tenderId);
+
+            if (tenderRequest  != null) {
+              //  TenderRequest tenderRequest = tenderRequestOptional.get();
+                //  queueResponse.setIndentorName("NUll");
+                //   queueResponse.setProjectName("NUll");
+                queueResponse.setAmount(tenderRequest.getTotalTenderValue());
+                //   queueResponse.setBudgetName("NUll");
+                queueResponse.setIndentTitle(tenderRequest.getTitleOfTender());
+                queueResponse.setModeOfProcurement(tenderRequest.getModeOfProcurement());
+                queueResponse.setConsignee(tenderRequest.getConsignesAndBillinngAddress());
+              /*  List<IndentCreationResponseDTO> indentList = tenderRequest.getIndentResponseDTO();
+                if (indentList != null && !indentList.isEmpty()) {
+                    IndentCreationResponseDTO firstIndent = indentList.get(0); // Assuming first indent is needed
+                    queueResponse.setIndentorName(firstIndent.getIndentorName());
+                    queueResponse.setProjectName(firstIndent.getProjectName());
+                }
+
+               */
+
+
+            }
+        } else if (requestId.startsWith("CP")) {
+            // Fetch data from CP table
+            String contigencyId = requestId;
+          //  ContigencyPurchaseResponseDto cpTable = contigencyPurchaseService.getContigencyPurchaseById(contigencyId);
+             ContigencyPurchase cp = contigencyPurchaseRepository.findById(contigencyId).orElse(null);
+
+            if (cp != null) {
+               // ContigencyPurchase cp = cpTable.get();
+                //  queueResponse.setIndentorName("Null");
+                queueResponse.setProjectName(cp.getProjectName());
+                queueResponse.setAmount(cp.getAmountToBePaid());
+                //  queueResponse.setBudgetName("Null");
+                //  queueResponse.setIndentTitle("NUll");
+                //queueResponse.setModeOfProcurement("NULL");
+                //  queueResponse.setConsignee("Null");
+            }
+        }else if (requestId.startsWith("PO")) {
+                String poId = requestId;
+               // poWithTenderAndIndentResponseDTO po = purchaseOrderService.getPurchaseOrderById(poId);
+            PurchaseOrder po= purchaseOrderRepository.findById(poId).orElse(null);
+
+            if (po != null) {
+
+                    //   queueResponse.setIndentorName("Null");
+                    queueResponse.setProjectName(po.getProjectName());
+                    queueResponse.setAmount(po.getTotalValueOfPo());
+                    //     queueResponse.setBudgetName();
+                    //      queueResponse.setIndentTitle();
+                    //   queueResponse.setModeOfProcurement();
+                    queueResponse.setConsignee(po.getConsignesAddress());
+                  //  TenderWithIndentResponseDTO tenderDetails= po.getTenderDetails();
+               //     queueResponse.setIndentTitle(tenderDetails.getTitleOfTender());
+                  //  queueResponse.setModeOfProcurement(tenderDetails.getModeOfProcurement());
+                }
+        } else if (requestId.startsWith("SO")) {
+                    String soId = requestId;
+                  //  soWithTenderAndIndentResponseDTO so = serviceOrderService.getServiceOrderById(soId);
+            ServiceOrder so = serviceOrderRepository.findById(soId)
+                    .orElse(null);
+                    if (so != null) {
+                      //  ServiceOrder so = SO.get();
+                        //   queueResponse.setIndentorName("Null");
+                        queueResponse.setProjectName(so.getProjectName());
+                        queueResponse.setAmount(so.getTotalValueOfSo());
+                        //     queueResponse.setBudgetName();
+                        //      queueResponse.setIndentTitle();
+                        //   queueResponse.setModeOfProcurement();
+                        queueResponse.setConsignee(so.getConsignesAddress());
+                      //  TenderWithIndentResponseDTO tenderDetails= so.getTenderDetails();
+                      //  queueResponse.setIndentTitle(tenderDetails.getTitleOfTender());
+                      //  queueResponse.setModeOfProcurement(tenderDetails.getModeOfProcurement());
+                    }
+        }
+        return queueResponse;
+    }
+
+
 }
+
+

@@ -55,6 +55,7 @@ com\astro\constant\AppConstant.class
 com\astro\service\impl\VendorMasterServiceImpl.class
 com\astro\service\MaterialMasterService.class
 com\astro\dto\workflow\MaterialCreationRequestDto.class
+com\astro\dto\workflow\QueueResponse.class
 com\astro\controller\VendorMasterController.class
 com\astro\dto\workflow\InventoryModule\GatepassRequestDTO.class
 com\astro\service\impl\ContigencyPurchaseServiceImpl.class

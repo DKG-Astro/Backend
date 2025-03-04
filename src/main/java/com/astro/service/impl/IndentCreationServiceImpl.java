@@ -141,6 +141,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         }).collect(Collectors.toList());
 
         indentCreation.setMaterialDetails(materialDetailsList);
+
         indentCreationRepository.save(indentCreation);
 
         return mapToResponseDTO(indentCreation);

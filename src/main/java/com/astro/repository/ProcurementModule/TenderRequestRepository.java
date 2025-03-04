@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface TenderRequestRepository extends JpaRepository<TenderRequest, String> {
     Optional<TenderRequest> findByTenderId(String tenderId);
 
+  //  TenderRequest getByTenderId(String tenderId);
 }

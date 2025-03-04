@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ServiceOrderRepository extends JpaRepository<ServiceOrder,String> {
+    //ServiceOrder getSoId(String soId);
 }

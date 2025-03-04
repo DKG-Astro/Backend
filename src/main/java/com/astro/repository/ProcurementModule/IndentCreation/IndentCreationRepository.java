@@ -140,4 +140,6 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation,S
                 indent.created_date;
      """, nativeQuery = true)
     List<Object[]> getTechnoMomReport(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    IndentCreation getByIndentId(String indentId);
 }

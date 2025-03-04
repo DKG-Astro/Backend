@@ -85,6 +85,7 @@ public class IndentCreation {
         @Column(name="file_type")
         private String fileType;
 
+      //  private String totalAmount;
       //  @OneToMany(mappedBy = "indentCreation", cascade = CascadeType.ALL, orphanRemoval = true)
       //@ManyToMany(cascade = CascadeType.PERSIST)
   /*    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
