@@ -236,6 +236,10 @@ public class WorkflowServiceImpl implements WorkflowService {
             WorkflowTransition workflowTransition = createWorkflowTransition(requestId, workflowDto, transitionDto, createdBy);
             workflowTransitionRepository.save(workflowTransition);
             workflowTransitionDto = mapWorkflowTransitionDto(workflowTransition);
+            if (WorkflowName.TENDER_EVALUATOR.getValue().equalsIgnoreCase(workflowName)) {
+                workflowTransition.setModifiedBy(createdBy);
+                validateTenderWorkFlow(null, workflowTransition);
+            }
 
         } else {
             throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
@@ -533,7 +537,7 @@ public class WorkflowServiceImpl implements WorkflowService {
             nextWorkflowTransition.setStatus(AppConstant.IN_PROGRESS_TYPE);
             nextWorkflowTransition.setNextAction(AppConstant.PENDING_TYPE);
             nextWorkflowTransition.setAction(transitionActionReqDto.getAction());
-            nextWorkflowTransition.setRemarks(null);
+            nextWorkflowTransition.setRemarks(transitionActionReqDto.getRemarks());
             nextWorkflowTransition.setModifiedBy(transitionActionReqDto.getActionBy());
             nextWorkflowTransition.setModificationDate(new Date());
             nextWorkflowTransition.setRequestId(currentWorkflowTransition.getRequestId());
@@ -679,14 +683,22 @@ public class WorkflowServiceImpl implements WorkflowService {
 
         //validation for tender workflow
         if (WorkflowName.TENDER_EVALUATOR.getValue().equalsIgnoreCase(currentWorkflowTransition.getWorkflowName())) {
-            validateTenderWorkFlow(nextTransition, currentWorkflowTransition, nextWorkflowTransition);
+            validateTenderWorkFlow(currentWorkflowTransition, nextWorkflowTransition);
         }
 
     }
 
-    private void validateTenderWorkFlow(TransitionDto nextTransition, WorkflowTransition currentWorkflowTransition, WorkflowTransition nextWorkflowTransition) {
-        if ((nextWorkflowTransition.getCurrentRole().equalsIgnoreCase("Tender Evaluator")) || (nextWorkflowTransition.getCurrentRole().equalsIgnoreCase("Purchase Dept") && nextWorkflowTransition.getNextRole().equalsIgnoreCase("Purchase Dept"))) {
-            TenderWithIndentResponseDTO tenderWithIndentResponseDTO = tenderRequestService.getTenderRequestById(currentWorkflowTransition.getRequestId());
+    private void validateTenderWorkFlow(WorkflowTransition currentWorkflowTransition, WorkflowTransition nextWorkflowTransition) {
+        if ((nextWorkflowTransition.getCurrentRole().equalsIgnoreCase("Purchase Dept") && Objects.isNull(nextWorkflowTransition.getNextRole())) || (nextWorkflowTransition.getCurrentRole().equalsIgnoreCase("Purchase Dept") && Objects.nonNull(nextWorkflowTransition.getNextRole()) && nextWorkflowTransition.getNextRole().equalsIgnoreCase("Purchase Dept"))) {
+            List<SubWorkflowTransition> subWorkflowTransitionList = subWorkflowTransitionRepository.findByWorkflowTransitionIdAndStatus(currentWorkflowTransition.getWorkflowTransitionId(), AppConstant.PENDING_TYPE);
+            if (Objects.nonNull(subWorkflowTransitionList) && !subWorkflowTransitionList.isEmpty()) {
+                throw new InvalidInputException(new ErrorDetails(AppConstant.NEXT_TRANSITION_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                        AppConstant.ERROR_TYPE_VALIDATION, "Error occurred at approval. All indentor not performed action for this workflow to approve."));
+            }
+
+        }
+        if ((nextWorkflowTransition.getCurrentRole().equalsIgnoreCase("Tender Evaluator")) || (nextWorkflowTransition.getCurrentRole().equalsIgnoreCase("Purchase Dept") && Objects.nonNull(nextWorkflowTransition.getNextRole()) && nextWorkflowTransition.getNextRole().equalsIgnoreCase("Purchase Dept"))) {
+            TenderWithIndentResponseDTO tenderWithIndentResponseDTO = tenderRequestService.getTenderRequestById(nextWorkflowTransition.getRequestId());
             if (Objects.nonNull(tenderWithIndentResponseDTO) && Objects.nonNull(tenderWithIndentResponseDTO.getIndentResponseDTO()) && !tenderWithIndentResponseDTO.getIndentResponseDTO().isEmpty()) {
                 List<IndentCreationResponseDTO> indentResponseDTO = tenderWithIndentResponseDTO.getIndentResponseDTO();
                 List<Integer> indenterList = indentResponseDTO.stream().map(e -> e.getCreatedBy()).collect(Collectors.toList());
@@ -694,7 +706,7 @@ public class WorkflowServiceImpl implements WorkflowService {
                     AtomicInteger seq = new AtomicInteger(1);
                     indenterList.forEach(e -> {
                         SubWorkflowTransition subWorkflowTransition = new SubWorkflowTransition();
-                        subWorkflowTransition.setWorkflowId(currentWorkflowTransition.getWorkflowId());
+                        subWorkflowTransition.setWorkflowId(nextWorkflowTransition.getWorkflowId());
                         subWorkflowTransition.setWorkflowTransitionId(nextWorkflowTransition.getWorkflowTransitionId());
                         subWorkflowTransition.setAction(AppConstant.PENDING_TYPE);
                         subWorkflowTransition.setWorkflowName(nextWorkflowTransition.getWorkflowName());
@@ -711,14 +723,7 @@ public class WorkflowServiceImpl implements WorkflowService {
                 }
             }
         }
-        if (nextWorkflowTransition.getCurrentRole().equalsIgnoreCase("Purchase Dept") && Objects.isNull(nextWorkflowTransition.getNextRole())) {
-            List<SubWorkflowTransition> subWorkflowTransitionList = subWorkflowTransitionRepository.findByWorkflowTransitionIdAndStatus(currentWorkflowTransition.getWorkflowTransitionId(), AppConstant.PENDING_TYPE);
-            if (Objects.nonNull(subWorkflowTransitionList) && !subWorkflowTransitionList.isEmpty()) {
-                throw new InvalidInputException(new ErrorDetails(AppConstant.NEXT_TRANSITION_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
-                        AppConstant.ERROR_TYPE_VALIDATION, "Error occurred at approval. All indentor not performed action for this workflow to approve."));
-            }
 
-        }
     }
 
     private void validateUserRole(Integer actionBy, Integer roleId) {
