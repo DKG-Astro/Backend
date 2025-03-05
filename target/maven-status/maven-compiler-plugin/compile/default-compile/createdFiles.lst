@@ -121,6 +121,7 @@ com\astro\entity\UomMaster.class
 com\astro\entity\TransitionMaster.class
 com\astro\controller\RoleMasterController.class
 com\astro\controller\ProcurementModuleController\WorkOrderController.class
+com\astro\dto\workflow\ApprovedTenderDto.class
 com\astro\dto\workflow\ProcurementDtos\purchaseOrder\PurchaseOrderAttributesResponseDTO.class
 com\astro\service\ProjectMasterService.class
 com\astro\dto\workflow\InventoryModule\GoodsTransferResponseDto.class
@@ -135,6 +136,7 @@ com\astro\service\LocationMasterService.class
 com\astro\service\impl\LocationMasterServiceImpl.class
 com\astro\service\UserService.class
 com\astro\dto\workflow\ProcurementDtos\SreviceOrderDto\ServiceOrderResponseDTO.class
+com\astro\dto\workflow\SubWorkflowQueueDto.class
 com\astro\entity\WorkflowTransition.class
 com\astro\repository\ActionMasterRepository.class
 com\astro\entity\InventoryModule\GatepassOutAndIn.class

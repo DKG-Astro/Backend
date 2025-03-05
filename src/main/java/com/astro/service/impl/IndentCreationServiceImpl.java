@@ -141,6 +141,12 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         }).collect(Collectors.toList());
 
         indentCreation.setMaterialDetails(materialDetailsList);
+        // Calculate sum of all material total prices
+        BigDecimal totalIndentPrice = materialDetailsList.stream()
+                .map(MaterialDetails::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        indentCreation.setTotalIntentValue(totalIndentPrice);
 
         indentCreationRepository.save(indentCreation);
 

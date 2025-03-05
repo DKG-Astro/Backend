@@ -92,6 +92,10 @@ public class WorkflowController {
     public ResponseEntity<Object> getSubWorkflowTransition(@RequestParam Integer modifiedBy)  {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.getSubWorkflowTransition(modifiedBy)), HttpStatus.OK);
     }
+    @GetMapping("/getSubWorkflowTransitionQueue")
+    public ResponseEntity<Object> getSubWorkflowTransitionQueue(@RequestParam Integer modifiedBy)  {
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.getSubWorkflowQueue(modifiedBy)), HttpStatus.OK);
+    }
 
     @PostMapping("/approveSubWorkflow")
     public ResponseEntity<Object> approveSubWorkflow(@RequestParam Integer subWorkflowTransitionId)  {
