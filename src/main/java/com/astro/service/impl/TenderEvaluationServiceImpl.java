@@ -3,16 +3,20 @@ package com.astro.service.impl;
 import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.ProcurementDtos.TenderEvaluationRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.TenderEvaluationResponseDto;
+import com.astro.dto.workflow.ProcurementDtos.TenderEvaluationResponseWithBitTypeAndValueDto;
 import com.astro.entity.ProcurementModule.TenderEvaluation;
+import com.astro.entity.ProcurementModule.TenderRequest;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.ProcurementModule.TenderEvaluationRepository;
+import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.service.TenderEvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +24,8 @@ public class TenderEvaluationServiceImpl implements TenderEvaluationService {
 
     @Autowired
     private TenderEvaluationRepository tenderEvaluationRepository;
+    @Autowired
+    private TenderRequestRepository tenderRequestRepository;
 
     @Override
     public TenderEvaluationResponseDto createTenderEvaluation(TenderEvaluationRequestDto tenderEvaluationRequestDto) {
@@ -99,7 +105,7 @@ public class TenderEvaluationServiceImpl implements TenderEvaluationService {
     }
 
     @Override
-    public TenderEvaluationResponseDto getTenderEvaluationById(String tenderId) {
+    public TenderEvaluationResponseWithBitTypeAndValueDto getTenderEvaluationById(String tenderId) {
         TenderEvaluation tenderEvaluation =tenderEvaluationRepository.findById(tenderId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
@@ -108,8 +114,29 @@ public class TenderEvaluationServiceImpl implements TenderEvaluationService {
                                 AppConstant.ERROR_TYPE_RESOURCE,
                                 "Tender Evaluation not found for the provided tendeer ID.")
                 ));
+        TenderEvaluationResponseWithBitTypeAndValueDto responseDto = new TenderEvaluationResponseWithBitTypeAndValueDto();
 
-        return mapToResponseDTO(tenderEvaluation);
+        responseDto.setTenderId(tenderEvaluation.getTenderId());
+        responseDto.setUploadQualifiedVendorsFileName(tenderEvaluation.getUploadQualifiedVendorsFileName());
+        responseDto.setUploadTechnicallyQualifiedVendorsFileName(tenderEvaluation.getUploadTechnicallyQualifiedVendorsFileName());
+        responseDto.setUploadCommeriallyQualifiedVendorsFileName(tenderEvaluation.getUploadCommeriallyQualifiedVendorsFileName());
+        responseDto.setFormationOfTechnoCommerialComitee(tenderEvaluation.getFormationOfTechnoCommerialComitee());
+        responseDto.setResponseFileName(tenderEvaluation.getResponseFileName());
+        responseDto.setResponseForTechnicallyQualifiedVendorsFileName(tenderEvaluation.getResponseForTechnicallyQualifiedVendorsFileName());
+        responseDto.setResponseForCommeriallyQualifiedVendorsFileName(tenderEvaluation.getResponseForCommeriallyQualifiedVendorsFileName());
+
+        responseDto.setFileType(tenderEvaluation.getFileType());
+        responseDto.setCreatedBy(tenderEvaluation.getCreatedBy());
+        responseDto.setUpdatedBy(tenderEvaluation.getUpdatedBy());
+        responseDto.setCreatedDate(tenderEvaluation.getCreatedDate());
+        responseDto.setUpdatedDate(tenderEvaluation.getUpdatedDate());
+        Optional<TenderRequest> optionalTenderRequest = tenderRequestRepository.findByTenderId(tenderId);
+        TenderRequest tenderRequest = optionalTenderRequest.get();
+
+        responseDto.setBitType(tenderRequest.getBidType());
+        responseDto.setTotalValueOfTender(tenderRequest.getTotalTenderValue());
+
+      return responseDto;
     }
 
     @Override

@@ -920,7 +920,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     public List<ApprovedTenderDto> getApprovedTender() {
 
-       // return workflowTransitionRepository.findApprovedTenderRequestIds();
+        // return workflowTransitionRepository.findApprovedTenderRequestIds();
         List<String> tenderIds = workflowTransitionRepository.findApprovedTenderRequestIds();
 
         List<ApprovedTenderDto> approvedTenders = new ArrayList<>();
@@ -1090,166 +1090,13 @@ public class WorkflowServiceImpl implements WorkflowService {
         return queueResponse;
 
     }
-    /*
-    @Override
-    public List<SubWorkflowQueueDto> getSubWorkflowQueue(Integer modifiedBy) {
-        List<SubWorkflowQueueDto> workflowQueueDtoList = new ArrayList<>();
-
-        List<SubWorkflowTransition> subWorkflowTransitionList = subWorkflowTransitionRepository.findByActionOn(modifiedBy);
-
-        if (Objects.nonNull(subWorkflowTransitionList) && !subWorkflowTransitionList.isEmpty()) {
-
-                workflowQueueDtoList = subWorkflowTransitionList.stream().map(e -> {
-                SubWorkflowQueueDto subWorkflowQueueDto = new SubWorkflowQueueDto();
-                subWorkflowQueueDto.setSubWorkflowTransitionId(e.getSubWorkflowTransitionId());
-                subWorkflowQueueDto.setWorkflowId(e.getWorkflowId());
-                subWorkflowQueueDto.setWorkflowName(e.getWorkflowName());
-                subWorkflowQueueDto.setModifiedBy(e.getModifiedBy());
-                subWorkflowQueueDto.setWorkflowSequence(e.getWorkflowSequence());
-                subWorkflowQueueDto.setStatus(e.getStatus());
-                subWorkflowQueueDto.setRemarks(e.getRemarks());
-                subWorkflowQueueDto.setAction(e.getAction());
-                subWorkflowQueueDto.setActionOn(e.getActionOn());
-                subWorkflowQueueDto.setRequestId(e.getRequestId());
-                subWorkflowQueueDto.setCreatedBy(e.getCreatedBy());
-                subWorkflowQueueDto.setCreatedDate(e.getCreatedDate());
-                subWorkflowQueueDto.setModificationDate(e.getModificationDate());
-
-                // Fetch additional fields from indent_creation table
-                Optional<IndentCreation> indentOptional = indentCreationRepository.findById(e.getRequestId());
-                if (indentOptional.isPresent()) {
-                    IndentCreation indent = indentOptional.get();
-                    subWorkflowQueueDto.setIndentorName(indent.getIndentorName());
-                    subWorkflowQueueDto.setProjectName(indent.getProjectName());
-                    subWorkflowQueueDto.setAmount(indent.getTotalIntentValue());
-                   // subWorkflowQueueDto.setBudgetName(indent.getBudgetName());
-                  //  subWorkflowQueueDto.setIndentTitle(indent.getIndentTitle());
-                   // subWorkflowQueueDto.setModeOfProcurement(indent.getModeOfProcurement());
-                    subWorkflowQueueDto.setConsignee(indent.getConsignesLocation());
-                }
-
-                return subWorkflowQueueDto;
-            }).collect(Collectors.toList());
-        }
-        return workflowQueueDtoList;
-    }
 
 
 
-     */
-/*
- @Override
- public List<SubWorkflowQueueDto> getSubWorkflowQueue(Integer modifiedBy) {
-     List<SubWorkflowQueueDto> workflowQueueDtoList = new ArrayList<>();
 
-     List<SubWorkflowTransition> subWorkflowTransitionList = subWorkflowTransitionRepository.findByActionOn(modifiedBy);
-     if (Objects.nonNull(subWorkflowTransitionList) && !subWorkflowTransitionList.isEmpty()) {
-         for (SubWorkflowTransition transition : subWorkflowTransitionList) {
-             String tenderId = transition.getRequestId();
-             // Fetch indentIds for the current tender (requestId)
-             List<String> indentIds = indentIdRepository.findTenderWithIndent(tenderId);
-
-             // Fetch indent details using the indentIds
-             List<IndentCreation> indentList = indentCreationRepository.findByIndentIdIn(indentIds);
-
-             // If there are multiple indentIds, ensure a one-to-one mapping with the same tender
-             for (int i = 0; i < indentList.size(); i++) {
-                 SubWorkflowQueueDto subWorkflowQueueDto = new SubWorkflowQueueDto();
-                 subWorkflowQueueDto.setSubWorkflowTransitionId(transition.getSubWorkflowTransitionId());
-                 subWorkflowQueueDto.setWorkflowId(transition.getWorkflowId());
-                 subWorkflowQueueDto.setWorkflowName(transition.getWorkflowName());
-                 subWorkflowQueueDto.setModifiedBy(transition.getModifiedBy());
-                 subWorkflowQueueDto.setWorkflowSequence(transition.getWorkflowSequence());
-                 subWorkflowQueueDto.setStatus(transition.getStatus());
-                 subWorkflowQueueDto.setRemarks(transition.getRemarks());
-                 subWorkflowQueueDto.setAction(transition.getAction());
-                 subWorkflowQueueDto.setActionOn(transition.getActionOn());
-                 subWorkflowQueueDto.setRequestId(transition.getRequestId());
-                 subWorkflowQueueDto.setCreatedBy(transition.getCreatedBy());
-                 subWorkflowQueueDto.setCreatedDate(transition.getCreatedDate());
-                 subWorkflowQueueDto.setModificationDate(transition.getModificationDate());
-
-                 // Assign corresponding indent to the tender
-                 IndentCreation indent = indentList.get(i); // Ensure one-to-one mapping
-                 subWorkflowQueueDto.setIndentId(indent.getIndentId());
-                 subWorkflowQueueDto.setIndentorName(indent.getIndentorName());
-                 subWorkflowQueueDto.setProjectName(indent.getProjectName());
-                 subWorkflowQueueDto.setAmount(indent.getTotalIntentValue());
-                 subWorkflowQueueDto.setConsignee(indent.getConsignesLocation());
-
-                 workflowQueueDtoList.add(subWorkflowQueueDto);
-             }
-         }
-     }
-     return workflowQueueDtoList;
- }
+   /*
 
 
-
- */
-    /*
- @Override
- public List<SubWorkflowQueueDto> getSubWorkflowQueue(Integer modifiedBy) {
-     List<SubWorkflowQueueDto> workflowQueueDtoList = new ArrayList<>();
-
-     // Get all transitions for the given modifiedBy
-     List<SubWorkflowTransition> subWorkflowTransitionList = subWorkflowTransitionRepository.findByActionOn(modifiedBy);
-
-     if (Objects.nonNull(subWorkflowTransitionList) && !subWorkflowTransitionList.isEmpty()) {
-         for (SubWorkflowTransition transition : subWorkflowTransitionList) {
-             String tenderId = transition.getRequestId();
-
-             // Fetch indentIds for the current tender (requestId)
-             List<String> indentIds = indentIdRepository.findTenderWithIndent(tenderId);
-
-             // Fetch indent details using the indentIds
-             List<IndentCreation> indentList = indentCreationRepository.findByIndentIdIn(indentIds);
-
-             if (indentList.isEmpty()) {
-                 // No indent data, add only transition details
-                 SubWorkflowQueueDto subWorkflowQueueDto = new SubWorkflowQueueDto();
-                 populateTransitionDetails(subWorkflowQueueDto, transition);
-                 workflowQueueDtoList.add(subWorkflowQueueDto);
-             } else {
-                 // If indent data exists, map it with transition
-                 for (IndentCreation indent : indentList) {
-                     SubWorkflowQueueDto subWorkflowQueueDto = new SubWorkflowQueueDto();
-                     populateTransitionDetails(subWorkflowQueueDto, transition);
-                     populateIndentDetails(subWorkflowQueueDto, indent);
-                     workflowQueueDtoList.add(subWorkflowQueueDto);
-                 }
-             }
-         }
-     }
-     return workflowQueueDtoList;
- }
-
-
-    private void populateTransitionDetails(SubWorkflowQueueDto dto, SubWorkflowTransition transition) {
-        dto.setSubWorkflowTransitionId(transition.getSubWorkflowTransitionId());
-        dto.setWorkflowId(transition.getWorkflowId());
-        dto.setWorkflowName(transition.getWorkflowName());
-        dto.setModifiedBy(transition.getModifiedBy());
-        dto.setWorkflowSequence(transition.getWorkflowSequence());
-        dto.setStatus(transition.getStatus());
-        dto.setRemarks(transition.getRemarks());
-        dto.setAction(transition.getAction());
-        dto.setActionOn(transition.getActionOn());
-        dto.setRequestId(transition.getRequestId());
-        dto.setCreatedBy(transition.getCreatedBy());
-        dto.setCreatedDate(transition.getCreatedDate());
-        dto.setModificationDate(transition.getModificationDate());
-    }
-
-    private void populateIndentDetails(SubWorkflowQueueDto dto, IndentCreation indent) {
-        dto.setIndentId(indent.getIndentId());
-        dto.setIndentorName(indent.getIndentorName());
-        dto.setProjectName(indent.getProjectName());
-        dto.setAmount(indent.getTotalIntentValue());
-        dto.setConsignee(indent.getConsignesLocation());
-    }
-
-     */
     @Override
     public List<SubWorkflowQueueDto> getSubWorkflowQueue(Integer modifiedBy) {
         List<SubWorkflowQueueDto> workflowQueueDtoList = new ArrayList<>();
@@ -1306,12 +1153,66 @@ public class WorkflowServiceImpl implements WorkflowService {
         return workflowQueueDtoList;
     }
 
+    */
+
+    @Override
+    public List<SubWorkflowQueueDto> getSubWorkflowQueue(Integer modifiedBy) {
+        List<SubWorkflowQueueDto> workflowQueueDtoList = new ArrayList<>();
 
 
+        List<SubWorkflowTransition> subWorkflowTransitionList = subWorkflowTransitionRepository.findByActionOn(modifiedBy);
 
+        if (subWorkflowTransitionList != null && !subWorkflowTransitionList.isEmpty()) {
 
+            Map<String, List<SubWorkflowTransition>> transitionsByRequestId = subWorkflowTransitionList.stream()
+                    .collect(Collectors.groupingBy(SubWorkflowTransition::getRequestId));
 
+            for (Map.Entry<String, List<SubWorkflowTransition>> entry : transitionsByRequestId.entrySet()) {
+                String tenderId = entry.getKey(); // Request ID
+                List<SubWorkflowTransition> transitions = entry.getValue(); // Transitions for the request ID
 
+                List<String> indentIds = indentIdRepository.findTenderWithIndent(tenderId);
+                if (indentIds.isEmpty()) continue;
+
+                // Fetch indent details using the indentIds
+                List<IndentCreation> indentList = indentCreationRepository.findByIndentIdIn(indentIds);
+                if (indentList.isEmpty()) continue;
+
+                // Distribute indent records across transitions
+                int transitionIndex = 0;
+                for (IndentCreation indent : indentList) {
+                    SubWorkflowTransition transition = transitions.get(transitionIndex);
+
+                    SubWorkflowQueueDto subWorkflowQueueDto = new SubWorkflowQueueDto();
+                    subWorkflowQueueDto.setSubWorkflowTransitionId(transition.getSubWorkflowTransitionId());
+                    subWorkflowQueueDto.setWorkflowId(transition.getWorkflowId());
+                    subWorkflowQueueDto.setWorkflowName(transition.getWorkflowName());
+                    subWorkflowQueueDto.setModifiedBy(transition.getModifiedBy());
+                    subWorkflowQueueDto.setWorkflowSequence(transition.getWorkflowSequence());
+                    subWorkflowQueueDto.setStatus(transition.getStatus());
+                    subWorkflowQueueDto.setRemarks(transition.getRemarks());
+                    subWorkflowQueueDto.setAction(transition.getAction());
+                    subWorkflowQueueDto.setActionOn(transition.getActionOn());
+                    subWorkflowQueueDto.setRequestId(transition.getRequestId());
+                    subWorkflowQueueDto.setCreatedBy(transition.getCreatedBy());
+                    subWorkflowQueueDto.setCreatedDate(transition.getCreatedDate());
+                    subWorkflowQueueDto.setModificationDate(transition.getModificationDate());
+
+                    // Assign corresponding indent to the transition
+                    subWorkflowQueueDto.setIndentId(indent.getIndentId());
+                    subWorkflowQueueDto.setIndentorName(indent.getIndentorName());
+                    subWorkflowQueueDto.setProjectName(indent.getProjectName());
+                    subWorkflowQueueDto.setAmount(indent.getTotalIntentValue());
+                    subWorkflowQueueDto.setConsignee(indent.getConsignesLocation());
+
+                    workflowQueueDtoList.add(subWorkflowQueueDto);
+
+                    transitionIndex = (transitionIndex + 1) % transitions.size();
+                }
+            }
+        }
+        return workflowQueueDtoList;
+    }
 
 
 }

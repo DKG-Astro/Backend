@@ -153,6 +153,7 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\InventoryM
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\QueueResponse.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller\InventoryModule\MaterialDisposalController.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\UserDto.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\TenderEvaluationResponseWithBitTypeAndValueDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\util\ResponseBuilder.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\VendorMasterResponseDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\GoodsReturnService.java

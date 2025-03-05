@@ -10,7 +10,7 @@ public interface TenderEvaluationService {
 
     public TenderEvaluationResponseDto createTenderEvaluation(TenderEvaluationRequestDto tenderEvaluationRequestDto);
     public TenderEvaluationResponseDto updateTenderEvaluation(String tenderId, TenderEvaluationRequestDto tenderEvaluationRequestDto);
-    public TenderEvaluationResponseDto getTenderEvaluationById(String tenderId);
+    public TenderEvaluationResponseWithBitTypeAndValueDto getTenderEvaluationById(String tenderId);
     public List<TenderEvaluationResponseDto> getAllTenderEvaluations();
     public void deleteTenderEvaluation(String tenderId);
 

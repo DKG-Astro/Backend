@@ -11,6 +11,7 @@ public class SubWorkflowQueueDto {
     private String indentorName;
     private String projectName;
     private BigDecimal amount;
+    private String bitType;
     private String budgetName;
     private String indentTitle;
     private String modeOfProcurement;

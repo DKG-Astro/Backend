@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Controller
 @RequestMapping("/file")
 public class FileProcessingController {
@@ -41,7 +44,9 @@ public class FileProcessingController {
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(@RequestParam String fileType, @RequestParam(name = "file") MultipartFile file){
+      // Map<String,String> map = new HashMap<>();
         String fileName = fileProcessingService.uploadFile(fileType, file);
+      // map.put("fileName",fileName);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(fileName), HttpStatus.CREATED);
     }
 

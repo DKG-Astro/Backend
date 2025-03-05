@@ -86,6 +86,7 @@ com\astro\entity\InventoryModule\GprnMaterialsId.class
 com\astro\service\impl\TenderRequestServiceImpl.class
 com\astro\service\JobMasterService.class
 com\astro\controller\UserMasterController.class
+com\astro\dto\workflow\ProcurementDtos\TenderEvaluationResponseWithBitTypeAndValueDto.class
 com\astro\repository\StateMasterRepository.class
 com\astro\dto\workflow\ProcurementDtos\IndentDto\IndentReportDetailsDTO.class
 com\astro\util\ResponseBuilder.class
