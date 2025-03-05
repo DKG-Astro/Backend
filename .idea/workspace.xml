@@ -5,24 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ff5636e0-402f-4a63-8653-94f411351cbb" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/controller/FileProcessingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/controller/FileProcessingController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/controller/ProcurementModuleController/TenderEvaluationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/controller/ProcurementModuleController/TenderEvaluationController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/SubWorkflowQueueDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/SubWorkflowQueueDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/TenderEvaluationRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/TenderEvaluationRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/FileProcessingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/FileProcessingService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/TenderEvaluationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/TenderEvaluationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/FileProcessingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/FileProcessingServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/TenderEvaluationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/TenderEvaluationServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/FileProcessingController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/controller/FileProcessingController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/ProcurementModuleController/TenderEvaluationController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/controller/ProcurementModuleController/TenderEvaluationController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/SubWorkflowQueueDto.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/SubWorkflowQueueDto.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/TenderEvaluationService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/service/TenderEvaluationService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/FileProcessingServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/service/impl/FileProcessingServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/TenderEvaluationServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/service/impl/TenderEvaluationServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

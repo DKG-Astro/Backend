@@ -27,27 +27,27 @@ public class FileProcessingController {
     private FileProcessingService fileProcessingService;
 
     @GetMapping("/list")
-    public ResponseEntity<?> getFileList(){
+    public ResponseEntity<?> getFileList() {
         return new ResponseEntity<>(fileProcessingService.fileList(), HttpStatus.OK);
     }
 
     @GetMapping(value = "/download/{fileType}/{fileName}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<?> downloadFile(@PathVariable(value = "fileType") String fileType, @PathVariable(value = "fileName") String fileName){
+    public ResponseEntity<?> downloadFile(@PathVariable(value = "fileType") String fileType, @PathVariable(value = "fileName") String fileName) {
         Resource file = fileProcessingService.downloadFile(fileType, fileName);
-        if(file == null){
+        if (file == null) {
             return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(), HttpStatus.NOT_FOUND);
         } else {
             return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(file);
         }
-        
+
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<?> uploadFile(@RequestParam String fileType, @RequestParam(name = "file") MultipartFile file){
-      // Map<String,String> map = new HashMap<>();
+    public ResponseEntity<?> uploadFile(@RequestParam String fileType, @RequestParam(name = "file") MultipartFile file) {
+        Map<String, String> map = new HashMap<>();
         String fileName = fileProcessingService.uploadFile(fileType, file);
-      // map.put("fileName",fileName);
-        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(fileName), HttpStatus.CREATED);
+        map.put("fileName", fileName);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(map), HttpStatus.CREATED);
     }
 
 }
