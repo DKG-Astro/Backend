@@ -159,7 +159,7 @@ CREATE TABLE goods_inspection (
 	receipt_inspection_no VARCHAR(255), -- Foreign key to Good Provisional Receipt entity
     installation_date varchar(20),
     commissioning_date varchar(20),
-    upload_installation_report text, -- For storing PDF files
+    upload_installation_report Blob,
     accepted_quantity INT NOT NULL,
     rejected_quantity INT NOT NULL,
 	goods_return_permament_or_replacement VARCHAR(255),

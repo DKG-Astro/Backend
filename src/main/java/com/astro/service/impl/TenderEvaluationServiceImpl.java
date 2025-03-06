@@ -87,7 +87,7 @@ public class TenderEvaluationServiceImpl implements TenderEvaluationService {
                                 "Tender eavaluation request not found for the provided tender ID.")
                 ));
 
-        tenderEvaluation.setTenderId(tenderEvaluationRequestDto.getTenderId());
+     //   tenderEvaluation.setTenderId(tenderEvaluationRequestDto.getTenderId());
         tenderEvaluation.setUploadQualifiedVendorsFileName(tenderEvaluationRequestDto.getUploadQualifiedVendorsFileName());
         tenderEvaluation.setUploadTechnicallyQualifiedVendorsFileName(tenderEvaluationRequestDto.getUploadTechnicallyQualifiedVendorsFileName());
         tenderEvaluation.setUploadCommeriallyQualifiedVendorsFileName(tenderEvaluationRequestDto.getUploadCommeriallyQualifiedVendorsFileName());
@@ -133,7 +133,7 @@ public class TenderEvaluationServiceImpl implements TenderEvaluationService {
         Optional<TenderRequest> optionalTenderRequest = tenderRequestRepository.findByTenderId(tenderId);
         TenderRequest tenderRequest = optionalTenderRequest.get();
 
-        responseDto.setBitType(tenderRequest.getBidType());
+        responseDto.setBidType(tenderRequest.getBidType());
         responseDto.setTotalValueOfTender(tenderRequest.getTotalTenderValue());
 
       return responseDto;
