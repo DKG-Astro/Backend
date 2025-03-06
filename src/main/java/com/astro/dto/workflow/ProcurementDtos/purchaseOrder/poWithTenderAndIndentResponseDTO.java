@@ -29,6 +29,7 @@ public class poWithTenderAndIndentResponseDTO {
  private String vendorAccountName;
  private BigDecimal totalValueOfPo;
  private String projectName;
+ private BigDecimal projectLimit;
  private List<PurchaseOrderAttributesResponseDTO> purchaseOrderAttributes;
  private Integer createdBy;
  private String updatedBy;

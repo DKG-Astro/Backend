@@ -25,6 +25,7 @@ public class soWithTenderAndIndentResponseDTO {
     private String vendorsAccountName;
     private BigDecimal totalValueOfSo;
     private String projectName;
+    private BigDecimal projectLimit;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
     private List<ServiceOrderMaterialResponseDTO> materials;
