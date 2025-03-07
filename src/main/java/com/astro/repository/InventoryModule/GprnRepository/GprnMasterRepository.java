@@ -1,9 +1,9 @@
 package com.astro.repository.InventoryModule.GprnRepository;
 
-import com.astro.entity.InventoryModule.Gprn;
+import com.astro.entity.InventoryModule.GprnMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface GprnRepository extends JpaRepository<Gprn,String> {
+public interface GprnMasterRepository extends JpaRepository<GprnMaster,Integer> {
 }

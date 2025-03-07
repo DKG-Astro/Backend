@@ -2,10 +2,9 @@ package com.astro.controller.InventoryModule;
 
 import com.astro.dto.workflow.InventoryModule.GoodsInspectionRequestDto;
 import com.astro.dto.workflow.InventoryModule.GoodsInspectionResponseDto;
-import com.astro.dto.workflow.InventoryModule.GprnDto.GprnResponseDto;
-import com.astro.entity.InventoryModule.GoodsInspection;
+import com.astro.dto.workflow.InventoryModule.GprnDto.getGprnDtlsDto;
 import com.astro.service.GoodsInspectionService;
-import com.astro.service.GprnService;
+import com.astro.service.ProcessService;
 import com.astro.util.ResponseBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,7 +24,7 @@ public class GoodsInspectionController {
     private GoodsInspectionService goodsInspectionService;
 
     @Autowired
-    private GprnService gprnService;
+    private ProcessService gprnService;
     @Autowired
     private ObjectMapper mapper;
 
@@ -76,10 +75,12 @@ public class GoodsInspectionController {
         return ResponseEntity.ok("GoodsInspection deleted successfully."+" " +goodsInspectionNo);
     }
     //fetch all details from the gprn
-    @GetMapping("/gprn/{gprnId}")
+ /*   @GetMapping("/gprn/{gprnId}")
     public ResponseEntity<Object> fetchGprDetails(@PathVariable String gprnId) {
-        GprnResponseDto gprnDetails = gprnService.getGprnById(gprnId);
+        getGprnDtlsDto gprnDetails = gprnService.getGprnById(gprnId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(gprnDetails), HttpStatus.OK);
     }
+
+  */
 
 }

@@ -202,7 +202,7 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         response.setVendorsZRSCCode(serviceOrder.getVendorsZRSCCode());
         response.setVendorsAccountName(serviceOrder.getVendorsAccountName());
         // response.setTotalValueOfSo(ServiceOrder.getTotalValueOfSo());
-        response.setProjectName(serviceOrder.getProjectName());
+        //response.setProjectName(serviceOrder.getProjectName());
         response.setCreatedBy(serviceOrder.getCreatedBy());
         response.setUpdatedBy(serviceOrder.getUpdatedBy());
         response.setCreatedDate(serviceOrder.getCreatedDate());

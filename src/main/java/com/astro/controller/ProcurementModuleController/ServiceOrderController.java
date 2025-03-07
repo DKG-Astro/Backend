@@ -33,7 +33,7 @@ public class ServiceOrderController {
     public ResponseEntity<Object> createServiceOrder(@RequestBody ServiceOrderRequestDTO requestDTO) {
         ServiceOrderResponseDTO responseDTO = serviceOrder.createServiceOrder(requestDTO);
         // Initiateing the workflow after saving the indent
-        String requestId = responseDTO.getSoId(); // Useing the indent ID as the request ID
+        String requestId = responseDTO.getSoId();
         String workflowName = "SO Workflow";
      //   String createdBy = responseDTO.getCreatedBy();
       //  Optional<UserMaster> userMaster = userService.getUserMasterByCreatedBy(createdBy);
@@ -41,6 +41,8 @@ public class ServiceOrderController {
 
         Integer userId = requestDTO.getCreatedBy();
 
+        // Call initiateWorkflow API
+     //   WorkflowTransitionDto workflowTransitionDto = workflowService.initiateWorkflow(requestId, workflowName, userId);
         // Call initiateWorkflow API
         WorkflowTransitionDto workflowTransitionDto = workflowService.initiateWorkflow(requestId, workflowName, userId);
 

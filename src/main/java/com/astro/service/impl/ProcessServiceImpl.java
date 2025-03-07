@@ -1,58 +1,43 @@
 package com.astro.service.impl;
 
 
-import com.astro.constant.AppConstant;
-import com.astro.dto.workflow.InventoryModule.GprnDto.GprnMaterialsRequestDto;
-import com.astro.dto.workflow.InventoryModule.GprnDto.GprnMaterialsResponseDto;
 
-import com.astro.dto.workflow.InventoryModule.GprnDto.GprnRequestDto;
-import com.astro.dto.workflow.InventoryModule.GprnDto.GprnResponseDto;
+import com.astro.dto.workflow.InventoryModule.GprnDto.getGprnDtlsDto;
+import com.astro.dto.workflow.InventoryModule.GprnDto.saveGprnDto;
+import com.astro.repository.InventoryModule.GprnRepository.GprnMasterRepository;
+import com.astro.repository.InventoryModule.GprnRepository.GprnMaterialDetailsRepository;
 
-import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderAttributesDTO;
-import com.astro.entity.InventoryModule.Gprn;
-import com.astro.entity.InventoryModule.GprnMaterials;
-
-
-import com.astro.entity.InventoryModule.GprnMaterialsId;
-import com.astro.entity.ProcurementModule.IndentCreation;
-import com.astro.exception.BusinessException;
-import com.astro.exception.ErrorDetails;
-import com.astro.exception.InvalidInputException;
-import com.astro.repository.InventoryModule.GprnRepository.GprnMaterialsRepository;
-import com.astro.repository.InventoryModule.GprnRepository.GprnRepository;
-import com.astro.service.GprnService;
-import com.astro.util.CommonUtils;
+import com.astro.service.ProcessService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigDecimal;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
-public class GprnServiceImpl implements GprnService {
+public class ProcessServiceImpl implements ProcessService {
 
     @Autowired
-    private GprnRepository gprnRepository;
+    private GprnMasterRepository gprnMasterRepository;
 
     @Autowired
-    private GprnMaterialsRepository gprnMaterialsRepository;
-    private static final Logger log = LoggerFactory.getLogger(GprnServiceImpl.class);
+    private GprnMaterialDetailsRepository gprnMaterialDetailsRepository;
+    private static final Logger log = LoggerFactory.getLogger(ProcessServiceImpl.class);
 
-        @Transactional
-        public GprnResponseDto createGprnWithMaterialDetails(GprnRequestDto gprnRequestDto){
+    @Override
+    public saveGprnDto saveGprn(saveGprnDto saveGprnDto) {
+        return null;
+    }
+
+    @Override
+    public getGprnDtlsDto getSubProcessDtls(String processStage, String processId) {
+        return null;
+    }
+
+    /*    @Transactional
+        public getGprnDtlsDto createGprnWithMaterialDetails(saveGprnDto gprnRequestDto){
                 //, String provisionalReceiptCertificateFileName, String photoFileName) {
             // Check if the GPRN ID already exists
             if (gprnRepository.existsById(gprnRequestDto.getGprnNo())) {
@@ -109,18 +94,6 @@ public class GprnServiceImpl implements GprnService {
                 gprnMaterial.setSerialNo(materialRequest.getSerialNo());
                 gprnMaterial.setWarranty(materialRequest.getWarranty());
                 gprnMaterial.setNote(materialRequest.getNote());
-             //   gprnMaterial.setPhotoFileName(materialRequest.getPhotographPath());
-               // handleFileUploadMaterial(gprnMaterial, materialRequest.getPhotographPath(), gprnMaterial::setPhotographPath);
-                String storedFilePaths = materialRequest.getPhotographPath();
-                String fileName = storedFilePaths != null && !storedFilePaths.isEmpty() ? new File(storedFilePaths).getName() : null;
-
-                gprnMaterial.setPhotoFileName(fileName);
-                String storedFilePath = materialRequest.getPhotographPath(); // Ensure this holds the correct file path
-                if (storedFilePath != null && !storedFilePath.isEmpty()) {
-                    gprnMaterial.setPhotographPath(storedFilePath);
-                } else {
-                    log.warn("Photograph path is missing for material: " + materialRequest.getMaterialCode());
-                }
 
                 gprnMaterial.setGprn(gprn);
                 return gprnMaterial;
@@ -136,7 +109,7 @@ public class GprnServiceImpl implements GprnService {
 
 
     @Transactional
-    public GprnResponseDto updateGprn(String gprnId, GprnRequestDto gprnRequestDto,String provisionalReceiptCertificateFileName, String photoFileName) {
+    public getGprnDtlsDto updateGprn(String gprnId, saveGprnDto gprnRequestDto, String provisionalReceiptCertificateFileName, String photoFileName) {
 
         Gprn gprn = gprnRepository.findById(gprnId)
                 .orElseThrow(() -> new BusinessException(
@@ -221,7 +194,6 @@ public class GprnServiceImpl implements GprnService {
                 .collect(Collectors.toList());
 
         gprn.getGprnMaterials().addAll(updatedMaterialDetails);
-      //  updatedMaterialDetails.forEach(material -> material.getGprns().add(gprn)); // Ensure bidirectional relationship
         gprnMaterialsRepository.saveAll(updatedMaterialDetails);
         gprnRepository.save(gprn);
 
@@ -229,13 +201,13 @@ public class GprnServiceImpl implements GprnService {
     }
 
     @Override
-    public List<GprnResponseDto> getAllGprn() {
+    public List<getGprnDtlsDto> getAllGprn() {
         List<Gprn> gprn = gprnRepository.findAll();
         return gprn.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
     }
 
     @Override
-    public GprnResponseDto getGprnById(String gprnId) {
+    public getGprnDtlsDto getGprnById(String gprnId) {
         Gprn gprn = gprnRepository.findById(gprnId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
@@ -275,8 +247,8 @@ public class GprnServiceImpl implements GprnService {
     }
 
 
-    private GprnResponseDto mapToResponseDTO(Gprn gprn) {
-        GprnResponseDto gprnResponseDto = new GprnResponseDto();
+    private getGprnDtlsDto mapToResponseDTO(Gprn gprn) {
+        getGprnDtlsDto gprnResponseDto = new getGprnDtlsDto();
         gprnResponseDto.setGprnNo(gprn.getGprnNo());
         gprnResponseDto.setGprnNo(gprn.getGprnNo());
         gprnResponseDto.setPoId(gprn.getPoId());
@@ -329,35 +301,10 @@ public class GprnServiceImpl implements GprnService {
         return gprnResponseDto;
     }
 
-    public void handleFileUpload(Gprn gprn, MultipartFile file, Consumer<byte[]> fileSetter) {
-        if (file != null) {
-            try (InputStream inputStream = file.getInputStream()) {
-                byte[] fileBytes = inputStream.readAllBytes();
-                fileSetter.accept(fileBytes); // Set file content (byte[])
 
-            } catch (IOException e) {
-                throw new InvalidInputException(new ErrorDetails(500, 3, "File Processing Error",
-                        "Error while processing the uploaded file. Please try again."));
-            }
-        } else {
-            fileSetter.accept(null);  // Handle gracefully if no file is uploaded
-        }
-    }
-    public void handleFileUploadMaterial(GprnMaterials gprnMaterials, MultipartFile file, Consumer<byte[]> fileSetter) {
-        if (file != null) {
-            try (InputStream inputStream = file.getInputStream()) {
-                byte[] fileBytes = inputStream.readAllBytes();
-                fileSetter.accept(fileBytes); // Set file content (byte[])
 
-            } catch (IOException e) {
-                throw new InvalidInputException(new ErrorDetails(500, 3, "File Processing Error",
-                        "Error while processing the uploaded file. Please try again."));
-            }
-        } else {
-            fileSetter.accept(null);  // Handle gracefully if no file is uploaded
-        }
-    }
 
+     */
 
 
 

@@ -3,12 +3,10 @@ package com.astro.controller.InventoryModule;
 import com.astro.dto.workflow.InventoryModule.GoodsInspectionResponseDto;
 import com.astro.dto.workflow.InventoryModule.GoodsReceiptInspectionRequestDto;
 import com.astro.dto.workflow.InventoryModule.GoodsReceiptInspectionResponseDto;
-import com.astro.dto.workflow.InventoryModule.GprnDto.GprnResponseDto;
-import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderResponseDTO;
-import com.astro.entity.InventoryModule.GoodsReceiptInspection;
+import com.astro.dto.workflow.InventoryModule.GprnDto.getGprnDtlsDto;
 import com.astro.service.GoodsInspectionService;
 import com.astro.service.GoodsReceiptInspectionService;
-import com.astro.service.GprnService;
+import com.astro.service.ProcessService;
 import com.astro.service.PurchaseOrderService;
 import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +28,7 @@ public class GRIController {
     private PurchaseOrderService poService;
 
     @Autowired
-    private GprnService gprnService;
+    private ProcessService gprnService;
 
 
     @Autowired
@@ -74,11 +72,13 @@ public class GRIController {
 
  */
 
-    @GetMapping("/gprn/{gprnId}")
+  /*  @GetMapping("/gprn/{gprnId}")
     public ResponseEntity<Object> fetchGprDetails(@PathVariable String gprnId) {
-        GprnResponseDto gprnDetails = gprnService.getGprnById(gprnId);
+        getGprnDtlsDto gprnDetails = gprnService.getGprnById(gprnId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(gprnDetails), HttpStatus.OK);
     }
+
+   */
 
     @GetMapping("/goodsInspection/{goodsInspectionNo}")
     public ResponseEntity<Object> fetchGoodsInspectionDetails(@PathVariable String goodsInspectionNo) {
