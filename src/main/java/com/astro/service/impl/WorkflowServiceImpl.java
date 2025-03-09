@@ -238,7 +238,7 @@ public class WorkflowServiceImpl implements WorkflowService {
             workflowTransitionDto = mapWorkflowTransitionDto(workflowTransition);
             if (WorkflowName.TENDER_EVALUATOR.getValue().equalsIgnoreCase(workflowName)) {
                 workflowTransition.setModifiedBy(createdBy);
-                validateTenderWorkFlow(null, workflowTransition);
+                validateTenderWorkFlow(null, workflowTransition, null);
             }
 
         } else {
@@ -508,7 +508,7 @@ public class WorkflowServiceImpl implements WorkflowService {
                 subWorkflowTransition.setModificationDate(new Date());
 
                 subWorkflowTransitionRepository.save(subWorkflowTransition);
-
+                validateSubWorkflow(subWorkflowTransition);
             } else {
                 throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                         AppConstant.ERROR_TYPE_VALIDATION, "Invalid sub workflow transition id."));
@@ -516,6 +516,41 @@ public class WorkflowServiceImpl implements WorkflowService {
         } else {
             throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid sub workflow transition id."));
+        }
+    }
+
+
+    private void validateSubWorkflow(SubWorkflowTransition subWorkflowTransition) {
+        String requestId = subWorkflowTransition.getRequestId();
+        Integer workflowTransitionId = subWorkflowTransition.getWorkflowTransitionId();
+
+        List<SubWorkflowTransition> subWorkflowTransitionList = subWorkflowTransitionRepository.findByWorkflowTransitionIdAndRequestIdAndTransitionTypeAndTransitionName(workflowTransitionId, requestId, "Double", "Phase_1");
+        if(Objects.nonNull(subWorkflowTransitionList) && !subWorkflowTransitionList.isEmpty()){
+            List<SubWorkflowTransition> subWorkflowTransitionFilteredList  = subWorkflowTransitionList.stream().filter(e -> !e.getStatus().equalsIgnoreCase(AppConstant.APPROVE_TYPE)).collect(Collectors.toList());
+            if(subWorkflowTransitionFilteredList.isEmpty()){
+                WorkflowTransition currentWorkflowTransition = workflowTransitionRepository.findByWorkflowTransitionIdAndRequestId(workflowTransitionId, requestId);
+                currentWorkflowTransition.setNextAction(AppConstant.COMPLETED_TYPE);
+                workflowTransitionRepository.save(currentWorkflowTransition);
+
+                WorkflowTransition nextWorkflowTransition = new WorkflowTransition();
+                nextWorkflowTransition.setWorkflowId(currentWorkflowTransition.getWorkflowId());
+                nextWorkflowTransition.setTransitionId(currentWorkflowTransition.getTransitionId());
+                nextWorkflowTransition.setTransitionOrder(currentWorkflowTransition.getTransitionOrder());
+                nextWorkflowTransition.setWorkflowName(currentWorkflowTransition.getWorkflowName());
+                nextWorkflowTransition.setCreatedDate(currentWorkflowTransition.getCreatedDate());
+                nextWorkflowTransition.setCreatedBy(currentWorkflowTransition.getCreatedBy());
+                nextWorkflowTransition.setTransitionSubOrder(currentWorkflowTransition.getTransitionSubOrder());
+                nextWorkflowTransition.setModifiedBy(currentWorkflowTransition.getModifiedBy());
+                nextWorkflowTransition.setModificationDate(new Date());
+                nextWorkflowTransition.setStatus(AppConstant.IN_PROGRESS_TYPE);
+                nextWorkflowTransition.setAction(AppConstant.APPROVE_TYPE);
+                nextWorkflowTransition.setNextAction(AppConstant.PENDING_TYPE);
+                nextWorkflowTransition.setRemarks(null);
+                nextWorkflowTransition.setCurrentRole(currentWorkflowTransition.getCurrentRole());
+                nextWorkflowTransition.setWorkflowSequence(currentWorkflowTransition.getWorkflowSequence() + 1);
+
+                workflowTransitionRepository.save(nextWorkflowTransition);
+            }
         }
     }
 
@@ -683,12 +718,12 @@ public class WorkflowServiceImpl implements WorkflowService {
 
         //validation for tender workflow
         if (WorkflowName.TENDER_EVALUATOR.getValue().equalsIgnoreCase(currentWorkflowTransition.getWorkflowName())) {
-            validateTenderWorkFlow(currentWorkflowTransition, nextWorkflowTransition);
+            validateTenderWorkFlow(currentWorkflowTransition, nextWorkflowTransition, AppConstant.APPROVE_TYPE);
         }
 
     }
 
-    private void validateTenderWorkFlow(WorkflowTransition currentWorkflowTransition, WorkflowTransition nextWorkflowTransition) {
+    private void validateTenderWorkFlow(WorkflowTransition currentWorkflowTransition, WorkflowTransition nextWorkflowTransition, String actionType) {
         if ((nextWorkflowTransition.getCurrentRole().equalsIgnoreCase("Purchase Dept") && Objects.isNull(nextWorkflowTransition.getNextRole())) || (nextWorkflowTransition.getCurrentRole().equalsIgnoreCase("Purchase Dept") && Objects.nonNull(nextWorkflowTransition.getNextRole()) && nextWorkflowTransition.getNextRole().equalsIgnoreCase("Purchase Dept"))) {
             List<SubWorkflowTransition> subWorkflowTransitionList = subWorkflowTransitionRepository.findByWorkflowTransitionIdAndStatus(currentWorkflowTransition.getWorkflowTransitionId(), AppConstant.PENDING_TYPE);
             if (Objects.nonNull(subWorkflowTransitionList) && !subWorkflowTransitionList.isEmpty()) {
@@ -716,6 +751,12 @@ public class WorkflowServiceImpl implements WorkflowService {
                         subWorkflowTransition.setRequestId(nextWorkflowTransition.getRequestId());
                         subWorkflowTransition.setStatus(AppConstant.PENDING_TYPE);
                         subWorkflowTransition.setCreatedDate(new Date());
+                        subWorkflowTransition.setTransitionType(tenderWithIndentResponseDTO.getBidType());
+                        if("Double".equalsIgnoreCase(tenderWithIndentResponseDTO.getBidType()) && Objects.isNull(actionType)){
+                            subWorkflowTransition.setTransitionName("Phase_1");
+                        }else if("Double".equalsIgnoreCase(tenderWithIndentResponseDTO.getBidType()) && AppConstant.APPROVE_TYPE.equalsIgnoreCase(actionType)){
+                            subWorkflowTransition.setTransitionName("Phase_2");
+                        }
                         seq.getAndIncrement();
 
                         subWorkflowTransitionRepository.save(subWorkflowTransition);

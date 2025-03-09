@@ -11,4 +11,6 @@ public interface SubWorkflowTransitionRepository extends JpaRepository<SubWorkfl
     List<SubWorkflowTransition> findByWorkflowTransitionIdAndStatus(Integer workflowTransitionId, String pendingType);
 
     List<SubWorkflowTransition> findByActionOn(Integer modifiedBy);
+
+    List<SubWorkflowTransition> findByWorkflowTransitionIdAndRequestIdAndTransitionTypeAndTransitionName(Integer workflowTransitionId, String requestId, String transitionType, String transitionName);
 }
