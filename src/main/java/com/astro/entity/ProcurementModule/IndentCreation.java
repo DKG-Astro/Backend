@@ -84,6 +84,8 @@ public class IndentCreation {
         private String uploadPACOrBrandPACFileName;
         @Column(name="file_type")
         private String fileType;
+        @Column(name = "total_indent_value")
+        private BigDecimal totalIntentValue;
 
       //  private String totalAmount;
       //  @OneToMany(mappedBy = "indentCreation", cascade = CascadeType.ALL, orphanRemoval = true)

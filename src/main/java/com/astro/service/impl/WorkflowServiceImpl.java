@@ -17,6 +17,7 @@ import com.astro.exception.InvalidInputException;
 import com.astro.repository.*;
 import com.astro.repository.ProcurementModule.ContigencyPurchaseRepository;
 import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
+import com.astro.repository.ProcurementModule.IndentIdRepository;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderRepository;
 import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrderRepository;
 import com.astro.repository.ProcurementModule.TenderRequestRepository;
@@ -85,6 +86,8 @@ public class WorkflowServiceImpl implements WorkflowService {
     private ContigencyPurchaseRepository contigencyPurchaseRepository;
     @Autowired
     private ServiceOrderRepository serviceOrderRepository;
+    @Autowired
+    private IndentIdRepository indentIdRepository;
 
 
     @Override
@@ -956,9 +959,36 @@ public class WorkflowServiceImpl implements WorkflowService {
         return workflowTransitionRepository.findApprovedIndentRequestIds();
     }
 
-    public List<String> getApprovedTender() {
-        return workflowTransitionRepository.findApprovedTenderRequestIds();
+    @Override
+    public List<String> getApprovedTenderIdsForPOAndSO() {
+        return workflowTransitionRepository.findApprovedTenderIdsForPOANDSO();
     }
+
+    public List<ApprovedTenderDto> getApprovedTender() {
+
+        // return workflowTransitionRepository.findApprovedTenderRequestIds();
+        List<String> tenderIds = workflowTransitionRepository.findApprovedTenderRequestIds();
+
+        List<ApprovedTenderDto> approvedTenders = new ArrayList<>();
+
+        for (String tenderId : tenderIds) {
+            // Fetch bidType and totalValue from TenderRequest table
+            Optional<TenderRequest> optionalTenderRequest = tenderRequestRepository.findByTenderId(tenderId);
+
+            if (optionalTenderRequest.isPresent()) {
+                TenderRequest tenderRequest = optionalTenderRequest.get(); // Unwrap Optional
+                ApprovedTenderDto dto = new ApprovedTenderDto(
+                        tenderId,
+                        tenderRequest.getBidType(),
+                        tenderRequest.getTotalTenderValue()
+                );
+                approvedTenders.add(dto);
+            }
+        }
+        return approvedTenders;
+
+    }
+
 
     @Override
     public List<QueueResponse> allPendingWorkflowTransitionINQueue(String roleName) {
@@ -1007,17 +1037,17 @@ public class WorkflowServiceImpl implements WorkflowService {
         queueResponse.setCreatedDate(workflowTransition.getCreatedDate());
 
         String requestId = workflowTransition.getRequestId();
-       // boolean isMatched = false;
+        // boolean isMatched = false;
 
         if (requestId.startsWith("IND")) {
             // Fetch data from IndentCreation entity
             String indentId = requestId;
-          //  IndentCreationResponseDTO indentCreations = indentCreationService.getIndentById(indentId);
+            //  IndentCreationResponseDTO indentCreations = indentCreationService.getIndentById(indentId);
             IndentCreation indentCreation = indentCreationRepository.getByIndentId(indentId);
             if (indentCreation != null) {
                 queueResponse.setIndentorName(indentCreation.getIndentorName());
                 queueResponse.setProjectName(indentCreation.getProjectName());
-              //  queueResponse.setAmount(indentCreations.getTotalPriceOfAllMaterials());
+                queueResponse.setAmount(indentCreation.getTotalIntentValue());
                 //  queueResponse.setBudgetName();
                 //   queueResponse.setIndentTitle("NUll");
                 //   queueResponse.setModeOfProcurement("NUll");
@@ -1025,14 +1055,14 @@ public class WorkflowServiceImpl implements WorkflowService {
             }
         } else if (requestId.startsWith("T")) {
             String tenderId = requestId;
-           TenderRequest tenderRequest = tenderRequestRepository.findById(tenderId).orElse(null);
+            TenderRequest tenderRequest = tenderRequestRepository.findById(tenderId).orElse(null);
 
             // Fetch data from TenderRequest entity
-          //  TenderWithIndentResponseDTO tenderRequest = tenderRequestService.getTenderRequestById(tenderId);
-          //  TenderRequest tenderRequest = tenderRequestRepository.getByTenderId(tenderId);
+            //  TenderWithIndentResponseDTO tenderRequest = tenderRequestService.getTenderRequestById(tenderId);
+            //  TenderRequest tenderRequest = tenderRequestRepository.getByTenderId(tenderId);
 
-            if (tenderRequest  != null) {
-              //  TenderRequest tenderRequest = tenderRequestOptional.get();
+            if (tenderRequest != null) {
+                //  TenderRequest tenderRequest = tenderRequestOptional.get();
                 //  queueResponse.setIndentorName("NUll");
                 //   queueResponse.setProjectName("NUll");
                 queueResponse.setAmount(tenderRequest.getTotalTenderValue());
@@ -1054,11 +1084,11 @@ public class WorkflowServiceImpl implements WorkflowService {
         } else if (requestId.startsWith("CP")) {
             // Fetch data from CP table
             String contigencyId = requestId;
-          //  ContigencyPurchaseResponseDto cpTable = contigencyPurchaseService.getContigencyPurchaseById(contigencyId);
-             ContigencyPurchase cp = contigencyPurchaseRepository.findById(contigencyId).orElse(null);
+            //  ContigencyPurchaseResponseDto cpTable = contigencyPurchaseService.getContigencyPurchaseById(contigencyId);
+            ContigencyPurchase cp = contigencyPurchaseRepository.findById(contigencyId).orElse(null);
 
             if (cp != null) {
-               // ContigencyPurchase cp = cpTable.get();
+                // ContigencyPurchase cp = cpTable.get();
                 //  queueResponse.setIndentorName("Null");
                 queueResponse.setProjectName(cp.getProjectName());
                 queueResponse.setAmount(cp.getAmountToBePaid());
@@ -1067,47 +1097,175 @@ public class WorkflowServiceImpl implements WorkflowService {
                 //queueResponse.setModeOfProcurement("NULL");
                 //  queueResponse.setConsignee("Null");
             }
-        }else if (requestId.startsWith("PO")) {
-                String poId = requestId;
-               // poWithTenderAndIndentResponseDTO po = purchaseOrderService.getPurchaseOrderById(poId);
-            PurchaseOrder po= purchaseOrderRepository.findById(poId).orElse(null);
+        } else if (requestId.startsWith("PO")) {
+            String poId = requestId;
+            // poWithTenderAndIndentResponseDTO po = purchaseOrderService.getPurchaseOrderById(poId);
+            PurchaseOrder po = purchaseOrderRepository.findById(poId).orElse(null);
 
             if (po != null) {
 
-                    //   queueResponse.setIndentorName("Null");
-                    queueResponse.setProjectName(po.getProjectName());
-                    queueResponse.setAmount(po.getTotalValueOfPo());
-                    //     queueResponse.setBudgetName();
-                    //      queueResponse.setIndentTitle();
-                    //   queueResponse.setModeOfProcurement();
-                    queueResponse.setConsignee(po.getConsignesAddress());
-                  //  TenderWithIndentResponseDTO tenderDetails= po.getTenderDetails();
-               //     queueResponse.setIndentTitle(tenderDetails.getTitleOfTender());
-                  //  queueResponse.setModeOfProcurement(tenderDetails.getModeOfProcurement());
-                }
+                //   queueResponse.setIndentorName("Null");
+                queueResponse.setProjectName(po.getProjectName());
+                queueResponse.setAmount(po.getTotalValueOfPo());
+                //     queueResponse.setBudgetName();
+                //      queueResponse.setIndentTitle();
+                //   queueResponse.setModeOfProcurement();
+                queueResponse.setConsignee(po.getConsignesAddress());
+                //  TenderWithIndentResponseDTO tenderDetails= po.getTenderDetails();
+                //     queueResponse.setIndentTitle(tenderDetails.getTitleOfTender());
+                //  queueResponse.setModeOfProcurement(tenderDetails.getModeOfProcurement());
+            }
         } else if (requestId.startsWith("SO")) {
-                    String soId = requestId;
-                  //  soWithTenderAndIndentResponseDTO so = serviceOrderService.getServiceOrderById(soId);
+            String soId = requestId;
+            //  soWithTenderAndIndentResponseDTO so = serviceOrderService.getServiceOrderById(soId);
             ServiceOrder so = serviceOrderRepository.findById(soId)
                     .orElse(null);
-                    if (so != null) {
-                      //  ServiceOrder so = SO.get();
-                        //   queueResponse.setIndentorName("Null");
-                        queueResponse.setProjectName(so.getProjectName());
-                        queueResponse.setAmount(so.getTotalValueOfSo());
-                        //     queueResponse.setBudgetName();
-                        //      queueResponse.setIndentTitle();
-                        //   queueResponse.setModeOfProcurement();
-                        queueResponse.setConsignee(so.getConsignesAddress());
-                      //  TenderWithIndentResponseDTO tenderDetails= so.getTenderDetails();
-                      //  queueResponse.setIndentTitle(tenderDetails.getTitleOfTender());
-                      //  queueResponse.setModeOfProcurement(tenderDetails.getModeOfProcurement());
-                    }
+            if (so != null) {
+                //  ServiceOrder so = SO.get();
+                //   queueResponse.setIndentorName("Null");
+                queueResponse.setProjectName(so.getProjectName());
+                queueResponse.setAmount(so.getTotalValueOfSo());
+                //     queueResponse.setBudgetName();
+                //      queueResponse.setIndentTitle();
+                //   queueResponse.setModeOfProcurement();
+                queueResponse.setConsignee(so.getConsignesAddress());
+                //  TenderWithIndentResponseDTO tenderDetails= so.getTenderDetails();
+                //  queueResponse.setIndentTitle(tenderDetails.getTitleOfTender());
+                //  queueResponse.setModeOfProcurement(tenderDetails.getModeOfProcurement());
+            }
         }
         return queueResponse;
+
+    }
+
+
+
+
+   /*
+
+
+    @Override
+    public List<SubWorkflowQueueDto> getSubWorkflowQueue(Integer modifiedBy) {
+        List<SubWorkflowQueueDto> workflowQueueDtoList = new ArrayList<>();
+        Set<String> processedIndentIds = new HashSet<>(); // To track already added indentIds
+        String previousRequestId = null; // Track last requestId
+        List<SubWorkflowTransition> subWorkflowTransitionList = subWorkflowTransitionRepository.findByActionOn(modifiedBy);
+
+        if (Objects.nonNull(subWorkflowTransitionList) && !subWorkflowTransitionList.isEmpty()) {
+            for (SubWorkflowTransition transition : subWorkflowTransitionList) {
+                String tenderId = transition.getRequestId();
+                // Reset processedIndentIds if requestId has changed
+                if (!tenderId.equals(previousRequestId)) {
+                    processedIndentIds.clear();
+                    previousRequestId = tenderId; // Update to new requestId
+                }
+                // Fetch indentIds for the current tender (requestId)
+                List<String> indentIds = indentIdRepository.findTenderWithIndent(tenderId);
+
+                // Fetch indent details using the indentIds
+                List<IndentCreation> indentList = indentCreationRepository.findByIndentIdIn(indentIds);
+
+                for (IndentCreation indent : indentList) {
+                    if (processedIndentIds.contains(indent.getIndentId())) {
+                        continue; // Skip if already added
+                    }
+
+                    SubWorkflowQueueDto subWorkflowQueueDto = new SubWorkflowQueueDto();
+                    subWorkflowQueueDto.setSubWorkflowTransitionId(transition.getSubWorkflowTransitionId());
+                    subWorkflowQueueDto.setWorkflowId(transition.getWorkflowId());
+                    subWorkflowQueueDto.setWorkflowName(transition.getWorkflowName());
+                    subWorkflowQueueDto.setModifiedBy(transition.getModifiedBy());
+                    subWorkflowQueueDto.setWorkflowSequence(transition.getWorkflowSequence());
+                    subWorkflowQueueDto.setStatus(transition.getStatus());
+                    subWorkflowQueueDto.setRemarks(transition.getRemarks());
+                    subWorkflowQueueDto.setAction(transition.getAction());
+                    subWorkflowQueueDto.setActionOn(transition.getActionOn());
+                    subWorkflowQueueDto.setRequestId(transition.getRequestId());
+                    subWorkflowQueueDto.setCreatedBy(transition.getCreatedBy());
+                    subWorkflowQueueDto.setCreatedDate(transition.getCreatedDate());
+                    subWorkflowQueueDto.setModificationDate(transition.getModificationDate());
+
+                    // Assign corresponding indent to the tender
+                    subWorkflowQueueDto.setIndentId(indent.getIndentId());
+                    subWorkflowQueueDto.setIndentorName(indent.getIndentorName());
+                    subWorkflowQueueDto.setProjectName(indent.getProjectName());
+                    subWorkflowQueueDto.setAmount(indent.getTotalIntentValue());
+                    subWorkflowQueueDto.setConsignee(indent.getConsignesLocation());
+
+                    workflowQueueDtoList.add(subWorkflowQueueDto);
+                    processedIndentIds.add(indent.getIndentId()); // Mark indentId as processed
+                }
+            }
+        }
+        return workflowQueueDtoList;
+    }
+
+    */
+
+    @Override
+    public List<SubWorkflowQueueDto> getSubWorkflowQueue(Integer modifiedBy) {
+        List<SubWorkflowQueueDto> workflowQueueDtoList = new ArrayList<>();
+
+
+        List<SubWorkflowTransition> subWorkflowTransitionList = subWorkflowTransitionRepository.findByActionOn(modifiedBy);
+
+        if (subWorkflowTransitionList != null && !subWorkflowTransitionList.isEmpty()) {
+
+            Map<String, List<SubWorkflowTransition>> transitionsByRequestId = subWorkflowTransitionList.stream()
+                    .collect(Collectors.groupingBy(SubWorkflowTransition::getRequestId));
+
+            for (Map.Entry<String, List<SubWorkflowTransition>> entry : transitionsByRequestId.entrySet()) {
+                String tenderId = entry.getKey(); // Request ID
+                List<SubWorkflowTransition> transitions = entry.getValue(); // Transitions for the request ID
+
+                List<String> indentIds = indentIdRepository.findTenderWithIndent(tenderId);
+                if (indentIds.isEmpty()) continue;
+
+                // Fetch indent details using the indentIds
+                List<IndentCreation> indentList = indentCreationRepository.findByIndentIdIn(indentIds);
+                if (indentList.isEmpty()) continue;
+
+                // Distribute indent records across transitions
+                int transitionIndex = 0;
+                for (IndentCreation indent : indentList) {
+                    SubWorkflowTransition transition = transitions.get(transitionIndex);
+
+                    SubWorkflowQueueDto subWorkflowQueueDto = new SubWorkflowQueueDto();
+                    subWorkflowQueueDto.setSubWorkflowTransitionId(transition.getSubWorkflowTransitionId());
+                    subWorkflowQueueDto.setWorkflowId(transition.getWorkflowId());
+                    subWorkflowQueueDto.setWorkflowName(transition.getWorkflowName());
+                    subWorkflowQueueDto.setModifiedBy(transition.getModifiedBy());
+                    subWorkflowQueueDto.setWorkflowSequence(transition.getWorkflowSequence());
+                    subWorkflowQueueDto.setStatus(transition.getStatus());
+                    subWorkflowQueueDto.setRemarks(transition.getRemarks());
+                    subWorkflowQueueDto.setAction(transition.getAction());
+                    subWorkflowQueueDto.setActionOn(transition.getActionOn());
+                    subWorkflowQueueDto.setRequestId(transition.getRequestId());
+                    subWorkflowQueueDto.setCreatedBy(transition.getCreatedBy());
+                    subWorkflowQueueDto.setCreatedDate(transition.getCreatedDate());
+                    subWorkflowQueueDto.setModificationDate(transition.getModificationDate());
+
+                    // Assign corresponding indent to the transition
+                    subWorkflowQueueDto.setIndentId(indent.getIndentId());
+                    subWorkflowQueueDto.setIndentorName(indent.getIndentorName());
+                    subWorkflowQueueDto.setProjectName(indent.getProjectName());
+                    subWorkflowQueueDto.setAmount(indent.getTotalIntentValue());
+                    subWorkflowQueueDto.setConsignee(indent.getConsignesLocation());
+
+                    workflowQueueDtoList.add(subWorkflowQueueDto);
+
+                    transitionIndex = (transitionIndex + 1) % transitions.size();
+                }
+            }
+        }
+        return workflowQueueDtoList;
     }
 
 
 }
+
+
+
+
 
 

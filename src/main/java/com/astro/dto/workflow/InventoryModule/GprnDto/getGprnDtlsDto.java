@@ -1,16 +1,13 @@
 package com.astro.dto.workflow.InventoryModule.GprnDto;
 
 
-
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.time.LocalDateTime;
-
+import java.util.Collections;
 import java.util.List;
 
 @Data
-public class GprnRequestDto {
+public class getGprnDtlsDto {
 
     private String gprnNo;
     private String poId;
@@ -28,15 +25,13 @@ public class GprnRequestDto {
     private Integer warrantyYears;
     private String project;
     private String receivedQty;
-    private String pendingQty;
-    private String acceptedQty;
-    private MultipartFile provisionalReceiptCertificate;
+  //  private String pendingQty;
+  //  private String acceptedQty;
+ //   private String provisionalReceiptCertificateFileName;
     private String receivedBy;
     private String createdBy;
     private String updatedBy;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
-
-  //  private List<GprnMaterialsRequestDto> gprnMaterialsRequest =Collections.emptyList();
-    private List<GprnMaterialsRequestDto> gprnMaterials;
+    private List<GprnMaterialsResponseDto> gprnMaterialsResponsetDtos;
 }

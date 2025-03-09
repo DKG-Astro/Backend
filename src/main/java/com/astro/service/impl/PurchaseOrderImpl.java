@@ -1,7 +1,6 @@
 package com.astro.service.impl;
 
 
-
 import com.astro.constant.AppConstant;
 
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
@@ -229,7 +228,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         responseDTO.setVendorAccountNumber(purchaseOrder.getVendorAccountNumber());
         responseDTO.setVendorsZfscCode(purchaseOrder.getVendorsZfscCode());
         responseDTO.setVendorAccountName(purchaseOrder.getVendorAccountName());
-        responseDTO.setProjectName(purchaseOrder.getProjectName());
+        //  responseDTO.setProjectName(purchaseOrder.getProjectName());
         responseDTO.setTotalValueOfPo(tenderWithIndent.getTotalTenderValue());
         responseDTO.setCreatedBy(purchaseOrder.getCreatedBy());
         responseDTO.setUpdatedBy(purchaseOrder.getUpdatedBy());
@@ -252,6 +251,18 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                     return attributeDTO;
                 })
                 .collect(Collectors.toList()));
+        String projectName = tenderWithIndent.getIndentResponseDTO()
+                .stream()
+                .findFirst()
+                .map(IndentCreationResponseDTO::getProjectName)
+                .orElse(null);
+        BigDecimal projectLimit = tenderWithIndent.getIndentResponseDTO()
+                .stream()
+                .findFirst()
+                .map(IndentCreationResponseDTO::getProjectLimit)
+                .orElse(null);
+        responseDTO.setProjectName(projectName);
+        responseDTO.setProjectLimit(projectLimit);
         // Set Tender & Indent details
         responseDTO.setTenderDetails(tenderWithIndent);
         return responseDTO;

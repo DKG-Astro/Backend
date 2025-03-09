@@ -89,49 +89,51 @@ CREATE TABLE `astrodatabase`.`state_master` (
 
 
 --Inventory Modules
-CREATE TABLE GPRN (
-    gprn_no VARCHAR(255) PRIMARY KEY,
-    po_no VARCHAR(255),
+CREATE TABLE gprn_master (
+    process_id VARCHAR(50) NOT NULL,
+    sub_process_id INT AUTO_INCREMENT PRIMARY KEY,
+    po_id VARCHAR(50) NOT NULL,
     date DATE,
-    delivery_challan_no VARCHAR(255),
-    delivery_challan_date DATE ,
-    vendor_id VARCHAR(255),
-    vendor_name VARCHAR(255),
-    vendor_email VARCHAR(255),
-    vendor_contact_no BIGINT,
-    field_station VARCHAR(255),
-    indentor_name VARCHAR(255),
-    expected_supply_date DATE,
-    consignee_detail VARCHAR(255),
-    warranty_years INT,
-    project VARCHAR(255),
-    received_qty VARCHAR(255),
-    pending_qty VARCHAR(255),
-    accepted_qty VARCHAR(255),
-    provisional_receipt_certificate BLOB,
-    received_by VARCHAR(255),
-    created_by VARCHAR(255),
-    updated_by VARCHAR(255),
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    challan_no VARCHAR(50) NOT NULL,
+    delivery_date DATE NOT NULL,
+    vendor_id VARCHAR(50) NOT NULL,
+    field_station VARCHAR(50) NOT NULL,
+    indentor_name VARCHAR(50) NOT NULL,
+    supply_expected_date DATE NOT NULL,
+    consignee_detail VARCHAR(100) NOT NULL,
+    warranty_years DECIMAL(10,1),
+    project VARCHAR(50),
+    received_by VARCHAR(50) NOT NULL,
+    created_by INT,
+    updated_by VARCHAR(50),
+    created_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (po_id) REFERENCES purchase_order(po_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (vendor_id) REFERENCES vendor_master(vendor_id) ON UPDATE CASCADE,
+    UNIQUE (process_id)
 );
-CREATE TABLE gprn_materials (
-    material_code VARCHAR(255) PRIMARY KEY,
-    description VARCHAR(255),
-    uom VARCHAR(50),
-    ordered_quantity INT,
-    quantity_delivered INT,
-    received_quantity INT,
-    unit_price DOUBLE,
-    net_price DECIMAL(18, 2),
-    make_no VARCHAR(255),
-    model_no VARCHAR(255),
-    serial_no VARCHAR(255),
-    warranty VARCHAR(255),
-    note VARCHAR(255),
-    photograph_path BLOB,
-    gprn_id VARCHAR(255),
-    FOREIGN KEY (gprn_id) REFERENCES GPRN(gprn_no)
+
+
+CREATE TABLE gprn_material_detail (
+    detail_id INT AUTO_INCREMENT PRIMARY KEY,
+    process_id VARCHAR(50) NOT NULL,
+    sub_process_id INT NOT NULL,
+    po_id VARCHAR(50) NOT NULL,
+    material_code VARCHAR(50) NOT NULL,
+    material_desc VARCHAR(50) NOT NULL,
+    uom_id VARCHAR(10) NOT NULL,
+    received_quantity DECIMAL(10,2) NOT NULL,
+    unit_price DECIMAL(10,2) NOT NULL,
+    make_no VARCHAR(50),
+    serial_no VARCHAR(50),
+    model_no VARCHAR(50),
+    warrantyw_terms VARCHAR(100),
+    note VARCHAR(100),
+    photo_path VARCHAR(100),
+    FOREIGN KEY (process_id) REFERENCES gprn_master(process_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (sub_process_id) REFERENCES gprn_master(sub_process_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (material_code) REFERENCES material_master(material_code) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (uom_id) REFERENCES uom_master(uom_code) ON UPDATE CASCADE
 );
 CREATE TABLE material_disposal (
     material_disposal_code VARCHAR(255) primary key,
@@ -159,7 +161,7 @@ CREATE TABLE goods_inspection (
 	receipt_inspection_no VARCHAR(255), -- Foreign key to Good Provisional Receipt entity
     installation_date varchar(20),
     commissioning_date varchar(20),
-    upload_installation_report text, -- For storing PDF files
+    upload_installation_report Blob,
     accepted_quantity INT NOT NULL,
     rejected_quantity INT NOT NULL,
 	goods_return_permament_or_replacement VARCHAR(255),
@@ -187,6 +189,7 @@ CREATE TABLE goods_return (
     updated_by varchar(200),
     updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
 CREATE TABLE goods_receipt_inspection (
     receipt_inspection_no VARCHAR(255)  PRIMARY KEY,
     installation_date DATE,

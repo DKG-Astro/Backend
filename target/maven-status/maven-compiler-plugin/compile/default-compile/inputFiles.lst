@@ -24,6 +24,7 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\UomM
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\MaterialDisposalService.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\purchaseOrder\PurchaseOrderRequestDTO.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\UomMasterServiceImpl.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\ProcessService.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\TransitionMasterRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\InventoryModule\GatePassRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\RoleDto.java
@@ -36,9 +37,11 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\JobMaster
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\SreviceOrderDto\ServiceOrderMaterialRequestDTO.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\InventoryModule\GoodsInspectionRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\TenderRequestService.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\SubWorkflowQueueDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\InventoryModule\MaterialDisposalResponseDTO.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\WorkflowTransitionRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\SubWorkflowTransition.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\ProcessServiceImpl.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\TenderEvaluationRequestDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\purchaseOrder\PurchaseOrderAttributesDTO.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\RoleMaster.java
@@ -53,12 +56,12 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\user
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\LocationMasterRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\SreviceOrderDto\soWithTenderAndIndentResponseDTO.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\ServiceOrderService.java
-C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\InventoryModule\GprnRepository\GprnRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\TenderEvaluationServiceImpl.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\UserRoleMasterRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\VendorMasterRequestDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\ServiceOrderServiceImpl.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\ProcurementModule\WorkOrder.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\InventoryModule\GprnMaterialDetails.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProjectMaster\ProjectMasterRequestDTO.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\WorkflowMaster.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\exception\ExceptionHelper.java
@@ -73,6 +76,7 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\ActionMast
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\JobMasterRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\AssetService.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\IndentDto\MaterialDetailsRequestDTO.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\InventoryModule\GprnRepository\GprnMaterialDetailsRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\TenderEvaluationResponseDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\ProcurementActivityReportResponse.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\VendorMasterServiceImpl.java
@@ -87,7 +91,7 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\Empl
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\InventoryModule\MaterialDisposalRequestDTO.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\UserServiceImpl.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\IndentCreationServiceImpl.java
-C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\GprnServiceImpl.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\InventoryModule\GprnDto\MaterialDtlList.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\GoodsReceiptInspectionServiceImpl.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller\ProcurementModuleController\TenderRequestController.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\TechnoMomReportDTO.java
@@ -109,6 +113,7 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\Proc
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\MaterialCreationServiceImpl.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\exception\ErrorDetails.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\VendorContractReportDTO.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\InventoryModule\GprnDto\getGprnDtlsDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\ContigencyPurchaseServiceImpl.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\InventoryModule\GprnMaterialsId.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\RoleMasterService.java
@@ -119,7 +124,6 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\Good
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\ProcurementModule\IndentCreation.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\config\SwaggerConfigurations.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller\InventoryModule\GoodsInspectionController.java
-C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller\InventoryModule\GprnController.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller\InventoryModule\GatepassController.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\ProcurementModule\PurchaseOrder\PurchaseOrderAttributesRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ActionDto.java
@@ -134,13 +138,12 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\Proc
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\ProcurementModule\ContigencyPurchaseRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\ProjectMasterServiceImpl.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\MaterialCreationResponseDto.java
-C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\InventoryModule\GprnMaterials.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\InventoryModule\GoodsTransferResponseDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\EmployeeDepartmentMasterService.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\InventoryModule\GprnMaster.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\constant\WorkflowName.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\LocationMasterRequestDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\TenderEvaluationService.java
-C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\InventoryModule\GprnDto\GprnResponseDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\MaterialMaster.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\MaterialMasterService.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\GatepassServiceImpl.java
@@ -148,10 +151,11 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\Asse
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\TransitionConditionMaster.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller\ProcurementModuleController\WorkOrderController.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\WorkOrderDto\WorkOrderRequestDTO.java
-C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\InventoryModule\Gprn.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\InventoryModule\GprnDto\saveGprnDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\QueueResponse.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller\InventoryModule\MaterialDisposalController.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\UserDto.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\TenderEvaluationResponseWithBitTypeAndValueDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\util\ResponseBuilder.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\VendorMasterResponseDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\GoodsReturnService.java
@@ -159,7 +163,6 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\exception\Unautho
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\IndentCreationService.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\IndentDto\IndentCreationRequestDTO.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\JobMasterResponseDto.java
-C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\InventoryModule\GprnDto\GprnRequestDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\InventoryModule\GoodsInspectionResponseDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\TenderWithIndentResponseDTO.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\LocationMasterService.java
@@ -176,12 +179,12 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\Procur
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\VendorMasterService.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\MaterialCreationRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\ProcurementModule\IndentId.java
-C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\InventoryModule\GprnRepository\GprnMaterialsRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\TenderRequestDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\VendorMaster.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\exception\FilesNotFoundException.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\EmployeeDepartmentMasterRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\ContigencyPurchaseReportDto.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ApprovedTenderDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\ProcurementModule\TenderEvaluation.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller\RoleMasterController.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\InventoryModule\GoodsReceiptInspection.java
@@ -193,6 +196,7 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\Invent
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\ProcurementModule\IndentCreation\MaterialDetailsRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\WorkOrderImpl.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller\UserMasterController.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller\InventoryModule\ProcessController.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\InventoryModule\GoodsReturnResponseDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\util\Base64ToByteArrayConverter.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\ProcurementModule\ServiceOrderMaterial.java
@@ -228,7 +232,6 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\MaterialCr
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\InventoryModule\GoodsReturnRequestDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\InventoryModule\GatepassRequestDTO.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\WorkflowDto.java
-C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\GprnService.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller\InventoryModule\AssetController.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller\ProcurementModuleController\IndentCreationController.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\constant\AppConstant.java
@@ -246,13 +249,13 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\InventoryM
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\ProcurementModule\IndentIdRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller\JobMasterController.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\IndentDto\IndentReportDetailsDTO.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\InventoryModule\GprnRepository\GprnMasterRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\IndentIdDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\MaterialMasterRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\InventoryModule\GatepassResponseDTO.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\StateDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\ProcurementModule\MaterialDetails.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\service\impl\LocationMasterServiceImpl.java
-C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\InventoryModule\GprnDto\GprnMaterialsRequestDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\LocationMasterResponseDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\util\APIResponse.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\InventoryModule\GprnDto\GprnMaterialsResponseDto.java

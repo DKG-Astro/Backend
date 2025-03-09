@@ -2,6 +2,7 @@ package com.astro.controller.ProcurementModuleController;
 
 import com.astro.dto.workflow.ProcurementDtos.TenderEvaluationRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.TenderEvaluationResponseDto;
+import com.astro.dto.workflow.ProcurementDtos.TenderEvaluationResponseWithBitTypeAndValueDto;
 import com.astro.dto.workflow.WorkflowTransitionDto;
 import com.astro.service.TenderEvaluationService;
 import com.astro.service.WorkflowService;
@@ -52,7 +53,7 @@ public class TenderEvaluationController {
 
     @GetMapping("/{tenderId}")
     public ResponseEntity<Object> getTenderEvaluationById(@PathVariable String tenderId) {
-        TenderEvaluationResponseDto response = tenderEvaluationService.getTenderEvaluationById(tenderId);
+        TenderEvaluationResponseWithBitTypeAndValueDto response = tenderEvaluationService.getTenderEvaluationById(tenderId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
 
