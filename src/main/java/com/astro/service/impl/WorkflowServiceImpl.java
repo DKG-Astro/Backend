@@ -918,6 +918,11 @@ public class WorkflowServiceImpl implements WorkflowService {
         return workflowTransitionRepository.findApprovedIndentRequestIds();
     }
 
+    @Override
+    public List<String> getApprovedTenderIdsForPOAndSO() {
+        return workflowTransitionRepository.findApprovedTenderIdsForPOANDSO();
+    }
+
     public List<ApprovedTenderDto> getApprovedTender() {
 
         // return workflowTransitionRepository.findApprovedTenderRequestIds();
@@ -942,6 +947,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         return approvedTenders;
 
     }
+
 
     @Override
     public List<QueueResponse> allPendingWorkflowTransitionINQueue(String roleName) {

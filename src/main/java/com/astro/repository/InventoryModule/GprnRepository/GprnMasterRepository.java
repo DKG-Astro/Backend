@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface GprnMasterRepository extends JpaRepository<GprnMaster,Integer> {
+
+
 }
