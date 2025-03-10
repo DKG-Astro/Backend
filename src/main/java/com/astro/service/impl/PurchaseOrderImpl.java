@@ -89,7 +89,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setApplicablePbgToBeSubmitted(purchaseOrderRequestDTO.getApplicablePbgToBeSubmitted());
         purchaseOrder.setTransporterAndFreightForWarderDetails(purchaseOrderRequestDTO.getTransporterAndFreightForWarderDetails());
         purchaseOrder.setVendorAccountNumber(purchaseOrderRequestDTO.getVendorAccountNumber());
-        purchaseOrder.setVendorsZfscCode(purchaseOrderRequestDTO.getVendorsZfscCode());
+        purchaseOrder.setVendorsZfscCode(purchaseOrderRequestDTO.getVendorsIfscCode());
         purchaseOrder.setVendorAccountName(purchaseOrderRequestDTO.getVendorAccountName());
         //  purchaseOrder.setTotalValueOfPo(purchaseOrderRequestDTO.getTotalValueOfPo());
         purchaseOrder.setProjectName(purchaseOrderRequestDTO.getProjectName());
@@ -155,7 +155,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setApplicablePbgToBeSubmitted(purchaseOrderRequestDTO.getApplicablePbgToBeSubmitted());
         purchaseOrder.setTransporterAndFreightForWarderDetails(purchaseOrderRequestDTO.getTransporterAndFreightForWarderDetails());
         purchaseOrder.setVendorAccountNumber(purchaseOrderRequestDTO.getVendorAccountNumber());
-        purchaseOrder.setVendorsZfscCode(purchaseOrderRequestDTO.getVendorsZfscCode());
+        purchaseOrder.setVendorsZfscCode(purchaseOrderRequestDTO.getVendorsIfscCode());
         purchaseOrder.setVendorAccountName(purchaseOrderRequestDTO.getVendorAccountName());
         purchaseOrder.setProjectName(purchaseOrderRequestDTO.getProjectName());
         //   purchaseOrder.setTotalValueOfPo(purchaseOrderRequestDTO.getTotalValueOfPo());
@@ -226,7 +226,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         responseDTO.setApplicablePbgToBeSubmitted(purchaseOrder.getApplicablePbgToBeSubmitted());
         responseDTO.setTransporterAndFreightForWarderDetails(purchaseOrder.getTransporterAndFreightForWarderDetails());
         responseDTO.setVendorAccountNumber(purchaseOrder.getVendorAccountNumber());
-        responseDTO.setVendorsZfscCode(purchaseOrder.getVendorsZfscCode());
+        responseDTO.setVendorsIfscCode(purchaseOrder.getVendorsZfscCode());
         responseDTO.setVendorAccountName(purchaseOrder.getVendorAccountName());
         //  responseDTO.setProjectName(purchaseOrder.getProjectName());
         responseDTO.setTotalValueOfPo(tenderWithIndent.getTotalTenderValue());
@@ -322,7 +322,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         responseDTO.setApplicablePbgToBeSubmitted(purchaseOrder.getApplicablePbgToBeSubmitted());
         responseDTO.setTransporterAndFreightForWarderDetails(purchaseOrder.getTransporterAndFreightForWarderDetails());
         responseDTO.setVendorAccountNumber(purchaseOrder.getVendorAccountNumber());
-        responseDTO.setVendorsZfscCode(purchaseOrder.getVendorsZfscCode());
+        responseDTO.setVendorsIfscCode(purchaseOrder.getVendorsZfscCode());
         responseDTO.setVendorAccountName(purchaseOrder.getVendorAccountName());
         responseDTO.setProjectName(purchaseOrder.getProjectName());
         //  responseDTO.setTotalValueOfPo(purchaseOrder.getTotalValueOfPo());
