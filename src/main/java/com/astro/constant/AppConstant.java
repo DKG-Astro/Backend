@@ -24,6 +24,7 @@ public class AppConstant {
     public static final String ERROR_TYPE_ERROR = "error";
     public static final String ERROR_TYPE_VALIDATION = "validation";
     public static final String ERROR_TYPE_RESOURCE = "missing resource";
+    public static final String ERROR_TYPE_CORRUPTED = "corrupted resource";
 
     public static final int ERROR_TYPE_CODE_RESOURCE = 5001;
     public static final int INTER_SERVER_ERROR = 1000;

@@ -1,13 +1,11 @@
 package com.astro.service;
 
 
-import com.astro.dto.workflow.InventoryModule.GprnDto.getGprnDtlsDto;
-import com.astro.dto.workflow.InventoryModule.GprnDto.saveGprnDto;
+import com.astro.dto.workflow.InventoryModule.GprnDto.GetGprnDtlsDto;
+import com.astro.dto.workflow.InventoryModule.GprnDto.SaveGprnDto;
 
 public interface ProcessService {
+    public String saveGprn(SaveGprnDto saveGprnDto);
 
-
-    saveGprnDto saveGprn(saveGprnDto saveGprnDto);
-
-    getGprnDtlsDto getSubProcessDtls(String processStage, String processId);
+    public Object getSubProcessDtls(String processStage, String processId);
 }

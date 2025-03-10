@@ -2,6 +2,7 @@ package com.astro.util;
 
 import org.apache.tomcat.util.http.fileupload.FileItem;
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -137,4 +138,89 @@ public class CommonUtils {
         }
         return null;  // Handle null case if necessary
     }
+
+    public static String saveBase64Image(String base64Image, String basePath) throws IOException {
+        // Validate input
+        if (base64Image == null || base64Image.trim().isEmpty()) {
+            return null; // Return null if the input is empty or null
+        }
+
+        try {
+            // Extract Base64 data (remove metadata like "data:image/png;base64,")
+            String[] parts = base64Image.split(",");
+            String imageData = parts.length > 1 ? parts[1] : parts[0];
+
+            // Decode Base64
+            byte[] imageBytes = Base64.getDecoder().decode(imageData);
+
+            // Check if the decoded byte array is empty (corrupted file)
+            if (imageBytes.length == 0) {
+                throw new IOException("Invalid or corrupted Base64 image data.");
+            }
+
+            // Determine file extension
+            String fileExtension = getFileExtension(base64Image);
+
+            // Generate a unique filename (timestamp + UUID)
+            String fileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().replace("-", "") + fileExtension;
+
+            // Ensure the base path directory exists
+            File directory = new File(basePath);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            // Define file path
+            String filePath = basePath + File.separator + fileName;
+
+            // Write to file
+            try (FileOutputStream fos = new FileOutputStream(filePath)) {
+                fos.write(imageBytes);
+            }
+
+            return fileName; // Return only the filename
+        } catch (IllegalArgumentException e) {
+            throw new IOException("Invalid Base64 format. Cannot decode.", e);
+        }
+    }
+
+    private static String getFileExtension(String base64) {
+        if (base64.startsWith("data:image/png")) return ".png";
+        if (base64.startsWith("data:image/jpeg") || base64.startsWith("data:image/jpg")) return ".jpg";
+        if (base64.startsWith("data:image/gif")) return ".gif";
+        return ".jpg"; // Default to .jpg
+    }
+
+    public static String convertImageToBase64(String fileName, String basePath) throws IOException {
+        // Construct the full file path
+        String filePath = basePath + File.separator + fileName;
+
+        // Ensure the file exists
+        File file = new File(filePath);
+        if (!file.exists() || file.isDirectory()) {
+            throw new IOException("File not found: " + filePath);
+        }
+
+        // Read file into byte array
+        try (FileInputStream fis = new FileInputStream(file)) {
+            byte[] fileBytes = fis.readAllBytes();
+
+            // Encode bytes to Base64
+            String base64String = Base64.getEncoder().encodeToString(fileBytes);
+
+            // Get MIME type (file extension)
+            String mimeType = getMimeType(fileName);
+
+            // Return Base64 with proper metadata
+            return "data:" + mimeType + ";base64," + base64String;
+        }
+    }
+
+    private static String getMimeType(String fileName) {
+        if (fileName.endsWith(".png")) return "image/png";
+        if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) return "image/jpeg";
+        if (fileName.endsWith(".gif")) return "image/gif";
+        return "image/jpeg"; // Default type
+    }
+
 }
