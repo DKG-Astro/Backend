@@ -394,7 +394,11 @@ public class WorkflowServiceImpl implements WorkflowService {
         }
         TransitionMaster currentTransition = transitionMasterRepository.findById(workflowTransition.getTransitionId()).orElse(null);
 
-        validateUserRole(transitionActionReqDto.getActionBy(), currentTransition.getNextRoleId());
+        if(workflowTransition.getWorkflowId() == 7 && workflowTransition.getCurrentRole().equalsIgnoreCase("Tender Evaluator") && workflowTransition.getNextRole().equalsIgnoreCase("Tender Evaluator")){
+            validateUserRole(transitionActionReqDto.getActionBy(), currentTransition.getCurrentRoleId());
+        }else {
+            validateUserRole(transitionActionReqDto.getActionBy(), currentTransition.getNextRoleId());
+        }
         if (AppConstant.COMPLETED_TYPE.equalsIgnoreCase(workflowTransition.getStatus())) {
             throw new BusinessException(new ErrorDetails(AppConstant.INVALID_ACTION, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Workflow already completed."));
