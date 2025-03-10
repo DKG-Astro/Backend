@@ -550,7 +550,9 @@ public class WorkflowServiceImpl implements WorkflowService {
                 nextWorkflowTransition.setNextAction(AppConstant.PENDING_TYPE);
                 nextWorkflowTransition.setRemarks(null);
                 nextWorkflowTransition.setCurrentRole(currentWorkflowTransition.getCurrentRole());
+                nextWorkflowTransition.setNextRole(currentWorkflowTransition.getCurrentRole());
                 nextWorkflowTransition.setWorkflowSequence(currentWorkflowTransition.getWorkflowSequence() + 1);
+                nextWorkflowTransition.setRequestId(currentWorkflowTransition.getRequestId());
 
                 workflowTransitionRepository.save(nextWorkflowTransition);
             }
