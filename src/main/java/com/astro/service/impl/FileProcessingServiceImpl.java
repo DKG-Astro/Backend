@@ -32,13 +32,13 @@ public class FileProcessingServiceImpl implements FileProcessingService {
     public List<String> fileList() {
         File dir = new File(basePath);
         File[] files = dir.listFiles();
-    
+
         return files != null ? Arrays.stream(files).map(i -> i.getName()).collect(Collectors.toList()) : null;
     }
 
     @Override
     public String uploadFile(String fileType, MultipartFile multipartFile) {
-        if(!FILE_TYPE_LIST.contains(fileType)){
+        if (!FILE_TYPE_LIST.contains(fileType)) {
             throw new FilesNotFoundException(new ErrorDetails(AppConstant.INVALID_FILE_TYPE, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid File type."));
         }
@@ -51,38 +51,38 @@ public class FileProcessingServiceImpl implements FileProcessingService {
                         AppConstant.ERROR_TYPE_VALIDATION, "Invalid File type."));
             }
 
-             Path path = Path.of(basePath+ fileType + "//" + fileName);
-             Files.copy(multipartFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-        } catch (Exception e){
+            Path path = Path.of(basePath + fileType + "//" + fileName);
+            Files.copy(multipartFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) {
             throw new FilesNotFoundException(new ErrorDetails(AppConstant.FILE_UPLOAD_ERROR, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "File upload error."));
         }
 
 
         return fileName;
-    }   
+    }
 
     @Override
     public Resource downloadFile(String fileType, String fileName) {
 
-        if(!FILE_TYPE_LIST.contains(fileType)){
+        if (!FILE_TYPE_LIST.contains(fileType)) {
             throw new FilesNotFoundException(new ErrorDetails(AppConstant.INVALID_FILE_TYPE, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid File type."));
         }
 
-        File dir = new File(basePath+ fileType + "//" +fileName);
-        try{
-        if(dir.exists()){
-            Resource resource = new UrlResource(dir.toURI());
-            return resource;
-        }else{
-            throw new FilesNotFoundException(new ErrorDetails(AppConstant.FILE_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
-                    AppConstant.ERROR_TYPE_VALIDATION, "File not found."));
-        }
-        }catch (Exception e){
+        File dir = new File(basePath + fileType + "//" + fileName);
+        try {
+            if (dir.exists()) {
+                Resource resource = new UrlResource(dir.toURI());
+                return resource;
+            } else {
+                throw new FilesNotFoundException(new ErrorDetails(AppConstant.FILE_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                        AppConstant.ERROR_TYPE_VALIDATION, "File not found."));
+            }
+        } catch (Exception e) {
             throw new FilesNotFoundException(new ErrorDetails(AppConstant.FILE_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "File not found."));
         }
     }
-    
+
 }

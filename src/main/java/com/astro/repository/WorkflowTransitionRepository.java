@@ -24,11 +24,14 @@ public interface WorkflowTransitionRepository extends JpaRepository<WorkflowTran
     List<WorkflowTransition> findByWorkflowIdAndRequestIdAndNextRole(Integer workflowId, String requestId, String assignmentRole);
     List<WorkflowTransition> findByModifiedBy(Integer modifiedBy);
 
-    @Query("SELECT wt.requestId FROM WorkflowTransition wt WHERE wt.workflowName = 'Indent Workflow' AND wt.status = 'Completed' AND wt.nextAction IS NULL")
+    @Query("SELECT wt.requestId FROM WorkflowTransition wt WHERE wt.workflowName = 'Indent Workflow' AND wt.status = 'Completed' AND wt.nextAction IS NULL AND wt.requestId NOT IN (SELECT i.indentId FROM IndentId i WHERE i.tenderRequest IS NOT NULL)")
     List<String> findApprovedIndentRequestIds();
 
     //@Query("SELECT wt.requestId FROM WorkflowTransition wt WHERE wt.workflowName = 'Tender Approver Workflow' AND wt.status = 'Completed' AND wt.nextAction IS NULL")
-    @Query("SELECT wt.requestId FROM WorkflowTransition wt WHERE wt.workflowName = 'Tender Approver Workflow' AND wt.status = 'Completed' AND wt.nextAction IS NULL AND wt.requestId NOT IN (SELECT swt.requestId FROM SubWorkflowTransition swt)")
+    @Query("SELECT wt.requestId FROM WorkflowTransition wt WHERE wt.workflowName = 'Tender Approver Workflow' AND wt.status = 'Completed' AND wt.nextAction IS NULL AND wt.requestId NOT IN (SELECT swt.requestId FROM SubWorkflowTransition swt) AND wt.requestId NOT IN (SELECT po.tenderId FROM PurchaseOrder po) AND wt.requestId NOT IN (SELECT so.tenderId FROM ServiceOrder so)")
     List<String> findApprovedTenderRequestIds();
+
+    @Query("Select wt.requestId from WorkflowTransition wt WHERE wt.workflowName = 'Tender Evaluator Workflow' AND wt.status = 'Completed' AND wt.nextAction IS NULL AND wt.requestId NOT IN (SELECT po.tenderId FROM PurchaseOrder po) AND wt.requestId NOT IN (SELECT so.tenderId FROM ServiceOrder so)")
+    List<String> findApprovedTenderIdsForPOANDSO();
 
 }

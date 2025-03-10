@@ -42,6 +42,12 @@ public class SubWorkflowTransition {
     @Column(name = "REMARKS")
     private String remarks;
 
+    @Column(name = "TRANSITIONNAME")
+    private String transitionName;
+
+    @Column(name = "TRANSITIONTYPE")
+    private String transitionType;
+
     @Column(name = "ACTIONON")
     private Integer actionOn;
 

@@ -23,6 +23,7 @@ public interface WorkflowService {
     public List<String> getApprovedIndents();
    // public List<String> getApprovedTender();
    public List<ApprovedTenderDto> getApprovedTender();
+    public List<String> getApprovedTenderIdsForPOAndSO();
 
     public List<QueueResponse> allPendingWorkflowTransitionINQueue(String roleName);
     public List<SubWorkflowQueueDto> getSubWorkflowQueue(Integer modifiedBy);

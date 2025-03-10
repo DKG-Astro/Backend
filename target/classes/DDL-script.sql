@@ -104,7 +104,7 @@ CREATE TABLE gprn_master (
     warranty_years DECIMAL(10,1),
     project VARCHAR(50),
     received_by VARCHAR(50) NOT NULL,
-     created_by INT,
+    created_by INT,
     updated_by VARCHAR(50),
     created_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -124,7 +124,7 @@ CREATE TABLE gprn_material_detail (
     make_no VARCHAR(50),
     serial_no VARCHAR(50),
     model_no VARCHAR(50),
-    warranty_terms VARCHAR(100),
+    warrantyw_terms VARCHAR(100),
     note VARCHAR(100),
     photo_path VARCHAR(100),
     FOREIGN KEY (process_id) REFERENCES gprn_master(process_id) ON UPDATE CASCADE ON DELETE CASCADE,
