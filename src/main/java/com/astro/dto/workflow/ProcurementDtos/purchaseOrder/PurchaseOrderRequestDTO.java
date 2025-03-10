@@ -24,7 +24,7 @@ public class PurchaseOrderRequestDTO{
         private String applicablePbgToBeSubmitted;
         private String transporterAndFreightForWarderDetails;
         private String vendorAccountNumber;
-        private String vendorsZfscCode;
+        private String vendorsIfscCode;
         private String vendorAccountName;
        // private BigDecimal totalValueOfPo;
         private String projectName;
