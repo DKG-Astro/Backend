@@ -2,7 +2,7 @@ package com.astro.controller.InventoryModule;
 
 import com.astro.dto.workflow.InventoryModule.GoodsInspectionRequestDto;
 import com.astro.dto.workflow.InventoryModule.GoodsInspectionResponseDto;
-import com.astro.dto.workflow.InventoryModule.GprnDto.getGprnDtlsDto;
+import com.astro.dto.workflow.InventoryModule.GprnDto.GetGprnDtlsDto;
 import com.astro.service.GoodsInspectionService;
 import com.astro.service.ProcessService;
 import com.astro.util.ResponseBuilder;

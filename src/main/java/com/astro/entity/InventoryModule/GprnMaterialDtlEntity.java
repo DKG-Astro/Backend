@@ -8,16 +8,16 @@ import java.math.BigDecimal;
 @Data
 @Entity
 @Table(name = "gprn_material_detail")
-public class GprnMaterialDetails {
+public class GprnMaterialDtlEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "detail_id")
     private Integer detailId;
 
-    @ManyToOne
-    @JoinColumn(name = "process_id", insertable = false, updatable = false)
-    private GprnMaster gprnMaster;
+    // @ManyToOne
+    // @JoinColumn(name = "process_id", insertable = false, updatable = false)
+    // private GprnMasterEntity gprnMaster;
 
     @Column(name="process_id")
     private String processId;
@@ -59,5 +59,5 @@ public class GprnMaterialDetails {
     private String note;
 
     @Column(name = "photo_path")
-    private String photoPath;
+    private String fileName;
 }

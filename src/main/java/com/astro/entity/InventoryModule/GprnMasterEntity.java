@@ -14,12 +14,12 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "gprn_master")
-public class GprnMaster {
+public class GprnMasterEntity {
 
-    @Id
     @Column(name = "process_id")
     private String processId;
 
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sub_process_id")
     private Integer subProcessId;
@@ -27,15 +27,18 @@ public class GprnMaster {
     @Column(name = "po_id")
     private String poId;
 
+    @Column(name = "location_id")
+    private String locationId;
+
     @Column(name = "date")
-    private Date date;
+    private LocalDate date;
 
     @Column(name = "challan_no")
     private String challanNo;
 
 
     @Column(name = "delivery_date")
-    private Date deliveryDate;
+    private LocalDate deliveryDate;
 
     @Column(name = "vendor_id")
     private String vendorId;
@@ -47,7 +50,7 @@ public class GprnMaster {
     private String indentorName;
 
     @Column(name = "supply_expected_date")
-    private Date supplyExpectedDate;
+    private LocalDate supplyExpectedDate;
 
     @Column(name = "consignee_detail")
     private String consigneeDetail;
@@ -61,15 +64,19 @@ public class GprnMaster {
     @Column(name = "received_by")
     private String receivedBy;
 
-    @OneToMany(mappedBy = "gprnMaster", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GprnMaterialDetails> materialDetails;
+    // @OneToMany(mappedBy = "gprnMaster", cascade = CascadeType.ALL, orphanRemoval = true)
+    // private List<GprnMaterialDtlEntity> materialDetails;
+    
     @Column(name = "created_by")
-    private Integer createdBy;
+    private String createdBy;
+
     @Column(name = "updated_by")
     private String updatedBy;
+
     @Column(name = "created_date", nullable = false)
-    private LocalDateTime createdDate = LocalDateTime.now();
+    private LocalDateTime createDate = LocalDateTime.now();
+
     @Column(name = "updated_date", nullable = false)
-    private LocalDateTime updatedDate = LocalDateTime.now();
+    private LocalDateTime updateDate = LocalDateTime.now();
 
 }

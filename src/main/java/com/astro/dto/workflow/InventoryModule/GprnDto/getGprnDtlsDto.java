@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Data
-public class getGprnDtlsDto {
+public class GetGprnDtlsDto {
 
     private String gprnNo;
     private String poId;

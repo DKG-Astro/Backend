@@ -1,10 +1,12 @@
 package com.astro.controller.InventoryModule;
 
-
-import com.astro.dto.workflow.InventoryModule.GprnDto.getGprnDtlsDto;
-import com.astro.dto.workflow.InventoryModule.GprnDto.saveGprnDto;
+import com.astro.dto.workflow.InventoryModule.GprnDto.SaveGprnDto;
 import com.astro.service.ProcessService;
 import com.astro.util.ResponseBuilder;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +19,16 @@ public class ProcessController {
     @Autowired
     private ProcessService processService;
 
-    @PostMapping
-    public ResponseEntity<Object> saveGprn(@RequestBody saveGprnDto saveGprnDto) {
-          saveGprnDto created = processService.saveGprn(saveGprnDto);
-        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(created), HttpStatus.OK);
+    @PostMapping("/saveGprn")
+    public ResponseEntity<Object> saveGprn(@RequestBody SaveGprnDto saveGprnDto) {
+        String processNo = processService.saveGprn(saveGprnDto);
+        Map<String, String> res = new HashMap<>();
+        res.put("processNo", processNo);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
-    @GetMapping
-    public ResponseEntity<Object> getSubProcessDtls(@PathVariable String processStage,String processId ) {
-       getGprnDtlsDto created = processService.getSubProcessDtls(processStage,processId);
+    @GetMapping("/getSubProcessDtls")
+    public ResponseEntity<Object> getSubProcessDtls(@RequestParam String processStage, @RequestParam String processNo ) {
+       Object created = processService.getSubProcessDtls(processStage, processNo);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(created), HttpStatus.OK);
     }
 }
