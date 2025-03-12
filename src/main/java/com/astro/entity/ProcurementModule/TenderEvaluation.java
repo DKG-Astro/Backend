@@ -1,6 +1,7 @@
 package com.astro.entity.ProcurementModule;
 
 
+import io.swagger.models.auth.In;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -10,9 +11,9 @@ import java.time.LocalDateTime;
 @Table(name = "tender_evaluation")
 @Data
 public class TenderEvaluation {
-   // @Id
-   // @GeneratedValue(strategy = GenerationType.IDENTITY)
-   // private Long tenderEvaluationId;
+    // @Id
+    // @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // private Long tenderEvaluationId;
     @Id
     private String tenderId;
     private String uploadQualifiedVendorsFileName;
@@ -22,6 +23,14 @@ public class TenderEvaluation {
     private String responseFileName;
     private String responseForTechnicallyQualifiedVendorsFileName;
     private String responseForCommeriallyQualifiedVendorsFileName;
+    private Integer uploadQualifiedVendorsFileNameCreatedBy;
+    private Integer uploadTechnicallyQualifiedVendorsFileNameCreatedBy;
+    private Integer uploadCommeriallyQualifiedVendorsFileNameCreatedBy;
+    private Integer formationOfTechnoCommerialComiteeCreatedBy;
+    private Integer responseFileNameCreatedBy;
+    private Integer responseForTechnicallyQualifiedVendorsFileNameCreatedBy;
+    private Integer responseForCommeriallyQualifiedVendorsFileNameCreatedBy;
+
     private String fileType;
     @Column(name = "updated_by")
     private String updatedBy;
@@ -31,8 +40,6 @@ public class TenderEvaluation {
     private LocalDateTime createdDate = LocalDateTime.now();
     @Column(name = "updated_date", nullable = false)
     private LocalDateTime updatedDate = LocalDateTime.now();
-
-
 
 
 }

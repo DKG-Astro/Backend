@@ -16,6 +16,13 @@ public class TenderEvaluationResponseWithBitTypeAndValueDto {
     private String responseFileName;
     private String responseForTechnicallyQualifiedVendorsFileName;
     private String responseForCommeriallyQualifiedVendorsFileName;
+    private Integer uploadQualifiedVendorsFileNameCreatedBy;
+    private Integer uploadTechnicallyQualifiedVendorsFileNameCreatedBy;
+    private Integer uploadCommeriallyQualifiedVendorsFileNameCreatedBy;
+    private Integer formationOfTechnoCommerialComiteeCreatedBy;
+    private Integer responseFileNameCreatedBy;
+    private Integer responseForTechnicallyQualifiedVendorsFileNameCreatedBy;
+    private Integer responseForCommeriallyQualifiedVendorsFileNameCreatedBy;
     private String fileType;
     private String bidType;
     private BigDecimal totalValueOfTender;

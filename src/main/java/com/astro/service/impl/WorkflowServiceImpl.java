@@ -1207,7 +1207,7 @@ public class WorkflowServiceImpl implements WorkflowService {
     }
 
     */
-
+/*
     @Override
     public List<SubWorkflowQueueDto> getSubWorkflowQueue(Integer modifiedBy) {
         List<SubWorkflowQueueDto> workflowQueueDtoList = new ArrayList<>();
@@ -1266,6 +1266,72 @@ public class WorkflowServiceImpl implements WorkflowService {
         }
         return workflowQueueDtoList;
     }
+
+ */
+   @Override
+   public List<SubWorkflowQueueDto> getSubWorkflowQueue(Integer modifiedBy) {
+       List<SubWorkflowQueueDto> workflowQueueDtoList = new ArrayList<>();
+
+
+       List<SubWorkflowTransition> subWorkflowTransitionList = subWorkflowTransitionRepository.findByActionOn(modifiedBy);
+
+       if (subWorkflowTransitionList != null && !subWorkflowTransitionList.isEmpty()) {
+
+           Map<String, List<SubWorkflowTransition>> transitionsByRequestId = subWorkflowTransitionList.stream()
+                   .collect(Collectors.groupingBy(SubWorkflowTransition::getRequestId));
+
+           for (Map.Entry<String, List<SubWorkflowTransition>> entry : transitionsByRequestId.entrySet()) {
+               String tenderId = entry.getKey(); // Request ID
+               List<SubWorkflowTransition> transitions = entry.getValue(); // Transitions for the request ID
+
+               List<String> indentIds = indentIdRepository.findTenderWithIndent(tenderId);
+               if (indentIds.isEmpty()) continue;
+
+               // Fetch indent details using the indentIds
+               List<IndentCreation> indentList = indentCreationRepository.findByIndentIdIn(indentIds);
+               if (indentList.isEmpty()) continue;
+
+// Double the size of indentList dynamically
+               List<IndentCreation> extendedIndentList = new ArrayList<>(indentList);
+               extendedIndentList.addAll(indentList); // Duplicate the list
+
+               int transitionIndex = 0;
+               for (SubWorkflowTransition transition : transitions) {
+                   // Assign indent details (cycling through the extended list)
+                   IndentCreation indent = extendedIndentList.get(transitionIndex % extendedIndentList.size());
+
+                   SubWorkflowQueueDto subWorkflowQueueDto = new SubWorkflowQueueDto();
+                   subWorkflowQueueDto.setSubWorkflowTransitionId(transition.getSubWorkflowTransitionId());
+                   subWorkflowQueueDto.setWorkflowId(transition.getWorkflowId());
+                   subWorkflowQueueDto.setWorkflowName(transition.getWorkflowName());
+                   subWorkflowQueueDto.setModifiedBy(transition.getModifiedBy());
+                   subWorkflowQueueDto.setWorkflowSequence(transition.getWorkflowSequence());
+                   subWorkflowQueueDto.setStatus(transition.getStatus());
+                   subWorkflowQueueDto.setRemarks(transition.getRemarks());
+                   subWorkflowQueueDto.setAction(transition.getAction());
+                   subWorkflowQueueDto.setActionOn(transition.getActionOn());
+                   subWorkflowQueueDto.setRequestId(transition.getRequestId());
+                   subWorkflowQueueDto.setCreatedBy(transition.getCreatedBy());
+                   subWorkflowQueueDto.setCreatedDate(transition.getCreatedDate());
+                   subWorkflowQueueDto.setModificationDate(transition.getModificationDate());
+
+                   // Assign indent details
+                   subWorkflowQueueDto.setIndentId(indent.getIndentId());
+                   subWorkflowQueueDto.setIndentorName(indent.getIndentorName());
+                   subWorkflowQueueDto.setProjectName(indent.getProjectName());
+                   subWorkflowQueueDto.setAmount(indent.getTotalIntentValue());
+                   subWorkflowQueueDto.setConsignee(indent.getConsignesLocation());
+
+                   workflowQueueDtoList.add(subWorkflowQueueDto);
+
+                   transitionIndex++;
+               }
+
+           }
+       }
+       return workflowQueueDtoList;
+   }
+
 
 
 }

@@ -44,6 +44,14 @@ public class TenderEvaluationServiceImpl implements TenderEvaluationService {
         tenderEvaluation.setResponseForTechnicallyQualifiedVendorsFileName(tenderEvaluationRequestDto.getResponseForTechnicallyQualifiedVendorsFileName());
         tenderEvaluation.setResponseForCommeriallyQualifiedVendorsFileName(tenderEvaluationRequestDto.getResponseForCommeriallyQualifiedVendorsFileName());
 
+        tenderEvaluation.setUploadQualifiedVendorsFileNameCreatedBy(tenderEvaluationRequestDto.getUploadQualifiedVendorsFileNameCreatedBy());
+        tenderEvaluation.setUploadTechnicallyQualifiedVendorsFileNameCreatedBy(tenderEvaluationRequestDto.getUploadTechnicallyQualifiedVendorsFileNameCreatedBy());
+        tenderEvaluation.setUploadCommeriallyQualifiedVendorsFileNameCreatedBy(tenderEvaluationRequestDto.getUploadCommeriallyQualifiedVendorsFileNameCreatedBy());
+        tenderEvaluation.setFormationOfTechnoCommerialComiteeCreatedBy(tenderEvaluationRequestDto.getFormationOfTechnoCommerialComiteeCreatedBy());
+        tenderEvaluation.setResponseFileNameCreatedBy(tenderEvaluationRequestDto.getResponseFileNameCreatedBy());
+        tenderEvaluation.setResponseForTechnicallyQualifiedVendorsFileNameCreatedBy(tenderEvaluationRequestDto.getResponseForTechnicallyQualifiedVendorsFileNameCreatedBy());
+        tenderEvaluation.setResponseForCommeriallyQualifiedVendorsFileNameCreatedBy(tenderEvaluationRequestDto.getResponseForCommeriallyQualifiedVendorsFileNameCreatedBy());
+
         tenderEvaluation.setFileType(tenderEvaluationRequestDto.getFileType());
         tenderEvaluation.setCreatedBy(tenderEvaluationRequestDto.getCreatedBy());
         tenderEvaluation.setUpdatedBy(tenderEvaluationRequestDto.getUpdatedBy());
@@ -64,6 +72,14 @@ public class TenderEvaluationServiceImpl implements TenderEvaluationService {
         responseDto.setResponseFileName(tenderEvaluation.getResponseFileName());
         responseDto.setResponseForTechnicallyQualifiedVendorsFileName(tenderEvaluation.getResponseForTechnicallyQualifiedVendorsFileName());
         responseDto.setResponseForCommeriallyQualifiedVendorsFileName(tenderEvaluation.getResponseForCommeriallyQualifiedVendorsFileName());
+
+        responseDto.setUploadQualifiedVendorsFileNameCreatedBy(tenderEvaluation.getUploadQualifiedVendorsFileNameCreatedBy());
+        responseDto.setUploadTechnicallyQualifiedVendorsFileNameCreatedBy(tenderEvaluation.getUploadTechnicallyQualifiedVendorsFileNameCreatedBy());
+        responseDto.setUploadCommeriallyQualifiedVendorsFileNameCreatedBy(tenderEvaluation.getUploadCommeriallyQualifiedVendorsFileNameCreatedBy());
+        responseDto.setFormationOfTechnoCommerialComiteeCreatedBy(tenderEvaluation.getFormationOfTechnoCommerialComiteeCreatedBy());
+        responseDto.setResponseFileNameCreatedBy(tenderEvaluation.getResponseFileNameCreatedBy());
+        responseDto.setResponseForTechnicallyQualifiedVendorsFileNameCreatedBy(tenderEvaluation.getResponseForTechnicallyQualifiedVendorsFileNameCreatedBy());
+        responseDto.setResponseForCommeriallyQualifiedVendorsFileNameCreatedBy(tenderEvaluation.getResponseForCommeriallyQualifiedVendorsFileNameCreatedBy());
 
         responseDto.setFileType(tenderEvaluation.getFileType());
         responseDto.setCreatedBy(tenderEvaluation.getCreatedBy());
@@ -98,6 +114,17 @@ public class TenderEvaluationServiceImpl implements TenderEvaluationService {
         tenderEvaluation.setFileType(tenderEvaluationRequestDto.getFileType());
         tenderEvaluation.setCreatedBy(tenderEvaluationRequestDto.getCreatedBy());
         tenderEvaluation.setUpdatedBy(tenderEvaluationRequestDto.getUpdatedBy());
+
+
+        tenderEvaluation.setUploadQualifiedVendorsFileNameCreatedBy(tenderEvaluationRequestDto.getUploadQualifiedVendorsFileNameCreatedBy());
+        tenderEvaluation.setUploadTechnicallyQualifiedVendorsFileNameCreatedBy(tenderEvaluationRequestDto.getUploadTechnicallyQualifiedVendorsFileNameCreatedBy());
+        tenderEvaluation.setUploadCommeriallyQualifiedVendorsFileNameCreatedBy(tenderEvaluationRequestDto.getUploadCommeriallyQualifiedVendorsFileNameCreatedBy());
+        tenderEvaluation.setFormationOfTechnoCommerialComiteeCreatedBy(tenderEvaluationRequestDto.getFormationOfTechnoCommerialComiteeCreatedBy());
+        tenderEvaluation.setResponseFileNameCreatedBy(tenderEvaluationRequestDto.getResponseFileNameCreatedBy());
+        tenderEvaluation.setResponseForTechnicallyQualifiedVendorsFileNameCreatedBy(tenderEvaluationRequestDto.getResponseForTechnicallyQualifiedVendorsFileNameCreatedBy());
+        tenderEvaluation.setResponseForCommeriallyQualifiedVendorsFileNameCreatedBy(tenderEvaluationRequestDto.getResponseForCommeriallyQualifiedVendorsFileNameCreatedBy());
+
+
         tenderEvaluationRepository.save(tenderEvaluation);
 
         return mapToResponseDTO(tenderEvaluation);
@@ -124,6 +151,15 @@ public class TenderEvaluationServiceImpl implements TenderEvaluationService {
         responseDto.setResponseFileName(tenderEvaluation.getResponseFileName());
         responseDto.setResponseForTechnicallyQualifiedVendorsFileName(tenderEvaluation.getResponseForTechnicallyQualifiedVendorsFileName());
         responseDto.setResponseForCommeriallyQualifiedVendorsFileName(tenderEvaluation.getResponseForCommeriallyQualifiedVendorsFileName());
+
+        responseDto.setUploadQualifiedVendorsFileNameCreatedBy(tenderEvaluation.getUploadQualifiedVendorsFileNameCreatedBy());
+        responseDto.setUploadTechnicallyQualifiedVendorsFileNameCreatedBy(tenderEvaluation.getUploadTechnicallyQualifiedVendorsFileNameCreatedBy());
+        responseDto.setUploadCommeriallyQualifiedVendorsFileNameCreatedBy(tenderEvaluation.getUploadCommeriallyQualifiedVendorsFileNameCreatedBy());
+        responseDto.setFormationOfTechnoCommerialComiteeCreatedBy(tenderEvaluation.getFormationOfTechnoCommerialComiteeCreatedBy());
+        responseDto.setResponseFileNameCreatedBy(tenderEvaluation.getResponseFileNameCreatedBy());
+        responseDto.setResponseForTechnicallyQualifiedVendorsFileNameCreatedBy(tenderEvaluation.getResponseForTechnicallyQualifiedVendorsFileNameCreatedBy());
+        responseDto.setResponseForCommeriallyQualifiedVendorsFileNameCreatedBy(tenderEvaluation.getResponseForCommeriallyQualifiedVendorsFileNameCreatedBy());
+
 
         responseDto.setFileType(tenderEvaluation.getFileType());
         responseDto.setCreatedBy(tenderEvaluation.getCreatedBy());

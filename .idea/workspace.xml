@@ -6,10 +6,20 @@
   <component name="ChangeListManager">
     <list default="true" id="ff5636e0-402f-4a63-8653-94f411351cbb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/PurchaseOrderRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/PurchaseOrderRequestDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/PurchaseOrderResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/PurchaseOrderResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/poWithTenderAndIndentResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/poWithTenderAndIndentResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/PurchaseOrderImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/PurchaseOrderImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/TenderEvaluationRequestDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/TenderEvaluationRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/TenderEvaluationResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/TenderEvaluationResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/TenderEvaluationResponseWithBitTypeAndValueDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/TenderEvaluationResponseWithBitTypeAndValueDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/TenderEvaluation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/TenderEvaluation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/TenderEvaluationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/TenderEvaluationServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/TenderEvaluationRequestDto.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/TenderEvaluationRequestDto.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/TenderEvaluationResponseDto.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/TenderEvaluationResponseDto.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/TenderEvaluationResponseWithBitTypeAndValueDto.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/TenderEvaluationResponseWithBitTypeAndValueDto.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/ProcurementModule/TenderEvaluation.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/entity/ProcurementModule/TenderEvaluation.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/TenderEvaluationServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/service/impl/TenderEvaluationServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/WorkflowServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/service/impl/WorkflowServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,15 +50,15 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.BackendServiceApplication.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "git-widget-placeholder": "inventory",
-    "kotlin-language-version-configured": "true",
-    "run.code.analysis.last.selected.profile": "pProject Default"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.BackendServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;inventory&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.astro.entity.InventoryModule" />
