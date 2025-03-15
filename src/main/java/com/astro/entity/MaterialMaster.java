@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "material_master")
@@ -30,20 +31,20 @@ public class MaterialMaster {
     @Column(name = "mode_of_procurement")
     private String modeOfProcurement;
 
+    @OneToMany(mappedBy = "jobCode", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<VendorNamesForJobWorkMaterial> vendorNames;
+
     @Column(name = "end_of_life")
     private String endOfLife;
 
     @Column(name = "depreciation_rate")
     private BigDecimal depreciationRate;
 
-    @Column(name = "stock_levels_min")
-    private BigDecimal stockLevelsMin;
+    @Column(name = "stock_levels")
+    private BigDecimal stockLevels;
+    @Column(name = "estimated_price_with_ccy")
+    private BigDecimal estimatedPriceWithCcy;
 
-    @Column(name = "stock_levels_max")
-    private BigDecimal stockLevelsMax;
-
-    @Column(name = "re_order_level")
-    private BigDecimal reOrderLevel;
 
     @Column(name = "condition_of_goods")
     private String conditionOfGoods;
@@ -61,7 +62,7 @@ public class MaterialMaster {
     private Boolean indigenousOrImported;
 
     @Column(name = "created_by")
-    private String createdBy;
+    private Integer createdBy;
     @Column(name = "updated_by")
     private String updatedBy;
 

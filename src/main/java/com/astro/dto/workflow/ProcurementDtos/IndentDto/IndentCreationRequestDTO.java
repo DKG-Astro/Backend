@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -26,8 +27,8 @@ public class IndentCreationRequestDTO {
     private String consignesLocation;
     private String fileType;
     private String uploadingPriorApprovalsFileName;
-    private String uploadTenderDocumentsFileName;
-    private String uploadGOIOrRFPFileName;
+    private String technicalSpecificationsFileName;
+    private String draftEOIOrRFPFileName;
     private String uploadPACOrBrandPACFileName;
     //private MultipartFile uploadingPriorApprovals;
   //  private MultipartFile uploadTenderDocuments;

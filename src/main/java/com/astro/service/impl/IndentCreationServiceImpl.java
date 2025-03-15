@@ -95,8 +95,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setPeriodOfContract(indentRequestDTO.getPeriodOfContract());
         indentCreation.setSingleAndMultipleJob(indentRequestDTO.getSingleAndMultipleJob());
         indentCreation.setFileType(indentRequestDTO.getFileType());
-    indentCreation.setUploadTenderDocumentsFileName(indentRequestDTO.getUploadTenderDocumentsFileName());
-    indentCreation.setUploadGOIOrRFPFileName(indentRequestDTO.getUploadGOIOrRFPFileName());
+    indentCreation.setTechnicalSpecificationsFileName(indentRequestDTO.getTechnicalSpecificationsFileName());
+    indentCreation.setDraftEOIOrRFPFileName(indentRequestDTO.getDraftEOIOrRFPFileName());
     indentCreation.setUploadPACOrBrandPACFileName(indentRequestDTO.getUploadPACOrBrandPACFileName());
 /*
         handleFileUpload(indentCreation, indentRequestDTO.getUploadingPriorApprovals(),
@@ -124,6 +124,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             material.setQuantity(materialRequest.getQuantity());
             material.setUnitPrice(materialRequest.getUnitPrice());
             material.setUom(materialRequest.getUom());
+            material.setModeOfProcurement(materialRequest.getModeOfProcurement());
             // Calculate total price
             BigDecimal totalPrice = materialRequest.getQuantity().multiply(materialRequest.getUnitPrice());
             material.setTotalPrice(totalPrice);
@@ -177,8 +178,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setEstimatedRate(indentRequestDTO.getEstimatedRate());
         indentCreation.setPeriodOfContract(indentRequestDTO.getPeriodOfContract());
         indentCreation.setSingleAndMultipleJob(indentRequestDTO.getSingleAndMultipleJob());
-        indentCreation.setUploadTenderDocumentsFileName(indentRequestDTO.getUploadTenderDocumentsFileName());
-        indentCreation.setUploadGOIOrRFPFileName(indentRequestDTO.getUploadGOIOrRFPFileName());
+        indentCreation.setTechnicalSpecificationsFileName(indentRequestDTO.getTechnicalSpecificationsFileName());
+        indentCreation.setDraftEOIOrRFPFileName(indentRequestDTO.getDraftEOIOrRFPFileName());
         indentCreation.setUploadPACOrBrandPACFileName(indentRequestDTO.getUploadPACOrBrandPACFileName());
         indentCreation.setUploadingPriorApprovalsFileName(indentRequestDTO.getUploadingPriorApprovalsFileName());
         indentCreation.setFileType(indentRequestDTO.getFileType());
@@ -207,6 +208,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             material.setQuantity(materialRequest.getQuantity());
             material.setUnitPrice(materialRequest.getUnitPrice());
             material.setUom(materialRequest.getUom());
+            material.setModeOfProcurement(materialRequest.getModeOfProcurement());
             // Calculate total price
             BigDecimal totalPrice = materialRequest.getQuantity().multiply(materialRequest.getUnitPrice());
             material.setTotalPrice(totalPrice);
@@ -265,8 +267,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             response.setEstimatedRate(indentCreation.getEstimatedRate());
             response.setPeriodOfContract(indentCreation.getPeriodOfContract());
             response.setSingleAndMultipleJob(indentCreation.getSingleAndMultipleJob());
-         response.setUploadTenderDocumentsFileName(indentCreation.getUploadTenderDocumentsFileName());
-         response.setUploadGOIOrRFPFileName(indentCreation.getUploadGOIOrRFPFileName());
+         response.setTechnicalSpecificationsFileName(indentCreation.getTechnicalSpecificationsFileName());
+         response.setDraftEOIOrRFPFileName(indentCreation.getDraftEOIOrRFPFileName());
            response.setUploadPACOrBrandPACFileName(indentCreation.getUploadPACOrBrandPACFileName());
            response.setFileType(indentCreation.getFileType());
           /*  String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
@@ -323,6 +325,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                 materialResponse.setUom(material.getUom());
                 materialResponse.setTotalPrice(material.getTotalPrice());
                 materialResponse.setBudgetCode(material.getBudgetCode());
+                materialResponse.setModeOfProcurement(material.getModeOfProcurement());
                 materialResponse.setMaterialCategory(material.getMaterialCategory());
                 materialResponse.setMaterialSubCategory(material.getMaterialSubCategory());
                 materialResponse.setMaterialAndJob(material.getMaterialAndJob());

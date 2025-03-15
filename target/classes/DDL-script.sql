@@ -478,7 +478,8 @@ CREATE TABLE job_master (
     asset_id VARCHAR(255),
     uom VARCHAR(50),
     value DECIMAL(15, 2),
-	created_by VARCHAR(255),
+    mode_of_procurement VARCHAR(255),
+	created_by INT,
     updated_by VARCHAR(255),
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -540,6 +541,26 @@ CREATE TABLE employee_department_master (
     updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+CREATE TABLE vendor_names_for_job_work_material (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    vendor_name VARCHAR(255) NOT NULL,
+    job_code VARCHAR(50),
+    material_code VARCHAR(50),
+    work_code VARCHAR(50),
+    FOREIGN KEY (job_code) REFERENCES job_master(job_code) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (material_code) REFERENCES material_master(material_code) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (work_code) REFERENCES work_master(work_code) ON UPDATE CASCADE ON DELETE CASCADE
+);
+  CREATE TABLE work_master (
+    work_code VARCHAR(255) PRIMARY KEY,
+    work_sub_category VARCHAR(255),
+    mode_of_procurement VARCHAR(255),
+    work_description TEXT,
+    created_by INT,
+    updated_by VARCHAR(255),
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
 
 

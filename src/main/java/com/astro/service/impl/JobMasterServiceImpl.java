@@ -5,10 +5,12 @@ import com.astro.dto.workflow.JobMasterRequestDto;
 import com.astro.dto.workflow.JobMasterResponseDto;
 import com.astro.entity.JobMaster;
 
+import com.astro.entity.VendorNamesForJobWorkMaterial;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.JobMasterRepository;
+import com.astro.repository.VendorNamesForJobWorkMaterialRepository;
 import com.astro.service.JobMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,24 +23,42 @@ public class JobMasterServiceImpl implements JobMasterService {
 
     @Autowired
     private JobMasterRepository jobMasterRepository;
+    @Autowired
+    private VendorNamesForJobWorkMaterialRepository vendorNameRepository;
     @Override
     public JobMasterResponseDto createJobMaster(JobMasterRequestDto jobMasterRequestDto) {
 
         // Check if the indentorId already exists
-        if (jobMasterRepository.existsById(jobMasterRequestDto.getJobCode())) {
+       /* if (jobMasterRepository.existsById(jobMasterRequestDto.getJobCode())) {
             ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate job code", "job code " + jobMasterRequestDto.getJobCode() + " already exists.");
             throw new InvalidInputException(errorDetails);
         }
+
+        */
+        String jobCode = "J" + System.currentTimeMillis();
         JobMaster jobMaster = new JobMaster();
-        jobMaster.setJobCode(jobMasterRequestDto.getJobCode());
+        jobMaster.setJobCode(jobCode);
         jobMaster.setCategory(jobMasterRequestDto.getCategory());
         jobMaster.setJobDescription(jobMasterRequestDto.getJobDescription());
         jobMaster.setAssetId(jobMasterRequestDto.getAssetId());
         jobMaster.setUom(jobMasterRequestDto.getUom());
         jobMaster.setValue(jobMasterRequestDto.getValue());
+        jobMaster.setModeOfProcurement(jobMasterRequestDto.getModeOfProcurement());
         jobMaster.setCreatedBy(jobMasterRequestDto.getCreatedBy());
         jobMaster.setUpdatedBy(jobMasterRequestDto.getUpdatedBy());
         jobMasterRepository.save(jobMaster);
+        // Saveing Vendornames in different table
+        if (jobMasterRequestDto.getVendorNames() != null && !jobMasterRequestDto.getVendorNames().isEmpty()) {
+            List<VendorNamesForJobWorkMaterial> vendors = jobMasterRequestDto.getVendorNames().stream().map(vendorName -> {
+                VendorNamesForJobWorkMaterial vendor = new VendorNamesForJobWorkMaterial();
+                vendor.setVendorName(vendorName);
+                vendor.setJobCode(jobCode);
+                return vendor;
+            }).collect(Collectors.toList());
+
+            vendorNameRepository.saveAll(vendors);
+        }
+
 
         return mapToResponseDTO(jobMaster);
     }
@@ -62,9 +82,23 @@ public class JobMasterServiceImpl implements JobMasterService {
         jobMaster.setAssetId(jobMasterRequestDto.getAssetId());
         jobMaster.setUom(jobMasterRequestDto.getUom());
         jobMaster.setValue(jobMasterRequestDto.getValue());
+        jobMaster.setModeOfProcurement(jobMasterRequestDto.getModeOfProcurement());
         jobMaster.setCreatedBy(jobMasterRequestDto.getCreatedBy());
         jobMaster.setUpdatedBy(jobMasterRequestDto.getUpdatedBy());
         jobMasterRepository.save(jobMaster);
+        // Saveing Vendornames in different table
+        if (jobMasterRequestDto.getVendorNames() != null && !jobMasterRequestDto.getVendorNames().isEmpty()) {
+            List<VendorNamesForJobWorkMaterial> vendors = jobMasterRequestDto.getVendorNames().stream().map(vendorName -> {
+                VendorNamesForJobWorkMaterial vendor = new VendorNamesForJobWorkMaterial();
+                vendor.setVendorName(vendorName);
+                vendor.setJobCode(jobCode);
+                return vendor;
+            }).collect(Collectors.toList());
+
+            vendorNameRepository.saveAll(vendors);
+        }
+
+
 
 
         return mapToResponseDTO(jobMaster);
@@ -126,10 +160,17 @@ public class JobMasterServiceImpl implements JobMasterService {
         responseDto.setAssetId(jobMaster.getAssetId());
         responseDto.setUom(jobMaster.getUom());
         responseDto.setValue(jobMaster.getValue());
+        responseDto.setModeOfProcurement(jobMaster.getModeOfProcurement());
         responseDto.setUpdatedBy(jobMaster.getUpdatedBy());
         responseDto.setCreatedBy(jobMaster.getCreatedBy());
         responseDto.setCreatedDate(jobMaster.getCreatedDate());
         responseDto.setUpdatedDate(jobMaster.getUpdatedDate());
+        List<String> vendorNames = vendorNameRepository.findByJobCode(jobMaster.getJobCode())
+                .stream()
+                .map(VendorNamesForJobWorkMaterial::getVendorName)
+                .collect(Collectors.toList());
+
+        responseDto.setVendorNames(vendorNames);
 
         return responseDto;
     }

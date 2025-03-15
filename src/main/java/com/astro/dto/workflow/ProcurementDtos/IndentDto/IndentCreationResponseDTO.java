@@ -16,8 +16,8 @@ public class IndentCreationResponseDTO {
     private String indentorEmailAddress;
     private String consignesLocation;
     private String uploadingPriorApprovalsFileName;
-    private String uploadTenderDocumentsFileName;
-    private String uploadGOIOrRFPFileName;
+    private String technicalSpecificationsFileName;
+    private String draftEOIOrRFPFileName;
     private String uploadPACOrBrandPACFileName;
     private String fileType;
    // private String uploadingPriorApprovalsFile;

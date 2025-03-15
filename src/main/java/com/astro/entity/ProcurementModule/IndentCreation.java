@@ -76,10 +76,10 @@ public class IndentCreation {
 
         @Column(name = "uploading_prior_approvals_file_name")
         private String uploadingPriorApprovalsFileName;
-        @Column(name = "upload_tender_documents_file_name")
-        private String uploadTenderDocumentsFileName;
-        @Column(name = "upload_goi_or_rfp_file_name")
-        private String uploadGOIOrRFPFileName;
+        @Column(name = "technical_specifications_file_name")
+        private String technicalSpecificationsFileName;
+        @Column(name = "draft_Eoi_Or_Rfp_file_name")
+        private String draftEOIOrRFPFileName;
         @Column(name = "upload_pac_or_brand_pac_file_name")
         private String uploadPACOrBrandPACFileName;
         @Column(name="file_type")

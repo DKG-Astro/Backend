@@ -6,11 +6,12 @@ import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class MaterialMasterRequestDto {
 
-    private String materialCode;
+  //  private String materialCode;
     private String category;
     private String subCategory;
     private String description;
@@ -18,15 +19,16 @@ public class MaterialMasterRequestDto {
     private String modeOfProcurement;
     private String endOfLife;
     private BigDecimal depreciationRate;
-    private BigDecimal stockLevelsMin;
-    private BigDecimal stockLevelsMax;
-    private BigDecimal reOrderLevel;
+    private BigDecimal stockLevels;
+   // private BigDecimal stockLevelsMax;
+   // private BigDecimal reOrderLevel;
     private String conditionOfGoods;
     private String shelfLife;
-    private MultipartFile uploadImage;
+    private BigDecimal estimatedPriceWithCcy;
+    private String uploadImageFileName;
     private Boolean indigenousOrImported;
-
-    private String createdBy;
+    private List<String> vendorNames;
+    private Integer createdBy;
     private String updatedBy;
 
 }

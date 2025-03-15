@@ -11,6 +11,9 @@ public class UserRoleDto {
     private Integer roleId;
     private String role;
     private Integer userId;
+    private String userName;
+    private String mobileNumber;
+    private String email;
     private boolean readPermission;
     private boolean writePermission;
     private String createdBy;

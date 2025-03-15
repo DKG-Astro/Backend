@@ -5,10 +5,12 @@ import com.astro.dto.workflow.MaterialMasterRequestDto;
 import com.astro.dto.workflow.MaterialMasterResponseDto;
 import com.astro.entity.MaterialMaster;
 import com.astro.entity.ProcurementModule.IndentCreation;
+import com.astro.entity.VendorNamesForJobWorkMaterial;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.MaterialMasterRepository;
+import com.astro.repository.VendorNamesForJobWorkMaterialRepository;
 import com.astro.service.MaterialMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,15 +27,20 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
 
     @Autowired
     private MaterialMasterRepository materialMasterRepository;
+    @Autowired
+    private VendorNamesForJobWorkMaterialRepository vendorNameRepository;
     @Override
-    public MaterialMasterResponseDto createMaterialMaster(MaterialMasterRequestDto materialMasterRequestDto,String uploadImageFileName) {
+    public MaterialMasterResponseDto createMaterialMaster(MaterialMasterRequestDto materialMasterRequestDto) {
         // Check if the indentorId already exists
-        if (materialMasterRepository.existsById(materialMasterRequestDto.getMaterialCode())) {
+      /*  if (materialMasterRepository.existsById(materialMasterRequestDto.getMaterialCode())) {
             ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Material code", "Material  code " + materialMasterRequestDto.getMaterialCode() + " already exists.");
             throw new InvalidInputException(errorDetails);
         }
+
+       */
+        String materialCode = "M" + System.currentTimeMillis();
         MaterialMaster materialMaster= new MaterialMaster();
-        materialMaster.setMaterialCode(materialMasterRequestDto.getMaterialCode());
+        materialMaster.setMaterialCode(materialCode);
         materialMaster.setCategory(materialMasterRequestDto.getCategory());
         materialMaster.setSubCategory(materialMasterRequestDto.getSubCategory());
         materialMaster.setDescription(materialMasterRequestDto.getDescription());
@@ -41,25 +48,32 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
         materialMaster.setEndOfLife(materialMasterRequestDto.getEndOfLife());
         materialMaster.setModeOfProcurement(materialMasterRequestDto.getModeOfProcurement());
         materialMaster.setDepreciationRate(materialMasterRequestDto.getDepreciationRate());
-        materialMaster.setStockLevelsMax(materialMasterRequestDto.getStockLevelsMax());
-        materialMaster.setStockLevelsMin(materialMasterRequestDto.getStockLevelsMin());
-        materialMaster.setReOrderLevel(materialMasterRequestDto.getReOrderLevel());
+        materialMaster.setStockLevels(materialMasterRequestDto.getStockLevels());
         materialMaster.setConditionOfGoods(materialMasterRequestDto.getConditionOfGoods());
         materialMaster.setShelfLife(materialMasterRequestDto.getShelfLife());
-        materialMaster.setUploadImageName(uploadImageFileName);
+        materialMaster.setUploadImageName(materialMasterRequestDto.getUploadImageFileName());
         materialMaster.setIndigenousOrImported(materialMasterRequestDto.getIndigenousOrImported());
+        materialMaster.setEstimatedPriceWithCcy(materialMasterRequestDto.getEstimatedPriceWithCcy());
         materialMaster.setCreatedBy(materialMasterRequestDto.getCreatedBy());
         materialMaster.setUpdatedBy(materialMasterRequestDto.getUpdatedBy());
-        handleFileUpload(materialMaster, materialMasterRequestDto.getUploadImage(),
-                materialMaster::setUploadImage);
         materialMasterRepository.save(materialMaster);
+        // Saveing Vendornames in different table
+        if (materialMasterRequestDto.getVendorNames() != null && !materialMasterRequestDto.getVendorNames().isEmpty()) {
+            List<VendorNamesForJobWorkMaterial> vendors = materialMasterRequestDto.getVendorNames().stream().map(vendorName -> {
+                VendorNamesForJobWorkMaterial vendor = new VendorNamesForJobWorkMaterial();
+                vendor.setVendorName(vendorName);
+                vendor.setMaterialCode(materialCode);
+                return vendor;
+            }).collect(Collectors.toList());
 
+            vendorNameRepository.saveAll(vendors);
+        }
         return mapToResponseDTO(materialMaster);
     }
 
 
     @Override
-    public MaterialMasterResponseDto updateMaterialMaster(String materialCode, MaterialMasterRequestDto materialMasterRequestDto, String uploadImageFileName) {
+    public MaterialMasterResponseDto updateMaterialMaster(String materialCode, MaterialMasterRequestDto materialMasterRequestDto) {
         MaterialMaster materialMaster = materialMasterRepository.findById(materialCode)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
@@ -77,18 +91,26 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
         materialMaster.setEndOfLife(materialMasterRequestDto.getEndOfLife());
         materialMaster.setModeOfProcurement(materialMasterRequestDto.getModeOfProcurement());
         materialMaster.setDepreciationRate(materialMasterRequestDto.getDepreciationRate());
-        materialMaster.setStockLevelsMax(materialMasterRequestDto.getStockLevelsMax());
-        materialMaster.setStockLevelsMin(materialMasterRequestDto.getStockLevelsMin());
-        materialMaster.setReOrderLevel(materialMasterRequestDto.getReOrderLevel());
+        materialMaster.setStockLevels(materialMasterRequestDto.getStockLevels());
         materialMaster.setConditionOfGoods(materialMasterRequestDto.getConditionOfGoods());
         materialMaster.setShelfLife(materialMasterRequestDto.getShelfLife());
-        materialMaster.setUploadImageName(uploadImageFileName);
+        materialMaster.setUploadImageName(materialMasterRequestDto.getUploadImageFileName());
         materialMaster.setIndigenousOrImported(materialMasterRequestDto.getIndigenousOrImported());
+        materialMaster.setEstimatedPriceWithCcy(materialMasterRequestDto.getEstimatedPriceWithCcy());
         materialMaster.setUpdatedBy(materialMasterRequestDto.getUpdatedBy());
         materialMaster.setCreatedBy(materialMasterRequestDto.getCreatedBy());
-        handleFileUpload(materialMaster, materialMasterRequestDto.getUploadImage(),
-                materialMaster::setUploadImage);
         materialMasterRepository.save(materialMaster);
+        // Saveing Vendornames in different table
+        if (materialMasterRequestDto.getVendorNames() != null && !materialMasterRequestDto.getVendorNames().isEmpty()) {
+            List<VendorNamesForJobWorkMaterial> vendors = materialMasterRequestDto.getVendorNames().stream().map(vendorName -> {
+                VendorNamesForJobWorkMaterial vendor = new VendorNamesForJobWorkMaterial();
+                vendor.setVendorName(vendorName);
+                vendor.setMaterialCode(materialCode);
+                return vendor;
+            }).collect(Collectors.toList());
+
+            vendorNameRepository.saveAll(vendors);
+        }
 
         return mapToResponseDTO(materialMaster);
 
@@ -153,34 +175,25 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
         materialMasterResponseDto.setEndOfLife(materialMaster.getEndOfLife());
         materialMasterResponseDto.setModeOfProcurement(materialMaster.getModeOfProcurement());
         materialMasterResponseDto.setDepreciationRate(materialMaster.getDepreciationRate());
-        materialMasterResponseDto.setStockLevelsMax(materialMaster.getStockLevelsMax());
-        materialMasterResponseDto.setStockLevelsMin(materialMaster.getStockLevelsMin());
-        materialMasterResponseDto.setReOrderLevel(materialMaster.getReOrderLevel());
+        materialMasterResponseDto.setStockLevels(materialMaster.getStockLevels());
         materialMasterResponseDto.setConditionOfGoods(materialMaster.getConditionOfGoods());
         materialMasterResponseDto.setShelfLife(materialMaster.getShelfLife());
-        materialMasterResponseDto.setUploadImage(materialMaster.getUploadImageName());
+        materialMasterResponseDto.setUploadImageFileName(materialMaster.getUploadImageName());
         materialMasterResponseDto.setIndigenousOrImported(materialMaster.getIndigenousOrImported());
+        materialMasterResponseDto.setEstimatedPriceWithCcy(materialMaster.getEstimatedPriceWithCcy());
         materialMasterResponseDto.setCreatedBy(materialMaster.getCreatedBy());
         materialMasterResponseDto.setUpdatedBy(materialMaster.getUpdatedBy());
         materialMasterResponseDto.setCreatedDate(materialMaster.getCreatedDate());
         materialMasterResponseDto.setUpdatedDate(materialMaster.getUpdatedDate());
 
+        List<String> vendorNames= vendorNameRepository.findByMaterialCode(materialMaster.getMaterialCode())
+                .stream()
+                .map(VendorNamesForJobWorkMaterial::getVendorName)
+                .collect(Collectors.toList());
+        materialMasterResponseDto.setVendorNames(vendorNames);
         return materialMasterResponseDto;
 
     }
-    public void handleFileUpload(MaterialMaster materialMaster, MultipartFile file, Consumer<byte[]> fileSetter) {
-        if (file != null) {
-            try (InputStream inputStream = file.getInputStream()) {
-                byte[] fileBytes = inputStream.readAllBytes();
-                fileSetter.accept(fileBytes); // Set file content (byte[])
 
-            } catch (IOException e) {
-                throw new InvalidInputException(new ErrorDetails(500, 3, "File Processing Error",
-                        "Error while processing the uploaded file. Please try again."));
-            }
-        } else {
-            fileSetter.accept(null);  // Handle gracefully if no file is uploaded
-        }
-    }
 
 }

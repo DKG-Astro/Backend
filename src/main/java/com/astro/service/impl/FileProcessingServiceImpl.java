@@ -26,7 +26,7 @@ public class FileProcessingServiceImpl implements FileProcessingService {
     @Value("${filePath}")
     private String basePath;
 
-    final List<String> FILE_TYPE_LIST = Arrays.asList("Indent", "Tender", "CP", "INV");
+    final List<String> FILE_TYPE_LIST = Arrays.asList("Indent", "Tender", "CP", "INV","Material");
 
     @Override
     public List<String> fileList() {

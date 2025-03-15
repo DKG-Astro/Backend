@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface MaterialMasterService {
 
-    public MaterialMasterResponseDto createMaterialMaster(MaterialMasterRequestDto materialMasterRequestDto,String uploadImageFileName);
-    public MaterialMasterResponseDto updateMaterialMaster(String materialCode, MaterialMasterRequestDto materialMasterRequestDto,String uploadImageFileName);
+    public MaterialMasterResponseDto createMaterialMaster(MaterialMasterRequestDto materialMasterRequestDto);
+    public MaterialMasterResponseDto updateMaterialMaster(String materialCode, MaterialMasterRequestDto materialMasterRequestDto);
     public List<MaterialMasterResponseDto> getAllMaterialMasters();
 
     public MaterialMasterResponseDto getMaterialMasterById(String materialCode);

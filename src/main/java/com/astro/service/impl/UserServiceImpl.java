@@ -38,6 +38,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     RoleMasterRepository roleMasterRepository;
 
+
     @Override
     public void validateUser(Integer userId) {
        UserMaster userMaster = userMasterRepository.findById(userId).orElseThrow(() -> new InvalidInputException(new ErrorDetails(AppConstant.USER_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
@@ -57,7 +58,6 @@ public class UserServiceImpl implements UserService {
             }
 
             UserRoleMaster userRoleMaster = userRoleMasterRepository.findByUserId(userMaster.getUserId());
-
             userRoleDto = new UserRoleDto();
             userRoleDto.setUserId(userRoleMaster.getUserId());
             userRoleDto.setUserRoleId(userRoleMaster.getUserRoleId());
@@ -67,6 +67,9 @@ public class UserServiceImpl implements UserService {
             userRoleDto.setReadPermission(userRoleMaster.getReadPermission());
             userRoleDto.setWritePermission(userRoleMaster.getWritePermission());
             userRoleDto.setRole(roleNameById(userRoleMaster.getRoleId()));
+            userRoleDto.setUserName(userMaster.getUserName());
+            userRoleDto.setMobileNumber(userMaster.getMobileNumber());
+            userRoleDto.setEmail(userMaster.getEmail());
         }else{
             throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid input."));

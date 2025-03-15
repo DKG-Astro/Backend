@@ -53,6 +53,8 @@ public class MaterialDetails {
 
     @Column(name = "material_and_job")
     private String materialAndJob;
+    @Column(name="mode_of_procurement")
+    private String modeOfProcurement;
 
 
   //  @ManyToOne

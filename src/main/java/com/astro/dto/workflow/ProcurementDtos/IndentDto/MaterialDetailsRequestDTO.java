@@ -17,4 +17,5 @@ public class MaterialDetailsRequestDTO {
     private String materialCategory;
     private String materialSubCategory;
     private String materialAndJob;
+    private String modeOfProcurement;
 }
