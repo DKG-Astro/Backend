@@ -129,6 +129,7 @@ public class ProcessServiceImpl implements ProcessService {
         gme.setSupplyExpectedDate(CommonUtils.convertStringToDateObject(req.getSupplyExpectedDate()));
         gme.setUpdateDate(LocalDateTime.now());
         gme.setProcessId(req.getPoId().substring(2));
+        gme.setLocationId(req.getLocationId());
 
         gme = gmr.save(gme);
 
