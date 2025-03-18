@@ -1,6 +1,8 @@
 package com.astro.controller.InventoryModule;
 
+import com.astro.dto.workflow.InventoryModule.GiDto.SaveGiDto;
 import com.astro.dto.workflow.InventoryModule.GprnDto.SaveGprnDto;
+import com.astro.dto.workflow.InventoryModule.grv.GrvDto;
 import com.astro.service.ProcessService;
 import com.astro.util.ResponseBuilder;
 
@@ -20,15 +22,32 @@ public class ProcessController {
     private ProcessService processService;
 
     @PostMapping("/saveGprn")
-    public ResponseEntity<Object> saveGprn(@RequestBody SaveGprnDto saveGprnDto) {
-        String processNo = processService.saveGprn(saveGprnDto);
+    public ResponseEntity<Object> saveGprn(@RequestBody SaveGprnDto req) {
+        String processNo = processService.saveGprn(req);
         Map<String, String> res = new HashMap<>();
         res.put("processNo", processNo);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
+
+    @PostMapping("/saveGi")
+    public ResponseEntity<Object> saveGi(@RequestBody SaveGiDto req) {
+        String processNo = processService.saveGi(req);
+        Map<String, String> res = new HashMap<>();
+        res.put("processNo", processNo);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
     @GetMapping("/getSubProcessDtls")
     public ResponseEntity<Object> getSubProcessDtls(@RequestParam String processStage, @RequestParam String processNo ) {
        Object created = processService.getSubProcessDtls(processStage, processNo);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(created), HttpStatus.OK);
+    }
+
+    @PostMapping("/saveGrv")
+    public ResponseEntity<Object> saveGrv(@RequestBody GrvDto req) {
+        String processNo = processService.saveGrv(req);
+        Map<String, String> res = new HashMap<>();
+        res.put("processNo", processNo);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
 }
