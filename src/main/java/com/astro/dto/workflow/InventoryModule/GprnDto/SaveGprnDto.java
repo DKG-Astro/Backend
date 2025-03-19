@@ -16,6 +16,9 @@ public class SaveGprnDto {
     private String challanNo;
     private String deliveryDate;
     private String vendorId;
+    private String vendorEmail;
+    private String vendorName;
+    private String vendorContact;
     private String fieldStation;
     private String indentorName;
     private String supplyExpectedDate;

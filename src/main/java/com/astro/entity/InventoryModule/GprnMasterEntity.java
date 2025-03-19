@@ -73,7 +73,7 @@ public class GprnMasterEntity {
     @Column(name = "updated_by")
     private String updatedBy;
 
-    @Column(name = "created_date", nullable = false)
+    @Column(name = "create_date", nullable = false)
     private LocalDateTime createDate = LocalDateTime.now();
 
     @Column(name = "updated_date", nullable = false)

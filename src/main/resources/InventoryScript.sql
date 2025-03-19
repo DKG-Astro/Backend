@@ -202,8 +202,8 @@ CREATE TABLE goods_inspection_detail (
 CREATE TABLE grn_master(
     grn_process_id VARCHAR(50) NOT NULL,
     grn_sub_process_id INT AUTO_INCREMENT PRIMARY KEY,
-    gprn_process_id VARCHAR(50) NOT NULL,
-    gprn_sub_process_id INT NOT NULL,
+    gi_process_id VARCHAR(50) NOT NULL,
+    gi_sub_process_id INT NOT NULL,
     grn_date DATE,
     installation_date DATE,
     commissioning_date DATE,
@@ -222,7 +222,6 @@ CREATE TABLE grn_material_detail(
     grn_process_id VARCHAR(50) NOT NULL,
     grn_sub_process_id INT NOT NULL,
     gi_sub_process_id INT NOT NULL,
-    gi_process_id VARCHAR(50) NOT NULL,
     quantity DECIMAL(10, 2) NOT NULL,
     asset_id INT NOT NULL,
     locator_id INT NOT NULL,

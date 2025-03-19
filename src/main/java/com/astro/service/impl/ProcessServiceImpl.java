@@ -9,6 +9,7 @@ import com.astro.dto.workflow.InventoryModule.grn.GrnDto;
 import com.astro.dto.workflow.InventoryModule.grn.GrnMaterialDtlDto;
 import com.astro.dto.workflow.InventoryModule.grv.GrvDto;
 import com.astro.dto.workflow.InventoryModule.grv.GrvMaterialDtlDto;
+import com.astro.entity.VendorMaster;
 import com.astro.entity.InventoryModule.AssetMasterEntity;
 import com.astro.entity.InventoryModule.GiMasterEntity;
 import com.astro.entity.InventoryModule.GiMaterialDtlEntity;
@@ -21,6 +22,7 @@ import com.astro.entity.InventoryModule.GrvMaterialDtlEntity;
 import com.astro.entity.InventoryModule.OhqMasterEntity;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
+import com.astro.repository.VendorMasterRepository;
 import com.astro.repository.InventoryModule.AssetMasterRepository;
 import com.astro.repository.InventoryModule.GiRepository.GiMasterRepository;
 import com.astro.repository.InventoryModule.GiRepository.GiMaterialDtlRepository;
@@ -99,6 +101,9 @@ public class ProcessServiceImpl implements ProcessService {
 
     @Autowired
     private AssetMasterRepository amr;
+
+    @Autowired
+    private VendorMasterRepository vmr;
 
     private final String basePath = bp + "/INV";
 
@@ -263,8 +268,20 @@ public class ProcessServiceImpl implements ProcessService {
 
                 })
                 .collect(Collectors.toList());
+        
+        VendorMaster vm = vmr.findById(gme.getVendorId())
+                .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                        AppConstant.ERROR_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_RESOURCE,
+                        "Vendor not found for the provided vendor ID.")));
 
         SaveGprnDto gprnRes = mapper.map(gme, SaveGprnDto.class);
+        gprnRes.setProcessId(processNo);
+        gprnRes.setVendorEmail(vm.getEmailAddress());
+        gprnRes.setVendorName(vm.getVendorName());
+        gprnRes.setVendorContact(vm.getMobileNo());
+
         gprnRes.setDate(CommonUtils.convertDateToString(gme.getDate()));
         gprnRes.setSupplyExpectedDate(CommonUtils.convertDateToString(gme.getSupplyExpectedDate()));
         gprnRes.setDeliveryDate(CommonUtils.convertDateToString(gme.getDeliveryDate()));
@@ -280,7 +297,7 @@ public class ProcessServiceImpl implements ProcessService {
         validateGprnSubProcessId(req.getGprnNo());
 
         ModelMapper mapper = new ModelMapper();
-
+        System.out.println("STARTED");
         GiMasterEntity gime = new GiMasterEntity();
         gime.setCommissioningDate(CommonUtils.convertStringToDateObject(req.getCommissioningDate()));
         gime.setInstallationDate(CommonUtils.convertStringToDateObject(req.getCommissioningDate()));
@@ -324,7 +341,7 @@ public class ProcessServiceImpl implements ProcessService {
 
             Integer assetId = null;
             if(gmdd.getAcceptedQuantity().compareTo(BigDecimal.ZERO) > 0){
-                assetId = createNewAsset(gmdd);
+                assetId = createNewAsset(gmdd, req.getCreatedBy());
             }
 
             GiMaterialDtlEntity gimde = new GiMaterialDtlEntity();
@@ -400,6 +417,7 @@ public class ProcessServiceImpl implements ProcessService {
 
             GrvMaterialDtlEntity grvMaterialDtl = new GrvMaterialDtlEntity();
             mapper.map(materialDtl, grvMaterialDtl);
+            grvMaterialDtl.setUomId("No"); // need to change
             grvMaterialDtl.setGrvProcessId(grvMaster.getGrvProcessId());
             grvMaterialDtl.setGrvSubProcessId(grvMaster.getGrvSubProcessId());
             grvMaterialDtl.setMaterialCode(materialDtl.getMaterialCode());
@@ -499,6 +517,14 @@ public class ProcessServiceImpl implements ProcessService {
         List<GiMaterialDtlDto> materialDtlListRes = gimdeList.stream()
                 .map(gimde -> {
                     GiMaterialDtlDto gmdd = mapper.map(gimde, GiMaterialDtlDto.class);
+                    gmdd.setAssetId(gimde.getAssetId());
+
+                    // fetch asset details using assetId
+                    Optional<AssetMasterEntity> aeOpt = amr.findById(gimde.getAssetId());
+                    if(aeOpt.isPresent()){
+                        gmdd.setAssetDesc(aeOpt.get().getAssetDesc());
+                        gmdd.setUomId(aeOpt.get().getUomId());
+                    }
                     try {
                         String imageBase64 = CommonUtils.convertImageToBase64(gimde.getInstallationReportFileName(),
                                 basePath);
@@ -511,7 +537,7 @@ public class ProcessServiceImpl implements ProcessService {
                 .collect(Collectors.toList());
 
         SaveGiDto giRes = new SaveGiDto();
-        giRes.setInspectionNo(gime.getInspectionSubProcessId());
+        giRes.setInspectionNo(processNo);
         giRes.setGprnNo(processNo);
         giRes.setInstallationDate(CommonUtils.convertDateToString(gime.getInstallationDate()));
         giRes.setCommissioningDate(CommonUtils.convertDateToString(gime.getCommissioningDate()));
@@ -576,7 +602,7 @@ public class ProcessServiceImpl implements ProcessService {
         return combinedRes;
     }
 
-    private Integer createNewAsset(GiMaterialDtlDto materialDtl) {
+    private Integer createNewAsset(GiMaterialDtlDto materialDtl, Integer createdBy) {
         // Check if the asset already exists
         Optional<AssetMasterEntity> ameOpt = amr.findByMaterialCodeAndMaterialDescAndMakeNoAndModelNoAndSerialNoAndUomId(
                 materialDtl.getMaterialCode(),
@@ -590,6 +616,9 @@ public class ProcessServiceImpl implements ProcessService {
         if(ameOpt.isEmpty()){
             AssetMasterEntity ame = new ModelMapper().map(materialDtl, AssetMasterEntity.class);
             ame.setAssetDesc(materialDtl.getMaterialDesc());
+            ame.setCreateDate(LocalDateTime.now());
+            ame.setCreatedBy(createdBy);
+            ame.setUpdatedDate(LocalDateTime.now());
             amr.save(ame);
 
             return ame.getAssetId();
@@ -610,7 +639,7 @@ public class ProcessServiceImpl implements ProcessService {
         grnMaster.setInstallationDate(CommonUtils.convertStringToDateObject(req.getInstallationDate()));
         grnMaster.setCommissioningDate(CommonUtils.convertStringToDateObject(req.getCommissioningDate()));
         grnMaster.setCreatedBy(req.getCreatedBy());
-        grnMaster.setSystemCreatedBy(req.getSystemCreatedBy());
+        grnMaster.setSystemCreatedBy(Integer.parseInt(req.getCreatedBy()));
         grnMaster.setCreateDate(LocalDateTime.now());
         grnMaster.setLocationId(req.getLocationId());
         grnMaster.setGiProcessId(req.getGiNo().split("/")[0].substring(3));
@@ -649,18 +678,21 @@ public class ProcessServiceImpl implements ProcessService {
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
             // Total received quantity including current
-            BigDecimal totalReceivedQty = previouslyReceivedQty.add(materialDtl.getReceivedQuantity());
+            BigDecimal totalReceivedQty = previouslyReceivedQty.add(materialDtl.getAcceptedQuantity());
 
             // Check if total received quantity exceeds accepted quantity
             if (totalReceivedQty.compareTo(giMaterial.get().getAcceptedQuantity()) > 0) {
+                System.out.println("Total received quantity for Asset ID " + giMaterial.get().getAcceptedQuantity() + " " + totalReceivedQty);
                 errorMessage.append("Total received quantity for Asset ID " + materialDtl.getAssetId() +
                         " exceeds accepted quantity in GI. ");
                 errorFound = true;
                 continue;
             }
 
+            // In the saveGrn method where you're mapping GRN material details
             GrnMaterialDtlEntity grnMaterialDtl = new GrnMaterialDtlEntity();
             mapper.map(materialDtl, grnMaterialDtl);
+            grnMaterialDtl.setQuantity(materialDtl.getReceivedQuantity());  
             grnMaterialDtl.setGrnProcessId(grnMaster.getGrnProcessId());
             grnMaterialDtl.setGrnSubProcessId(grnMaster.getGrnSubProcessId());
             grnMaterialDtl.setGiSubProcessId(grnMaster.getGiSubProcessId());

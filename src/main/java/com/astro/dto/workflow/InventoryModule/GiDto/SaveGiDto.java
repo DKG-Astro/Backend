@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SaveGiDto {
-    private Integer inspectionNo;
+    private String inspectionNo;
     private String gprnNo;
     private String installationDate;
     private String commissioningDate;

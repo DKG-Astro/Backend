@@ -11,7 +11,9 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class GiMaterialDtlDto {
     private String materialCode;
+    private Integer assetId;
     private String materialDesc;
+    private String assetDesc;
     private String makeNo;
     private String modelNo;
     private String serialNo;

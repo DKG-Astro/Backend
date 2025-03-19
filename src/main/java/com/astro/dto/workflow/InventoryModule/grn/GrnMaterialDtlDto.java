@@ -1,7 +1,6 @@
 package com.astro.dto.workflow.InventoryModule.grn;
 
 import java.math.BigDecimal;
-
 import lombok.Data;
 
 @Data
@@ -14,4 +13,5 @@ public class GrnMaterialDtlDto {
     private BigDecimal receivedQuantity;
     private BigDecimal acceptedQuantity;
     private BigDecimal depriciationRate;
+    private BigDecimal quantity;  // Add this field to match the entity
 }

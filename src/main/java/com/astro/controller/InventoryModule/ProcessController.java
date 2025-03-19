@@ -2,6 +2,7 @@ package com.astro.controller.InventoryModule;
 
 import com.astro.dto.workflow.InventoryModule.GiDto.SaveGiDto;
 import com.astro.dto.workflow.InventoryModule.GprnDto.SaveGprnDto;
+import com.astro.dto.workflow.InventoryModule.grn.GrnDto;
 import com.astro.dto.workflow.InventoryModule.grv.GrvDto;
 import com.astro.service.ProcessService;
 import com.astro.util.ResponseBuilder;
@@ -46,6 +47,13 @@ public class ProcessController {
     @PostMapping("/saveGrv")
     public ResponseEntity<Object> saveGrv(@RequestBody GrvDto req) {
         String processNo = processService.saveGrv(req);
+        Map<String, String> res = new HashMap<>();
+        res.put("processNo", processNo);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+    @PostMapping("/saveGrn")
+    public ResponseEntity<Object> saveGrn(@RequestBody GrnDto req) {
+        String processNo = processService.saveGrn(req);
         Map<String, String> res = new HashMap<>();
         res.put("processNo", processNo);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
