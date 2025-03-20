@@ -45,19 +45,21 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
         materialMaster.setSubCategory(materialMasterRequestDto.getSubCategory());
         materialMaster.setDescription(materialMasterRequestDto.getDescription());
         materialMaster.setUom(materialMasterRequestDto.getUom());
-        materialMaster.setEndOfLife(materialMasterRequestDto.getEndOfLife());
-        materialMaster.setModeOfProcurement(materialMasterRequestDto.getModeOfProcurement());
-        materialMaster.setDepreciationRate(materialMasterRequestDto.getDepreciationRate());
-        materialMaster.setStockLevels(materialMasterRequestDto.getStockLevels());
-        materialMaster.setConditionOfGoods(materialMasterRequestDto.getConditionOfGoods());
-        materialMaster.setShelfLife(materialMasterRequestDto.getShelfLife());
+     //   materialMaster.setEndOfLife(materialMasterRequestDto.getEndOfLife());
+     //   materialMaster.setModeOfProcurement(materialMasterRequestDto.getModeOfProcurement());
+    //    materialMaster.setDepreciationRate(materialMasterRequestDto.getDepreciationRate());
+       // materialMaster.setStockLevels(materialMasterRequestDto.getStockLevels());
+      //  materialMaster.setConditionOfGoods(materialMasterRequestDto.getConditionOfGoods());
+     //   materialMaster.setShelfLife(materialMasterRequestDto.getShelfLife());
+        materialMaster.setUnitPrice(materialMasterRequestDto.getUnitPrice());
+        materialMaster.setCurrency(materialMasterRequestDto.getCurrency());
         materialMaster.setUploadImageName(materialMasterRequestDto.getUploadImageFileName());
         materialMaster.setIndigenousOrImported(materialMasterRequestDto.getIndigenousOrImported());
         materialMaster.setEstimatedPriceWithCcy(materialMasterRequestDto.getEstimatedPriceWithCcy());
         materialMaster.setCreatedBy(materialMasterRequestDto.getCreatedBy());
         materialMaster.setUpdatedBy(materialMasterRequestDto.getUpdatedBy());
         materialMasterRepository.save(materialMaster);
-        // Saveing Vendornames in different table
+      /*  // Saveing Vendornames in different table
         if (materialMasterRequestDto.getVendorNames() != null && !materialMasterRequestDto.getVendorNames().isEmpty()) {
             List<VendorNamesForJobWorkMaterial> vendors = materialMasterRequestDto.getVendorNames().stream().map(vendorName -> {
                 VendorNamesForJobWorkMaterial vendor = new VendorNamesForJobWorkMaterial();
@@ -68,6 +70,8 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
 
             vendorNameRepository.saveAll(vendors);
         }
+
+       */
         return mapToResponseDTO(materialMaster);
     }
 
@@ -88,19 +92,23 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
         materialMaster.setSubCategory(materialMasterRequestDto.getSubCategory());
         materialMaster.setDescription(materialMasterRequestDto.getDescription());
         materialMaster.setUom(materialMasterRequestDto.getUom());
-        materialMaster.setEndOfLife(materialMasterRequestDto.getEndOfLife());
-        materialMaster.setModeOfProcurement(materialMasterRequestDto.getModeOfProcurement());
-        materialMaster.setDepreciationRate(materialMasterRequestDto.getDepreciationRate());
-        materialMaster.setStockLevels(materialMasterRequestDto.getStockLevels());
-        materialMaster.setConditionOfGoods(materialMasterRequestDto.getConditionOfGoods());
-        materialMaster.setShelfLife(materialMasterRequestDto.getShelfLife());
+     //   materialMaster.setEndOfLife(materialMasterRequestDto.getEndOfLife());
+      //  materialMaster.setModeOfProcurement(materialMasterRequestDto.getModeOfProcurement());
+        materialMaster.setUnitPrice(materialMasterRequestDto.getUnitPrice());
+        materialMaster.setCurrency(materialMasterRequestDto.getCurrency());
+      //  materialMaster.setDepreciationRate(materialMasterRequestDto.getDepreciationRate());
+      //  materialMaster.setStockLevels(materialMasterRequestDto.getStockLevels());
+      //  materialMaster.setConditionOfGoods(materialMasterRequestDto.getConditionOfGoods());
+     //   materialMaster.setShelfLife(materialMasterRequestDto.getShelfLife());
+        materialMaster.setUnitPrice(materialMasterRequestDto.getUnitPrice());
+        materialMaster.setCurrency(materialMasterRequestDto.getCurrency());
         materialMaster.setUploadImageName(materialMasterRequestDto.getUploadImageFileName());
         materialMaster.setIndigenousOrImported(materialMasterRequestDto.getIndigenousOrImported());
         materialMaster.setEstimatedPriceWithCcy(materialMasterRequestDto.getEstimatedPriceWithCcy());
         materialMaster.setUpdatedBy(materialMasterRequestDto.getUpdatedBy());
         materialMaster.setCreatedBy(materialMasterRequestDto.getCreatedBy());
         materialMasterRepository.save(materialMaster);
-        // Saveing Vendornames in different table
+      /*  // Saveing Vendornames in different table
         if (materialMasterRequestDto.getVendorNames() != null && !materialMasterRequestDto.getVendorNames().isEmpty()) {
             List<VendorNamesForJobWorkMaterial> vendors = materialMasterRequestDto.getVendorNames().stream().map(vendorName -> {
                 VendorNamesForJobWorkMaterial vendor = new VendorNamesForJobWorkMaterial();
@@ -110,7 +118,10 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
             }).collect(Collectors.toList());
 
             vendorNameRepository.saveAll(vendors);
+
         }
+
+       */
 
         return mapToResponseDTO(materialMaster);
 
@@ -172,12 +183,14 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
         materialMasterResponseDto.setSubCategory(materialMaster.getSubCategory());
         materialMasterResponseDto.setDescription(materialMaster.getDescription());
         materialMasterResponseDto.setUom(materialMaster.getUom());
-        materialMasterResponseDto.setEndOfLife(materialMaster.getEndOfLife());
-        materialMasterResponseDto.setModeOfProcurement(materialMaster.getModeOfProcurement());
-        materialMasterResponseDto.setDepreciationRate(materialMaster.getDepreciationRate());
-        materialMasterResponseDto.setStockLevels(materialMaster.getStockLevels());
-        materialMasterResponseDto.setConditionOfGoods(materialMaster.getConditionOfGoods());
-        materialMasterResponseDto.setShelfLife(materialMaster.getShelfLife());
+      //  materialMasterResponseDto.setEndOfLife(materialMaster.getEndOfLife());
+     //   materialMasterResponseDto.setModeOfProcurement(materialMaster.getModeOfProcurement());
+        materialMasterResponseDto.setCurrency(materialMaster.getCurrency());
+        materialMasterResponseDto.setUnitPrice(materialMaster.getUnitPrice());
+      //  materialMasterResponseDto.setDepreciationRate(materialMaster.getDepreciationRate());
+      //  materialMasterResponseDto.setStockLevels(materialMaster.getStockLevels());
+      //  materialMasterResponseDto.setConditionOfGoods(materialMaster.getConditionOfGoods());
+       // materialMasterResponseDto.setShelfLife(materialMaster.getShelfLife());
         materialMasterResponseDto.setUploadImageFileName(materialMaster.getUploadImageName());
         materialMasterResponseDto.setIndigenousOrImported(materialMaster.getIndigenousOrImported());
         materialMasterResponseDto.setEstimatedPriceWithCcy(materialMaster.getEstimatedPriceWithCcy());
@@ -185,15 +198,21 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
         materialMasterResponseDto.setUpdatedBy(materialMaster.getUpdatedBy());
         materialMasterResponseDto.setCreatedDate(materialMaster.getCreatedDate());
         materialMasterResponseDto.setUpdatedDate(materialMaster.getUpdatedDate());
-
+/*
         List<String> vendorNames= vendorNameRepository.findByMaterialCode(materialMaster.getMaterialCode())
                 .stream()
                 .map(VendorNamesForJobWorkMaterial::getVendorName)
                 .collect(Collectors.toList());
         materialMasterResponseDto.setVendorNames(vendorNames);
+
+ */
         return materialMasterResponseDto;
 
+
+
     }
+
+
 
 
 }

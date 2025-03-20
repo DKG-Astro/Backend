@@ -109,6 +109,12 @@ public class WorkflowController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
 
+    @GetMapping("/approved-PoIds")
+    public ResponseEntity<Object>  getApprovedPoIds() {
+        List<String> response= workflowService.getApprovedPoIds();
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+    }
+
     @GetMapping("/getApprovedTender")
     public ResponseEntity<Object> getApprovedTender()  {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.getApprovedTender()), HttpStatus.OK);

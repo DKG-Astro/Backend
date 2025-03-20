@@ -16,7 +16,8 @@ public class MaterialDetailsResponseDTO {
     private String budgetCode;
     private String materialCategory;
     private String materialSubCategory;
-    private String materialAndJob;
+  //  private String materialAndJob;
     private String modeOfProcurement;
 
+    // private List<String> vendorNames;
 }

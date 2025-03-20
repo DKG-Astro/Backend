@@ -14,20 +14,21 @@ public class MaterialMasterResponseDto {
     private String subCategory;
     private String description;
     private String uom;
-    private String modeOfProcurement;
-    private String endOfLife;
-    private BigDecimal depreciationRate;
-    private BigDecimal stockLevels;
-   // private BigDecimal stockLevelsMax;
-   // private BigDecimal reOrderLevel;
-    private String conditionOfGoods;
-    private String shelfLife;
+ //   private String modeOfProcurement;
+ //   private String endOfLife;
+ //   private BigDecimal depreciationRate;
+ //   private BigDecimal stockLevels;
+  //  private String conditionOfGoods;
+ //   private String shelfLife;
     private String uploadImageFileName;
     private Boolean indigenousOrImported;
     private BigDecimal estimatedPriceWithCcy;
-    private List<String> vendorNames;
+  //  private List<String> vendorNames;
+    private BigDecimal unitPrice;
+    private String currency;
     private Integer createdBy;
     private String updatedBy;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
+
 }

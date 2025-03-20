@@ -27,23 +27,31 @@ public class MaterialMaster {
 
     @Column(name = "uom")
     private String uom;
+    @Column(name = "unit_price")
+    private BigDecimal unitPrice;
 
-    @Column(name = "mode_of_procurement")
-    private String modeOfProcurement;
+    @Column(name = "currency")
+    private String currency;
 
-    @OneToMany(mappedBy = "jobCode", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<VendorNamesForJobWorkMaterial> vendorNames;
+    @Column(name = "estimated_price_with_ccy")
+    private BigDecimal estimatedPriceWithCcy;
 
-    @Column(name = "end_of_life")
+  //  @Column(name = "mode_of_procurement")
+  //  private String modeOfProcurement;
+
+ //  @OneToMany(mappedBy = "jobCode", cascade = CascadeType.ALL, orphanRemoval = true)
+  // private List<VendorNamesForJobWorkMaterial> vendorNames;
+
+   /* @Column(name = "end_of_life")
     private String endOfLife;
+
 
     @Column(name = "depreciation_rate")
     private BigDecimal depreciationRate;
 
     @Column(name = "stock_levels")
     private BigDecimal stockLevels;
-    @Column(name = "estimated_price_with_ccy")
-    private BigDecimal estimatedPriceWithCcy;
+
 
 
     @Column(name = "condition_of_goods")
@@ -51,6 +59,8 @@ public class MaterialMaster {
 
     @Column(name = "shelf_life")
     private String shelfLife;
+
+    */
 
     @Lob
     @Column(name = "upload_image")

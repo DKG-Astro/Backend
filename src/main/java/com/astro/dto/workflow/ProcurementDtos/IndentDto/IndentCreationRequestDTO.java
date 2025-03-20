@@ -19,7 +19,7 @@ public class IndentCreationRequestDTO {
 
     private String indentorName;
 
-    private String indentId;
+  //  private String indentId;
 
     private String indentorMobileNo;
 

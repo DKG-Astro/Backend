@@ -970,6 +970,11 @@ public class WorkflowServiceImpl implements WorkflowService {
         return workflowTransitionRepository.findApprovedTenderIdsForPOANDSO();
     }
 
+    @Override
+    public List<String> getApprovedPoIds() {
+        return workflowTransitionRepository.findApprovedPoIds();
+    }
+
     public List<ApprovedTenderDto> getApprovedTender() {
 
         // return workflowTransitionRepository.findApprovedTenderRequestIds();
