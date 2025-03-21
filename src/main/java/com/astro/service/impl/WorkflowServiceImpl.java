@@ -90,6 +90,7 @@ public class WorkflowServiceImpl implements WorkflowService {
     private IndentIdRepository indentIdRepository;
 
 
+
     @Override
     public WorkflowDto workflowByWorkflowName(String workflowName) {
         WorkflowDto workflowDto = null;
@@ -975,6 +976,30 @@ public class WorkflowServiceImpl implements WorkflowService {
         return workflowTransitionRepository.findApprovedPoIds();
     }
 
+
+  /*  @Override
+    public List<ApprovedPoIdsDto> getApprovedPoIds() {
+
+       List<String> poIds= workflowTransitionRepository.findApprovedPoIds();
+       List<ApprovedPoIdsDto> approvedPoIdsDtos = new ArrayList<>();
+       for(String poId : poIds){
+          PurchaseOrder purchaseOrder =purchaseOrderRepository.findByPoId(poId);
+
+          IndentCreation ind = indentCreationRepository.findByIndentId(purchaseOrder.getIndentId());
+          ApprovedPoIdsDto dto = new ApprovedPoIdsDto(
+                  poId,
+                  (ind != null) ? ind.getIndentorName() : null,
+                  purchaseOrder.getVendorName()
+          );
+          approvedPoIdsDtos.add(dto);
+
+       }
+       return approvedPoIdsDtos;
+
+    }
+
+   */
+
     public List<ApprovedTenderDto> getApprovedTender() {
 
         // return workflowTransitionRepository.findApprovedTenderRequestIds();
@@ -987,7 +1012,7 @@ public class WorkflowServiceImpl implements WorkflowService {
             Optional<TenderRequest> optionalTenderRequest = tenderRequestRepository.findByTenderId(tenderId);
 
             if (optionalTenderRequest.isPresent()) {
-                TenderRequest tenderRequest = optionalTenderRequest.get(); // Unwrap Optional
+                TenderRequest tenderRequest = optionalTenderRequest.get();
                 ApprovedTenderDto dto = new ApprovedTenderDto(
                         tenderId,
                         tenderRequest.getBidType(),

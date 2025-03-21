@@ -52,25 +52,14 @@ public class MaterialDetails {
     @Column(name = "material_sub_category")
     private String materialSubCategory;
 
-  //  @Column(name = "material_and_job")
- //   private String materialAndJob;
-    @Column(name="mode_of_procurement")
+    @Column(name = "mode_of_procurement")
     private String modeOfProcurement;
- //   @OneToMany(mappedBy = "materialode", cascade = CascadeType.ALL, orphanRemoval = true)
-  //  private List<VendorNamesForJobWorkMaterial> vendorNames;
 
 
 
-    //  @ManyToOne
-  //  @JoinColumn(name = "indent_creation_id", nullable = false)
-   // @ManyToMany(mappedBy = "materialDetails")
-  // Many-to-Many Relationship with IndentCreation
-
-   // private IndentCreation indentCreation;
-   @ManyToOne
-   @JoinColumn(name = "indent_id", referencedColumnName = "indent_id", insertable = false, updatable = false)
-   private IndentCreation indentCreation;
-
+    @ManyToOne
+    @JoinColumn(name = "indent_id", referencedColumnName = "indent_id", insertable = false, updatable = false)
+    private IndentCreation indentCreation;
 
 
 }

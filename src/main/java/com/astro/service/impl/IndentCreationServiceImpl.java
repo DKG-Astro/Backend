@@ -22,10 +22,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -49,7 +51,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
 
         @Autowired
         private VendorNamesForJobWorkMaterialRepository vendorNameRepository;
-
+    @Transactional
     public IndentCreationResponseDTO createIndent(IndentCreationRequestDTO indentRequestDTO){
 
 
@@ -122,23 +124,11 @@ public class IndentCreationServiceImpl implements IndentCreationService {
 
 
             material.setIndentCreation(indentCreation);
-            // Saveing Vendornames in different table
-         /*   if (materialRequest.getVendorNames() != null && !materialRequest.getVendorNames().isEmpty()) {
-                List<VendorNamesForJobWorkMaterial> vendors = materialRequest.getVendorNames().stream().map(vendorName -> {
-                    VendorNamesForJobWorkMaterial vendor = new VendorNamesForJobWorkMaterial();
-                    vendor.setVendorName(vendorName);
-                    vendor.setMaterialCode(materialRequest.getMaterialCode());
-                    return vendor;
-                }).collect(Collectors.toList());
-                vendorNameRepository.saveAll(vendors);
-            }
-
-          */
           //  material.setIndentCreations(indentCreation);  // Associate with the current indentCreation
             return material;
         }).collect(Collectors.toList());
 
-        indentCreation.setMaterialDetails(materialDetailsList);
+         indentCreation.setMaterialDetails(materialDetailsList);
         // Calculate sum of all material total prices
         BigDecimal totalIndentPrice = materialDetailsList.stream()
                 .map(MaterialDetails::getTotalPrice)
@@ -146,10 +136,39 @@ public class IndentCreationServiceImpl implements IndentCreationService {
 
         indentCreation.setTotalIntentValue(totalIndentPrice);
 
-        indentCreationRepository.save(indentCreation);
 
-        return mapToResponseDTO(indentCreation);
+        indentCreationRepository.save(indentCreation);
+      //  List<MaterialDetails> savedMaterials = materialDetailsRepository.saveAll(materialDetailsList);
+        List<MaterialDetails> savedMaterials = materialDetailsRepository.findByIndentId(indentId);
+
+        // Save VendorNames for each Material
+      List<VendorNamesForJobWorkMaterial> vendorList = new ArrayList<>();
+        for (int i = 0; i < materialDetailsList.size(); i++) {
+            MaterialDetails savedMaterial = savedMaterials.get(i);
+            MaterialDetailsRequestDTO materialRequest = indentRequestDTO.getMaterialDetails().get(i);
+            System.out.println("Material ID: " + savedMaterial.getId() + ", Material Code: " + savedMaterial.getMaterialCode());
+
+            if (materialRequest.getVendorNames() != null && !materialRequest.getVendorNames().isEmpty()) {
+                for (String vendorName : materialRequest.getVendorNames()) {
+                    VendorNamesForJobWorkMaterial vendor = new VendorNamesForJobWorkMaterial();
+                    vendor.setVendorName(vendorName);
+                    vendor.setMaterialId(savedMaterial.getId());
+                    vendor.setMaterialCode(savedMaterial.getMaterialCode());
+                    vendorList.add(vendor);
+                }
+            }
+        }
+
+        // Save all vendor records
+        if (!vendorList.isEmpty()) {
+            vendorNameRepository.saveAll(vendorList);
+        }
+      IndentCreation  indentCreations = indentCreationRepository.findByIndentId(indentId);
+        return mapToResponseDTO(indentCreations);
     }
+
+
+
 
     public IndentCreationResponseDTO updateIndent(String indentId, IndentCreationRequestDTO indentRequestDTO){
             //,String uploadingPriorApprovalsFileName,String uploadTenderDocumentsFileName,String uploadGOIOrRFPFileName,String uploadPACOrBrandPACFileName) {
@@ -247,7 +266,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         }
 
 
-
+        @Transactional
         private IndentCreationResponseDTO mapToResponseDTO(IndentCreation indentCreation) {
             IndentCreationResponseDTO response = new IndentCreationResponseDTO();
             response.setIndentorName(indentCreation.getIndentorName());
@@ -296,14 +315,19 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                 materialResponse.setModeOfProcurement(material.getModeOfProcurement());
                 materialResponse.setMaterialCategory(material.getMaterialCategory());
                 materialResponse.setMaterialSubCategory(material.getMaterialSubCategory());
-               // materialResponse.setMaterialAndJob(material.getMaterialAndJob());
-            /*    List<String> vendorNames= vendorNameRepository.findByMaterialCode(material.getMaterialCode())
+
+
+                List<String> vendorNames = vendorNameRepository.findByMaterialId(material.getId())
                         .stream()
                         .map(VendorNamesForJobWorkMaterial::getVendorName)
                         .collect(Collectors.toList());
+                System.out.println("material_id" +material.getId());
+
+                System.out.println("VendorNames:" + vendorNames);
                 materialResponse.setVendorNames(vendorNames);
 
-             */
+
+
                 return materialResponse;
             }).collect(Collectors.toList());
 

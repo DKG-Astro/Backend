@@ -144,4 +144,6 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation,S
     IndentCreation getByIndentId(String indentId);
 
     List<IndentCreation> findByIndentIdIn(List<String> indentIds);
+
+    IndentCreation findByIndentId(String indentId);
 }

@@ -1,6 +1,7 @@
 package com.astro.controller;
 
 
+import com.astro.dto.workflow.ApprovedPoIdsDto;
 import com.astro.dto.workflow.TransitionActionReqDto;
 import com.astro.service.WorkflowService;
 import com.astro.util.ResponseBuilder;
@@ -109,11 +110,18 @@ public class WorkflowController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
 
-    @GetMapping("/approved-PoIds")
+  /*  @GetMapping("/approved-PoIds")
     public ResponseEntity<Object>  getApprovedPoIds() {
-        List<String> response= workflowService.getApprovedPoIds();
+        List<ApprovedPoIdsDto> response= workflowService.getApprovedPoIds();
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
+
+   */
+  @GetMapping("/approved-PoIds")
+  public ResponseEntity<Object>  getApprovedPoIds() {
+      List<String> response= workflowService.getApprovedPoIds();
+      return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+  }
 
     @GetMapping("/getApprovedTender")
     public ResponseEntity<Object> getApprovedTender()  {

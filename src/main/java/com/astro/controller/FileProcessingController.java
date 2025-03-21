@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +51,42 @@ public class FileProcessingController {
         String fileName = fileProcessingService.uploadFile(fileType, file);
         map.put("fileName", fileName);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(map), HttpStatus.CREATED);
+    }
+/*
+
+    @GetMapping(value = "/view/{fileType}/{fileName}")
+    public ResponseEntity<Resource> viewFile(@PathVariable("fileType") String fileType,
+                                             @PathVariable("fileName") String fileName) {
+        Resource file = fileProcessingService.downloadFile(fileType, fileName);
+
+        if (file == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        String contentType;
+        try {
+            contentType = Files.probeContentType(Path.of(file.getFile().getAbsolutePath()));
+            if (contentType == null) {
+                contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+            }
+        } catch (IOException e) {
+            contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(file);
+    }
+    */
+    @GetMapping(value = "/view/{fileType}/{fileName}")
+    public ResponseEntity<?> viewFile(@PathVariable("fileType") String fileType,
+                                             @PathVariable("fileName") String fileName) {
+        Resource file = fileProcessingService.viewFile(fileType, fileName);
+        if (file == null) {
+            return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(), HttpStatus.NOT_FOUND);
+        } else {
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(file);
+        }
     }
 
 }

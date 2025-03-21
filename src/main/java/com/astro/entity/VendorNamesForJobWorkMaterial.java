@@ -1,5 +1,6 @@
 package com.astro.entity;
 
+import com.astro.entity.ProcurementModule.MaterialDetails;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -13,6 +14,8 @@ public class VendorNamesForJobWorkMaterial {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long materialId;
+
     @Column(name = "vendor_name", nullable = false)
     private String vendorName;
 
@@ -24,5 +27,6 @@ public class VendorNamesForJobWorkMaterial {
 
     @Column(name = "work_code")
     private String workCode;
+
 
 }

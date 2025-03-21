@@ -1,6 +1,7 @@
 package com.astro.service.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -16,6 +17,9 @@ import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -84,5 +88,25 @@ public class FileProcessingServiceImpl implements FileProcessingService {
                     AppConstant.ERROR_TYPE_VALIDATION, "File not found."));
         }
     }
+
+    @Override
+    public Resource viewFile(String fileType, String fileName) {
+        if (!FILE_TYPE_LIST.contains(fileType)) {
+            throw new FilesNotFoundException(new ErrorDetails(AppConstant.INVALID_FILE_TYPE,
+                    AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION, "Invalid File type."));
+        }
+
+        Resource file = downloadFile(fileType, fileName);
+
+        if (file == null) {
+            throw new FilesNotFoundException(new ErrorDetails(AppConstant.FILE_NOT_FOUND,
+                    AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION, "File not found."));
+        }
+
+        return file;
+    }
+
 
 }

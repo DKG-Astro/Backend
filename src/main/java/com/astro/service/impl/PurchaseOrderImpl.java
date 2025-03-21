@@ -8,6 +8,7 @@ import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.*;
 import com.astro.dto.workflow.VendorContractReportDTO;
+import com.astro.entity.ProcurementModule.MaterialDetails;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
 import com.astro.entity.ProcurementModule.TenderRequest;
@@ -15,6 +16,7 @@ import com.astro.entity.ProjectMaster;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
+import com.astro.repository.ProcurementModule.IndentCreation.MaterialDetailsRepository;
 import com.astro.repository.ProcurementModule.IndentIdRepository;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;
 
@@ -31,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -52,6 +55,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
     private TenderRequestRepository tenderRequestRepository;
     @Autowired
     private ProjectMasterRepository projectMasterRepository;
+
 
     public PurchaseOrderResponseDTO createPurchaseOrder(PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
 
@@ -210,6 +214,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         // Fetch related Tender & Indent
         TenderWithIndentResponseDTO tenderWithIndent = tenderRequestService.getTenderRequestById(purchaseOrder.getTenderId());
 
+
         poWithTenderAndIndentResponseDTO responseDTO = new poWithTenderAndIndentResponseDTO();
         responseDTO.setPoId(purchaseOrder.getPoId());
         responseDTO.setTenderId(purchaseOrder.getTenderId());
@@ -248,6 +253,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                     attributeDTO.setDuties(attribute.getDuties());
                     attributeDTO.setFreightCharge(attribute.getFreightCharge());
                     attributeDTO.setBudgetCode(attribute.getBudgetCode());
+
                     return attributeDTO;
                 })
                 .collect(Collectors.toList()));

@@ -26,7 +26,8 @@ public interface WorkflowService {
 
     public List<String> getApprovedTenderIdsForPOAndSO();
 
-    public List<String> getApprovedPoIds();
+   // public List<ApprovedPoIdsDto> getApprovedPoIds();
+   public List<String> getApprovedPoIds();
 
     public List<QueueResponse> allPendingWorkflowTransitionINQueue(String roleName);
     public List<SubWorkflowQueueDto> getSubWorkflowQueue(Integer modifiedBy);

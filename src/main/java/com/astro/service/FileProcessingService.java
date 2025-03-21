@@ -12,5 +12,7 @@ public interface FileProcessingService {
     public String uploadFile(String fileType, MultipartFile multipartFile);
     public Resource downloadFile(String fileType, String fileName);
 
+    public Resource viewFile(String fileType, String fileName);
+
 
 }

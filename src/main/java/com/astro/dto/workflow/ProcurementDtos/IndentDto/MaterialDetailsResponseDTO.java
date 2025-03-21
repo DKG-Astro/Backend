@@ -3,6 +3,7 @@ package com.astro.dto.workflow.ProcurementDtos.IndentDto;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class MaterialDetailsResponseDTO {
@@ -18,6 +19,5 @@ public class MaterialDetailsResponseDTO {
     private String materialSubCategory;
   //  private String materialAndJob;
     private String modeOfProcurement;
-
-    // private List<String> vendorNames;
+    private List<String> vendorNames;
 }
