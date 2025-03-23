@@ -20,6 +20,7 @@ public class poWithTenderAndIndentResponseDTO {
  private Boolean ifLdClauseApplicable;
  private String incoTerms;
  private String paymentTerms;
+ private String vendorId;
  private String vendorName;
  private String vendorAddress;
  private String applicablePbgToBeSubmitted;

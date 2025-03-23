@@ -89,7 +89,7 @@ public class FileProcessingServiceImpl implements FileProcessingService {
         }
     }
 
-    @Override
+  /*  @Override
     public Resource viewFile(String fileType, String fileName) {
         if (!FILE_TYPE_LIST.contains(fileType)) {
             throw new FilesNotFoundException(new ErrorDetails(AppConstant.INVALID_FILE_TYPE,
@@ -107,6 +107,40 @@ public class FileProcessingServiceImpl implements FileProcessingService {
 
         return file;
     }
+
+   */
+  @Override
+  public Resource viewFile(String fileType, String fileName) {
+      if (!FILE_TYPE_LIST.contains(fileType)) {
+          throw new FilesNotFoundException(new ErrorDetails(AppConstant.INVALID_FILE_TYPE,
+                  AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                  AppConstant.ERROR_TYPE_VALIDATION, "Invalid File type."));
+      }
+
+      Resource file = downloadFile(fileType, fileName);
+
+      if (file == null) {
+          throw new FilesNotFoundException(new ErrorDetails(AppConstant.FILE_NOT_FOUND,
+                  AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                  AppConstant.ERROR_TYPE_VALIDATION, "File not found."));
+      }
+
+      return file;
+  }
+
+    // Business logic to determine content type
+    public String getContentType(String fileName) {
+        if (fileName.endsWith(".pdf")) {
+            return MediaType.APPLICATION_PDF_VALUE;
+        } else if (fileName.endsWith(".png") || fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
+            return MediaType.IMAGE_JPEG_VALUE;
+        } else if (fileName.endsWith(".txt")) {
+            return MediaType.TEXT_PLAIN_VALUE;
+        } else {
+            return MediaType.APPLICATION_OCTET_STREAM_VALUE; // Default
+        }
+    }
+
 
 
 }

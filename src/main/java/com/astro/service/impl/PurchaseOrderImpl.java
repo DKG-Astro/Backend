@@ -4,6 +4,7 @@ package com.astro.service.impl;
 import com.astro.constant.AppConstant;
 
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.*;
@@ -32,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -95,6 +97,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setVendorAccountNumber(purchaseOrderRequestDTO.getVendorAccountNumber());
         purchaseOrder.setVendorsZfscCode(purchaseOrderRequestDTO.getVendorsIfscCode());
         purchaseOrder.setVendorAccountName(purchaseOrderRequestDTO.getVendorAccountName());
+        purchaseOrder.setVendorId(purchaseOrderRequestDTO.getVendorId());
         //  purchaseOrder.setTotalValueOfPo(purchaseOrderRequestDTO.getTotalValueOfPo());
         purchaseOrder.setProjectName(purchaseOrderRequestDTO.getProjectName());
         purchaseOrder.setCreatedBy(purchaseOrderRequestDTO.getCreatedBy());
@@ -162,6 +165,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setVendorsZfscCode(purchaseOrderRequestDTO.getVendorsIfscCode());
         purchaseOrder.setVendorAccountName(purchaseOrderRequestDTO.getVendorAccountName());
         purchaseOrder.setProjectName(purchaseOrderRequestDTO.getProjectName());
+        purchaseOrder.setVendorId(purchaseOrderRequestDTO.getVendorId());
         //   purchaseOrder.setTotalValueOfPo(purchaseOrderRequestDTO.getTotalValueOfPo());
         purchaseOrder.setUpdatedBy(purchaseOrderRequestDTO.getUpdatedBy());
         purchaseOrder.setCreatedBy(purchaseOrderRequestDTO.getCreatedBy());
@@ -213,6 +217,13 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
 
         // Fetch related Tender & Indent
         TenderWithIndentResponseDTO tenderWithIndent = tenderRequestService.getTenderRequestById(purchaseOrder.getTenderId());
+        Map<String, MaterialDetailsResponseDTO> indentMaterialMap = new HashMap<>();
+
+        for (IndentCreationResponseDTO indent : tenderWithIndent.getIndentResponseDTO()) {
+            for (MaterialDetailsResponseDTO material : indent.getMaterialDetails()) {
+                indentMaterialMap.put(material.getMaterialCode(), material);
+            }
+        }
 
 
         poWithTenderAndIndentResponseDTO responseDTO = new poWithTenderAndIndentResponseDTO();
@@ -233,6 +244,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         responseDTO.setVendorAccountNumber(purchaseOrder.getVendorAccountNumber());
         responseDTO.setVendorsIfscCode(purchaseOrder.getVendorsZfscCode());
         responseDTO.setVendorAccountName(purchaseOrder.getVendorAccountName());
+        responseDTO.setVendorId(purchaseOrder.getVendorId());
         //  responseDTO.setProjectName(purchaseOrder.getProjectName());
         responseDTO.setTotalValueOfPo(tenderWithIndent.getTotalTenderValue());
         responseDTO.setCreatedBy(purchaseOrder.getCreatedBy());
@@ -253,7 +265,9 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                     attributeDTO.setDuties(attribute.getDuties());
                     attributeDTO.setFreightCharge(attribute.getFreightCharge());
                     attributeDTO.setBudgetCode(attribute.getBudgetCode());
-
+                    MaterialDetailsResponseDTO indentMaterial = indentMaterialMap.get(attribute.getMaterialCode());
+                    attributeDTO.setUnitPrice(indentMaterial.getUnitPrice());
+                    attributeDTO.setUom(indentMaterial.getUom());
                     return attributeDTO;
                 })
                 .collect(Collectors.toList()));
@@ -330,6 +344,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         responseDTO.setVendorAccountNumber(purchaseOrder.getVendorAccountNumber());
         responseDTO.setVendorsIfscCode(purchaseOrder.getVendorsZfscCode());
         responseDTO.setVendorAccountName(purchaseOrder.getVendorAccountName());
+        responseDTO.setVendorId(purchaseOrder.getVendorId());
         responseDTO.setProjectName(purchaseOrder.getProjectName());
         //  responseDTO.setTotalValueOfPo(purchaseOrder.getTotalValueOfPo());
         responseDTO.setCreatedBy(purchaseOrder.getCreatedBy());
@@ -374,8 +389,6 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                 .orElse(BigDecimal.ZERO);
         responseDTO.setProjectLimit(allocatedAmount);
         System.out.println("allocatedAmount: " + allocatedAmount);
-
-
         return responseDTO;
     }
 

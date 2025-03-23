@@ -7,39 +7,171 @@
     <list default="true" id="ff5636e0-402f-4a63-8653-94f411351cbb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/controller/FileProcessingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/controller/FileProcessingController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/controller/WorkflowController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/controller/WorkflowController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/IndentDto/MaterialDetailsRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/IndentDto/MaterialDetailsRequestDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/IndentDto/MaterialDetailsResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/IndentDto/MaterialDetailsResponseDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/PurchaseOrderAttributesResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/PurchaseOrderAttributesResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/MaterialDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/MaterialDetails.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/VendorNamesForJobWorkMaterial.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/VendorNamesForJobWorkMaterial.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/IndentCreation/IndentCreationRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/IndentCreation/IndentCreationRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/IndentCreation/MaterialDetailsRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/IndentCreation/MaterialDetailsRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/PurchaseOrder/PurchaseOrderRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/PurchaseOrder/PurchaseOrderRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/VendorNamesForJobWorkMaterialRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/VendorNamesForJobWorkMaterialRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/PurchaseOrderRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/PurchaseOrderRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/PurchaseOrderResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/PurchaseOrderResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/poWithTenderAndIndentResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/poWithTenderAndIndentResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/PurchaseOrder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/PurchaseOrder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/FileProcessingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/FileProcessingService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/WorkflowService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/WorkflowService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/FileProcessingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/FileProcessingServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/IndentCreationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/IndentCreationServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/PurchaseOrderImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/PurchaseOrderImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/FileProcessingController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/controller/FileProcessingController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/InventoryModule/GRIController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/controller/InventoryModule/GRIController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/WorkflowController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/controller/WorkflowController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/BackendServiceApplication.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/config/AppConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/config/ResponseHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/config/WebSecurityConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/constant/WorkflowName.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/EmployeeDepartmentMasterController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/FileProcessingController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/InventoryModule/AssetController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/InventoryModule/GatepassController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/InventoryModule/GoodsInspectionController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/InventoryModule/GoodsReturnController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/InventoryModule/GoodsTransferController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/InventoryModule/MaterialDisposalController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/InventoryModule/ProcessController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/JobMasterController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/LocationMasterController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/MaterialCreationController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/MaterialMasterController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/ProcurementModuleController/ContigencyPurchaseController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/ProcurementModuleController/IndentCreationController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/ProcurementModuleController/PurchaseOrderController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/ProcurementModuleController/ServiceOrderController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/ProcurementModuleController/TenderEvaluationController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/ProjectMasterController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/Reports.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/UomMasterController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/WorkMasterController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/controller/WorkflowController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ActionDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ApprovedPoIdsDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/EmployeeDepartmentMasterResponseDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/InventoryModule/AssetRequestDTO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/InventoryModule/AssetResponseDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/InventoryModule/GatepassRequestDTO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/InventoryModule/GoodsTransferResponseDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/InventoryModule/GprnDto/getGprnDtlsDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/InventoryModule/MaterialDisposalRequestDTO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/InventoryModule/MaterialDisposalResponseDTO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/MaterialCreationRequestDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/MaterialCreationResponseDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/MaterialMasterRequestDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/MaterialMasterResponseDto.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/IndentDto/MaterialDetailsRequestDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/IndentDto/MaterialDetailsRequestDTO.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/IndentDto/MaterialDetailsResponseDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/IndentDto/MaterialDetailsResponseDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/IndentIdDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/TenderEvaluationResponseDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/TenderEvaluationResponseWithBitTypeAndValueDto.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/PurchaseOrderAttributesResponseDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/PurchaseOrderAttributesResponseDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProjectMaster/ProjectMasterRequestDTO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProjectMaster/ProjectMasterResponseDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/StateDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/TransitionConditionDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/UomMasterResponseDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/WorkMasterRequestDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/ActionMaster.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/EmployeeDepartmentMaster.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/InventoryModule/Asset.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/InventoryModule/GatepassOutAndIn.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/InventoryModule/GiMaterialDtlEntity.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/InventoryModule/GoodsInspection.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/InventoryModule/GoodsReturn.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/InventoryModule/GoodsTransfer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/InventoryModule/GprnMasterEntity.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/InventoryModule/GprnMaterialDtlEntity.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/InventoryModule/GprnMaterialsId.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/InventoryModule/GrnMasterEntity.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/InventoryModule/GrnMaterialDtlEntity.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/InventoryModule/MaterialDisposal.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/InventoryModule/OhqMasterEntity.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/MaterialMaster.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/ProcurementModule/ContigencyPurchase.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/ProcurementModule/MaterialDetails.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/entity/ProcurementModule/MaterialDetails.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/VendorNamesForJobWorkMaterial.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/entity/VendorNamesForJobWorkMaterial.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/ProcurementModule/IndentCreation/IndentCreationRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/repository/ProcurementModule/IndentCreation/IndentCreationRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/ProcurementModule/IndentCreation/MaterialDetailsRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/repository/ProcurementModule/IndentCreation/MaterialDetailsRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/ProcurementModule/PurchaseOrder/PurchaseOrderRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/repository/ProcurementModule/PurchaseOrder/PurchaseOrderRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/VendorNamesForJobWorkMaterialRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/repository/VendorNamesForJobWorkMaterialRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/FileProcessingService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/service/FileProcessingService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/FileProcessingServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/service/impl/FileProcessingServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/IndentCreationServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/service/impl/IndentCreationServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/PurchaseOrderImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/service/impl/PurchaseOrderImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/WorkflowServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/service/impl/WorkflowServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/ProcurementModule/PurchaseOrder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/ProcurementModule/PurchaseOrderAttributes.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/RoleMaster.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/StateMaster.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/SubWorkflowTransition.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/TransitionConditionMaster.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/TransitionMaster.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/UomMaster.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/UserRoleMaster.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/WorkMaster.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/exception/BusinessException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/exception/ExceptionHelper.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/exception/FilesNotFoundException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/exception/InvalidInputException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/exception/UnauthorizedException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/ActionMasterRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/EmployeeDepartmentMasterRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/InventoryModule/AssetRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/InventoryModule/GatePassRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/InventoryModule/GiRepository/GiMaterialDtlRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/InventoryModule/GoodsInspectionRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/InventoryModule/GoodsReturnRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/InventoryModule/GoodsTransferRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/InventoryModule/GprnRepository/GprnMasterRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/InventoryModule/GprnRepository/GprnMaterialDtlRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/InventoryModule/MaterialDisposalRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/InventoryModule/grn/GrnMasterRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/InventoryModule/grn/GrnMaterialDtlRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/MaterialMasterRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/ProcurementModule/ContigencyPurchaseRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/ProcurementModule/IndentCreation/MaterialDetailsRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/ProcurementModule/PurchaseOrder/PurchaseOrderAttributesRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/ProcurementModule/PurchaseOrder/PurchaseOrderRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/ProcurementModule/TenderEvaluationRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/RoleMasterRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/StateMasterRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/SubWorkflowTransitionRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/TransitionConditionMasterRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/TransitionMasterRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/UomMasterRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/UserMasterRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/UserRoleMasterRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/VendorMasterRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/WorkMasterRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/WorkflowTransitionRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/ohq/OhqMasterRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/AssetService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/EmployeeDepartmentMasterService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/FileProcessingService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/GatepassService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/GoodsTransferService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/MaterialCreationService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/MaterialDisposalService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/MaterialMasterService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/ProjectMasterService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/TenderEvaluationService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/UomMasterService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/WorkMasterService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/AssetServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/ContigencyPurchaseServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/EmployeeDepartmentMasterServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/FileProcessingServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/GatepassServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/GoodsInspectionServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/GoodsReceiptInspectionServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/GoodsResturnServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/GoodsTransferServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/IndentCreationServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/MaterialCreationServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/MaterialDisposalServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/MaterialMasterServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/ProcessServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/ProjectMasterServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/PurchaseOrderImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/RoleMasterServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/TenderEvaluationServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/UomMasterServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/UserServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/VendorMasterServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/WorkMasterServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/WorkflowServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/util/Base64ToByteArrayConverter.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/util/CommonUtils.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

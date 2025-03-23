@@ -28,6 +28,7 @@ public class PurchaseOrderRequestDTO{
         private String vendorAccountName;
        // private BigDecimal totalValueOfPo;
         private String projectName;
+        private String vendorId;
         private List<PurchaseOrderAttributesDTO> purchaseOrderAttributes;
         private String updatedBy;
         private Integer createdBy;

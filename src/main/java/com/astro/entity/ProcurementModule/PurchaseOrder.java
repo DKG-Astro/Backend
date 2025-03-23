@@ -44,6 +44,8 @@ public class PurchaseOrder {
     private String applicablePbgToBeSubmitted;
     @Column(name = "transporter_and_freight_for_warder_details")
     private String transporterAndFreightForWarderDetails;
+    @Column(name = "vendor_id")
+    private String vendorId;
     @Column(name = "vendor_account_number")
     private String vendorAccountNumber;
     @Column(name = "vendors_zfsc_code")

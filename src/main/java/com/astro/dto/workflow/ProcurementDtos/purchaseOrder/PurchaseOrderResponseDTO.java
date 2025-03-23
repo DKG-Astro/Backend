@@ -24,6 +24,7 @@ public class PurchaseOrderResponseDTO {
     private String vendorAddress;
     private String applicablePbgToBeSubmitted;
     private String transporterAndFreightForWarderDetails;
+    private String vendorId;
     private String vendorAccountNumber;
     private String vendorsIfscCode;
     private String vendorAccountName;

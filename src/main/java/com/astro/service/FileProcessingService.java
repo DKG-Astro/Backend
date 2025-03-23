@@ -13,6 +13,7 @@ public interface FileProcessingService {
     public Resource downloadFile(String fileType, String fileName);
 
     public Resource viewFile(String fileType, String fileName);
+    public String getContentType(String fileName);
 
 
 }
