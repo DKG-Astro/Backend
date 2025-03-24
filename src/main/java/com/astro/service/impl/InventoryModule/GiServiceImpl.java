@@ -13,7 +13,9 @@ import java.util.stream.Collectors;
 import com.astro.service.InventoryModule.GiService;
 import com.astro.service.InventoryModule.GprnService;
 import com.astro.repository.InventoryModule.GiRepository.*;
+import com.astro.repository.MaterialMasterRepository;
 import com.astro.repository.InventoryModule.AssetMasterRepository;
+import com.astro.entity.MaterialMaster;
 import com.astro.entity.InventoryModule.*;
 import com.astro.dto.workflow.InventoryModule.GiDto.*;
 import com.astro.exception.*;
@@ -37,6 +39,9 @@ public class GiServiceImpl implements GiService {
     
     @Autowired
     private AssetMasterRepository amr;
+
+    @Autowired
+    private MaterialMasterRepository mmr;
 
     private final String basePath;
 
@@ -176,6 +181,12 @@ public class GiServiceImpl implements GiService {
     }
 
     private Integer createNewAsset(GiMaterialDtlDto materialDtl, Integer createdBy) {
+        MaterialMaster mme = mmr.findById(materialDtl.getMaterialCode())
+            .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                    AppConstant.ERROR_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_RESOURCE,
+                    "Material not found for the provided material code.")));
         Optional<AssetMasterEntity> ameOpt = amr.findByMaterialCodeAndMaterialDescAndMakeNoAndModelNoAndSerialNoAndUomId(
                 materialDtl.getMaterialCode(),
                 materialDtl.getMaterialDesc(),
@@ -191,6 +202,7 @@ public class GiServiceImpl implements GiService {
             ame.setCreateDate(LocalDateTime.now());
             ame.setCreatedBy(createdBy);
             ame.setUpdatedDate(LocalDateTime.now());
+            ame.setUnitPrice(mme.getUnitPrice());
             amr.save(ame);
             return ame.getAssetId();
         }

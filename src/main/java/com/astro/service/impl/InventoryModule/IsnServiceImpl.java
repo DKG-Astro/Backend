@@ -94,7 +94,7 @@ public class IsnServiceImpl implements IsnService {
 
         isnmdr.saveAll(isnMaterialDtlList);
 
-        return "INV" + isnMaster.getIssueNoteId();
+        return "INV" + "/" + isnMaster.getIssueNoteId();
     }
 
     @Override
@@ -122,7 +122,12 @@ public class IsnServiceImpl implements IsnService {
         List<IsnMaterialDtlEntity> isnMaterialList = isnmdr.findByIssueNoteId(isnMaster.getIssueNoteId());
 
         List<IsnMaterialDtlDto> materialDtlListRes = isnMaterialList.stream()
-                .map(material -> mapper.map(material, IsnMaterialDtlDto.class))
+                .map(material -> {
+                    IsnMaterialDtlDto dto = mapper.map(material, IsnMaterialDtlDto.class);
+                    amr.findById(material.getAssetId())
+                        .ifPresent(asset -> dto.setAssetDesc(asset.getAssetDesc()));
+                    return dto;
+                })
                 .collect(Collectors.toList());
 
         IsnDto isnRes = new IsnDto();
@@ -156,6 +161,7 @@ public class IsnServiceImpl implements IsnService {
             assetDto.setAssetId(asset.getAssetId());
             assetDto.setAssetDesc(asset.getAssetDesc());
             assetDto.setUomId(asset.getUomId());
+            assetDto.setUnitPrice(asset.getUnitPrice());
 
             List<IsnOhqDtlsDto> ohqDtoList = new ArrayList<>();
             for (OhqMasterEntity ohq : ohqList) {

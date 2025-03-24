@@ -49,9 +49,17 @@ public class GrnServiceImpl implements GrnService {
         ModelMapper mapper = new ModelMapper();
 
         GrnMasterEntity grnMaster = new GrnMasterEntity();
-        grnMaster.setGrnDate(CommonUtils.convertStringToDateObject(req.getGrnDate()));
-        grnMaster.setInstallationDate(CommonUtils.convertStringToDateObject(req.getInstallationDate()));
-        grnMaster.setCommissioningDate(CommonUtils.convertStringToDateObject(req.getCommissioningDate()));
+        // Add null checks for date fields
+        if (req.getGrnDate() != null && !req.getGrnDate().trim().isEmpty()) {
+            grnMaster.setGrnDate(CommonUtils.convertStringToDateObject(req.getGrnDate()));
+        }
+        if (req.getInstallationDate() != null && !req.getInstallationDate().trim().isEmpty()) {
+            grnMaster.setInstallationDate(CommonUtils.convertStringToDateObject(req.getInstallationDate()));
+        }
+        if (req.getCommissioningDate() != null && !req.getCommissioningDate().trim().isEmpty()) {
+            grnMaster.setCommissioningDate(CommonUtils.convertStringToDateObject(req.getCommissioningDate()));
+        }
+        
         grnMaster.setCreatedBy(req.getCreatedBy());
         grnMaster.setSystemCreatedBy(Integer.parseInt(req.getCreatedBy()));
         grnMaster.setCreateDate(LocalDateTime.now());

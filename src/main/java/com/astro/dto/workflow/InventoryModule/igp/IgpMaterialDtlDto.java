@@ -12,5 +12,5 @@ public class IgpMaterialDtlDto {
     private String igpProcessId;
     private Integer igpSubProcessId;
     private Integer issueNoteId;
-    private Integer uomId;
+    private String uomId;
 }

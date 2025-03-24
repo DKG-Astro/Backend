@@ -18,12 +18,21 @@ public class GrnMasterEntity {
     @Column(name = "grn_process_id", nullable = false)
     private String grnProcessId;
     
-    @Column(name = "gi_process_id", nullable = false)
+    @Column(name = "gi_process_id")
     private String giProcessId;
     
-    @Column(name = "gi_sub_process_id", nullable = false)
+    @Column(name = "gi_sub_process_id")
     private Integer giSubProcessId;
+
+    @Column(name = "igp_process_id")
+    private String igpProcessId;
     
+    @Column(name = "igp_sub_process_id")
+    private Integer igpSubProcessId;
+
+    @Column(name = "grn_type", nullable = false)
+    private String grnType;
+
     @Column(name = "grn_date")
     private LocalDate grnDate;
     

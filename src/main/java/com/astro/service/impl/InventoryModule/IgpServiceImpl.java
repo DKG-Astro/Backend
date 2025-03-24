@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.astro.service.InventoryModule.IgpService;
+import com.astro.repository.InventoryModule.AssetMasterRepository;
 import com.astro.repository.InventoryModule.igp.*;
 import com.astro.repository.InventoryModule.isn.IssueNoteMasterRepository;
 import com.astro.repository.InventoryModule.ogp.OgpDetailRepository;
@@ -41,6 +42,9 @@ public class IgpServiceImpl implements IgpService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private AssetMasterRepository amr;
 
     @Override
     @Transactional
@@ -148,10 +152,11 @@ public class IgpServiceImpl implements IgpService {
                 IgpDetailEntity detail = new IgpDetailEntity();
                 detail.setIgpProcessId(savedIgpMaster.getIgpProcessId());
                 detail.setIgpSubProcessId(savedIgpMaster.getIgpSubProcessId());
-                detail.setIssueNoteId(ogpMaster.getIssueNoteId());  // Fixed: using issue note ID from OGP master
                 detail.setAssetId(dtl.getAssetId());
                 detail.setLocatorId(dtl.getLocatorId());
                 detail.setQuantity(dtl.getQuantity());
+                // detail.setOgpProcessId(req.getOgpId().split("/")[0]);
+                detail.setOgpSubProcessId(Integer.parseInt(req.getOgpId().split("/")[1]));
                 return detail;
             })
             .collect(Collectors.toList());
@@ -188,7 +193,15 @@ public class IgpServiceImpl implements IgpService {
         response.setIgpId(igpMaster.getIgpProcessId() + "/" + igpMaster.getIgpSubProcessId());
 
         List<IgpMaterialDtlDto> materialDtls = igpDetails.stream()
-            .map(detail -> modelMapper.map(detail, IgpMaterialDtlDto.class))
+            .map(detail -> {
+                IgpMaterialDtlDto dto = modelMapper.map(detail, IgpMaterialDtlDto.class);
+                amr.findById(detail.getAssetId())
+                    .ifPresent(asset -> {
+                        dto.setAssetDesc(asset.getAssetDesc());
+                        dto.setUomId(asset.getUomId());
+                    });
+                return dto;
+            })
             .collect(Collectors.toList());
 
         response.setMaterialDtlList(materialDtls);
@@ -197,7 +210,7 @@ public class IgpServiceImpl implements IgpService {
 
     private void validateOgp(String processNo) {
         String[] processNoSplit = processNo.split("/");
-        if (processNoSplit.length != 2 || !processNoSplit[0].equals("OGP")) {
+        if (processNoSplit.length != 2) {
             throw new InvalidInputException(new ErrorDetails(
                     AppConstant.USER_INVALID_INPUT,
                     AppConstant.ERROR_TYPE_CODE_VALIDATION,
@@ -225,7 +238,6 @@ public class IgpServiceImpl implements IgpService {
     }
 
     private BigDecimal getOgpQuantity(Integer ogpSubProcessId, Integer assetId, Integer locatorId) {
-        // Implement this method to get the OGP quantity for the given asset and locator
         return ogpDetailRepository.findQuantityByOgpSubProcessIdAndAssetIdAndLocatorId(
             ogpSubProcessId, assetId, locatorId)
             .orElse(BigDecimal.ZERO);

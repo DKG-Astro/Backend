@@ -9,6 +9,6 @@ public class OgpMaterialDtlDto {
     private Integer assetId;
     private Integer locatorId;
     private BigDecimal quantity;
-    private String igpProcessId;
-    private Integer igpSubProcessId;
+    private String assetDesc;
+    private String uomId;
 }

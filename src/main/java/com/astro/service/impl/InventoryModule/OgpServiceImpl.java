@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.astro.service.InventoryModule.OgpService;
+import com.astro.repository.InventoryModule.AssetMasterRepository;
 import com.astro.repository.InventoryModule.isn.IssueNoteMasterRepository;
 import com.astro.repository.InventoryModule.ogp.OgpDetailRepository;
 import com.astro.repository.InventoryModule.ogp.OgpMasterRepository;
@@ -36,6 +37,9 @@ public class OgpServiceImpl implements OgpService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private AssetMasterRepository amr;
 
     @Override
     @Transactional
@@ -70,21 +74,26 @@ public class OgpServiceImpl implements OgpService {
         }
 
         // Create OGP master
-        final OgpMasterEntity ogpMaster = modelMapper.map(req, OgpMasterEntity.class);
+        final OgpMasterEntity ogpMaster = new OgpMasterEntity();  // Manual mapping instead of ModelMapper
         ogpMaster.setOgpDate(CommonUtils.convertStringToDateObject(req.getOgpDate()));
         ogpMaster.setIssueNoteId(issueNoteId);
         ogpMaster.setCreateDate(LocalDateTime.now());
         ogpMaster.setOgpProcessId("INV" + issueNoteId);
+        ogpMaster.setCreatedBy(req.getCreatedBy());
+        ogpMaster.setLocationId(req.getLocationId());
 
         final OgpMasterEntity savedOgpMaster = ogpMasterRepository.save(ogpMaster);
 
         // Save OGP details
         List<OgpDetailEntity> ogpDetails = req.getMaterialDtlList().stream()
             .map(dtl -> {
-                OgpDetailEntity detail = modelMapper.map(dtl, OgpDetailEntity.class);
+                OgpDetailEntity detail = new OgpDetailEntity();  // Manual mapping instead of ModelMapper
                 detail.setOgpProcessId(savedOgpMaster.getOgpProcessId()); 
                 detail.setOgpSubProcessId(savedOgpMaster.getOgpSubProcessId());
                 detail.setIssueNoteId(issueNoteId);
+                detail.setAssetId(dtl.getAssetId());
+                detail.setLocatorId(dtl.getLocatorId());
+                detail.setQuantity(dtl.getQuantity());
                 return detail;
             })
             .collect(Collectors.toList());
@@ -122,7 +131,15 @@ public class OgpServiceImpl implements OgpService {
         response.setOgpId(ogpMaster.getOgpProcessId() + "/" + ogpMaster.getOgpSubProcessId());
 
         List<OgpMaterialDtlDto> materialDtls = ogpDetails.stream()
-            .map(detail -> modelMapper.map(detail, OgpMaterialDtlDto.class))
+            .map(detail -> {
+                OgpMaterialDtlDto dto = modelMapper.map(detail, OgpMaterialDtlDto.class);
+                amr.findById(detail.getAssetId())
+                    .ifPresent(asset -> {
+                        dto.setAssetDesc(asset.getAssetDesc());
+                        dto.setUomId(asset.getUomId());
+                    });
+                return dto;
+            })
             .collect(Collectors.toList());
 
         response.setMaterialDtlList(materialDtls);
@@ -131,7 +148,7 @@ public class OgpServiceImpl implements OgpService {
 
     public void validateIsn(String processNo) {
         String[] processNoSplit = processNo.split("/");
-        if (processNoSplit.length != 2 || !processNoSplit[0].equals("ISN")) {
+        if (processNoSplit.length != 2 || !processNoSplit[0].equals("INV")) {
             throw new InvalidInputException(new ErrorDetails(
                     AppConstant.USER_INVALID_INPUT,
                     AppConstant.ERROR_TYPE_CODE_VALIDATION,

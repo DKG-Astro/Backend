@@ -20,6 +20,9 @@ public class GrnMaterialDtlEntity {
     @Column(name = "grn_process_id", nullable = false)
     private String grnProcessId;
     
+    @Column(name = "igp_sub_process_id", nullable = false)
+    private Integer igpSubProcessId;
+
     @Column(name = "grn_sub_process_id", nullable = false)
     private Integer grnSubProcessId;
     

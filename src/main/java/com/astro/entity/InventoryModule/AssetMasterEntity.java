@@ -31,6 +31,9 @@ public class AssetMasterEntity {
     private String componentName;
     private Integer componentId;
     private BigDecimal initQuantity;
+
+    @Column(name="unit_price")
+    private BigDecimal unitPrice;
     
     @Column(name = "create_date", updatable = false)
     private LocalDateTime createDate;

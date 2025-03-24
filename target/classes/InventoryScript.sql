@@ -34,6 +34,7 @@ CREATE TABLE asset_master(
     serial_no VARCHAR(50),
     model_no VARCHAR(50),
     init_quantity DECIMAL(10,2),
+    unit_price DECIMAL(10,2),
     uom_id VARCHAR(10) NOT NULL,
     component_name VARCHAR(50),
     component_id INT,
@@ -117,7 +118,7 @@ CREATE TABLE grv_master (
     INDEX idx_grv_process_id (grv_process_id),
     INDEX idx_gi_sub_process (gi_sub_process_id),
     INDEX idx_date (date),
-    FOREIGN KEY (gi_sub_process_id) REFERENCES goods_inspection_master(gprn_sub_process_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (gi_sub_process_id) REFERENCES goods_inspection_master(inspection_sub_process_id) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (location_id) REFERENCES location_master(location_code) on update cascade
 );
 
@@ -202,8 +203,11 @@ CREATE TABLE goods_inspection_detail (
 CREATE TABLE grn_master(
     grn_process_id VARCHAR(50) NOT NULL,
     grn_sub_process_id INT AUTO_INCREMENT PRIMARY KEY,
-    gi_process_id VARCHAR(50) NOT NULL,
-    gi_sub_process_id INT NOT NULL,
+    gi_process_id VARCHAR(50),
+    gi_sub_process_id INT,
+    grn_type VARCHAR(10),
+    igp_process_id VARCHAR(50),
+    igp_sub_process_id INT,
     grn_date DATE,
     installation_date DATE,
     commissioning_date DATE,
@@ -213,8 +217,8 @@ CREATE TABLE grn_master(
     location_id VARCHAR(10) NOT NULL,
 
     FOREIGN KEY (location_id) REFERENCES location_master(location_code) ON UPDATE CASCADE,
-    FOREIGN KEY (gprn_sub_process_id) REFERENCES gprn_master(sub_process_id) ON UPDATE CASCADE ON DELETE CASCADE
-
+    FOREIGN KEY (gi_sub_process_id) REFERENCES goods_inspection_master(inspection_sub_process_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (igp_sub_process_id) REFERENCES igp_master(igp_sub_process_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE grn_material_detail(
@@ -222,6 +226,7 @@ CREATE TABLE grn_material_detail(
     grn_process_id VARCHAR(50) NOT NULL,
     grn_sub_process_id INT NOT NULL,
     gi_sub_process_id INT NOT NULL,
+    igp_sub_process_id INT NOT NULL,
     quantity DECIMAL(10, 2) NOT NULL,
     asset_id INT NOT NULL,
     locator_id INT NOT NULL,
@@ -230,7 +235,8 @@ CREATE TABLE grn_material_detail(
     FOREIGN KEY (asset_id) REFERENCES asset_master(asset_id) ON UPDATE CASCADE,
     FOREIGN KEY (grn_sub_process_id) REFERENCES grn_master(grn_sub_process_id) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (gi_sub_process_id) REFERENCES goods_inspection_master(inspection_sub_process_id) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (locator_id) references locator_master(locator_id) on update cascade
+    FOREIGN KEY (locator_id) references locator_master(locator_id) on update cascade,
+    FOREIGN KEY (igp_sub_process_id) REFERENCES igp_master(igp_sub_process_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE ohq_master (
@@ -245,4 +251,79 @@ CREATE TABLE ohq_master (
     FOREIGN KEY (locator_id) REFERENCES locator_master(locator_id) ON UPDATE CASCADE
 );
 
+CREATE TABLE issue_note_master (
+    issue_note_id INT AUTO_INCREMENT PRIMARY KEY,
+    issue_note_type ENUM('Returnable', 'Non Returnable'),
+    issue_date DATE NOT NULL,
+    consignee_detail VARCHAR(50),
+    indentor_name VARCHAR(50),
+    field_station VARCHAR(50),
+    created_by INT NOT NULL,
+    create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    location_id VARCHAR(10) NOT NULL,
+    FOREIGN KEY (location_id) REFERENCES location_master(location_code) ON UPDATE CASCADE
+);
+
+CREATE TABLE issue_note_detail (
+    detail_id INT AUTO_INCREMENT PRIMARY KEY,
+    issue_note_id INT NOT NULL,
+    asset_id INT NOT NULL,
+    locator_id INT NOT NULL,
+    quantity DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (issue_note_id) REFERENCES issue_note_master(issue_note_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (asset_id) REFERENCES asset_master(asset_id) ON UPDATE CASCADE,
+    FOREIGN KEY (locator_id) REFERENCES locator_master(locator_id) ON UPDATE CASCADE
+);
+
+
+CREATE TABLE igp_master(
+    igp process_id VARCHAR(50) NOT NULL,
+    igp_sub_process_id INT AUTO_INCREMENT PRIMARY KEY,
+    ogp_sub_process_id INT NOT NULL,
+    igp_date DATE NOT NULL,
+    location_id VARCHAR(10) NOT NULL,
+    created_by INT NOT NULL,
+    create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (location_id) REFERENCES location_master(location_code) ON UPDATE CASCADE,
+    FOREIGN KEY (ogp_sub_process_id) REFERENCES ogp_master(ogp_sub_process_id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE igp_detail(
+    detail_id INT AUTO_INCREMENT PRIMARY KEY,
+    igp_process_id VARCHAR(50) NOT NULL,
+    igp_sub_process_id INT NOT NULL,
+    ogp_sub_process_id  INT,
+    asset_id INT NOT NULL,
+    locator_id INT NOT NULL,
+    quantity DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (igp_sub_process_id) REFERENCES igp_master(igp_sub_process_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (asset_id) REFERENCES asset_master(asset_id) ON UPDATE CASCADE,
+    FOREIGN KEY (locator_id) REFERENCES locator_master(locator_id) ON UPDATE CASCADE
+    FOREIGN KEY (ogp_sub_process_id) REFERENCES ogp_master(ogp_sub_process_id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE ogp_master(
+    ogp_process_id VARCHAR(50) NOT NULL,
+    ogp_sub_process_id INT AUTO_INCREMENT PRIMARY KEY,
+    issue_note_id INT NOT NULL,
+    ogp_date DATE NOT NULL,
+    location_id VARCHAR(10) NOT NULL,
+    created_by INT NOT NULL,
+    create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (location_id) REFERENCES location_master(location_code) ON UPDATE CASCADE,
+    FOREIGN KEY (issue_note_id) REFERENCES issue_note_master(issue_note_id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE ogp_detail(
+    detail_id INT AUTO_INCREMENT PRIMARY KEY,
+    ogp_process_id VARCHAR(50) NOT NULL,
+    ogp_sub_process_id INT NOT NULL,
+    asset_id INT NOT NULL,
+    locator_id INT NOT NULL,
+    quantity DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (ogp_sub_process_id) REFERENCES ogp_master(ogp_sub_process_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (issue_note_id) REFERENCES issue_note_master(issue_note_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (asset_id) REFERENCES asset_master(asset_id) ON UPDATE CASCADE,
+    FOREIGN KEY (locator_id) REFERENCES locator_master(locator_id) ON UPDATE CASCADE
+);
 

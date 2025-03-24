@@ -19,12 +19,6 @@ public class OgpDetailEntity {
     @Column(name = "ogp_sub_process_id")
     private Integer ogpSubProcessId;
 
-    @Column(name = "igp_process_id")
-    private String igpProcessId;
-
-    @Column(name = "igp_sub_process_id")
-    private Integer igpSubProcessId;
-
     @Column(name = "issue_note_id")
     private Integer issueNoteId;
 
