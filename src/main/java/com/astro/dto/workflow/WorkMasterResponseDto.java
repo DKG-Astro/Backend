@@ -9,9 +9,9 @@ public class WorkMasterResponseDto {
 
     private String workCode;
     private String workSubCategory;
-    private String modeOfProcurement;
+   // private String modeOfProcurement;
     private String workDescription;
-    private List<String> vendorNames;
+  //  private List<String> vendorNames;
     private String updatedBy;
     private Integer createdBy;
 

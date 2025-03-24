@@ -31,11 +31,11 @@ public class JobMaster {
     @Column(name = "value")
     private BigDecimal value;
 
-    @Column(name = "mode_of_procurement")
-    private String modeOfProcurement;
+   // @Column(name = "mode_of_procurement")
+  //  private String modeOfProcurement;
 
-    @OneToMany(mappedBy = "jobCode", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<VendorNamesForJobWorkMaterial> vendorNames;
+   // @OneToMany(mappedBy = "jobCode", cascade = CascadeType.ALL, orphanRemoval = true)
+   // private List<VendorNamesForJobWorkMaterial> vendorNames;
 
     @Column(name = "created_by")
     private Integer createdBy;

@@ -37,6 +37,9 @@ public class IndentCreationResponseDTO {
     private BigDecimal totalPriceOfAllMaterials;
     private BigDecimal projectLimit;
     private List<MaterialDetailsResponseDTO> materialDetails;
+    private String brandAndModel;
+    private String justification;
+    private Boolean brandPac;
     private Integer createdBy;
     private String updatedBy;
 

@@ -15,8 +15,8 @@ public class JobMasterResponseDto {
     private String assetId;
     private String uom;
     private BigDecimal value;
-    private String modeOfProcurement;
-    private List<String> vendorNames;
+   // private String modeOfProcurement;
+   // private List<String> vendorNames;
     private String updatedBy;
     private Integer createdBy;
 

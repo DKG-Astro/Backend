@@ -12,9 +12,9 @@ import java.util.List;
 public class WorkMasterRequestDto {
 
     private String workSubCategory;
-    private String modeOfProcurement;
+  //  private String modeOfProcurement;
     private String workDescription;
-    private List<String> vendorNames;
+   // private List<String> vendorNames;
     private String updatedBy;
     private Integer createdBy;
 

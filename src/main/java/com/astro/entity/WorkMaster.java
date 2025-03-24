@@ -17,11 +17,11 @@ public class WorkMaster {
     private String workCode;
     @Column(name="work_sub_category")
     private String workSubCategory;
-    @Column(name = "mode_of_procurement")
-    private String modeOfProcurement;
+  //  @Column(name = "mode_of_procurement")
+  //  private String modeOfProcurement;
 
-    @OneToMany(mappedBy = "jobCode", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<VendorNamesForJobWorkMaterial> vendorNames;
+   // @OneToMany(mappedBy = "jobCode", cascade = CascadeType.ALL, orphanRemoval = true)
+  //  private List<VendorNamesForJobWorkMaterial> vendorNames;
     @Column(name = "work_description")
     private String workDescription;
     @Column(name = "created_by")

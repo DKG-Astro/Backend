@@ -43,11 +43,11 @@ public class JobMasterServiceImpl implements JobMasterService {
         jobMaster.setAssetId(jobMasterRequestDto.getAssetId());
         jobMaster.setUom(jobMasterRequestDto.getUom());
         jobMaster.setValue(jobMasterRequestDto.getValue());
-        jobMaster.setModeOfProcurement(jobMasterRequestDto.getModeOfProcurement());
+     //   jobMaster.setModeOfProcurement(jobMasterRequestDto.getModeOfProcurement());
         jobMaster.setCreatedBy(jobMasterRequestDto.getCreatedBy());
         jobMaster.setUpdatedBy(jobMasterRequestDto.getUpdatedBy());
         jobMasterRepository.save(jobMaster);
-        // Saveing Vendornames in different table
+     /*   // Saveing Vendornames in different table
         if (jobMasterRequestDto.getVendorNames() != null && !jobMasterRequestDto.getVendorNames().isEmpty()) {
             List<VendorNamesForJobWorkMaterial> vendors = jobMasterRequestDto.getVendorNames().stream().map(vendorName -> {
                 VendorNamesForJobWorkMaterial vendor = new VendorNamesForJobWorkMaterial();
@@ -57,7 +57,11 @@ public class JobMasterServiceImpl implements JobMasterService {
             }).collect(Collectors.toList());
 
             vendorNameRepository.saveAll(vendors);
+
+
         }
+
+      */
 
 
         return mapToResponseDTO(jobMaster);
@@ -82,11 +86,11 @@ public class JobMasterServiceImpl implements JobMasterService {
         jobMaster.setAssetId(jobMasterRequestDto.getAssetId());
         jobMaster.setUom(jobMasterRequestDto.getUom());
         jobMaster.setValue(jobMasterRequestDto.getValue());
-        jobMaster.setModeOfProcurement(jobMasterRequestDto.getModeOfProcurement());
+      //  jobMaster.setModeOfProcurement(jobMasterRequestDto.getModeOfProcurement());
         jobMaster.setCreatedBy(jobMasterRequestDto.getCreatedBy());
         jobMaster.setUpdatedBy(jobMasterRequestDto.getUpdatedBy());
         jobMasterRepository.save(jobMaster);
-        // Saveing Vendornames in different table
+      /*  // Saveing Vendornames in different table
         if (jobMasterRequestDto.getVendorNames() != null && !jobMasterRequestDto.getVendorNames().isEmpty()) {
             List<VendorNamesForJobWorkMaterial> vendors = jobMasterRequestDto.getVendorNames().stream().map(vendorName -> {
                 VendorNamesForJobWorkMaterial vendor = new VendorNamesForJobWorkMaterial();
@@ -97,6 +101,8 @@ public class JobMasterServiceImpl implements JobMasterService {
 
             vendorNameRepository.saveAll(vendors);
         }
+
+       */
 
 
 
@@ -160,17 +166,19 @@ public class JobMasterServiceImpl implements JobMasterService {
         responseDto.setAssetId(jobMaster.getAssetId());
         responseDto.setUom(jobMaster.getUom());
         responseDto.setValue(jobMaster.getValue());
-        responseDto.setModeOfProcurement(jobMaster.getModeOfProcurement());
+      //  responseDto.setModeOfProcurement(jobMaster.getModeOfProcurement());
         responseDto.setUpdatedBy(jobMaster.getUpdatedBy());
         responseDto.setCreatedBy(jobMaster.getCreatedBy());
         responseDto.setCreatedDate(jobMaster.getCreatedDate());
         responseDto.setUpdatedDate(jobMaster.getUpdatedDate());
-        List<String> vendorNames = vendorNameRepository.findByJobCode(jobMaster.getJobCode())
+      /*  List<String> vendorNames = vendorNameRepository.findByJobCode(jobMaster.getJobCode())
                 .stream()
                 .map(VendorNamesForJobWorkMaterial::getVendorName)
                 .collect(Collectors.toList());
 
         responseDto.setVendorNames(vendorNames);
+
+       */
 
         return responseDto;
     }

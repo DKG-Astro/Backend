@@ -31,23 +31,12 @@ public class WorkMasterServiceImpl implements WorkMasterService {
         WorkMaster workMaster = new WorkMaster();
         workMaster.setWorkCode(workCode);
         workMaster.setWorkSubCategory(workMasterRequestDto.getWorkSubCategory());
-        workMaster.setModeOfProcurement(workMasterRequestDto.getModeOfProcurement());
+    //    workMaster.setModeOfProcurement(workMasterRequestDto.getModeOfProcurement());
         workMaster.setWorkDescription(workMasterRequestDto.getWorkDescription());
         workMaster.setCreatedBy(workMasterRequestDto.getCreatedBy());
         workMaster.setUpdatedBy(workMasterRequestDto.getUpdatedBy());
 
         workMasterRepository.save(workMaster);
-        // Saveing Vendornames in different table
-        if (workMasterRequestDto.getVendorNames() != null && !workMasterRequestDto.getVendorNames().isEmpty()) {
-            List<VendorNamesForJobWorkMaterial> vendors = workMasterRequestDto.getVendorNames().stream().map(vendorName -> {
-                VendorNamesForJobWorkMaterial vendor = new VendorNamesForJobWorkMaterial();
-                vendor.setVendorName(vendorName);
-                vendor.setWorkCode(workCode);
-                return vendor;
-            }).collect(Collectors.toList());
-
-            vendorNameRepository.saveAll(vendors);
-        }
 
         return mapToResponseDTO(workMaster);
     }
@@ -58,16 +47,11 @@ public class WorkMasterServiceImpl implements WorkMasterService {
         responseDto.setWorkCode(workMaster.getWorkCode());
         responseDto.setWorkDescription(workMaster.getWorkDescription());
         responseDto.setWorkSubCategory(workMaster.getWorkSubCategory());
-        responseDto.setModeOfProcurement(workMaster.getModeOfProcurement());
+     //   responseDto.setModeOfProcurement(workMaster.getModeOfProcurement());
         responseDto.setCreatedBy(workMaster.getCreatedBy());
         responseDto.setUpdatedBy(workMaster.getUpdatedBy());
         responseDto.setCreatedDate(workMaster.getCreatedDate());
         responseDto.setUpdatedDate(workMaster.getUpdatedDate());
-        List<String> vendorNames= vendorNameRepository.findByWorkCode(workMaster.getWorkCode())
-                .stream()
-                .map(VendorNamesForJobWorkMaterial::getVendorName)
-                .collect(Collectors.toList());
-        responseDto.setVendorNames(vendorNames);
         return responseDto;
 
     }
@@ -85,23 +69,12 @@ public class WorkMasterServiceImpl implements WorkMasterService {
                 ));
 
         workMaster.setWorkSubCategory(workMasterRequestDto.getWorkSubCategory());
-        workMaster.setModeOfProcurement(workMasterRequestDto.getModeOfProcurement());
+      //  workMaster.setModeOfProcurement(workMasterRequestDto.getModeOfProcurement());
         workMaster.setWorkDescription(workMasterRequestDto.getWorkDescription());
         workMaster.setCreatedBy(workMasterRequestDto.getCreatedBy());
         workMaster.setUpdatedBy(workMasterRequestDto.getUpdatedBy());
 
         workMasterRepository.save(workMaster);
-        // Saveing Vendornames in different table
-        if (workMasterRequestDto.getVendorNames() != null && !workMasterRequestDto.getVendorNames().isEmpty()) {
-            List<VendorNamesForJobWorkMaterial> vendors = workMasterRequestDto.getVendorNames().stream().map(vendorName -> {
-                VendorNamesForJobWorkMaterial vendor = new VendorNamesForJobWorkMaterial();
-                vendor.setVendorName(vendorName);
-                vendor.setWorkCode(workCode);
-                return vendor;
-            }).collect(Collectors.toList());
-
-            vendorNameRepository.saveAll(vendors);
-        }
 
         return mapToResponseDTO(workMaster);
 

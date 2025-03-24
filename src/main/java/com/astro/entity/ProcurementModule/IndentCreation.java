@@ -48,7 +48,7 @@ public class IndentCreation {
         @Column(name = "is_pre_bit_meeting_required")
         private Boolean isPreBitMeetingRequired;
 
-        @Column(name = "pre_bid_meeting_date")
+        @Column(name = "pre_bid_meeting_date", nullable = true)
         private LocalDate preBidMeetingDate;
 
         @Column(name = "pre_bid_meeting_venue")
@@ -86,6 +86,10 @@ public class IndentCreation {
         private String fileType;
         @Column(name = "total_indent_value")
         private BigDecimal totalIntentValue;
+
+        private String brandAndModel;
+        private String justification;
+        private Boolean brandPac;
 
       //  private String totalAmount;
       //  @OneToMany(mappedBy = "indentCreation", cascade = CascadeType.ALL, orphanRemoval = true)

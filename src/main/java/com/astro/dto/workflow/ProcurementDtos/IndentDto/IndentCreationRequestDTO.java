@@ -44,6 +44,9 @@ public class IndentCreationRequestDTO {
     private BigDecimal estimatedRate;
     private BigDecimal periodOfContract;
     private String singleAndMultipleJob;
+    private String brandAndModel;
+    private String justification;
+    private Boolean brandPac;
     private List<MaterialDetailsRequestDTO> materialDetails;
     private String updatedBy;
     private Integer createdBy;
