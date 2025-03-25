@@ -46,6 +46,7 @@ public class ExceptionHelper {
     @ExceptionHandler(value = { Exception.class })
     public ResponseEntity<Object> handleException(Exception ex,  WebRequest request) {
         ex.printStackTrace();
+        System.out.println("EXCEPTION EX: " + ex);
         ErrorDetails errorDetails = new ErrorDetails(AppConstant.INTER_SERVER_ERROR, AppConstant.ERROR_TYPE_CODE_INTERNAL,
                 AppConstant.ERROR_TYPE_ERROR, ex.getMessage());
         return new ResponseEntity<Object>(ResponseBuilder.getErrorResponse(errorDetails), HttpStatus.INTERNAL_SERVER_ERROR);

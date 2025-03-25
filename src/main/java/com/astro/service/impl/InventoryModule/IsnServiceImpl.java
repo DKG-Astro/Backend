@@ -36,6 +36,7 @@ public class IsnServiceImpl implements IsnService {
     @Override
     @Transactional
     public String saveIsn(IsnDto req) {
+        System.out.println("SAVE ISN CALLED");
         ModelMapper mapper = new ModelMapper();
 
         IsnMasterEntity isnMaster = new IsnMasterEntity();

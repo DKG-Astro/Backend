@@ -83,8 +83,8 @@ public class ProcessController {
     }
 
     @PostMapping("/saveGrn")
-    public ResponseEntity<Object> saveGrn(@RequestBody IsnDto req) {
-        String processNo = processService.saveIsn(req);
+    public ResponseEntity<Object> saveGrn(@RequestBody GrnDto req) {
+        String processNo = processService.saveGrn(req);
         Map<String, String> res = new HashMap<>();
         res.put("processNo", processNo);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
