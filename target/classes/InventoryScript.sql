@@ -327,3 +327,22 @@ CREATE TABLE ogp_detail(
     FOREIGN KEY (locator_id) REFERENCES locator_master(locator_id) ON UPDATE CASCADE
 );
 
+
+SELECT
+    inm.issue_note_id AS IssueID,
+    inm.issue_date AS DateOfIssue,
+    am.material_desc AS ItemDescription,
+    mm.category AS Category,
+    mm.sub_category AS SubCategory,
+    ind.quantity AS QuantityIssued,
+    am.uom_id AS UnitOfMeasure,
+    inm.location_id As Location,
+    NULL AS IssuedTo,
+    NULL AS IssuedBy,
+    NULL AS Purpose
+FROM issue_note_master inm
+JOIN issue_note_detail ind ON inm.issue_note_id = ind.issue_note_id
+JOIN asset_master am ON ind.asset_id = am.asset_id
+JOIN material_master mm ON am.material_code = mm.material_code;
+
+

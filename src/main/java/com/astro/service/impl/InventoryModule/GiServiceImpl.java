@@ -1,10 +1,12 @@
 package com.astro.service.impl.InventoryModule;
 
+import com.astro.repository.InventoryModule.isn.IssueNoteMasterRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.math.BigDecimal;
@@ -43,7 +45,11 @@ public class GiServiceImpl implements GiService {
     @Autowired
     private MaterialMasterRepository mmr;
 
+    @Autowired
+    private IssueNoteMasterRepository issueNoteMasterRepository;
+
     private final String basePath;
+
 
     public GiServiceImpl(@Value("${filePath}") String bp) {
         this.basePath = bp + "/INV";
@@ -229,5 +235,28 @@ public class GiServiceImpl implements GiService {
                     AppConstant.ERROR_TYPE_RESOURCE,
                     "Provided GI No. is not valid."));
         }
+    }
+
+    @Override
+    public List<IssueRegisterDTO> getIssueRegisterReport(String startDate, String endDate) {
+        // Convert String dates to LocalDate
+        LocalDate StartDate = CommonUtils.convertStringToDateObject(startDate);
+        LocalDate EndDate = CommonUtils.convertStringToDateObject(endDate);
+
+        List<Object[]> results = issueNoteMasterRepository.getIssueRegisterData(StartDate, EndDate);
+
+        return results.stream().map(row -> new IssueRegisterDTO(
+                (Integer) row[0],              // issueID
+                (row[1] != null) ? ((java.sql.Date) row[1]).toLocalDate() : null,
+                (String) row[2],               // itemDescription
+                (String) row[3],               // category
+                (String) row[4],               // subCategory
+                (row[5] != null) ? new BigDecimal(row[5].toString()) : null, 
+                (String) row[6],               // unitOfMeasure
+                (String) row[7],               // location
+                (String) row[8],               // issuedTo
+                (String) row[9],               // issuedBy
+                (String) row[10]               // purpose
+        )).collect(Collectors.toList());
     }
 }
