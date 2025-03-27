@@ -36,6 +36,11 @@ CREATE TABLE asset_master(
     init_quantity DECIMAL(10,2),
     unit_price DECIMAL(10,2),
     uom_id VARCHAR(10) NOT NULL,
+    depriciation_rate DECIMAL(10,2),
+    end_of_life DATE,
+    stock_levels DECIMAL(10,2),
+    condition_of_goods VARCHAR(100),
+    shelf_life VARCHAR(50),
     component_name VARCHAR(50),
     component_id INT,
     create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -346,3 +351,25 @@ JOIN asset_master am ON ind.asset_id = am.asset_id
 JOIN material_master mm ON am.material_code = mm.material_code;
 
 
+CREATE TABLE asset_disposal(
+    disposal_id INT AUTO_INCREMENT PRIMARY KEY,
+    disposal_date DATE NOT NULL,
+    created_by INT NOT NULL,
+    create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    location_id VARCHAR(10) NOT NULL,
+    vendor_id VARCHAR(50),
+    FOREIGN KEY (location_id) REFERENCES location_master(location_code) ON UPDATE CASCADE
+    -- FOREIGN KEY (vendor_id) REFERENCES vendor_master(vendor_id) ON UPDATE CASCADE
+);
+
+CREATE TABLE asset_disposal_detail(
+    disposal_detail_id INT AUTO_INCREMENT PRIMARY KEY,
+    disposal_id INT NOT NULL,
+    asset_id INT NOT NULL,
+    asset_desc VARCHAR(50) NOT NULL,
+    disposal_quantity DECIMAL(10,2) NOT NULL,
+    disposal_category VARCHAR(50) NOT NULL,
+    disposal_mode VARCHAR(50) NOT NULL,
+    sales_note_filename VARCHAR(255),
+    FOREIGN KEY (disposal_id) REFERENCES asset_disposal(disposal_id) ON UPDATE CASCADE ON DELETE CASCADE
+);

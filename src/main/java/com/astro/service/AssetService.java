@@ -1,5 +1,6 @@
 package com.astro.service;
 
+import com.astro.dto.workflow.InventoryModule.AssetDisposalDto;
 import com.astro.dto.workflow.InventoryModule.AssetRequestDTO;
 import com.astro.dto.workflow.InventoryModule.AssetResponseDto;
 import com.astro.entity.InventoryModule.Asset;
@@ -16,5 +17,6 @@ public interface AssetService {
 
 
     public void deleteAsset(String assetCode);
+
 
 }

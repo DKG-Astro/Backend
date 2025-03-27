@@ -3,6 +3,7 @@ package com.astro.entity.InventoryModule;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -32,9 +33,24 @@ public class AssetMasterEntity {
     private Integer componentId;
     private BigDecimal initQuantity;
 
-    @Column(name="unit_price")
+    @Column(name = "unit_price")
     private BigDecimal unitPrice;
-    
+
+    @Column(name = "depriciation_rate")
+    private BigDecimal depriciationRate;
+
+    @Column(name = "end_of_life")
+    private LocalDate endOfLife;
+
+    @Column(name = "stock_levels")
+    private BigDecimal stockLevels;
+
+    @Column(name = "condition_of_goods")
+    private String conditionOfGoods;
+
+    @Column(name = "shelf_life")
+    private String shelfLife;
+
     @Column(name = "create_date", updatable = false)
     private LocalDateTime createDate;
     

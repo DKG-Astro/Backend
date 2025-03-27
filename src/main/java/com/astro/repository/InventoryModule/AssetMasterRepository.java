@@ -2,6 +2,7 @@ package com.astro.repository.InventoryModule;
 
 import com.astro.entity.InventoryModule.AssetMasterEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,4 +22,12 @@ public interface AssetMasterRepository extends JpaRepository<AssetMasterEntity, 
     boolean existsBySerialNo(String serialNo);
 
     Optional<AssetMasterEntity> findByMaterialCodeAndMaterialDescAndMakeNoAndModelNoAndSerialNoAndUomId(String materialCode, String materialDesc, String makeNo, String modelNo, String serialNo, String uomId);
+    boolean existsByMaterialCodeAndMaterialDescAndMakeNoAndModelNoAndSerialNoAndUomId(
+            @Param("materialCode") String materialCode,
+            @Param("materialDesc") String materialDesc,
+            @Param("makeNo") String makeNo,
+            @Param("modelNo") String modelNo,
+            @Param("serialNo") String serialNo,
+            @Param("uomId") String uomId
+    );
 }
