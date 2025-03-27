@@ -256,6 +256,9 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         responseDTO.setUpdatedBy(purchaseOrder.getUpdatedBy());
         responseDTO.setCreatedDate(purchaseOrder.getCreatedDate());
         responseDTO.setUpdatedDate(purchaseOrder.getUpdatedDate());
+        List<String> indentIds = indentIdRepository.findTenderWithIndent(purchaseOrder.getTenderId());
+
+        responseDTO.setIndentIds(indentIds);
 
         responseDTO.setPurchaseOrderAttributes(purchaseOrder.getPurchaseOrderAttributes().stream()
                 .map(attribute -> {
