@@ -54,15 +54,19 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     public TenderResponseDto createTenderRequest(TenderRequestDto tenderRequestDto){
 
         // Check if the indentorId already exists
-        if (TRrepo.existsById(tenderRequestDto.getTenderId())) {
+     /*   if (TRrepo.existsById(tenderRequestDto.getTenderId())) {
             ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Tender Request ID", "Tender ID " + tenderRequestDto.getTenderId() + " already exists.");
             throw new InvalidInputException(errorDetails);
         }
 
+      */
+
 
         TenderRequest tenderRequest = new TenderRequest();
 
-        tenderRequest.setTenderId(tenderRequestDto.getTenderId());
+        String tenderId = "T" + System.currentTimeMillis();
+       // tenderRequest.setTenderId(tenderRequestDto.getTenderId());
+        tenderRequest.setTenderId(tenderId);
         tenderRequest.setTitleOfTender(tenderRequestDto.getTitleOfTender());
         String openingDate = tenderRequestDto.getOpeningDate();
         tenderRequest.setOpeningDate(CommonUtils.convertStringToDateObject(openingDate));
@@ -76,11 +80,14 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         String LastDateOfSubmission = tenderRequestDto.getLastDateOfSubmission();
         tenderRequest.setLastDateOfSubmission(CommonUtils.convertStringToDateObject(LastDateOfSubmission));
         tenderRequest.setApplicableTaxes(tenderRequestDto.getApplicableTaxes());
-        tenderRequest.setConsignesAndBillinngAddress(tenderRequestDto.getConsignesAndBillinngAddress());
+      //  tenderRequest.setConsignesAndBillinngAddress(tenderRequestDto.getConsignesAndBillinngAddress());
+        tenderRequest.setConsignes(tenderRequestDto.getConsignes());
+        tenderRequest.setBillinngAddress(tenderRequestDto.getBillinngAddress());
         tenderRequest.setIncoTerms(tenderRequestDto.getIncoTerms());
         tenderRequest.setPaymentTerms(tenderRequestDto.getPaymentTerms());
         tenderRequest.setLdClause(tenderRequestDto.getLdClause());
-        tenderRequest.setApplicablePerformance(tenderRequestDto.getApplicablePerformance());
+      //  tenderRequest.setApplicablePerformance(tenderRequestDto.getApplicablePerformance());
+        tenderRequest.setPerformanceAndWarrantySecurity(tenderRequestDto.getPerformanceAndWarrantySecurity());
         tenderRequest.setBidSecurityDeclaration(tenderRequestDto.getBidSecurityDeclaration());
         tenderRequest.setMllStatusDeclaration(tenderRequestDto.getMllStatusDeclaration());
         tenderRequest.setSingleAndMultipleVendors(tenderRequestDto.getSingleAndMultipleVendors());
@@ -152,11 +159,14 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         String LastDateOfSubmission = tenderRequestDto.getLastDateOfSubmission();
         existingTR.setLastDateOfSubmission(CommonUtils.convertStringToDateObject(LastDateOfSubmission));
         existingTR.setApplicableTaxes(tenderRequestDto.getApplicableTaxes());
-        existingTR.setConsignesAndBillinngAddress(tenderRequestDto.getConsignesAndBillinngAddress());
+       // existingTR.setConsignesAndBillinngAddress(tenderRequestDto.getConsignesAndBillinngAddress());
+        existingTR.setBillinngAddress(tenderRequestDto.getBillinngAddress());
+        existingTR.setConsignes(tenderRequestDto.getConsignes());
         existingTR.setIncoTerms(tenderRequestDto.getIncoTerms());
         existingTR.setPaymentTerms(tenderRequestDto.getPaymentTerms());
         existingTR.setLdClause(tenderRequestDto.getLdClause());
-        existingTR.setApplicablePerformance(tenderRequestDto.getApplicablePerformance());
+       // existingTR.setApplicablePerformance(tenderRequestDto.getApplicablePerformance());
+        existingTR.setPerformanceAndWarrantySecurity(tenderRequestDto.getPerformanceAndWarrantySecurity());
         existingTR.setBidSecurityDeclaration(tenderRequestDto.getBidSecurityDeclaration());
         existingTR.setMllStatusDeclaration(tenderRequestDto.getMllStatusDeclaration());
         existingTR.setSingleAndMultipleVendors(tenderRequestDto.getSingleAndMultipleVendors());
@@ -230,11 +240,14 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         LocalDate LastDateOfSubmission = tenderRequest.getLastDateOfSubmission();
         responseDTO.setLastDateOfSubmission(CommonUtils.convertDateToString(LastDateOfSubmission));
         responseDTO.setApplicableTaxes(tenderRequest.getApplicableTaxes());
-        responseDTO.setConsignesAndBillinngAddress(tenderRequest.getConsignesAndBillinngAddress());
+       // responseDTO.setConsignesAndBillinngAddress(tenderRequest.getConsignesAndBillinngAddress());
+        responseDTO.setConsignes(tenderRequest.getConsignes());
+        responseDTO.setBillinngAddress(tenderRequest.getBillinngAddress());
         responseDTO.setIncoTerms(tenderRequest.getIncoTerms());
         responseDTO.setPaymentTerms(tenderRequest.getPaymentTerms());
         responseDTO.setLdClause(tenderRequest.getLdClause());
-        responseDTO.setApplicablePerformance(tenderRequest.getApplicablePerformance());
+      //  responseDTO.setApplicablePerformance(tenderRequest.getApplicablePerformance());
+        responseDTO.setPerformanceAndWarrantySecurity(tenderRequest.getPerformanceAndWarrantySecurity());
         responseDTO.setBidSecurityDeclaration(tenderRequest.getBidSecurityDeclaration());
         responseDTO.setMllStatusDeclaration(tenderRequest.getMllStatusDeclaration());
         responseDTO.setUploadTenderDocuments(tenderRequest.getUploadTenderDocumentsFileName());
@@ -258,7 +271,6 @@ public class TenderRequestServiceImpl implements TenderRequestService {
 
     @Override
     public List<TenderResponseDto> getAllTenderRequests() {
-
         List<TenderRequest> tenderRequests = TRrepo.findAll();
         return tenderRequests.stream()
                 .map(this::mapToResponseDTO)
@@ -309,11 +321,14 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         LocalDate LastDateOfSubmission = tenderRequest.getLastDateOfSubmission();
         tenderResponseDto.setLastDateOfSubmission(CommonUtils.convertDateToString(LastDateOfSubmission));
         tenderResponseDto.setApplicableTaxes(tenderRequest.getApplicableTaxes());
-        tenderResponseDto.setConsignesAndBillinngAddress(tenderRequest.getConsignesAndBillinngAddress());
+      //  tenderResponseDto.setConsignesAndBillinngAddress(tenderRequest.getConsignesAndBillinngAddress());
+        tenderResponseDto.setBillinngAddress(tenderRequest.getBillinngAddress());
+        tenderResponseDto.setConsignes(tenderRequest.getConsignes());
         tenderResponseDto.setIncoTerms(tenderRequest.getIncoTerms());
         tenderResponseDto.setPaymentTerms(tenderRequest.getPaymentTerms());
         tenderResponseDto.setLdClause(tenderRequest.getLdClause());
-        tenderResponseDto.setApplicablePerformance(tenderRequest.getApplicablePerformance());
+    //    tenderResponseDto.setApplicablePerformance(tenderRequest.getApplicablePerformance());
+        tenderResponseDto.setPerformanceAndWarrantySecurity(tenderRequest.getPerformanceAndWarrantySecurity());
         tenderResponseDto.setBidSecurityDeclaration(tenderRequest.getBidSecurityDeclaration());
         tenderResponseDto.setMllStatusDeclaration(tenderRequest.getMllStatusDeclaration());
         tenderResponseDto.setUploadTenderDocuments(tenderRequest.getUploadTenderDocumentsFileName());

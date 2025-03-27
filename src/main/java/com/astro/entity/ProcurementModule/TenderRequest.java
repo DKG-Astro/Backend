@@ -22,10 +22,10 @@ public class TenderRequest {
     private LocalDate openingDate;
     @Column(name = "closing_date")
     private LocalDate closingDate;
-    @OneToMany(mappedBy = "tenderRequest", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "tenderRequest", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<IndentId> indentIds;
-  //  @Column(name = "indent_id")
-  //  private String indentId;
+    //  @Column(name = "indent_id")
+    //  private String indentId;
     @Column(name = "indent_materials")
     private String indentMaterials;
     @Column(name = "mode_of_procurement")
@@ -36,16 +36,22 @@ public class TenderRequest {
     private LocalDate lastDateOfSubmission;
     @Column(name = "applicable_taxes")
     private String applicableTaxes;
-    @Column(name = "consignes_and_billinng_address")
-    private String consignesAndBillinngAddress;
+    //@Column(name = "consignes_and_billinng_address")
+    // private String consignesAndBillinngAddress;
+    @Column(name = "billinng_address")
+    private String billinngAddress;
+    @Column(name = "consignes")
+    private String consignes;
     @Column(name = "inco_terms")
     private String incoTerms;
     @Column(name = "payment_terms")
     private String paymentTerms;
     @Column(name = "ld_clause")
     private String ldClause;
-    @Column(name = "applicable_performance")
-    private String applicablePerformance;
+    // @Column(name = "applicable_performance")
+    // private String applicablePerformance;
+    @Column(name = "performance_and_warranty_security")
+    private String performanceAndWarrantySecurity;
     @Column(name = "bid_security_declaration")
     private Boolean bidSecurityDeclaration;
     @Column(name = "mll_status_declaration")

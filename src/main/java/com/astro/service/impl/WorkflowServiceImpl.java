@@ -1105,7 +1105,7 @@ public class WorkflowServiceImpl implements WorkflowService {
                 //   queueResponse.setBudgetName("NUll");
                 queueResponse.setIndentTitle(tenderRequest.getTitleOfTender());
                 queueResponse.setModeOfProcurement(tenderRequest.getModeOfProcurement());
-                queueResponse.setConsignee(tenderRequest.getConsignesAndBillinngAddress());
+                queueResponse.setConsignee(tenderRequest.getConsignes());
               /*  List<IndentCreationResponseDTO> indentList = tenderRequest.getIndentResponseDTO();
                 if (indentList != null && !indentList.isEmpty()) {
                     IndentCreationResponseDTO firstIndent = indentList.get(0); // Assuming first indent is needed

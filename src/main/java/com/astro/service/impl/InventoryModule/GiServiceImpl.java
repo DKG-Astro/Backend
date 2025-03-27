@@ -251,7 +251,7 @@ public class GiServiceImpl implements GiService {
                 (String) row[2],               // itemDescription
                 (String) row[3],               // category
                 (String) row[4],               // subCategory
-                (row[5] != null) ? new BigDecimal(row[5].toString()) : null, 
+                (row[5] != null) ? new BigDecimal(row[5].toString()) : null,
                 (String) row[6],               // unitOfMeasure
                 (String) row[7],               // location
                 (String) row[8],               // issuedTo

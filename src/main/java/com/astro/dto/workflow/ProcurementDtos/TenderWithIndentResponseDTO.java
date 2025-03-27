@@ -16,17 +16,18 @@ public class TenderWithIndentResponseDTO {
     private String titleOfTender;
     private String openingDate;
     private String closingDate;
-   // private String indentId;
+    // private String indentId;
     private String indentMaterials;
     private String modeOfProcurement;
     private String bidType;
     private String lastDateOfSubmission;
     private String applicableTaxes;
-    private String consignesAndBillinngAddress;
+    //  private String consignesAndBillinngAddress;
     private String incoTerms;
     private String paymentTerms;
     private String ldClause;
-    private String applicablePerformance;
+    //  private String applicablePerformance;
+    private String performanceAndWarrantySecurity;
     private Boolean bidSecurityDeclaration;
     private Boolean mllStatusDeclaration;
     private String uploadTenderDocuments;
@@ -35,14 +36,15 @@ public class TenderWithIndentResponseDTO {
     private String uploadSpecificTermsAndConditions;
     private String preBidDisscussions;
     private String fileType;
+    private String billinngAddress;
+    private String consignes;
     private String updatedBy;
     private Integer createdBy;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
     private List<IndentCreationResponseDTO> indentResponseDTO;
     private BigDecimal totalTenderValue;
- //   private List<IndentIdDto> indentIds;
-
+    //   private List<IndentIdDto> indentIds;
 
 
 }

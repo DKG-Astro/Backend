@@ -62,10 +62,12 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
     public PurchaseOrderResponseDTO createPurchaseOrder(PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
 
         // Check if the indentorId already exists
-        if (purchaseOrderRepository.existsById(purchaseOrderRequestDTO.getPoId())) {
+     /*   if (purchaseOrderRepository.existsById(purchaseOrderRequestDTO.getPoId())) {
             ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Purchase Order ID", "PO ID " + purchaseOrderRequestDTO.getPoId() + " already exists.");
             throw new InvalidInputException(errorDetails);
         }
+
+      */
 
 
 /*
@@ -79,8 +81,10 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         }
 
  */
+      //  String poId = "PO" + System.currentTimeMillis();
         PurchaseOrder purchaseOrder = new PurchaseOrder();
         purchaseOrder.setPoId(purchaseOrderRequestDTO.getPoId());
+       // purchaseOrder.setPoId(poId);
         purchaseOrder.setTenderId(purchaseOrderRequestDTO.getTenderId());
         purchaseOrder.setIndentId(purchaseOrderRequestDTO.getIndentId());
         purchaseOrder.setWarranty(purchaseOrderRequestDTO.getWarranty());
@@ -108,6 +112,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                     PurchaseOrderAttributes attribute = new PurchaseOrderAttributes();
                     attribute.setMaterialCode(dto.getMaterialCode());
                     attribute.setPoId(purchaseOrderRequestDTO.getPoId());
+                 //   attribute.setPoId(poId);
                     attribute.setMaterialDescription(dto.getMaterialDescription());
                     attribute.setQuantity(dto.getQuantity());
                     attribute.setRate(dto.getRate());

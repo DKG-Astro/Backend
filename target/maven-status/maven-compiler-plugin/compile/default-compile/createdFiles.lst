@@ -17,6 +17,7 @@ com\astro\entity\InventoryModule\OgpMasterEntity.class
 com\astro\entity\ProcurementModule\IndentMaterialMapping.class
 com\astro\dto\workflow\ProcurementDtos\SreviceOrderDto\soWithTenderAndIndentResponseDTO.class
 com\astro\controller\MaterialCreationController.class
+com\astro\controller\InventoryModule\InventoryReports.class
 com\astro\service\impl\TenderEvaluationServiceImpl.class
 com\astro\entity\ProcurementModule\ServiceOrder.class
 com\astro\entity\MaterialMaster.class
@@ -102,6 +103,7 @@ com\astro\entity\InventoryModule\GprnMaterialsId.class
 com\astro\repository\InventoryModule\isn\IssueNoteMaterialDtlRepository.class
 com\astro\service\impl\TenderRequestServiceImpl.class
 com\astro\service\JobMasterService.class
+com\astro\entity\InventoryModule\IssueRegisterDTO.class
 com\astro\entity\WorkMaster.class
 com\astro\controller\UserMasterController.class
 com\astro\dto\workflow\ProcurementDtos\TenderEvaluationResponseWithBitTypeAndValueDto.class
