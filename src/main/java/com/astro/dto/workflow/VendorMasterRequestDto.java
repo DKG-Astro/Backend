@@ -10,7 +10,7 @@ public class VendorMasterRequestDto {
     private String vendorName;
     private String contactNo;
     private String emailAddress;
-    private String registeredPlatform;
+    private Boolean registeredPlatform;
     private String pfmsVendorCode;
     private String primaryBusiness;
     private String address;
@@ -26,7 +26,7 @@ public class VendorMasterRequestDto {
     private String status;
 
     private String updatedBy;
-    private String createdBy;
+    private Integer createdBy;
 
 
 

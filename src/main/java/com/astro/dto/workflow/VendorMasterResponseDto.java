@@ -12,7 +12,7 @@ public class VendorMasterResponseDto {
     private String vendorName;
     private String contactNo;
     private String emailAddress;
-    private String registeredPlatform;
+    private Boolean registeredPlatform;
     private String pfmsVendorCode;
     private String primaryBusiness;
     private String address;
@@ -26,8 +26,9 @@ public class VendorMasterResponseDto {
     private String ifscCode;
     private String purchaseHistory;
     private String status;
+    private String remarks;
     private String updatedBy;
-    private String createdBy;
+    private Integer createdBy;
     private LocalDateTime createdDate;
 
     private LocalDateTime updatedDate;

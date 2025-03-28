@@ -357,7 +357,7 @@ CREATE TABLE asset_disposal(
     created_by INT NOT NULL,
     create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     location_id VARCHAR(10) NOT NULL,
-    vendor_id VARCHAR(50),
+    vendor_id VARCHAR(10),
     FOREIGN KEY (location_id) REFERENCES location_master(location_code) ON UPDATE CASCADE
     -- FOREIGN KEY (vendor_id) REFERENCES vendor_master(vendor_id) ON UPDATE CASCADE
 );

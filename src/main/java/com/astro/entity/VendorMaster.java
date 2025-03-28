@@ -31,7 +31,7 @@ public class VendorMaster {
     private String emailAddress;
 
     @Column(name = "registered_platform")
-    private String registeredPlatform;
+    private Boolean registeredPlatform;
 
     @Column(name = "pfms_vendor_code")
     private String pfmsVendorCode;
@@ -72,8 +72,10 @@ public class VendorMaster {
     @Column(name = "status")
     private String status;
 
+    private String remarks;
+
     @Column(name = "created_by")
-    private String createdBy;
+    private Integer createdBy;
     @Column(name = "updated_by")
     private String updatedBy;
 

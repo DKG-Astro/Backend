@@ -49,6 +49,15 @@ public class VendorMasterController {
         vendorMasterService.deleteVendorMaster(vendorId);
         return ResponseEntity.ok("material master deleted successfully. materialCode:"+" " +vendorId);
     }
+/*
+    @GetMapping("/not-approved")
+    public ResponseEntity<Object> getAllNotApprovedVendors() {
+        List<VendorMasterResponseDto> response = vendorMasterService.getAllNotApprovedVendors();
+        return ResponseEntity.ok(ResponseBuilder.getSuccessResponse(response));
+    }
+
+ */
+
 
 
 

@@ -17,6 +17,8 @@ public interface VendorMasterService {
     public VendorMasterResponseDto getVendorMasterById(String vendorId);
     public void deleteVendorMaster(String vendorId);
 
+   public List<VendorMasterResponseDto> getAllNotApprovedVendors();
+
 
  //   List<VendorContractReportDTO> getVendorContracts(String startDate, String endDate);
 }

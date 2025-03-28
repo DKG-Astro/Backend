@@ -38,7 +38,7 @@ public class VendorMasterServiceImpl implements VendorMasterService {
         vendorMaster.setVendorName(vendorMasterRequestDto.getVendorName());
         vendorMaster.setContactNo(vendorMasterRequestDto.getContactNo());
         vendorMaster.setEmailAddress(vendorMasterRequestDto.getEmailAddress());
-        vendorMaster.setRegisteredPlatform(vendorMasterRequestDto.getRegisteredPlatform());
+        vendorMaster.setRegisteredPlatform(false);
         vendorMaster.setPfmsVendorCode(vendorMasterRequestDto.getPfmsVendorCode());
         vendorMaster.setPrimaryBusiness(vendorMasterRequestDto.getPrimaryBusiness());
         vendorMaster.setAddress(vendorMasterRequestDto.getAddress());
@@ -51,8 +51,7 @@ public class VendorMasterServiceImpl implements VendorMasterService {
         vendorMaster.setAccountNo(vendorMasterRequestDto.getAccountNo());
         vendorMaster.setIfscCode(vendorMasterRequestDto.getIfscCode());
         vendorMaster.setPurchaseHistory(vendorMasterRequestDto.getPurchaseHistory());
-        vendorMaster.setStatus(vendorMasterRequestDto.getStatus());
-        vendorMaster.setCreatedBy(vendorMasterRequestDto.getCreatedBy());
+        vendorMaster.setStatus(AppConstant.PENDING_TYPE);
         vendorMaster.setUpdatedBy(vendorMasterRequestDto.getUpdatedBy());
 
 
@@ -152,6 +151,13 @@ public class VendorMasterServiceImpl implements VendorMasterService {
 
     }
 
+    @Override
+    public List<VendorMasterResponseDto> getAllNotApprovedVendors() {
+        return getAllVendorMasters().stream()
+                .filter(vendor -> "Pending".equalsIgnoreCase(vendor.getStatus()))
+                .collect(Collectors.toList());
+    }
+
 
 
     private VendorMasterResponseDto mapToResponseDTO(VendorMaster vendorMaster) {
@@ -177,13 +183,13 @@ public class VendorMasterServiceImpl implements VendorMasterService {
         responseDto.setIfscCode(vendorMaster.getIfscCode());
         responseDto.setPurchaseHistory(vendorMaster.getPurchaseHistory());
         responseDto.setStatus(vendorMaster.getStatus());
+        responseDto.setRemarks(vendorMaster.getRemarks());
         responseDto.setCreatedBy(vendorMaster.getCreatedBy());
         responseDto.setUpdatedBy(vendorMaster.getUpdatedBy());
         responseDto.setCreatedDate(vendorMaster.getCreatedDate());
         responseDto.setUpdatedDate(vendorMaster.getUpdatedDate());
 
         return responseDto;
-
 
     }
 }

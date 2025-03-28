@@ -6,8 +6,16 @@
   <component name="ChangeListManager">
     <list default="true" id="ff5636e0-402f-4a63-8653-94f411351cbb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/poWithTenderAndIndentResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/poWithTenderAndIndentResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/PurchaseOrderImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/PurchaseOrderImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/controller/VendorMasterController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/controller/VendorMasterController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/VendorMasterRequestDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/VendorMasterRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/VendorMasterResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/VendorMasterResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/VendorMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/VendorMaster.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/VendorMasterService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/VendorMasterService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/VendorMasterServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/VendorMasterServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/DDL-script.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/DDL-script.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/InventoryScript.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/InventoryScript.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/poWithTenderAndIndentResponseDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/poWithTenderAndIndentResponseDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/PurchaseOrderImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/service/impl/PurchaseOrderImpl.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -504,12 +504,12 @@ CREATE TABLE location_master (
     updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 CREATE TABLE vendor_master (
-    vendor_id VARCHAR(10) PRIMARY KEY,
+    vendor_id VARCHAR(250) PRIMARY KEY,
     vendor_type VARCHAR(50),
     vendor_name VARCHAR(100),
     contact_no VARCHAR(20),
     email_address VARCHAR(100),
-    registered_platform VARCHAR(10),
+    registered_platform BOOLEAN,
     pfms_vendor_code VARCHAR(20),
     primary_business VARCHAR(50),
     address TEXT,
@@ -523,8 +523,9 @@ CREATE TABLE vendor_master (
     ifsc_code VARCHAR(15),
     purchase_history TEXT,
     status VARCHAR(10),
+    remarks Varchar(255),
     updated_by varchar(200),
-    created_by varchar(200),
+    created_by LONG,
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -562,6 +563,27 @@ CREATE TABLE vendor_names_for_job_work_material (
     updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+CREATE TABLE vendor_master_util (
+    vendor_id VARCHAR(50) PRIMARY KEY,
+    vendor_name VARCHAR(255),
+    vendor_type VARCHAR(100),
+    contact_number VARCHAR(20),
+    email_address VARCHAR(255),
+    registered_platform BOOLEAN,
+    pfms_vendor_code VARCHAR(100),
+    primary_business VARCHAR(255),
+    address TEXT,
+    landline_number VARCHAR(20),
+    mobile_number VARCHAR(20),
+    fax_number VARCHAR(50),
+    pan_number VARCHAR(50),
+    gst_number VARCHAR(50),
+    bank_name VARCHAR(255),
+    account_number VARCHAR(50),
+    ifsc_code VARCHAR(50),
+    approval_status ENUM('APPROVED', 'REJECTED', 'AWAITING_APPROVAL', 'CHANGE_REQUEST'),
+    comments TEXT
+);
 
 
 
