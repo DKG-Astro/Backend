@@ -113,7 +113,7 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
 
         // Fetch vendor (Ensure it exists)
         VendorMasterUtil vendor = vendorMasterUtilRepository
-                .findById(request.getVendorId())
+                .findById(request.getRequestId())
                 .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
                         AppConstant.ERROR_CODE_RESOURCE,
                         AppConstant.ERROR_TYPE_CODE_VALIDATION,
@@ -128,6 +128,9 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
             return approveVendor(vendor, actionBy, remarks);
         } else if ("REJECTED".equalsIgnoreCase(request.getAction())) {
             return rejectVendor(vendor, request.getRemarks());
+        } else if ("CHANGE REQUEST".equalsIgnoreCase(request.getAction())) {
+            return changeRequestVendor(vendor, request.getRemarks());
+
         } else {
             throw new InvalidInputException(new ErrorDetails(
                     AppConstant.INVALID_ACTION,
@@ -136,6 +139,16 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
                     "Invalid action. Use 'APPROVED' or 'REJECTED'."
             ));
         }
+    }
+
+    private String changeRequestVendor(VendorMasterUtil vendor, String remarks) {
+
+        vendor.setApprovalStatus(VendorMasterUtil.ApprovalStatus.CHANGE_REQUEST);
+        vendor.setComments(remarks);
+
+        vendorMasterUtilRepository.save(vendor);
+        return "Vendor " + vendor.getVendorId() + " Change Requested.";
+
     }
 
 

@@ -6,16 +6,18 @@
   <component name="ChangeListManager">
     <list default="true" id="ff5636e0-402f-4a63-8653-94f411351cbb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/controller/VendorMasterController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/controller/VendorMasterController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/VendorMasterRequestDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/VendorMasterRequestDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/VendorMasterResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/VendorMasterResponseDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/VendorMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/VendorMaster.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/VendorMasterService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/VendorMasterService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/VendorMasterServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/VendorMasterServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ApprovalAndRejectionRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ApprovalAndRejectionRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/MaterialMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/MaterialMaster.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/UserRoleMasterRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/UserRoleMasterRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/VendorMasterUtilServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/VendorMasterUtilServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/DDL-script.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/DDL-script.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/InventoryScript.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/InventoryScript.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/poWithTenderAndIndentResponseDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ProcurementDtos/purchaseOrder/poWithTenderAndIndentResponseDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/PurchaseOrderImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/service/impl/PurchaseOrderImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/DDL-script.sql" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/DDL-script.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ApprovalAndRejectionRequestDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/dto/workflow/ApprovalAndRejectionRequestDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/entity/MaterialMaster.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/entity/MaterialMaster.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/repository/UserRoleMasterRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/repository/UserRoleMasterRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/VendorMasterUtilServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/service/impl/VendorMasterUtilServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/astro/service/impl/WorkflowServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/astro/service/impl/WorkflowServiceImpl.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

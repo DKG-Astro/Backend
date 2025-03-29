@@ -5,12 +5,12 @@ import lombok.Data;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
-@Table(name = "material_master")
+@Table(name = "material_master_util")
 @Data
-public class MaterialMaster {
+public class MaterialMasterUtil {
+
 
     @Id
     @Column(name = "material_code")
@@ -36,45 +36,26 @@ public class MaterialMaster {
     @Column(name = "estimated_price_with_ccy")
     private BigDecimal estimatedPriceWithCcy;
 
-  //  @Column(name = "mode_of_procurement")
-  //  private String modeOfProcurement;
-
- //  @OneToMany(mappedBy = "jobCode", cascade = CascadeType.ALL, orphanRemoval = true)
-  // private List<VendorNamesForJobWorkMaterial> vendorNames;
-
-   /* @Column(name = "end_of_life")
-    private String endOfLife;
-
-
-    @Column(name = "depreciation_rate")
-    private BigDecimal depreciationRate;
-
-    @Column(name = "stock_levels")
-    private BigDecimal stockLevels;
-
-
-
-    @Column(name = "condition_of_goods")
-    private String conditionOfGoods;
-
-    @Column(name = "shelf_life")
-    private String shelfLife;
-
-    */
-
-    @Lob
-    @Column(name = "upload_image")
-    private byte[] uploadImage;
     @Column(name = "upload_image_name")
     private String uploadImageName;
 
     @Column(name = "indigenous_or_imported")
     private Boolean indigenousOrImported;
 
-    @Column(name = "status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ApprovalStatus approvalStatus;
 
-    private String remarks;
+    private String comments;
+
+    public enum ApprovalStatus {
+
+        APPROVED,
+        REJECTED,
+        AWAITING_APPROVAL,
+        CHANGE_REQUEST
+
+    }
+
 
     @Column(name = "created_by")
     private Integer createdBy;
@@ -83,6 +64,7 @@ public class MaterialMaster {
 
     private LocalDateTime createdDate = LocalDateTime.now();
     private LocalDateTime updatedDate = LocalDateTime.now();
+
 
 
 }

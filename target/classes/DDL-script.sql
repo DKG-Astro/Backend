@@ -585,6 +585,38 @@ CREATE TABLE vendor_master_util (
     comments TEXT
 );
 
+CREATE TABLE material_master_util (
+    material_code VARCHAR(255) PRIMARY KEY,
+    category VARCHAR(255),
+    sub_category VARCHAR(255),
+    description TEXT,
+    uom VARCHAR(50),
+    unit_price DECIMAL(15,2),
+    currency VARCHAR(10),
+    estimated_price_with_ccy DECIMAL(15,2),
+    upload_image_name VARCHAR(255),
+    indigenous_or_imported BOOLEAN,
+    approval_status ENUM('APPROVED', 'REJECTED', 'AWAITING_APPROVAL', 'CHANGE_REQUEST'),
+    comments TEXT,
+    created_by INT,
+    updated_by VARCHAR(255),
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE material_status(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    material_code VARCHAR(255),
+    status VARCHAR(50) ,
+    action varchar(200),
+    comments TEXT,
+    created_by INT ,
+    updated_by INT,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (material_code) REFERENCES material_master_util(material_code)
+);
 
 
 

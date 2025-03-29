@@ -8,7 +8,7 @@ public class ApprovalAndRejectionRequestDTO {
     private String action;
     private Integer actionBy;
     private String remarks;
-    private String vendorId;
+    private String requestId;
 
 
 }

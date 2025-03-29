@@ -88,7 +88,11 @@ public class WorkflowServiceImpl implements WorkflowService {
     private ServiceOrderRepository serviceOrderRepository;
     @Autowired
     private IndentIdRepository indentIdRepository;
+    @Autowired
+    private VendorMasterUtilService vendorMasterUtilService;
 
+    @Autowired
+    private MaterialMasterUtilService materialMasterUtilService;
 
 
     @Override
@@ -1039,9 +1043,62 @@ public class WorkflowServiceImpl implements WorkflowService {
                     .map(this::mapToQueueResponse)
                     .collect(Collectors.toList());
         }
+        System.out.println(roleName);
 
+        if ("Store Purchase Officer".equalsIgnoreCase(roleName)) {
+            List<VendorRegistrationResponseDTO> awaitingApprovalVendors =vendorMasterUtilService.getAllAwaitingApprovalVendors();
+
+            List<QueueResponse> vendorQueueResponses = awaitingApprovalVendors.stream()
+                    .map(this::mapVendorToQueueResponse)
+                    .collect(Collectors.toList());
+            System.out.println("Awaiting Vendors: " + awaitingApprovalVendors.size());
+            queueResponseList.addAll(vendorQueueResponses);
+
+            // Fetch awaiting approval materials
+            List<MaterialMasterUtilResponseDto> awaitingApprovalMaterials =
+                    materialMasterUtilService.getAllAwaitingApprovalMaterials();
+
+            List<QueueResponse> materialQueueResponses = awaitingApprovalMaterials.stream()
+                    .map(this::mapMaterialToQueueResponse)
+                    .collect(Collectors.toList());
+
+            System.out.println("Awaiting Materials: " + awaitingApprovalMaterials.size());
+            queueResponseList.addAll(materialQueueResponses);
+        }
+
+        if ("Indent Creator".equalsIgnoreCase(roleName)) {
+            List<MaterialMasterUtilResponseDto> changeRequestMaterials =
+                    materialMasterUtilService.getAllChangeRequestMaterials();
+
+            List<QueueResponse> changeRequestQueueResponses = changeRequestMaterials.stream()
+                    .map(this::mapMaterialToQueueResponse)
+                    .collect(Collectors.toList());
+            queueResponseList.addAll(changeRequestQueueResponses);
+        }
         return queueResponseList;
     }
+
+    private QueueResponse mapMaterialToQueueResponse(MaterialMasterUtilResponseDto material) {
+
+        QueueResponse response = new QueueResponse();
+        response.setRequestId(material.getMaterialCode());
+        response.setWorkflowName("Material Workflow");
+        response.setStatus(material.getApprovalStatus());
+        return response;
+    }
+
+    private QueueResponse mapVendorToQueueResponse(VendorRegistrationResponseDTO vendor) {
+        QueueResponse response = new QueueResponse();
+
+        response.setRequestId(vendor.getVendorId());
+        response.setIndentorName(vendor.getVendorName());
+        response.setStatus(vendor.getApprovalStatus());
+        response.setWorkflowName("Vendor Workflow");
+      //  response.setCreatedDate();
+
+        return response;
+    }
+
 
     // Mapping function to convert WorkflowTransition to QueueResponse
     private QueueResponse mapToQueueResponse(WorkflowTransition workflowTransition) {
