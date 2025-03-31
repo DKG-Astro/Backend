@@ -1,11 +1,13 @@
 package com.astro.controller;
 
+import com.astro.dto.workflow.RegisteredVendorsDataDto;
 import com.astro.dto.workflow.VendorContractReportDTO;
 import com.astro.dto.workflow.VendorMasterRequestDto;
 import com.astro.dto.workflow.VendorMasterResponseDto;
 import com.astro.service.VendorMasterService;
 import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,6 +60,11 @@ public class VendorMasterController {
 
  */
 
+    @GetMapping("/approvedVendorData/{vendorId}")
+    public ResponseEntity<Object> getAllVendorData(@PathVariable String vendorId) {
+        List<RegisteredVendorsDataDto> response = vendorMasterService.getVendorPurchaseOrders(vendorId);
+        return ResponseEntity.ok(ResponseBuilder.getSuccessResponse(response));
+    }
 
 
 
