@@ -6,11 +6,13 @@ import com.astro.dto.workflow.VendorContractReportDTO;
 import com.astro.dto.workflow.VendorMasterRequestDto;
 import com.astro.dto.workflow.VendorMasterResponseDto;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
+import com.astro.entity.ProcurementModule.TenderRequest;
 import com.astro.entity.VendorMaster;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderRepository;
+import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.repository.VendorMasterRepository;
 import com.astro.service.VendorMasterService;
 import com.astro.util.CommonUtils;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +31,8 @@ public class VendorMasterServiceImpl implements VendorMasterService {
     private VendorMasterRepository vendorMasterRepository;
     @Autowired
     private PurchaseOrderRepository purchaseOrderRepository;
+    @Autowired
+    private TenderRequestRepository tenderRequestRepository;
 
     @Override
     public VendorMasterResponseDto createVendorMaster(VendorMasterRequestDto vendorMasterRequestDto) {
@@ -173,12 +178,18 @@ public class VendorMasterServiceImpl implements VendorMasterService {
 
         for(PurchaseOrder po : purchaseOrders){
 
+            Optional<TenderRequest> tender= tenderRequestRepository.findByTenderId(po.getTenderId());
+            TenderRequest tr= tender.get();
             RegisteredVendorsDataDto dto = new RegisteredVendorsDataDto();
             dto.setPurchaseOrder(po.getPoId());
             dto.setTenderNumber(po.getTenderId());
             dto.setDeliveryAndAcceptanceStatus("null");
             dto.setPaymentStatus("null");
             dto.setPaymentUTRNumber("null");
+            dto.setUploadTenderDocumentsFileName(tr.getUploadTenderDocumentsFileName());
+            dto.setUploadSpecificTermsAndConditionsFileName(tr.getUploadSpecificTermsAndConditionsFileName());
+            dto.setUploadGeneralTermsAndConditionsFileName(dto.getUploadGeneralTermsAndConditionsFileName());
+
             result.add(dto);
         }
 

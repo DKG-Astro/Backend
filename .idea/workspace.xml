@@ -6,9 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="ff5636e0-402f-4a63-8653-94f411351cbb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/controller/VendorMasterController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/controller/VendorMasterController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/PurchaseOrder/PurchaseOrderRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/PurchaseOrder/PurchaseOrderRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/VendorMasterService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/VendorMasterService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/RegisteredVendorsDataDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/RegisteredVendorsDataDto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/VendorMasterServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/VendorMasterServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
