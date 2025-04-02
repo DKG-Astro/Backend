@@ -1,7 +1,9 @@
 package com.astro.entity;
 import lombok.Data;
+import org.apache.logging.log4j.message.StringFormattedMessage;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -27,11 +29,18 @@ public class VendorMasterUtil {
     private String bankName;
     private String accountNumber;
     private String ifscCode;
-   // private String purchaseHistory;
+   //private String purchaseHistory;
 
     @Enumerated(EnumType.STRING)
     private ApprovalStatus approvalStatus;
     private String comments;
+    @Column(name = "created_by")
+    private Integer createdBy;
+    @Column(name = "updated_by")
+    private String updatedBy;
+
+    private LocalDateTime createdDate = LocalDateTime.now();
+    private LocalDateTime updatedDate = LocalDateTime.now();
 
     public enum ApprovalStatus {
 

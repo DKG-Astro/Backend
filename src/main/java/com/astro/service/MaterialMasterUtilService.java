@@ -18,6 +18,10 @@ public interface MaterialMasterUtilService{
     public String performActionForMaterial(ApprovalAndRejectionRequestDTO request);
 
     List<MaterialTransitionHistory> getMaterialStatusByCode(String materialCode);
+    public MaterialMasterUtilResponseDto updateMaterialMasterUtil(String materialCode, MaterialMasterUtilRequestDto dto);
+
+    public MaterialMasterUtilResponseDto getMaterialMasterUtilById(String materialCode);
+
 
 
 }

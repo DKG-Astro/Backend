@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/material-master")
+@RequestMapping("/api/material-master-util")
 public class MaterialMasterUtilController {
 
     @Autowired
@@ -51,6 +51,18 @@ public class MaterialMasterUtilController {
 
     }
 
+    @PutMapping("/update/{materialCode}")
+    public ResponseEntity<Object> updateMaterialMasterUtil(
+            @PathVariable String materialCode,@RequestBody MaterialMasterUtilRequestDto dto){
+        MaterialMasterUtilResponseDto updated = materialMasterUtilService.updateMaterialMasterUtil(materialCode,dto);
 
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(updated), HttpStatus.OK);
+    }
+
+    @GetMapping("/{materialCode}")
+    public ResponseEntity<Object> getMaterialMasterUtilById(@PathVariable String materialCode) {
+        MaterialMasterUtilResponseDto response = materialMasterUtilService.getMaterialMasterUtilById(materialCode);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+    }
 
 }

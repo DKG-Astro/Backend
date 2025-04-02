@@ -1,5 +1,6 @@
 package com.astro.dto.workflow;
 
+import io.swagger.models.auth.In;
 import lombok.Data;
 
 @Data
@@ -21,5 +22,8 @@ public class VendorRegistrationRequestDTO {
     private String bankName;
     private String accountNumber;
     private String ifscCode;
+    private String updatedBy;
+    private Integer createdBy;
+
 
 }

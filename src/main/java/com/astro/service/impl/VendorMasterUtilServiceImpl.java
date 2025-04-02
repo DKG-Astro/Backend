@@ -54,6 +54,8 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
         vendor.setIfscCode(dto.getIfscCode());
         vendor.setApprovalStatus(VendorMasterUtil.ApprovalStatus.AWAITING_APPROVAL); // Default Status
         vendor.setComments(null);
+        vendor.setCreatedBy(dto.getCreatedBy());
+        vendor.setUpdatedBy(dto.getUpdatedBy());
 
         vendorMasterUtilRepository.save(vendor);
         return mapToResponse(vendor);
@@ -89,7 +91,11 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
         vendorResponse.setBankName(vendor.getBankName());
         vendorResponse.setAccountNumber(vendor.getAccountNumber());
         vendorResponse.setIfscCode(vendor.getIfscCode());
-        vendorResponse.setApprovalStatus(vendor.getApprovalStatus().name()); // Convert Enum to String
+        vendorResponse.setApprovalStatus(vendor.getApprovalStatus().name());
+        vendorResponse.setCreatedBy(vendor.getCreatedBy());
+        vendorResponse.setUpdatedBy(vendor.getUpdatedBy());
+        vendorResponse.setCreatedDate(vendor.getCreatedDate());
+        vendorResponse.setUpdatedDate(vendor.getUpdatedDate());
         // vendorResponse.setComments(vendor.getComments());
 
         return vendorResponse;

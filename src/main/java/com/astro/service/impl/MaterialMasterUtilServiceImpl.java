@@ -6,6 +6,7 @@ import com.astro.dto.workflow.MaterialMasterUtilRequestDto;
 import com.astro.dto.workflow.MaterialMasterUtilResponseDto;
 import com.astro.dto.workflow.MaterialTransitionHistory;
 import com.astro.entity.*;
+import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.MaterialMasterRepository;
@@ -308,6 +309,56 @@ private void saveMaterialTracking(String materialCode, String status, String act
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public MaterialMasterUtilResponseDto updateMaterialMasterUtil(String materialCode, MaterialMasterUtilRequestDto dto) {
+
+        MaterialMasterUtil material = materialMasterUtilRepository.findById(materialCode)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "Materail master not found for the provided Material code.")
+                ));
+
+        material.setCategory(dto.getCategory());
+        material.setSubCategory(dto.getSubCategory());
+        material.setDescription(dto.getDescription());
+        material.setUom(dto.getUom());
+        material.setUnitPrice(dto.getUnitPrice());
+        material.setCurrency(dto.getCurrency());
+        material.setEstimatedPriceWithCcy(dto.getEstimatedPriceWithCcy());
+        material.setUploadImageName(dto.getUploadImageFileName());
+        material.setIndigenousOrImported(dto.getIndigenousOrImported());
+      //  material.setApprovalStatus(MaterialMasterUtil.ApprovalStatus.AWAITING_APPROVAL);
+        material.setComments(null);
+        material.setCreatedBy(dto.getCreatedBy());
+        material.setUpdatedBy(dto.getUpdatedBy());
+
+        materialMasterUtilRepository.save(material);
+
+        Integer actionBy = dto.getCreatedBy();
+        saveMaterialTracking(material.getMaterialCode(), "PENDING","UPDATED", null, actionBy );
+
+
+
+        return mapToResponse(material);
+    }
+
+    @Override
+    public MaterialMasterUtilResponseDto getMaterialMasterUtilById(String materialCode) {
+
+        MaterialMasterUtil material= materialMasterUtilRepository.findById(materialCode)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "material master not found for the provided materialcode.")
+                ));
+        return mapToResponse(material);
+    }
+
     private MaterialTransitionHistory mapToResponseDto(MaterialStatus status) {
 
         MaterialTransitionHistory history = new MaterialTransitionHistory();
@@ -324,8 +375,6 @@ private void saveMaterialTracking(String materialCode, String status, String act
 
         return history;
     }
-
-
 
 
 

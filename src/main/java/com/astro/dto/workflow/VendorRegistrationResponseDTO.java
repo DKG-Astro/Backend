@@ -2,6 +2,8 @@ package com.astro.dto.workflow;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class VendorRegistrationResponseDTO {
 
@@ -23,4 +25,8 @@ public class VendorRegistrationResponseDTO {
     private String accountNumber;
     private String ifscCode;
     private String approvalStatus;
+    private String updatedBy;
+    private Integer createdBy;
+    private LocalDateTime createdDate;
+    private LocalDateTime updatedDate;
 }
