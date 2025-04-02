@@ -19,12 +19,14 @@ public class AppConstant {
     public static final int ERROR_TYPE_CODE_VALIDATION = 2;
     public static final int ERROR_TYPE_CODE_INTERNAL = 3;
     public static final int ERROR_CODE_RESOURCE = 5;
+    public static final int ERROR_TYPE_CODE_INVALID = 6;
 
     // Error Type
     public static final String ERROR_TYPE_ERROR = "error";
     public static final String ERROR_TYPE_VALIDATION = "validation";
     public static final String ERROR_TYPE_RESOURCE = "missing resource";
     public static final String ERROR_TYPE_CORRUPTED = "corrupted resource";
+    public static final String ERROR_TYPE_INVALID = "invalid arguments";
 
     public static final int ERROR_TYPE_CODE_RESOURCE = 5001;
     public static final int INTER_SERVER_ERROR = 1000;
@@ -42,6 +44,8 @@ public class AppConstant {
     public static final int INVALID_FILE_TYPE = 1011;
     public static final int FILE_NOT_FOUND = 1012;
     public static final int FILE_UPLOAD_ERROR = 1013;
+
+    public static final int ERROR_CODE_INVALID = 2001;
 
 
     //Folder Path

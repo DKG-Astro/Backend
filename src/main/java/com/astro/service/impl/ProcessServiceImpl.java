@@ -20,6 +20,13 @@ import com.astro.service.InventoryModule.IgpService;
 import com.astro.service.InventoryModule.IsnService;
 import com.astro.service.InventoryModule.OgpService;
 import com.astro.exception.InvalidInputException;
+import com.astro.repository.ohq.OhqMasterRepository;
+import com.astro.dto.workflow.InventoryModule.ohq.OhqReportDto;
+import com.astro.dto.workflow.InventoryModule.ohq.OhqLocatorDetailDto;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import com.astro.dto.workflow.InventoryModule.GiDto.SaveGiDto;
 
@@ -29,6 +36,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class ProcessServiceImpl implements ProcessService {
@@ -52,6 +60,9 @@ public class ProcessServiceImpl implements ProcessService {
 
     @Autowired
     private IgpService igpService;
+
+    @Autowired
+    private OhqMasterRepository ohqMasterRepository;
 
     @Override
     public String saveGprn(SaveGprnDto req) {
@@ -126,5 +137,36 @@ public class ProcessServiceImpl implements ProcessService {
                         AppConstant.ERROR_TYPE_ERROR,
                         "Invalid process stage."));
         }
+    }
+
+    @Override
+    public List<OhqReportDto> getOhqReport() {
+        List<Object[]> results = ohqMasterRepository.getOhqReport();
+        ObjectMapper mapper = new ObjectMapper();
+        
+        return results.stream().map(row -> {
+            OhqReportDto dto = new OhqReportDto();
+            dto.setAssetId((Integer) row[0]);
+            dto.setAssetDesc((String) row[1]);
+            dto.setMaterialDesc((String) row[2]);
+            dto.setUomId((String) row[3]);
+            dto.setTotalQuantity((BigDecimal) row[4]);
+            dto.setBookValue((BigDecimal) row[5]);
+            dto.setDepriciationRate((BigDecimal) row[6]);
+            dto.setUnitPrice((BigDecimal) row[7]);
+            
+            try {
+                String locatorDetailsJson = (String) row[8];
+                List<OhqLocatorDetailDto> locatorDetails = mapper.readValue(
+                    locatorDetailsJson, 
+                    new TypeReference<List<OhqLocatorDetailDto>>() {}
+                );
+                dto.setLocatorDetails(locatorDetails);
+            } catch (Exception e) {
+                dto.setLocatorDetails(new ArrayList<>());
+            }
+            
+            return dto;
+        }).collect(Collectors.toList());
     }
 }

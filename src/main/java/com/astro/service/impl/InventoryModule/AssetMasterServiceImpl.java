@@ -6,10 +6,12 @@ import org.springframework.stereotype.Service;
 import org.modelmapper.ModelMapper;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -245,4 +247,36 @@ public class AssetMasterServiceImpl implements AssetMasterService {
         
         return response;
     }
+
+    @Override
+public List<AssetMasterDto> getAssetReport() {
+    List<Object[]> results = assetMasterRepository.getAssetReport();
+    
+    return results.stream().map(row -> {
+        AssetMasterDto dto = new AssetMasterDto();
+        dto.setAssetId((Integer) row[0]);
+        dto.setMaterialCode((String) row[1]);
+        dto.setMaterialDesc((String) row[2]);
+        dto.setAssetDesc((String) row[3]);
+        dto.setMakeNo((String) row[4]);
+        dto.setSerialNo((String) row[5]);
+        dto.setModelNo((String) row[6]);
+        dto.setInitQuantity((BigDecimal) row[7]);
+        dto.setUnitPrice((BigDecimal) row[8]);
+        dto.setUomId((String) row[9]);
+        dto.setDepriciationRate((BigDecimal) row[10]);
+        CommonUtils.convertSqlDateToString((Date) row[11]);
+        // dto.setEndOfLife(row[11] != null ? ((Date) row[11]).toLocalDate() : null);
+        dto.setStockLevels((BigDecimal) row[12]);
+        dto.setConditionOfGoods((String) row[13]);
+        dto.setShelfLife((String) row[14]);
+        dto.setComponentName((String) row[15]);
+        dto.setComponentId((Integer) row[16]);
+        // dto.setCreateDate(((Timestamp) row[17]).toLocalDateTime());
+        dto.setCreatedBy((Integer) row[18]);
+        // dto.setUpdatedDate(((Timestamp) row[19]).toLocalDateTime());
+        dto.setUpdatedBy((Integer) row[20]);
+        return dto;
+    }).collect(Collectors.toList());
+}
 }

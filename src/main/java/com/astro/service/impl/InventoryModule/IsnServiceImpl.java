@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -181,5 +182,49 @@ public class IsnServiceImpl implements IsnService {
         }
 
         return response;
+    }
+
+    @Override
+    public List<IsnReportDto> getIsnReport(String startDate, String endDate) {
+        List<LocalDateTime> dateRange = CommonUtils.getDateRenge(startDate, endDate);
+        
+        List<Object[]> results = isnmr.getIssueNoteDetails(dateRange.get(0), dateRange.get(1));
+        
+        Map<Integer, IsnReportDto> reportMap = new HashMap<>();
+        
+        for (Object[] row : results) {
+            Integer issueNoteId = (Integer) row[0];
+            
+            // Create or get master record
+            IsnReportDto masterDto = reportMap.computeIfAbsent(issueNoteId, k -> {
+                IsnReportDto dto = new IsnReportDto();
+                dto.setIssueNoteId(issueNoteId);
+                dto.setIssueNoteType((String) row[1]);
+                dto.setIssueDate(CommonUtils.convertSqlDateToString((java.sql.Date) row[2]));
+                dto.setConsigneeDetail((String) row[3]);
+                dto.setIndentorName((String) row[4]);
+                dto.setFieldStation((String) row[5]);
+                dto.setCreatedBy((Integer) row[6]);
+                // dto.setCreateDate(CommonUtils.convertSqlDateToString((java.sql.Date) row[7]));
+                // dto.setCreateDate((LocalDateTime) row[7]);
+                dto.setLocationId((String) row[8]);
+                dto.setDetails(new ArrayList<>());
+                return dto;
+            });
+            
+            // Create detail record
+            IsnReportDetailDto detailDto = new IsnReportDetailDto();
+            detailDto.setDetailId((Integer) row[9]);
+            detailDto.setAssetId((Integer) row[10]);
+            detailDto.setLocatorId((Integer) row[11]);
+            detailDto.setQuantity((BigDecimal) row[12]);
+            detailDto.setMaterialDesc((String) row[13]);
+            detailDto.setAssetDesc((String) row[14]);
+            detailDto.setUomId((String) row[15]);
+            
+            masterDto.getDetails().add(detailDto);
+        }
+        
+        return new ArrayList<>(reportMap.values());
     }
 }

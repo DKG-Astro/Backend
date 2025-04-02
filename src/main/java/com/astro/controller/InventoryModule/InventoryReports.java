@@ -22,11 +22,4 @@ public class InventoryReports {
     @Autowired
     private GiService giService;
 
-    @GetMapping("/issue-register")
-    public ResponseEntity<Object> getissueRegisterReport(
-            @RequestParam String startDate,
-            @RequestParam String endDate) {
-        List<IssueRegisterDTO> response=giService.getIssueRegisterReport(startDate, endDate);
-        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
-    }
 }

@@ -3,6 +3,8 @@ package com.astro.service.impl.InventoryModule;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import javax.transaction.Transactional;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,14 +15,21 @@ import com.astro.repository.InventoryModule.isn.IssueNoteMasterRepository;
 import com.astro.repository.InventoryModule.ogp.OgpDetailRepository;
 import com.astro.repository.InventoryModule.ogp.OgpMasterRepository;
 import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpDetailReportDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpMaterialDtlDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpReportDto;
 import com.astro.entity.InventoryModule.OgpDetailEntity;
 import com.astro.entity.InventoryModule.OgpMasterEntity;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.util.CommonUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import org.modelmapper.ModelMapper;
 
 @Service
@@ -173,5 +182,39 @@ public class OgpServiceImpl implements OgpService {
                     AppConstant.ERROR_TYPE_VALIDATION,
                     "Invalid ISN number format"));
         }
+    }
+
+    @Override
+    public List<OgpReportDto> getOgpReport(String startDate, String endDate) {
+        List<LocalDateTime> dateRange = CommonUtils.getDateRenge(startDate, endDate);
+        List<Object[]> results = ogpMasterRepository.getOgpReport(dateRange.get(0), dateRange.get(1));
+        
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        
+        return results.stream().map(row -> {
+            OgpReportDto dto = new OgpReportDto();
+            dto.setOgpProcessId((String) row[0]);
+            dto.setOgpSubProcessId((Integer) row[1]);
+            dto.setIssueNoteId((Integer) row[2]);
+            dto.setOgpDate(row[3] != null ? ((java.sql.Timestamp) row[3]).toLocalDateTime() : null);
+            dto.setLocationId((String) row[4]);
+            dto.setCreatedBy((Integer) row[5]);
+            dto.setCreateDate(row[6] != null ? ((java.sql.Timestamp) row[6]).toLocalDateTime() : null);
+            
+            try {
+                String detailsJson = (String) row[7];
+                List<OgpDetailReportDto> details = mapper.readValue(
+                    detailsJson, 
+                    new TypeReference<List<OgpDetailReportDto>>() {}
+                );
+                dto.setOgpDetails(details);
+            } catch (Exception e) {
+                dto.setOgpDetails(new ArrayList<>());
+            }
+            
+            return dto;
+        }).collect(Collectors.toList());
     }
 }

@@ -10,6 +10,4 @@ public interface GiService {
     String saveGi(SaveGiDto req);
     Map<String, Object> getGiDtls(String processNo);
     void validateGiSubProcessId(String processNo);
-
-    public List<IssueRegisterDTO> getIssueRegisterReport(String startDate, String endDate);
 }

@@ -6,11 +6,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.astro.constant.AppConstant;
+import com.astro.exception.ErrorDetails;
+import com.astro.exception.InvalidInputException;
+
 import java.io.*;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -221,6 +226,32 @@ public class CommonUtils {
         if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) return "image/jpeg";
         if (fileName.endsWith(".gif")) return "image/gif";
         return "image/jpeg"; // Default type
+    }
+
+    public static List<LocalDateTime> getDateRenge(String startDate, String endDate) {
+        try{
+            LocalDateTime start = CommonUtils.convertStringToDateObject(startDate).atStartOfDay();
+            LocalDateTime end = CommonUtils.convertStringToDateObject(endDate).atTime(23, 59, 59);
+            List<LocalDateTime> dateRenge = new ArrayList<>();
+            dateRenge.add(start);
+            dateRenge.add(end);
+            return dateRenge;
+        }
+        catch(Exception e){
+            throw new InvalidInputException(new ErrorDetails(
+                AppConstant.ERROR_CODE_INVALID, 
+                AppConstant.ERROR_TYPE_CODE_INVALID, 
+                AppConstant.ERROR_TYPE_INVALID, 
+                "Invalid start date and end date."));
+        }
+    }
+
+    public static String convertSqlDateToString(Date date) {
+        if (date == null) {
+            return null;
+        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        return dateFormat.format(date);
     }
 
 }

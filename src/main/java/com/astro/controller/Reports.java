@@ -2,12 +2,21 @@ package com.astro.controller;
 
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseReportDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentReportDetailsDTO;
+import com.astro.repository.InventoryModule.AssetMasterRepository;
 import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
 import com.astro.dto.workflow.ProcurementDtos.TechnoMomReportDTO;
 import com.astro.dto.workflow.VendorContractReportDTO;
+import com.astro.dto.workflow.InventoryModule.AssetMasterDto;
+import com.astro.dto.workflow.InventoryModule.isn.IsnReportDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpReportDto;
+import com.astro.dto.workflow.InventoryModule.ohq.OhqReportDto;
 import com.astro.service.ContigencyPurchaseService;
 import com.astro.service.IndentCreationService;
+import com.astro.service.ProcessService;
 import com.astro.service.PurchaseOrderService;
+import com.astro.service.InventoryModule.AssetMasterService;
+import com.astro.service.InventoryModule.IsnService;
+import com.astro.service.InventoryModule.OgpService;
 import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +38,18 @@ public class Reports {
     private ContigencyPurchaseService CPservice;
     @Autowired
     private PurchaseOrderService purchaseOrderService;
+
+    @Autowired
+    private IsnService isnService;
+
+    @Autowired
+    private ProcessService processService;
+
+    @Autowired
+    private AssetMasterService assetMasterService;
+
+    @Autowired
+    private OgpService  ogpService;
 
     @GetMapping("/indent")
     public ResponseEntity<Object> getIndentReport(
@@ -72,5 +93,35 @@ public class Reports {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
 
     }
+
+    @GetMapping("/isn")
+    public ResponseEntity<Object> getIsnReport(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+
+        List<IsnReportDto> response = isnService.getIsnReport(startDate, endDate);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+    }
+    @GetMapping("/ogp")
+    public ResponseEntity<Object> getOgpReport(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+
+        List<OgpReportDto> response = ogpService.getOgpReport(startDate, endDate);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+    }
+    @GetMapping("/stock")
+    public ResponseEntity<Object> getOhqReport() {
+
+        List<OhqReportDto> response = processService.getOhqReport();
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+    }
+    @GetMapping("/asset")
+    public ResponseEntity<Object> getAssetReport() {
+
+        List<AssetMasterDto> response = assetMasterService.getAssetReport();
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+    }
+    
 
 }

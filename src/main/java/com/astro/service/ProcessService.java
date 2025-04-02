@@ -6,6 +6,7 @@ import com.astro.dto.workflow.InventoryModule.grv.GrvDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpDto;
 import com.astro.dto.workflow.InventoryModule.isn.IsnDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
+import com.astro.dto.workflow.InventoryModule.ohq.OhqReportDto;
 import com.astro.entity.InventoryModule.IsnAssetOhqDtlsDto;
 
 import java.util.List;
@@ -30,4 +31,6 @@ public interface ProcessService {
     public List<IsnAssetOhqDtlsDto> getIsnAssetOhqDtls();
 
     public Object getSubProcessDtls(String processStage, String processId);
+
+public List<OhqReportDto> getOhqReport();
 }

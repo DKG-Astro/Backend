@@ -236,27 +236,4 @@ public class GiServiceImpl implements GiService {
                     "Provided GI No. is not valid."));
         }
     }
-
-    @Override
-    public List<IssueRegisterDTO> getIssueRegisterReport(String startDate, String endDate) {
-        // Convert String dates to LocalDate
-        LocalDate StartDate = CommonUtils.convertStringToDateObject(startDate);
-        LocalDate EndDate = CommonUtils.convertStringToDateObject(endDate);
-
-        List<Object[]> results = issueNoteMasterRepository.getIssueRegisterData(StartDate, EndDate);
-
-        return results.stream().map(row -> new IssueRegisterDTO(
-                (Integer) row[0],              // issueID
-                (row[1] != null) ? ((java.sql.Date) row[1]).toLocalDate() : null,
-                (String) row[2],               // itemDescription
-                (String) row[3],               // category
-                (String) row[4],               // subCategory
-                (row[5] != null) ? new BigDecimal(row[5].toString()) : null,
-                (String) row[6],               // unitOfMeasure
-                (String) row[7],               // location
-                (String) row[8],               // issuedTo
-                (String) row[9],               // issuedBy
-                (String) row[10]               // purpose
-        )).collect(Collectors.toList());
-    }
 }

@@ -2,6 +2,7 @@ package com.astro.repository.InventoryModule;
 
 import com.astro.entity.InventoryModule.AssetMasterEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -30,4 +31,15 @@ public interface AssetMasterRepository extends JpaRepository<AssetMasterEntity, 
             @Param("serialNo") String serialNo,
             @Param("uomId") String uomId
     );
+    
+    @Query(value = """
+        SELECT 
+            asset_id, material_code, material_desc, asset_desc, make_no, 
+            serial_no, model_no, init_quantity, unit_price, uom_id,
+            depriciation_rate, end_of_life, stock_levels, condition_of_goods,
+            shelf_life, component_name, component_id, create_date, created_by,
+            updated_date, updated_by
+        FROM asset_master
+        """, nativeQuery = true)
+    List<Object[]> getAssetReport();
 }
