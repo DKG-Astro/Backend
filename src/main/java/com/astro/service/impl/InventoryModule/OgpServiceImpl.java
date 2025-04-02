@@ -198,10 +198,10 @@ public class OgpServiceImpl implements OgpService {
             dto.setOgpProcessId((String) row[0]);
             dto.setOgpSubProcessId((Integer) row[1]);
             dto.setIssueNoteId((Integer) row[2]);
-            dto.setOgpDate(row[3] != null ? ((java.sql.Timestamp) row[3]).toLocalDateTime() : null);
+            dto.setOgpDate(CommonUtils.convertSqlDateToString((java.sql.Date) row[3]));
+            // dto.setOgpDate( row[3] != null ? ((java.sql.Timestamp) row[3]).toLocalDateTime() : null);
             dto.setLocationId((String) row[4]);
             dto.setCreatedBy((Integer) row[5]);
-            dto.setCreateDate(row[6] != null ? ((java.sql.Timestamp) row[6]).toLocalDateTime() : null);
             
             try {
                 String detailsJson = (String) row[7];

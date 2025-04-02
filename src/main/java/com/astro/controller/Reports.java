@@ -7,6 +7,7 @@ import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
 import com.astro.dto.workflow.ProcurementDtos.TechnoMomReportDTO;
 import com.astro.dto.workflow.VendorContractReportDTO;
 import com.astro.dto.workflow.InventoryModule.AssetMasterDto;
+import com.astro.dto.workflow.InventoryModule.igp.IgpReportDto;
 import com.astro.dto.workflow.InventoryModule.isn.IsnReportDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpReportDto;
 import com.astro.dto.workflow.InventoryModule.ohq.OhqReportDto;
@@ -15,6 +16,7 @@ import com.astro.service.IndentCreationService;
 import com.astro.service.ProcessService;
 import com.astro.service.PurchaseOrderService;
 import com.astro.service.InventoryModule.AssetMasterService;
+import com.astro.service.InventoryModule.IgpService;
 import com.astro.service.InventoryModule.IsnService;
 import com.astro.service.InventoryModule.OgpService;
 import com.astro.util.ResponseBuilder;
@@ -50,6 +52,9 @@ public class Reports {
 
     @Autowired
     private OgpService  ogpService;
+
+    @Autowired
+    private IgpService igpService;
 
     @GetMapping("/indent")
     public ResponseEntity<Object> getIndentReport(
@@ -108,6 +113,14 @@ public class Reports {
             @RequestParam String endDate) {
 
         List<OgpReportDto> response = ogpService.getOgpReport(startDate, endDate);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+    }
+    @GetMapping("/igp")
+    public ResponseEntity<Object> getIgpReport(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+
+        List<IgpReportDto> response = igpService.getIgpReport(startDate, endDate);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
     @GetMapping("/stock")

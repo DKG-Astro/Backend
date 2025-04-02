@@ -56,5 +56,7 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, St
 
     PurchaseOrder findByPoId(String poId);
 
+    List<PurchaseOrder> findByVendorId(String vendorId);
+
     // PurchaseOrder getByPoId(String poId);
 }

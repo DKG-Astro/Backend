@@ -1,20 +1,27 @@
 package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.RegisteredVendorsDataDto;
 import com.astro.dto.workflow.VendorContractReportDTO;
 import com.astro.dto.workflow.VendorMasterRequestDto;
 import com.astro.dto.workflow.VendorMasterResponseDto;
+import com.astro.entity.ProcurementModule.PurchaseOrder;
+import com.astro.entity.ProcurementModule.TenderRequest;
 import com.astro.entity.VendorMaster;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
+import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderRepository;
+import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.repository.VendorMasterRepository;
 import com.astro.service.VendorMasterService;
 import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,6 +29,10 @@ public class VendorMasterServiceImpl implements VendorMasterService {
 
     @Autowired
     private VendorMasterRepository vendorMasterRepository;
+    @Autowired
+    private PurchaseOrderRepository purchaseOrderRepository;
+    @Autowired
+    private TenderRequestRepository tenderRequestRepository;
 
     @Override
     public VendorMasterResponseDto createVendorMaster(VendorMasterRequestDto vendorMasterRequestDto) {
@@ -38,7 +49,7 @@ public class VendorMasterServiceImpl implements VendorMasterService {
         vendorMaster.setVendorName(vendorMasterRequestDto.getVendorName());
         vendorMaster.setContactNo(vendorMasterRequestDto.getContactNo());
         vendorMaster.setEmailAddress(vendorMasterRequestDto.getEmailAddress());
-        vendorMaster.setRegisteredPlatform(vendorMasterRequestDto.getRegisteredPlatform());
+        vendorMaster.setRegisteredPlatform(false);
         vendorMaster.setPfmsVendorCode(vendorMasterRequestDto.getPfmsVendorCode());
         vendorMaster.setPrimaryBusiness(vendorMasterRequestDto.getPrimaryBusiness());
         vendorMaster.setAddress(vendorMasterRequestDto.getAddress());
@@ -51,8 +62,7 @@ public class VendorMasterServiceImpl implements VendorMasterService {
         vendorMaster.setAccountNo(vendorMasterRequestDto.getAccountNo());
         vendorMaster.setIfscCode(vendorMasterRequestDto.getIfscCode());
         vendorMaster.setPurchaseHistory(vendorMasterRequestDto.getPurchaseHistory());
-        vendorMaster.setStatus(vendorMasterRequestDto.getStatus());
-        vendorMaster.setCreatedBy(vendorMasterRequestDto.getCreatedBy());
+        vendorMaster.setStatus(AppConstant.PENDING_TYPE);
         vendorMaster.setUpdatedBy(vendorMasterRequestDto.getUpdatedBy());
 
 
@@ -152,6 +162,39 @@ public class VendorMasterServiceImpl implements VendorMasterService {
 
     }
 
+    @Override
+    public List<VendorMasterResponseDto> getAllNotApprovedVendors() {
+        return getAllVendorMasters().stream()
+                .filter(vendor -> "Pending".equalsIgnoreCase(vendor.getStatus()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RegisteredVendorsDataDto> getVendorPurchaseOrders(String vendorId) {
+
+
+        List<PurchaseOrder> purchaseOrders = purchaseOrderRepository.findByVendorId(vendorId);
+        List<RegisteredVendorsDataDto> result = new ArrayList<>();
+
+        for(PurchaseOrder po : purchaseOrders){
+
+            Optional<TenderRequest> tender= tenderRequestRepository.findByTenderId(po.getTenderId());
+            TenderRequest tr= tender.get();
+            RegisteredVendorsDataDto dto = new RegisteredVendorsDataDto();
+            dto.setPurchaseOrder(po.getPoId());
+            dto.setTenderNumber(po.getTenderId());
+            dto.setDeliveryAndAcceptanceStatus("null");
+            dto.setPaymentStatus("null");
+            dto.setPaymentUTRNumber("null");
+            dto.setUploadTenderDocumentsFileName(tr.getUploadTenderDocumentsFileName());
+            dto.setUploadSpecificTermsAndConditionsFileName(tr.getUploadSpecificTermsAndConditionsFileName());
+            dto.setUploadGeneralTermsAndConditionsFileName(dto.getUploadGeneralTermsAndConditionsFileName());
+
+            result.add(dto);
+        }
+
+        return result;
+    }
 
 
     private VendorMasterResponseDto mapToResponseDTO(VendorMaster vendorMaster) {
@@ -177,13 +220,13 @@ public class VendorMasterServiceImpl implements VendorMasterService {
         responseDto.setIfscCode(vendorMaster.getIfscCode());
         responseDto.setPurchaseHistory(vendorMaster.getPurchaseHistory());
         responseDto.setStatus(vendorMaster.getStatus());
+        responseDto.setRemarks(vendorMaster.getRemarks());
         responseDto.setCreatedBy(vendorMaster.getCreatedBy());
         responseDto.setUpdatedBy(vendorMaster.getUpdatedBy());
         responseDto.setCreatedDate(vendorMaster.getCreatedDate());
         responseDto.setUpdatedDate(vendorMaster.getUpdatedDate());
 
         return responseDto;
-
 
     }
 }

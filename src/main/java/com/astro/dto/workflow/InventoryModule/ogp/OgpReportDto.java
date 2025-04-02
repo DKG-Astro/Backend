@@ -9,7 +9,7 @@ public class OgpReportDto {
     private String ogpProcessId;
     private Integer ogpSubProcessId;
     private Integer issueNoteId;
-    private LocalDateTime ogpDate;
+    private String ogpDate;
     private String locationId;
     private Integer createdBy;
     private LocalDateTime createDate;

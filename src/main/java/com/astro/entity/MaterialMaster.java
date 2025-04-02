@@ -71,6 +71,11 @@ public class MaterialMaster {
     @Column(name = "indigenous_or_imported")
     private Boolean indigenousOrImported;
 
+    @Column(name = "status")
+    private String status;
+
+    private String remarks;
+
     @Column(name = "created_by")
     private Integer createdBy;
     @Column(name = "updated_by")

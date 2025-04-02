@@ -1,0 +1,14 @@
+package com.astro.repository;
+
+
+import com.astro.entity.VendorMasterUtil;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface VendorMasterUtilRepository extends JpaRepository<VendorMasterUtil, String> {
+
+    List<VendorMasterUtil> findByApprovalStatus(VendorMasterUtil.ApprovalStatus approvalStatus);
+}

@@ -1,11 +1,13 @@
 package com.astro.controller;
 
+import com.astro.dto.workflow.RegisteredVendorsDataDto;
 import com.astro.dto.workflow.VendorContractReportDTO;
 import com.astro.dto.workflow.VendorMasterRequestDto;
 import com.astro.dto.workflow.VendorMasterResponseDto;
 import com.astro.service.VendorMasterService;
 import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +50,20 @@ public class VendorMasterController {
     public ResponseEntity<String> deleteVendorMaster(@PathVariable String vendorId) {
         vendorMasterService.deleteVendorMaster(vendorId);
         return ResponseEntity.ok("material master deleted successfully. materialCode:"+" " +vendorId);
+    }
+/*
+    @GetMapping("/not-approved")
+    public ResponseEntity<Object> getAllNotApprovedVendors() {
+        List<VendorMasterResponseDto> response = vendorMasterService.getAllNotApprovedVendors();
+        return ResponseEntity.ok(ResponseBuilder.getSuccessResponse(response));
+    }
+
+ */
+
+    @GetMapping("/approvedVendorData/{vendorId}")
+    public ResponseEntity<Object> getAllVendorData(@PathVariable String vendorId) {
+        List<RegisteredVendorsDataDto> response = vendorMasterService.getVendorPurchaseOrders(vendorId);
+        return ResponseEntity.ok(ResponseBuilder.getSuccessResponse(response));
     }
 
 

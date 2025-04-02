@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.transaction.Transactional;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,6 +21,11 @@ import com.astro.dto.workflow.InventoryModule.igp.*;
 import com.astro.exception.*;
 import com.astro.constant.AppConstant;
 import com.astro.util.CommonUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import org.modelmapper.ModelMapper;
 
 @Service
@@ -241,5 +247,44 @@ public class IgpServiceImpl implements IgpService {
         return ogpDetailRepository.findQuantityByOgpSubProcessIdAndAssetIdAndLocatorId(
             ogpSubProcessId, assetId, locatorId)
             .orElse(BigDecimal.ZERO);
+    }
+    
+    @Override
+    public List<IgpReportDto> getIgpReport(String startDate, String endDate) {
+        List<LocalDateTime> dateRange = CommonUtils.getDateRenge(startDate, endDate);
+        List<Object[]> results = igpMasterRepository.getIgpReport(dateRange.get(0), dateRange.get(1));
+        
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        
+        return results.stream().map(row -> {
+            IgpReportDto dto = new IgpReportDto();
+            dto.setIgpProcessId((String) row[0]);
+            dto.setIgpSubProcessId((Integer) row[1]);
+            dto.setOgpSubProcessId((Integer) row[2]);
+            dto.setIgpDate(CommonUtils.convertSqlDateToString((Date) row[3]));
+            // dto.setIgpDate(row[3] != null ? ((java.sql.Timestamp) row[3]).toLocalDateTime() : null);
+            dto.setLocationId((String) row[4]);
+            dto.setCreatedBy((Integer) row[5]);
+            // dto.setCreateDate(row[6] != null ? ((java.sql.Timestamp) row[6]).toLocalDateTime() : null);
+            
+            try {
+                String detailsJson = (String) row[7];
+                if (detailsJson != null && !detailsJson.isEmpty()) {
+                    List<IgpDetailReportDto> details = mapper.readValue(
+                        detailsJson, 
+                        mapper.getTypeFactory().constructCollectionType(List.class, IgpDetailReportDto.class)
+                    );
+                    dto.setIgpDetails(details);
+                } else {
+                    dto.setIgpDetails(new ArrayList<>());
+                }
+            } catch (Exception e) {
+                dto.setIgpDetails(new ArrayList<>());
+            }
+            
+            return dto;
+        }).collect(Collectors.toList());
     }
 }
