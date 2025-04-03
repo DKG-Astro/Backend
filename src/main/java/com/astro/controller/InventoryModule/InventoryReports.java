@@ -22,4 +22,5 @@ public class InventoryReports {
     @Autowired
     private GiService giService;
 
+
 }

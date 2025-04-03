@@ -36,14 +36,18 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
             //,String uploadCopyOfInvoiceFileName) {
 
         // Check if the indentorId already exists
-        if (CPrepo.existsById(contigencyPurchaseDto.getContigencyId())) {
+     /*   if (CPrepo.existsById(contigencyPurchaseDto.getContigencyId())) {
             ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Contigency Purchase ID", "CP ID " + contigencyPurchaseDto.getContigencyId() + " already exists.");
             throw new InvalidInputException(errorDetails);
         }
 
+      */
+
+        String cpId = "CP" + System.currentTimeMillis();
         ContigencyPurchase contigencyPurchase= new ContigencyPurchase();
 
-        contigencyPurchase.setContigencyId(contigencyPurchaseDto.getContigencyId());
+       // contigencyPurchase.setContigencyId(contigencyPurchaseDto.getContigencyId());
+        contigencyPurchase.setContigencyId(cpId);
         contigencyPurchase.setVendorsName(contigencyPurchaseDto.getVendorsName());
         contigencyPurchase.setVendorsInvoiceNo(contigencyPurchaseDto.getVendorsInvoiceNo());
         String date = contigencyPurchaseDto.getDate();

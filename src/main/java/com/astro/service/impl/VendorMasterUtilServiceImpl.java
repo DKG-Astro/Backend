@@ -7,6 +7,7 @@ import com.astro.dto.workflow.VendorRegistrationResponseDTO;
 import com.astro.entity.UserRoleMaster;
 import com.astro.entity.VendorMaster;
 import com.astro.entity.VendorMasterUtil;
+import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.UserRoleMasterRepository;
@@ -145,6 +146,19 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
                     "Invalid action. Use 'APPROVED' or 'REJECTED'."
             ));
         }
+    }
+
+    @Override
+    public VendorRegistrationResponseDTO getVendorMasterUtilById(String vendorId) {
+        VendorMasterUtil vendorMasterUtil= vendorMasterUtilRepository.findById(vendorId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Vendor master Util not found for the provided vendor id.")
+                ));
+        return mapToResponse(vendorMasterUtil);
     }
 
     private String changeRequestVendor(VendorMasterUtil vendor, String remarks) {

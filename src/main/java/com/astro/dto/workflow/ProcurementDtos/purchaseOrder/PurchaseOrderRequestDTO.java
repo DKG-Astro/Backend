@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class PurchaseOrderRequestDTO{
 
-        private String poId;
+      //  private String poId;
         private String tenderId;
         private String indentId;
         private BigDecimal warranty;

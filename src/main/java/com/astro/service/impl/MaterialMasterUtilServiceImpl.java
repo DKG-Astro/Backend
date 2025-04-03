@@ -154,8 +154,6 @@ public class MaterialMasterUtilServiceImpl implements MaterialMasterUtilService 
                        AppConstant.ERROR_TYPE_VALIDATION,
                        "Unauthorised User!"
                )));
-
-       // Fetch MaterialMasterUtil object
        MaterialMasterUtil material = materialMasterUtilRepository
                .findById(request.getRequestId())
                .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
@@ -187,7 +185,7 @@ public class MaterialMasterUtilServiceImpl implements MaterialMasterUtilService 
                return rejectMaterial(material, remarks, actionBy);
 
            case "CHANGE REQUEST":
-               if (roleId == 11) {  // Store Purchase Officer can request change
+               if (roleId == 11) {  // Store Purchase Officer
                    return changeRequestVendor(material, remarks, actionBy);
                }
                break;
@@ -276,7 +274,7 @@ private void saveMaterialTracking(String materialCode, String status, String act
     MaterialStatus materialStatus = new MaterialStatus();
     materialStatus.setMaterialCode(materialCode);
     materialStatus.setStatus(status);
-    materialStatus.setAction(action);  // Store the action performed
+    materialStatus.setAction(action);
     materialStatus.setComments(remarks);
     materialStatus.setCreatedBy(actionBy);
 

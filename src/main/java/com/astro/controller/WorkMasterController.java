@@ -18,7 +18,6 @@ public class WorkMasterController {
     @Autowired
     private WorkMasterService workMasterService;
 
-
     @PostMapping
     public ResponseEntity<Object> createWorkMaster(@RequestBody WorkMasterRequestDto requestDTO) {
         WorkMasterResponseDto work = workMasterService.createWorkMaster(requestDTO);
@@ -31,6 +30,7 @@ public class WorkMasterController {
         WorkMasterResponseDto response =workMasterService.updateWorkMaster(workCode, requestDTO);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
+
     @GetMapping
     public ResponseEntity<Object> getAllWorkMaster() {
         List<WorkMasterResponseDto> response = workMasterService.getAllWorkMasters();
