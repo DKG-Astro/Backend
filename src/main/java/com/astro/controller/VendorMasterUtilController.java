@@ -1,6 +1,7 @@
 package com.astro.controller;
 
 import com.astro.dto.workflow.ApprovalAndRejectionRequestDTO;
+import com.astro.dto.workflow.VendorMasterResponseDto;
 import com.astro.dto.workflow.VendorRegistrationRequestDTO;
 import com.astro.dto.workflow.VendorRegistrationResponseDTO;
 import com.astro.service.VendorMasterUtilService;
@@ -37,6 +38,12 @@ public class VendorMasterUtilController {
     public ResponseEntity<Object> approveOrRejectVendor(@RequestBody ApprovalAndRejectionRequestDTO request) {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(vendorMasterUtil.performAction(request)), HttpStatus.OK);
 
+    }
+
+    @GetMapping("/{vendorId}")
+    public ResponseEntity<Object> getVendorMasterUtilById(@PathVariable String vendorId) {
+        VendorRegistrationResponseDTO responseDTO = vendorMasterUtil.getVendorMasterUtilById(vendorId);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 
 

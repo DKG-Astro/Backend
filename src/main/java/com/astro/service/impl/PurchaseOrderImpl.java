@@ -59,6 +59,8 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
     private ProjectMasterRepository projectMasterRepository;
 
 
+
+
     public PurchaseOrderResponseDTO createPurchaseOrder(PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
 
         // Check if the indentorId already exists
@@ -81,10 +83,11 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         }
 
  */
-      //  String poId = "PO" + System.currentTimeMillis();
+        String poId = "PO" + System.currentTimeMillis();
         PurchaseOrder purchaseOrder = new PurchaseOrder();
-        purchaseOrder.setPoId(purchaseOrderRequestDTO.getPoId());
-       // purchaseOrder.setPoId(poId);
+
+      //  purchaseOrder.setPoId(purchaseOrderRequestDTO.getPoId());
+        purchaseOrder.setPoId(poId);
         purchaseOrder.setTenderId(purchaseOrderRequestDTO.getTenderId());
         purchaseOrder.setIndentId(purchaseOrderRequestDTO.getIndentId());
         purchaseOrder.setWarranty(purchaseOrderRequestDTO.getWarranty());
@@ -111,8 +114,8 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
 
                     PurchaseOrderAttributes attribute = new PurchaseOrderAttributes();
                     attribute.setMaterialCode(dto.getMaterialCode());
-                    attribute.setPoId(purchaseOrderRequestDTO.getPoId());
-                 //   attribute.setPoId(poId);
+                   // attribute.setPoId(purchaseOrderRequestDTO.getPoId());
+                    attribute.setPoId(poId);
                     attribute.setMaterialDescription(dto.getMaterialDescription());
                     attribute.setQuantity(dto.getQuantity());
                     attribute.setRate(dto.getRate());
@@ -185,7 +188,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
 
                     PurchaseOrderAttributes attribute = new PurchaseOrderAttributes();
                     attribute.setMaterialCode(dto.getMaterialCode());
-                    attribute.setPoId(purchaseOrderRequestDTO.getPoId());
+                 //   attribute.setPoId(purchaseOrderRequestDTO.getPoId());
                     attribute.setMaterialDescription(dto.getMaterialDescription());
                     attribute.setQuantity(dto.getQuantity());
                     attribute.setRate(dto.getRate());

@@ -1,6 +1,7 @@
 package com.astro.service;
 
 import com.astro.dto.workflow.ApprovalAndRejectionRequestDTO;
+import com.astro.dto.workflow.VendorMasterResponseDto;
 import com.astro.dto.workflow.VendorRegistrationRequestDTO;
 import com.astro.dto.workflow.VendorRegistrationResponseDTO;
 import com.astro.entity.VendorMasterUtil;
@@ -15,5 +16,7 @@ public interface VendorMasterUtilService {
     public List<VendorRegistrationResponseDTO> getAllAwaitingApprovalVendors();
 
     public String performAction(ApprovalAndRejectionRequestDTO request);
+
+    public VendorRegistrationResponseDTO getVendorMasterUtilById(String vendorId);
 
 }

@@ -48,10 +48,12 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
 
     public ServiceOrderResponseDTO createServiceOrder(ServiceOrderRequestDTO serviceOrderRequestDTO) {
         // Check if the indentorId already exists
-        if (serviceOrderRepository.existsById(serviceOrderRequestDTO.getSoId())) {
+      /*  if (serviceOrderRepository.existsById(serviceOrderRequestDTO.getSoId())) {
             ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Service Order ID", "SO ID " + serviceOrderRequestDTO.getSoId() + " already exists.");
             throw new InvalidInputException(errorDetails);
         }
+
+       */
 /*
         // Iterate over materialDetails and check if materialCode already exists
         for (ServiceOrderMaterialRequestDTO materialRequest : serviceOrderRequestDTO.getMaterials()) {
@@ -64,8 +66,10 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
 
  */
 
+        String soId = "SO" + System.currentTimeMillis();
         ServiceOrder serviceOrder = new ServiceOrder();
-        serviceOrder.setSoId(serviceOrderRequestDTO.getSoId());
+       // serviceOrder.setSoId(serviceOrderRequestDTO.getSoId());
+        serviceOrder.setSoId(soId);
         serviceOrder.setTenderId(serviceOrderRequestDTO.getTenderId());
         serviceOrder.setConsignesAddress(serviceOrderRequestDTO.getConsignesAddress());
         serviceOrder.setBillingAddress(serviceOrderRequestDTO.getBillingAddress());
@@ -87,7 +91,8 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
                 .map(dto -> {
                     ServiceOrderMaterial material = new ServiceOrderMaterial();
                     material.setMaterialCode(dto.getMaterialCode());
-                    material.setSoId(serviceOrderRequestDTO.getSoId());
+                   // material.setSoId(serviceOrderRequestDTO.getSoId());
+                    material.setSoId(soId);
                     material.setMaterialDescription(dto.getMaterialDescription());
                     material.setQuantity(dto.getQuantity());
                     material.setRate(dto.getRate());
