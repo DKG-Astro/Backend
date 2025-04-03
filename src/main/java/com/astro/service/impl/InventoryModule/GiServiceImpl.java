@@ -20,9 +20,15 @@ import com.astro.repository.InventoryModule.AssetMasterRepository;
 import com.astro.entity.MaterialMaster;
 import com.astro.entity.InventoryModule.*;
 import com.astro.dto.workflow.InventoryModule.GiDto.*;
+import com.astro.dto.workflow.InventoryModule.gprn.GprnPendingInspectionDetailDto;
+import com.astro.dto.workflow.InventoryModule.gprn.GprnPendingInspectionDto;
 import com.astro.exception.*;
 import com.astro.constant.AppConstant;
 import com.astro.util.CommonUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import org.modelmapper.ModelMapper;
 
 @Service
@@ -235,5 +241,51 @@ public class GiServiceImpl implements GiService {
                     AppConstant.ERROR_TYPE_RESOURCE,
                     "Provided GI No. is not valid."));
         }
+    }
+
+    public List<GprnPendingInspectionDto> getPendingGi() {
+        List<Object[]> results = gimr.findPendingGi();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        
+        return results.stream().map(row -> {
+            GprnPendingInspectionDto dto = new GprnPendingInspectionDto();
+            dto.setProcessId((String) row[0]);
+            dto.setSubProcessId((Integer) row[1]);
+            dto.setPoId((String) row[2]);
+            dto.setLocationId((String) row[3]);
+            dto.setDate(CommonUtils.convertSqlDateToString((Date) row[4]));
+            dto.setChallanNo((String) row[5]);
+            dto.setDeliveryDate(CommonUtils.convertSqlDateToString((Date) row[6]));
+            dto.setVendorId((String) row[7]);
+            dto.setFieldStation((String) row[8]);
+            dto.setIndentorName((String) row[9]);
+            dto.setSupplyExpectedDate(CommonUtils.convertSqlDateToString((Date) row[10]));
+            dto.setConsigneeDetail((String) row[11]);
+            dto.setWarrantyYears((BigDecimal) row[12]);
+            dto.setProject((String) row[13]);
+            dto.setReceivedBy((String) row[14]);
+            
+            try {
+                String detailsJson = (String) row[15];
+                if (detailsJson != null && !detailsJson.isEmpty()) {
+                    List<GprnPendingInspectionDetailDto> details = mapper.readValue(
+                        detailsJson,
+                        mapper.getTypeFactory().constructCollectionType(
+                            List.class, 
+                            GprnPendingInspectionDetailDto.class
+                        )
+                    );
+                    dto.setMaterialDetails(details);
+                } else {
+                    dto.setMaterialDetails(new ArrayList<>());
+                }
+            } catch (Exception e) {
+                dto.setMaterialDetails(new ArrayList<>());
+            }
+            
+            return dto;
+        }).collect(Collectors.toList());
     }
 }

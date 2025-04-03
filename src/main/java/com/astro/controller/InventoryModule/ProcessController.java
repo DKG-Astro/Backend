@@ -2,6 +2,7 @@ package com.astro.controller.InventoryModule;
 
 import com.astro.dto.workflow.InventoryModule.GiDto.SaveGiDto;
 import com.astro.dto.workflow.InventoryModule.GprnDto.SaveGprnDto;
+import com.astro.dto.workflow.InventoryModule.gprn.GprnPendingInspectionDto;
 import com.astro.dto.workflow.InventoryModule.grn.GrnDto;
 import com.astro.dto.workflow.InventoryModule.grv.GrvDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpDto;
@@ -9,6 +10,7 @@ import com.astro.dto.workflow.InventoryModule.isn.IsnDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
 import com.astro.entity.InventoryModule.IsnAssetOhqDtlsDto;
 import com.astro.service.ProcessService;
+import com.astro.service.InventoryModule.GiService;
 import com.astro.util.ResponseBuilder;
 
 import java.util.HashMap;
@@ -29,6 +31,9 @@ public class ProcessController {
 
     @Autowired
     private ProcessService processService;
+
+    @Autowired
+    private GiService gis;
 
     @PostMapping("/saveGprn")
     public ResponseEntity<Object> saveGprn(@RequestBody SaveGprnDto req) {
@@ -93,6 +98,12 @@ public class ProcessController {
     @GetMapping("/getIsnAssetOhqDtls")
     public ResponseEntity<Object> getIsnAssetOhqDtls() {
         List<IsnAssetOhqDtlsDto> res = processService.getIsnAssetOhqDtls();
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+    
+    @GetMapping("/getPendingGi")
+    public ResponseEntity<Object> getPendingGi() {
+        List<GprnPendingInspectionDto> res = gis.getPendingGi();
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
     
