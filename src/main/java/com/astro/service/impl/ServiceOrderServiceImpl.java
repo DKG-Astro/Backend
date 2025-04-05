@@ -65,8 +65,10 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         }
 
  */
+        String tenderId = serviceOrderRequestDTO.getTenderId();
+        String soId = generatePoId(tenderId);
 
-        String soId = "SO" + System.currentTimeMillis();
+      //  String soId = "SO" + System.currentTimeMillis();
         ServiceOrder serviceOrder = new ServiceOrder();
        // serviceOrder.setSoId(serviceOrderRequestDTO.getSoId());
         serviceOrder.setSoId(soId);
@@ -111,6 +113,10 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         serviceOrderRepository.save(serviceOrder);
 
         return mapToResponseDTO(serviceOrder);
+    }
+    public String generatePoId(String tenderId) {
+        String numericPart = tenderId.replaceAll("\\D+", "");
+        return "SO" + numericPart;
     }
 
     public ServiceOrderResponseDTO updateServiceOrder(String soId, ServiceOrderRequestDTO serviceOrderRequestDTO) {

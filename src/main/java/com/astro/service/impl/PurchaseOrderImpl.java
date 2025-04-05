@@ -83,8 +83,10 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         }
 
  */
-        String poId = "PO" + System.currentTimeMillis();
         PurchaseOrder purchaseOrder = new PurchaseOrder();
+
+        String tenderId = purchaseOrderRequestDTO.getTenderId();
+        String poId = generatePoId(tenderId);
 
       //  purchaseOrder.setPoId(purchaseOrderRequestDTO.getPoId());
         purchaseOrder.setPoId(poId);
@@ -145,6 +147,12 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrderRepository.save(purchaseOrder);
         return mapToResponseDTO(purchaseOrder);
     }
+
+    public String generatePoId(String tenderId) {
+        String numericPart = tenderId.replaceAll("\\D+", "");
+        return "PO" + numericPart;
+    }
+
 
     public PurchaseOrderResponseDTO updatePurchaseOrder(String poId, PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
         PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(poId)

@@ -61,12 +61,17 @@ public class TenderRequestServiceImpl implements TenderRequestService {
 
       */
 
+        Integer maxNumber =TRrepo.findMaxTenderNumber();
+        int nextNumber = (maxNumber == null) ? 1001 : maxNumber + 1;
+
+        String tenderId = "T" + nextNumber;
 
         TenderRequest tenderRequest = new TenderRequest();
 
-        String tenderId = "T" + System.currentTimeMillis();
+      //  String tenderId = "T" + System.currentTimeMillis();
        // tenderRequest.setTenderId(tenderRequestDto.getTenderId());
         tenderRequest.setTenderId(tenderId);
+        tenderRequest.setTenderNumber(nextNumber);
         tenderRequest.setTitleOfTender(tenderRequestDto.getTitleOfTender());
         String openingDate = tenderRequestDto.getOpeningDate();
         tenderRequest.setOpeningDate(CommonUtils.convertStringToDateObject(openingDate));

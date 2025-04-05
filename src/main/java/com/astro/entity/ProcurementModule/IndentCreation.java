@@ -22,6 +22,10 @@ public class IndentCreation {
         @Column(name = "indent_id", nullable = false, unique = true)
         private String indentId;
 
+        @Column(name = "indent_number", unique = true)
+        private Integer indentNumber;
+
+
         @Column(name = "indentor_name")
         private String indentorName;
 

@@ -16,6 +16,9 @@ public class TenderRequest {
     @Id
     @Column(name = "tender_id")
     private String tenderId;
+
+    @Column(name = "tender_number", unique = true)
+    private Integer tenderNumber;
     @Column(name = "title_of_tender")
     private String titleOfTender;
     @Column(name = "opening_date")

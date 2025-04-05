@@ -90,6 +90,7 @@ com\astro\controller\ProcurementModuleController\WorkOrderController.class
 com\astro\dto\workflow\InventoryModule\GoodsTransferResponseDto.class
 com\astro\dto\workflow\ApprovedPoIdsDto.class
 com\astro\repository\JobMasterRepository.class
+com\astro\dto\workflow\InventoryModule\gprn\GprnPendingInspectionDetailDto.class
 com\astro\dto\workflow\TransitionConditionDto.class
 com\astro\service\InventoryModule\IgpService.class
 com\astro\controller\WorkflowController.class
@@ -108,6 +109,7 @@ com\astro\entity\InventoryModule\OhqMasterEntity.class
 com\astro\config\AppConfig.class
 com\astro\controller\Reports.class
 com\astro\exception\ErrorDetails.class
+com\astro\dto\workflow\InventoryModule\gprn\GprnPendingInspectionDto.class
 com\astro\repository\InventoryModule\grv\GrvMasterRepository.class
 com\astro\dto\workflow\ProcurementDtos\IndentDto\MaterialDetailsRequestDTO.class
 com\astro\dto\workflow\ProjectMaster\ProjectMasterRequestDTO.class

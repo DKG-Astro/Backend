@@ -146,4 +146,7 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation,S
     List<IndentCreation> findByIndentIdIn(List<String> indentIds);
 
     IndentCreation findByIndentId(String indentId);
+
+    @Query("SELECT MAX(i.indentNumber) FROM IndentCreation i")
+    Integer findMaxIndentNumber();
 }

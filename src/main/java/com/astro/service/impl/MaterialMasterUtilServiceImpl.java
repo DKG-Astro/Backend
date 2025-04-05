@@ -319,6 +319,7 @@ private void saveMaterialTracking(String materialCode, String status, String act
                                 "Materail master not found for the provided Material code.")
                 ));
 
+        System.out.println("SubCa:"+ dto.getSubCategory());
         material.setCategory(dto.getCategory());
         material.setSubCategory(dto.getSubCategory());
         material.setDescription(dto.getDescription());
@@ -328,7 +329,7 @@ private void saveMaterialTracking(String materialCode, String status, String act
         material.setEstimatedPriceWithCcy(dto.getEstimatedPriceWithCcy());
         material.setUploadImageName(dto.getUploadImageFileName());
         material.setIndigenousOrImported(dto.getIndigenousOrImported());
-      //  material.setApprovalStatus(MaterialMasterUtil.ApprovalStatus.AWAITING_APPROVAL);
+        material.setApprovalStatus(MaterialMasterUtil.ApprovalStatus.AWAITING_APPROVAL);
         material.setComments(null);
         material.setCreatedBy(dto.getCreatedBy());
         material.setUpdatedBy(dto.getUpdatedBy());
@@ -337,7 +338,6 @@ private void saveMaterialTracking(String materialCode, String status, String act
 
         Integer actionBy = dto.getCreatedBy();
         saveMaterialTracking(material.getMaterialCode(), "PENDING","UPDATED", null, actionBy );
-
 
 
         return mapToResponse(material);

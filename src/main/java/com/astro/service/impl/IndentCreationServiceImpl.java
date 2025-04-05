@@ -75,12 +75,19 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             }
 
         }
+        Integer maxNumber = indentCreationRepository.findMaxIndentNumber();
+        int nextNumber = (maxNumber == null) ? 1001 : maxNumber + 1;
+
+        String indentId = "IND" + nextNumber;
+
+        System.out.println("IndentId"+indentId);
 
         IndentCreation indentCreation = new IndentCreation();
-        String indentId = "IND" + System.currentTimeMillis();
+     //   String indentId = "IND" + System.currentTimeMillis();
         indentCreation.setIndentorName(indentRequestDTO.getIndentorName());
         // indentCreation.setIndentId(indentRequestDTO.getIndentId());
         indentCreation.setIndentId(indentId);
+        indentCreation.setIndentNumber(nextNumber);
         indentCreation.setIndentorMobileNo(indentRequestDTO.getIndentorMobileNo());
         indentCreation.setIndentorEmailAddress(indentRequestDTO.getIndentorEmailAddress());
         indentCreation.setConsignesLocation(indentRequestDTO.getConsignesLocation());
