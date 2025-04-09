@@ -33,4 +33,6 @@ public interface ProcessService {
     public Object getSubProcessDtls(String processStage, String processId);
 
 public List<OhqReportDto> getOhqReport();
+
+public List<String> getPendingGprn();
 }

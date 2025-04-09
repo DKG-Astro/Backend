@@ -169,4 +169,9 @@ public class ProcessServiceImpl implements ProcessService {
             return dto;
         }).collect(Collectors.toList());
     }
+
+    @Override
+    public List<String> getPendingGprn() {
+        return gprnService.getPendingGprn();
+    }
 }

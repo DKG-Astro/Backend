@@ -186,4 +186,10 @@ public class GprnServiceImpl implements GprnService {
                 "Provided GPRN No. is not valid."));
         }
     }
+
+    @Override
+    public List<String> getPendingGprn() {
+        List<String> pendingGprnList = gmr.findPoIdsWithIncompleteGprn();
+        return pendingGprnList;
+    }
 }

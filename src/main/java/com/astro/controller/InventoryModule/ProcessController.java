@@ -106,5 +106,14 @@ public class ProcessController {
         List<GprnPendingInspectionDto> res = gis.getPendingGi();
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
+
+    @GetMapping("/getPendingGprn")
+    public ResponseEntity<Object> getPendingGprn() {
+        List<String> pendingGprnList = processService.getPendingGprn();
+        Map<String, List<String>> res = new HashMap<>();
+        res.put("pendingGprnList", pendingGprnList);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+    
     
 }
