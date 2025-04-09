@@ -1,7 +1,5 @@
 package com.astro.entity.ProcurementModule;
 
-
-import com.astro.entity.VendorNamesForJobWorkMaterial;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,8 +7,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Data
@@ -54,12 +50,14 @@ public class MaterialDetails {
 
     @Column(name = "mode_of_procurement")
     private String modeOfProcurement;
+    @Column(name="currency")
+    private String currency;
+
 
 
 
     @ManyToOne
     @JoinColumn(name = "indent_id", referencedColumnName = "indent_id", insertable = false, updatable = false)
     private IndentCreation indentCreation;
-
 
 }

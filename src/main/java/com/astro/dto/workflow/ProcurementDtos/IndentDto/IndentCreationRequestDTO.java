@@ -47,6 +47,10 @@ public class IndentCreationRequestDTO {
     private String brandAndModel;
     private String justification;
     private Boolean brandPac;
+    private String quarter;
+    private String purpose;
+    private String reason;
+    private String proprietaryJustification;
     private List<MaterialDetailsRequestDTO> materialDetails;
     private String updatedBy;
     private Integer createdBy;

@@ -95,6 +95,11 @@ public class IndentCreation {
         private String justification;
         private Boolean brandPac;
 
+        private String quarter;
+        private String purpose;
+        private String reason;
+        private String proprietaryJustification;
+
       //  private String totalAmount;
       //  @OneToMany(mappedBy = "indentCreation", cascade = CascadeType.ALL, orphanRemoval = true)
       //@ManyToMany(cascade = CascadeType.PERSIST)

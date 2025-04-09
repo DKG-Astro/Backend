@@ -36,6 +36,8 @@ public class MaterialMaster {
     @Column(name = "estimated_price_with_ccy")
     private BigDecimal estimatedPriceWithCcy;
 
+    private String briefDescription;
+
   //  @Column(name = "mode_of_procurement")
   //  private String modeOfProcurement;
 

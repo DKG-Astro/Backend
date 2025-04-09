@@ -16,6 +16,9 @@ public class MaterialMasterUtil {
     @Column(name = "material_code")
     private String materialCode;
 
+    @Column(name = "material_number", unique = true)
+    private Integer materialNumber;
+
     @Column(name = "category")
     private String category;
 
@@ -41,6 +44,8 @@ public class MaterialMasterUtil {
 
     @Column(name = "indigenous_or_imported")
     private Boolean indigenousOrImported;
+
+    private String briefDescription;
 
     @Enumerated(EnumType.STRING)
     private ApprovalStatus approvalStatus;

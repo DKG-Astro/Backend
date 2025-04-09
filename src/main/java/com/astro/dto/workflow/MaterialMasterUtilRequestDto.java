@@ -16,6 +16,7 @@ public class MaterialMasterUtilRequestDto {
     private Boolean indigenousOrImported;
     private BigDecimal unitPrice;
     private String currency;
+    private String briefDescription;
     private Integer createdBy;
     private String updatedBy;
 }

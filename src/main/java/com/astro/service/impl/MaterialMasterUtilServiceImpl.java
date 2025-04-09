@@ -39,9 +39,14 @@ public class MaterialMasterUtilServiceImpl implements MaterialMasterUtilService 
     public MaterialMasterUtilResponseDto createMaterial(MaterialMasterUtilRequestDto dto) {
         MaterialMasterUtil material = new MaterialMasterUtil();
 
-        String materialId = "M" + System.currentTimeMillis();
+        Integer maxNumber = materialMasterUtilRepository.findMaxMaterialNumber();
+        int nextNumber = (maxNumber == null) ? 1001 : maxNumber + 1;
+
+        String materialId = "M" + nextNumber;
+       // String materialId = "M" + System.currentTimeMillis();
 
         material.setMaterialCode(materialId);
+        material.setMaterialNumber(nextNumber);
         material.setCategory(dto.getCategory());
         material.setSubCategory(dto.getSubCategory());
         material.setDescription(dto.getDescription());
@@ -53,6 +58,7 @@ public class MaterialMasterUtilServiceImpl implements MaterialMasterUtilService 
         material.setIndigenousOrImported(dto.getIndigenousOrImported());
         material.setApprovalStatus(MaterialMasterUtil.ApprovalStatus.AWAITING_APPROVAL);
         material.setComments(null);
+        material.setBriefDescription(dto.getBriefDescription());
         material.setCreatedBy(dto.getCreatedBy());
         material.setUpdatedBy(dto.getUpdatedBy());
 
@@ -98,6 +104,7 @@ public class MaterialMasterUtilServiceImpl implements MaterialMasterUtilService 
         response.setIndigenousOrImported(material.getIndigenousOrImported());
         response.setApprovalStatus(material.getApprovalStatus().name());
         response.setComments(material.getComments());
+        response.setBriefDescription(material.getBriefDescription());
         response.setCreatedBy(material.getCreatedBy());
         response.setUpdatedBy(material.getUpdatedBy());
         response.setCreatedDate(material.getCreatedDate());
@@ -244,6 +251,7 @@ public class MaterialMasterUtilServiceImpl implements MaterialMasterUtilService 
         materialMaster.setIndigenousOrImported(material.getIndigenousOrImported());
         materialMaster.setEstimatedPriceWithCcy(material.getEstimatedPriceWithCcy());
         materialMaster.setRemarks(material.getComments());
+        materialMaster.setBriefDescription(material.getBriefDescription());
         materialMaster.setStatus("APPROVED");
         materialMaster.setCreatedBy(actionBy);
         materialMaster.setUpdatedBy(material.getUpdatedBy());
@@ -329,6 +337,7 @@ private void saveMaterialTracking(String materialCode, String status, String act
         material.setEstimatedPriceWithCcy(dto.getEstimatedPriceWithCcy());
         material.setUploadImageName(dto.getUploadImageFileName());
         material.setIndigenousOrImported(dto.getIndigenousOrImported());
+        material.setBriefDescription(dto.getBriefDescription());
         material.setApprovalStatus(MaterialMasterUtil.ApprovalStatus.AWAITING_APPROVAL);
         material.setComments(null);
         material.setCreatedBy(dto.getCreatedBy());

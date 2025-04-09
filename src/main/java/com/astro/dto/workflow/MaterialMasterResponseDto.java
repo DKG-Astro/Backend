@@ -23,6 +23,7 @@ public class MaterialMasterResponseDto {
     private String uploadImageFileName;
     private Boolean indigenousOrImported;
     private BigDecimal estimatedPriceWithCcy;
+    private String briefDescription;
   //  private List<String> vendorNames;
     private BigDecimal unitPrice;
     private String currency;

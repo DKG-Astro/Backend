@@ -114,6 +114,10 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setBrandPac(indentRequestDTO.getBrandPac());
         indentCreation.setJustification(indentRequestDTO.getJustification());
         indentCreation.setBrandAndModel(indentRequestDTO.getBrandAndModel());
+        indentCreation.setPurpose(indentRequestDTO.getPurpose());
+        indentCreation.setQuarter(indentRequestDTO.getQuarter());
+        indentCreation.setProprietaryJustification(indentRequestDTO.getProprietaryJustification());
+        indentCreation.setReason(indentRequestDTO.getReason());
         indentCreation.setCreatedBy(indentRequestDTO.getCreatedBy());
         indentCreation.setUpdatedBy(indentRequestDTO.getUpdatedBy());
         //   indentCreationRepository.save(indentCreation);
@@ -130,6 +134,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             material.setUnitPrice(materialRequest.getUnitPrice());
             material.setUom(materialRequest.getUom());
             material.setModeOfProcurement(materialRequest.getModeOfProcurement());
+            material.setCurrency(materialRequest.getCurrency());
             // Calculate total price
             BigDecimal totalPrice = materialRequest.getQuantity().multiply(materialRequest.getUnitPrice());
             material.setTotalPrice(totalPrice);
@@ -220,6 +225,10 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setBrandPac(indentRequestDTO.getBrandPac());
         indentCreation.setJustification(indentRequestDTO.getJustification());
         indentCreation.setBrandAndModel(indentRequestDTO.getBrandAndModel());
+        indentCreation.setQuarter(indentRequestDTO.getQuarter());
+        indentCreation.setPurpose(indentRequestDTO.getPurpose());
+        indentCreation.setProprietaryJustification(indentRequestDTO.getProprietaryJustification());
+        indentCreation.setReason(indentRequestDTO.getReason());
         indentCreation.setFileType(indentRequestDTO.getFileType());
         indentCreation.setUpdatedBy(indentRequestDTO.getUpdatedBy());
         indentCreation.setCreatedBy(indentRequestDTO.getCreatedBy());
@@ -237,6 +246,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             material.setUnitPrice(materialRequest.getUnitPrice());
             material.setUom(materialRequest.getUom());
             material.setModeOfProcurement(materialRequest.getModeOfProcurement());
+            material.setCurrency(materialRequest.getCurrency());
             // Calculate total price
             BigDecimal totalPrice = materialRequest.getQuantity().multiply(materialRequest.getUnitPrice());
             material.setTotalPrice(totalPrice);
@@ -316,6 +326,10 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         response.setBrandPac(indentCreation.getBrandPac());
         response.setJustification(indentCreation.getJustification());
         response.setBrandAndModel(indentCreation.getBrandAndModel());
+        response.setPurpose(indentCreation.getPurpose());
+        response.setQuarter(indentCreation.getQuarter());
+        response.setProprietaryJustification(indentCreation.getProprietaryJustification());
+        response.setReason(indentCreation.getReason());
         response.setFileType(indentCreation.getFileType());
         response.setCreatedBy(indentCreation.getCreatedBy());
         response.setUpdatedBy(indentCreation.getUpdatedBy());
@@ -344,7 +358,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             materialResponse.setModeOfProcurement(material.getModeOfProcurement());
             materialResponse.setMaterialCategory(material.getMaterialCategory());
             materialResponse.setMaterialSubCategory(material.getMaterialSubCategory());
-
+            materialResponse.setCurrency(material.getCurrency());
 
             List<String> vendorNames = vendorNameRepository.findByMaterialId(material.getId())
                     .stream()

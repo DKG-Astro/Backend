@@ -42,12 +42,17 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
         }
 
       */
+        Integer maxNumber = CPrepo.findMaxCpNumber();
+        int nextNumber = (maxNumber == null) ? 1001 : maxNumber + 1;
 
-        String cpId = "CP" + System.currentTimeMillis();
+        String cpId = "CP" + nextNumber;
+
+       // String cpId = "CP" + System.currentTimeMillis();
         ContigencyPurchase contigencyPurchase= new ContigencyPurchase();
 
        // contigencyPurchase.setContigencyId(contigencyPurchaseDto.getContigencyId());
         contigencyPurchase.setContigencyId(cpId);
+        contigencyPurchase.setCpNumber(nextNumber);
         contigencyPurchase.setVendorsName(contigencyPurchaseDto.getVendorsName());
         contigencyPurchase.setVendorsInvoiceNo(contigencyPurchaseDto.getVendorsInvoiceNo());
         String date = contigencyPurchaseDto.getDate();

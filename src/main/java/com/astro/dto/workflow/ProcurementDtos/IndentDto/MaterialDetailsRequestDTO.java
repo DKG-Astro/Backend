@@ -19,5 +19,7 @@ public class MaterialDetailsRequestDTO {
     private String materialSubCategory;
    // private String materialAndJob;
     private String modeOfProcurement;
+    private String currency;
     private List<String> vendorNames;
+
 }

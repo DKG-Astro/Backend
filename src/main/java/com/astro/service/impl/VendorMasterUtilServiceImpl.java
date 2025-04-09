@@ -17,6 +17,7 @@ import com.astro.service.VendorMasterUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.Column;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -35,8 +36,14 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
     public VendorRegistrationResponseDTO registerVendor(VendorRegistrationRequestDTO dto) {
         VendorMasterUtil vendor = new VendorMasterUtil();
 
-        String vendorId = "V" + System.currentTimeMillis();
+        Integer maxNumber = vendorMasterUtilRepository.findMaxVendorNumber();
+        int nextNumber = (maxNumber == null) ? 1001 : maxNumber + 1;
+
+        String vendorId = "V" + nextNumber;
+
+     //   String vendorId = "V" + System.currentTimeMillis();
         vendor.setVendorId(vendorId);
+        vendor.setVendorNumber(maxNumber);
         vendor.setVendorName(dto.getVendorName());
         vendor.setVendorType(dto.getVendorType());
         vendor.setContactNumber(dto.getContactNumber());

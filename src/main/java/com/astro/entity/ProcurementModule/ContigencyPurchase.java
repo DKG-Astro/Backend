@@ -16,6 +16,8 @@ public class ContigencyPurchase {
     @Id
     @Column(name = "contigency_id")
     private String contigencyId;
+    @Column(name = "cp_number", unique = true)
+    private Integer cpNumber;
     @Column(name = "vendors_name")
     private String vendorsName;
     @Column(name = "vendors_invoice_no")

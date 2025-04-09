@@ -21,6 +21,7 @@ public class MaterialMasterUtilResponseDto {
     private Integer createdBy;
     private String updatedBy;
     private String approvalStatus;
+    private String briefDescription;
     private String comments;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;

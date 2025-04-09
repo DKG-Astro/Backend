@@ -12,12 +12,13 @@ public class VendorMasterUtil {
 
     @Id
     private String vendorId;
+    @Column(name = "vendor_number", unique = true)
+    private Integer vendorNumber;
     private String vendorName;
     private String vendorType;
     private String contactNumber;
     private String emailAddress;
     private Boolean registeredPlatform;
-
     private String pfmsVendorCode;
     private String primaryBusiness;
     private String address;

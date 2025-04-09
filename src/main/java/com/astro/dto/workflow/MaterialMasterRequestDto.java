@@ -28,6 +28,7 @@ public class MaterialMasterRequestDto {
     private Boolean indigenousOrImported;
     private BigDecimal unitPrice;
     private String currency;
+    private String briefDescription;
   //  private List<String> vendorNames;
     private Integer createdBy;
     private String updatedBy;
