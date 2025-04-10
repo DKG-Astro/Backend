@@ -138,6 +138,10 @@ public class ProcessServiceImpl implements ProcessService {
                         "Invalid process stage."));
         }
     }
+    @Override
+    public List<String> getPendingGprn() {
+        return gprnService.getPendingGprn();
+    }
 
     @Override
     public List<OhqReportDto> getOhqReport() {

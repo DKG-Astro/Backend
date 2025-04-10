@@ -167,6 +167,12 @@ public class GprnServiceImpl implements GprnService {
     }
 
     @Override
+    public List<String> getPendingGprn() {
+        List<String> pendingGprnList = gmr.findPoIdsWithIncompleteGprn();
+        return pendingGprnList;
+    }
+
+    @Override
     public void validateGprnSubProcessId(String processNo) {
         String[] processNoSplit = processNo.split("/");
         if (processNoSplit.length != 2) {
