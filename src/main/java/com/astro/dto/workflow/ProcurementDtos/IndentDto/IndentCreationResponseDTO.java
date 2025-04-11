@@ -44,6 +44,8 @@ public class IndentCreationResponseDTO {
     private String purpose;
     private String reason;
     private String proprietaryJustification;
+    private Boolean buyBack;
+    private String uploadBuyBackFileNames;
     private Integer createdBy;
     private String updatedBy;
 

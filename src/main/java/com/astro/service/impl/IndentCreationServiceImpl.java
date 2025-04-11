@@ -117,6 +117,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setPurpose(indentRequestDTO.getPurpose());
         indentCreation.setQuarter(indentRequestDTO.getQuarter());
         indentCreation.setProprietaryJustification(indentRequestDTO.getProprietaryJustification());
+        indentCreation.setBuyBack(indentRequestDTO.getBuyBack());
+        indentCreation.setUploadBuyBackFileNames(indentRequestDTO.getUploadBuyBackFileNames());
         indentCreation.setReason(indentRequestDTO.getReason());
         indentCreation.setCreatedBy(indentRequestDTO.getCreatedBy());
         indentCreation.setUpdatedBy(indentRequestDTO.getUpdatedBy());
@@ -229,6 +231,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setPurpose(indentRequestDTO.getPurpose());
         indentCreation.setProprietaryJustification(indentRequestDTO.getProprietaryJustification());
         indentCreation.setReason(indentRequestDTO.getReason());
+        indentCreation.setBuyBack(indentRequestDTO.getBuyBack());
+        indentCreation.setUploadBuyBackFileNames(indentRequestDTO.getUploadBuyBackFileNames());
         indentCreation.setFileType(indentRequestDTO.getFileType());
         indentCreation.setUpdatedBy(indentRequestDTO.getUpdatedBy());
         indentCreation.setCreatedBy(indentRequestDTO.getCreatedBy());
@@ -331,6 +335,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         response.setProprietaryJustification(indentCreation.getProprietaryJustification());
         response.setReason(indentCreation.getReason());
         response.setFileType(indentCreation.getFileType());
+        response.setBuyBack(indentCreation.getBuyBack());
+        response.setUploadBuyBackFileNames(indentCreation.getUploadBuyBackFileNames());
         response.setCreatedBy(indentCreation.getCreatedBy());
         response.setUpdatedBy(indentCreation.getUpdatedBy());
 

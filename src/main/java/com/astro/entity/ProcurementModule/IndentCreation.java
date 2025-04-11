@@ -99,6 +99,8 @@ public class IndentCreation {
         private String purpose;
         private String reason;
         private String proprietaryJustification;
+        private Boolean buyBack;
+        private String uploadBuyBackFileNames;
 
       //  private String totalAmount;
       //  @OneToMany(mappedBy = "indentCreation", cascade = CascadeType.ALL, orphanRemoval = true)
