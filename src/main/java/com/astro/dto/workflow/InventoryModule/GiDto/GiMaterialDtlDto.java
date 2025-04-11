@@ -15,6 +15,7 @@ public class GiMaterialDtlDto {
     private String materialDesc;
     private String assetDesc;
     private String makeNo;
+    private String rejectReason;
     private String modelNo;
     private String serialNo;
     private String uomId;

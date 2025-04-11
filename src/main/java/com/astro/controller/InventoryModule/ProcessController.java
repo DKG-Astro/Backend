@@ -8,6 +8,7 @@ import com.astro.dto.workflow.InventoryModule.grv.GrvDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpDto;
 import com.astro.dto.workflow.InventoryModule.isn.IsnDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
 import com.astro.entity.InventoryModule.IsnAssetOhqDtlsDto;
 import com.astro.service.ProcessService;
 import com.astro.service.InventoryModule.GiService;
@@ -90,6 +91,14 @@ public class ProcessController {
     @PostMapping("/saveGrn")
     public ResponseEntity<Object> saveGrn(@RequestBody GrnDto req) {
         String processNo = processService.saveGrn(req);
+        Map<String, String> res = new HashMap<>();
+        res.put("processNo", processNo);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @PostMapping("/savePoOgp")
+    public ResponseEntity<Object> savePoOgp(@RequestBody OgpPoDto req) {
+        String processNo = processService.savePoOgp(req);
         Map<String, String> res = new HashMap<>();
         res.put("processNo", processNo);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);

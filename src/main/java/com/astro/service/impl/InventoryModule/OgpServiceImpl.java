@@ -13,14 +13,20 @@ import com.astro.service.InventoryModule.OgpService;
 import com.astro.repository.InventoryModule.AssetMasterRepository;
 import com.astro.repository.InventoryModule.isn.IssueNoteMasterRepository;
 import com.astro.repository.InventoryModule.ogp.OgpDetailRepository;
+import com.astro.repository.InventoryModule.ogp.OgpMasterPoRepository;
+import com.astro.repository.InventoryModule.ogp.OgpPoDetailRepository;
+
 import com.astro.repository.InventoryModule.ogp.OgpMasterRepository;
 import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDetailReportDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpMaterialDtlDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpReportDto;
 import com.astro.entity.InventoryModule.OgpDetailEntity;
 import com.astro.entity.InventoryModule.OgpMasterEntity;
+import com.astro.entity.InventoryModule.OgpMasterPoEntity;
+import com.astro.entity.InventoryModule.OgpPoDetailEntity;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
@@ -34,6 +40,12 @@ import org.modelmapper.ModelMapper;
 
 @Service
 public class OgpServiceImpl implements OgpService {
+    
+    @Autowired
+    private OgpMasterPoRepository ogpMasterPoRepository;
+    
+    @Autowired
+    private OgpPoDetailRepository ogpPoDetailRepository;
     
     @Autowired
     private OgpMasterRepository ogpMasterRepository;
@@ -216,5 +228,45 @@ public class OgpServiceImpl implements OgpService {
             
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public String savePoOgp(OgpPoDto request) {
+        // Check if OGP already exists for the PO
+        if (ogpMasterPoRepository.existsByPoId(request.getPoId())) {
+            throw new InvalidInputException(new ErrorDetails(
+                AppConstant.USER_INVALID_INPUT,
+                AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                AppConstant.ERROR_TYPE_VALIDATION,
+                "OGP already exists for PO ID: " + request.getPoId()));
+        }
+
+        // Create and save OGP Master PO
+        OgpMasterPoEntity ogpMasterPo = new OgpMasterPoEntity();
+        ogpMasterPo.setPoId(request.getPoId());
+        ogpMasterPo.setOgpDate(CommonUtils.convertStringToDateObject(request.getOgpDate()));
+        ogpMasterPo.setLocationId(request.getLocationId());
+        ogpMasterPo.setCreatedBy(request.getCreatedBy());
+        ogpMasterPo.setCreateDate(LocalDateTime.now());
+
+        OgpMasterPoEntity savedMaster = ogpMasterPoRepository.save(ogpMasterPo);
+
+        // Save OGP PO Details
+        List<OgpPoDetailEntity> details = request.getMaterialDtlList().stream()
+            .map(dtl -> {
+                OgpPoDetailEntity detail = new OgpPoDetailEntity();
+                detail.setOgpSubProcessId(savedMaster.getOgpSubProcessId());
+                detail.setMaterialCode(dtl.getMaterialCode());
+                detail.setMaterialDescription(dtl.getMaterialDescription());
+                detail.setUomId(dtl.getUom());
+                detail.setQuantity(dtl.getQuantity());
+                return detail;
+            })
+            .collect(Collectors.toList());
+
+        ogpPoDetailRepository.saveAll(details);
+
+        return "INV/" + savedMaster.getOgpSubProcessId().toString();
     }
 }

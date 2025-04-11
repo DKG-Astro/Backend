@@ -49,4 +49,7 @@ public class GiMaterialDtlEntity {
     @Column(name = "rejected_quantity", nullable = false, precision = 10, scale = 2)
     private BigDecimal rejectedQuantity;
 
+    @Column(name = "reject_reason")
+    private String rejectReason;
+
 }

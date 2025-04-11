@@ -6,6 +6,7 @@ import com.astro.dto.workflow.InventoryModule.grv.GrvDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpDto;
 import com.astro.dto.workflow.InventoryModule.isn.IsnDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
 import com.astro.dto.workflow.InventoryModule.ohq.OhqReportDto;
 import com.astro.entity.InventoryModule.IsnAssetOhqDtlsDto;
 
@@ -27,6 +28,8 @@ public interface ProcessService {
     public String saveOgp(OgpDto req);
 
     public String saveIgp(IgpDto req);
+
+    public String savePoOgp(OgpPoDto request);
 
     public List<IsnAssetOhqDtlsDto> getIsnAssetOhqDtls();
 

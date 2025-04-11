@@ -58,6 +58,9 @@ public class GprnMasterEntity {
     @Column(name = "warranty_years")
     private BigDecimal warrantyYears;
 
+    @Column(name = "warranty")
+    private String warranty;
+
     @Column(name = "project")
     private String project;
 

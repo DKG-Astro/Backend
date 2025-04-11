@@ -24,6 +24,7 @@ public class SaveGprnDto {
     private String supplyExpectedDate;
     private String consigneeDetail;
     private BigDecimal warrantyYears;
+    private String warranty;
     private String project;
     private String receivedBy;
     private String createdBy;

@@ -1,4 +1,4 @@
-package com.astro.repository.InventoryModule;
+    package com.astro.repository.InventoryModule;
 
 import com.astro.entity.InventoryModule.AssetMasterEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

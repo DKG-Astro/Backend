@@ -157,7 +157,7 @@ public class GprnServiceImpl implements GprnService {
         gprnRes.setProcessId(processNo);
         gprnRes.setVendorEmail(vm.getEmailAddress());
         gprnRes.setVendorName(vm.getVendorName());
-        gprnRes.setVendorContact(vm.getMobileNo());
+        gprnRes.setVendorContact(vm.getContactNo());
         gprnRes.setDate(CommonUtils.convertDateToString(gme.getDate()));
         gprnRes.setSupplyExpectedDate(CommonUtils.convertDateToString(gme.getSupplyExpectedDate()));
         gprnRes.setDeliveryDate(CommonUtils.convertDateToString(gme.getDeliveryDate()));
