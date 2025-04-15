@@ -6,6 +6,8 @@ import lombok.Data;
 @Data
 public class IgpDto {
     private String ogpId;
+    private String ogpType;
+    private String igpType;
     private String igpId;
     private String igpDate;
     private String locationId;

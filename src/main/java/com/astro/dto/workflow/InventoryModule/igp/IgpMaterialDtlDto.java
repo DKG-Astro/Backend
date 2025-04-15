@@ -6,6 +6,8 @@ import lombok.Data;
 @Data
 public class IgpMaterialDtlDto {
     private Integer assetId;
+    private String materialCode;
+    private String materialDescription;
     private String assetDesc;
     private Integer locatorId;
     private BigDecimal quantity;

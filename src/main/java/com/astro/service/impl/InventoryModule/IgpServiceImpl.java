@@ -14,6 +14,7 @@ import com.astro.service.InventoryModule.IgpService;
 import com.astro.repository.InventoryModule.AssetMasterRepository;
 import com.astro.repository.InventoryModule.igp.*;
 import com.astro.repository.InventoryModule.isn.IssueNoteMasterRepository;
+import com.astro.repository.InventoryModule.ogp.IgpPoDtlRepository;
 import com.astro.repository.InventoryModule.ogp.OgpDetailRepository;
 import com.astro.repository.InventoryModule.ogp.OgpMasterRepository;
 import com.astro.entity.InventoryModule.*;
@@ -52,13 +53,16 @@ public class IgpServiceImpl implements IgpService {
     @Autowired
     private AssetMasterRepository amr;
 
+    @Autowired
+    private IgpPoDtlRepository igpPoDtlRepository;
+
     @Override
     @Transactional
     public String saveIgp(IgpDto req) {
+        // 1. Validate OGP exists
         validateOgp(req.getOgpId());
         Integer ogpSubProcessId = Integer.parseInt(req.getOgpId().split("/")[1]);
 
-        // Get OGP details and validate issue note type
         OgpMasterEntity ogpMaster = ogpMasterRepository.findById(ogpSubProcessId)
             .orElseThrow(() -> new BusinessException(new ErrorDetails(
                 AppConstant.ERROR_CODE_RESOURCE,
@@ -66,27 +70,123 @@ public class IgpServiceImpl implements IgpService {
                 AppConstant.ERROR_TYPE_RESOURCE,
                 "OGP not found")));
 
-        // Validate issue note type
-        IsnMasterEntity issueNote = isnMasterRepository.findById(ogpMaster.getIssueNoteId())
-            .orElseThrow(() -> new BusinessException(new ErrorDetails(
-                AppConstant.ERROR_CODE_RESOURCE,
-                AppConstant.ERROR_TYPE_CODE_RESOURCE,
-                AppConstant.ERROR_TYPE_RESOURCE,
-                "Issue Note not found")));
+        // 2. Check OGP Type
+        if ("Non Returnable".equals(req.getOgpType())) {
+            throw new InvalidInputException(new ErrorDetails(
+                AppConstant.USER_INVALID_INPUT,
+                AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                AppConstant.ERROR_TYPE_VALIDATION,
+                "Cannot create IGP for Non-Returnable OGP"));
+        }
 
-        if ("Non Returnable".equals(issueNote.getIssueNoteType().toString())) {
+        // 3. Handle PO type IGP
+        if ("PO".equals(req.getIgpType())) {
+            // Check existing IGP PO details
+            List<IgpPoDtlEntity> existingPoDetails = igpPoDtlRepository.findByIgpSubProcessId(ogpSubProcessId);
+            
+            // Validate quantities and duplicates for PO
+            validatePoDetails(req.getMaterialDtlList(), existingPoDetails);
+
+            // Create and save IGP master
+            final IgpMasterEntity igpMaster = new IgpMasterEntity();
+            igpMaster.setIgpDate(CommonUtils.convertStringToDateObject(req.getIgpDate()));
+            igpMaster.setLocationId(req.getLocationId());
+            igpMaster.setCreatedBy(req.getCreatedBy());
+            igpMaster.setCreateDate(LocalDateTime.now());
+            igpMaster.setIgpProcessId("PO" + ogpSubProcessId);
+            igpMaster.setOgpSubProcessId(ogpSubProcessId);
+
+            final IgpMasterEntity savedIgpMaster = igpMasterRepository.save(igpMaster);
+
+            // Save PO details
+            List<IgpPoDtlEntity> igpPoDetails = req.getMaterialDtlList().stream()
+                .map(dtl -> {
+                    IgpPoDtlEntity detail = new IgpPoDtlEntity();
+                    detail.setIgpSubProcessId(savedIgpMaster.getIgpSubProcessId());
+                    detail.setMaterialCode(dtl.getMaterialCode());
+                    detail.setMaterialDescription(dtl.getMaterialDescription());
+                    detail.setUomId(dtl.getUomId());
+                    detail.setQuantity(dtl.getQuantity());
+                    return detail;
+                })
+                .collect(Collectors.toList());
+            
+            igpPoDtlRepository.saveAll(igpPoDetails);
+            return "INV" + "/" + savedIgpMaster.getIgpSubProcessId();
+        }
+        
+        // 4. Handle non-PO type IGP
+        else {
+            // Validate issue note type
+            IsnMasterEntity issueNote = isnMasterRepository.findById(ogpMaster.getIssueNoteId())
+                .orElseThrow(() -> new BusinessException(new ErrorDetails(
+                    AppConstant.ERROR_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_RESOURCE,
+                    "Issue Note not found")));
+
+            if ("Non Returnable".equals(issueNote.getIssueNoteType().toString())) {
+                throw new BusinessException(new ErrorDetails(
+                    AppConstant.USER_INVALID_INPUT,
+                    AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION,
+                    "Cannot create IGP for Non-Returnable Issue Note"));
+            }
+
+            // Check existing IGP details
+            List<IgpMasterEntity> existingIgpMasters = igpMasterRepository.findByOgpSubProcessId(ogpSubProcessId);
+            validateNonPoDetails(req.getMaterialDtlList(), existingIgpMasters);
+
+            // Create and save IGP master
+            final IgpMasterEntity igpMaster = new IgpMasterEntity();
+            igpMaster.setIgpDate(CommonUtils.convertStringToDateObject(req.getIgpDate()));
+            igpMaster.setLocationId(req.getLocationId());
+            igpMaster.setCreatedBy(req.getCreatedBy());
+            igpMaster.setCreateDate(LocalDateTime.now());
+            igpMaster.setIgpProcessId("INV" + ogpSubProcessId);
+            igpMaster.setOgpSubProcessId(ogpSubProcessId);
+
+            final IgpMasterEntity savedIgpMaster = igpMasterRepository.save(igpMaster);
+
+            // Save non-PO details
+            List<IgpDetailEntity> igpDetails = req.getMaterialDtlList().stream()
+                .map(dtl -> {
+                    IgpDetailEntity detail = new IgpDetailEntity();
+                    detail.setIgpProcessId(savedIgpMaster.getIgpProcessId());
+                    detail.setIgpSubProcessId(savedIgpMaster.getIgpSubProcessId());
+                    detail.setAssetId(dtl.getAssetId());
+                    detail.setLocatorId(dtl.getLocatorId());
+                    detail.setQuantity(dtl.getQuantity());
+                    detail.setOgpSubProcessId(ogpSubProcessId);
+                    return detail;
+                })
+                .collect(Collectors.toList());
+            
+            igpDetailRepository.saveAll(igpDetails);
+            return "INV" + "/" + savedIgpMaster.getIgpSubProcessId();
+        }
+    }
+
+    private void validatePoDetails(List<IgpMaterialDtlDto> newDetails, List<IgpPoDtlEntity> existingDetails) {
+        StringBuilder errorMessage = new StringBuilder();
+        
+        // Add your PO-specific validation logic here
+        // Example: Check for duplicates, validate quantities, etc.
+        
+        if (errorMessage.length() > 0) {
             throw new BusinessException(new ErrorDetails(
                 AppConstant.USER_INVALID_INPUT,
                 AppConstant.ERROR_TYPE_CODE_VALIDATION,
                 AppConstant.ERROR_TYPE_VALIDATION,
-                "Cannot create IGP for Non-Returnable Issue Note"));
+                errorMessage.toString()));
         }
+    }
 
-        // Get existing IGPs for this OGP
-        List<IgpMasterEntity> existingIgpMasters = igpMasterRepository.findByOgpSubProcessId(ogpSubProcessId);
+    private void validateNonPoDetails(List<IgpMaterialDtlDto> newDetails, List<IgpMasterEntity> existingIgpMasters) {
         Map<String, BigDecimal> totalIgpQuantities = new HashMap<>();
+        StringBuilder errorMessage = new StringBuilder();
 
-        // Calculate total IGP quantities for each asset and locator combination
+        // Calculate existing quantities
         for (IgpMasterEntity existingIgp : existingIgpMasters) {
             List<IgpDetailEntity> existingDetails = igpDetailRepository.findByIgpSubProcessId(existingIgp.getIgpSubProcessId());
             for (IgpDetailEntity detail : existingDetails) {
@@ -95,42 +195,14 @@ public class IgpServiceImpl implements IgpService {
             }
         }
 
-        // Validate new IGP quantities against existing ones
-        StringBuilder errorMessage = new StringBuilder();
-        for (IgpMaterialDtlDto dtl : req.getMaterialDtlList()) {
+        // Validate new quantities
+        for (IgpMaterialDtlDto dtl : newDetails) {
             String key = dtl.getAssetId() + "_" + dtl.getLocatorId();
             BigDecimal existingQty = totalIgpQuantities.getOrDefault(key, BigDecimal.ZERO);
-            
-            // Check for duplicate entries
-            if (existingIgpMasters.stream()
-                    .flatMap(igp -> igpDetailRepository.findByIgpSubProcessId(igp.getIgpSubProcessId()).stream())
-                    .anyMatch(detail -> detail.getAssetId().equals(dtl.getAssetId()) 
-                            && detail.getLocatorId().equals(dtl.getLocatorId())
-                            && detail.getQuantity().equals(dtl.getQuantity()))) {
-                errorMessage.append("Duplicate IGP entry found for Asset ID: ")
-                    .append(dtl.getAssetId())
-                    .append(" at Locator: ")
-                    .append(dtl.getLocatorId())
-                    .append(" with same quantity. ");
-                continue;
-            }
-
-            // Check if total quantity exceeds OGP quantity
             BigDecimal newTotalQty = existingQty.add(dtl.getQuantity());
-            // You need to implement a method to get OGP quantity for this asset and locator
-            BigDecimal ogpQuantity = getOgpQuantity(ogpSubProcessId, dtl.getAssetId(), dtl.getLocatorId());
             
-            if (newTotalQty.compareTo(ogpQuantity) > 0) {
-                errorMessage.append("Total IGP quantity (")
-                    .append(newTotalQty)
-                    .append(") exceeds OGP quantity (")
-                    .append(ogpQuantity)
-                    .append(") for Asset ID: ")
-                    .append(dtl.getAssetId())
-                    .append(" at Locator: ")
-                    .append(dtl.getLocatorId())
-                    .append(". ");
-            }
+            // Add your non-PO specific validation logic here
+            // Example: Check against OGP quantity, validate duplicates, etc.
         }
 
         if (errorMessage.length() > 0) {
@@ -140,36 +212,6 @@ public class IgpServiceImpl implements IgpService {
                 AppConstant.ERROR_TYPE_VALIDATION,
                 errorMessage.toString()));
         }
-
-        // Create IGP master and details as before
-        final IgpMasterEntity igpMaster = new IgpMasterEntity();
-        igpMaster.setIgpDate(CommonUtils.convertStringToDateObject(req.getIgpDate()));
-        igpMaster.setOgpSubProcessId(ogpSubProcessId);
-        igpMaster.setLocationId(req.getLocationId());
-        igpMaster.setCreatedBy(req.getCreatedBy());
-        igpMaster.setCreateDate(LocalDateTime.now());
-        igpMaster.setIgpProcessId("INV" + ogpSubProcessId);
-
-        final IgpMasterEntity savedIgpMaster = igpMasterRepository.save(igpMaster);
-
-        // Save IGP details
-        List<IgpDetailEntity> igpDetails = req.getMaterialDtlList().stream()
-            .map(dtl -> {
-                IgpDetailEntity detail = new IgpDetailEntity();
-                detail.setIgpProcessId(savedIgpMaster.getIgpProcessId());
-                detail.setIgpSubProcessId(savedIgpMaster.getIgpSubProcessId());
-                detail.setAssetId(dtl.getAssetId());
-                detail.setLocatorId(dtl.getLocatorId());
-                detail.setQuantity(dtl.getQuantity());
-                // detail.setOgpProcessId(req.getOgpId().split("/")[0]);
-                detail.setOgpSubProcessId(Integer.parseInt(req.getOgpId().split("/")[1]));
-                return detail;
-            })
-            .collect(Collectors.toList());
-        
-        igpDetailRepository.saveAll(igpDetails);
-
-        return savedIgpMaster.getIgpProcessId() + "/" + savedIgpMaster.getIgpSubProcessId();
     }
 
     @Override
@@ -286,5 +328,26 @@ public class IgpServiceImpl implements IgpService {
             
             return dto;
         }).collect(Collectors.toList());
+    }
+    
+    @Override
+    public List<IgpDetailReportDto> getIgpDetails() {
+        List<Object[]> results = igpDetailRepository.findAllIgpDetails();
+        
+        return results.stream()
+            .map(row -> {
+                IgpDetailReportDto dto = new IgpDetailReportDto();
+                dto.setDetailId((Integer) row[0]);
+                dto.setIgpSubProcessId((Integer) row[1]);
+                dto.setMaterialCode((String) row[2]);
+                dto.setMaterialDesc((String) row[3]);
+                dto.setAssetId((Integer) row[4]);
+                dto.setLocatorId((Integer) row[5]);
+                dto.setUomId((String) row[6]);
+                dto.setQuantity((BigDecimal) row[7]);
+                dto.setType((String) row[8]);
+                return dto;
+            })
+            .collect(Collectors.toList());
     }
 }

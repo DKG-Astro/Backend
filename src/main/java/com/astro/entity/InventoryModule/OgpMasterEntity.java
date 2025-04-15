@@ -31,4 +31,8 @@ public class OgpMasterEntity {
 
     @Column(name = "create_date")
     private LocalDateTime createDate;
+
+    @Column(name = "ogp_type")
+    private String ogpType;
+
 }

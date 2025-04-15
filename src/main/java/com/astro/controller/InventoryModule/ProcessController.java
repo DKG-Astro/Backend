@@ -5,13 +5,16 @@ import com.astro.dto.workflow.InventoryModule.GprnDto.SaveGprnDto;
 import com.astro.dto.workflow.InventoryModule.gprn.GprnPendingInspectionDto;
 import com.astro.dto.workflow.InventoryModule.grn.GrnDto;
 import com.astro.dto.workflow.InventoryModule.grv.GrvDto;
+import com.astro.dto.workflow.InventoryModule.igp.IgpDetailReportDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpDto;
 import com.astro.dto.workflow.InventoryModule.isn.IsnDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
 import com.astro.entity.InventoryModule.IsnAssetOhqDtlsDto;
 import com.astro.service.ProcessService;
 import com.astro.service.InventoryModule.GiService;
+import com.astro.service.InventoryModule.IgpService;
 import com.astro.util.ResponseBuilder;
 
 import java.util.HashMap;
@@ -35,6 +38,9 @@ public class ProcessController {
 
     @Autowired
     private GiService gis;
+
+    @Autowired
+    private IgpService igpService;
 
     @PostMapping("/saveGprn")
     public ResponseEntity<Object> saveGprn(@RequestBody SaveGprnDto req) {
@@ -122,6 +128,16 @@ public class ProcessController {
         List<String> pendingGprnList = processService.getPendingGprn();
         Map<String, List<String>> res = new HashMap<>();
         res.put("pendingGprnList", pendingGprnList);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+    @GetMapping("/getPoOgp")
+    public ResponseEntity<Object> getPoOgp(@RequestParam String processNo) {
+        OgpPoResponseDto res = processService.getPoOgp(processNo);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+    @GetMapping("/getGatePassReport")
+    public ResponseEntity<Object> getGatePassReport() {
+        List<IgpDetailReportDto> res = igpService.getIgpDetails();
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
     

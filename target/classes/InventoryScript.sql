@@ -13,7 +13,6 @@ CREATE TABLE gprn_master (
     indentor_name VARCHAR(50) NOT NULL,
     supply_expected_date DATE NOT NULL,
     consignee_detail VARCHAR(100) NOT NULL,
-    warranty VARCHAR(100),
     warranty_years DECIMAL(10,1),
     project VARCHAR(50),
     received_by VARCHAR(50) NOT NULL,
@@ -197,7 +196,6 @@ CREATE TABLE goods_inspection_detail (
     received_quantity DECIMAL(10,2) NOT NULL,
     accepted_quantity DECIMAL(10,2) NOT NULL,
     rejected_quantity DECIMAL(10,2) NOT NULL,
-    reject_reason VARCHAR(100),
     INDEX idx_inspection_subprocess (inspection_sub_process_id),
     INDEX idx_gprn_subprocess (gprn_sub_process_id),
     INDEX idx_material (material_code),
@@ -311,6 +309,7 @@ CREATE TABLE igp_detail(
 
 CREATE TABLE ogp_master(
     ogp_process_id VARCHAR(50) NOT NULL,
+    ogp_type VARCHAR(20),
     ogp_sub_process_id INT AUTO_INCREMENT PRIMARY KEY,
     issue_note_id INT NOT NULL,
     ogp_date DATE NOT NULL,
@@ -319,28 +318,6 @@ CREATE TABLE ogp_master(
     create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (location_id) REFERENCES location_master(location_code) ON UPDATE CASCADE,
     FOREIGN KEY (issue_note_id) REFERENCES issue_note_master(issue_note_id) ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE TABLE ogp_master_po(
-    ogp_sub_process_id INT AUTO_INCREMENT PRIMARY KEY,
-    po_id VARCHAR(50) NOT NULL,
-    ogp_date DATE NOT NULL,
-    location_id VARCHAR(10) NOT NULL,
-    created_by INT NOT NULL,
-    create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (location_id) REFERENCES location_master(location_code) ON UPDATE CASCADE,
-    FOREIGN KEY (po_id) REFERENCES purchase_order(po_id) ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE TABLE ogp_po_detail(
-    detail_id INT AUTO_INCREMENT PRIMARY KEY,
-    ogp_sub_process_id INT NOT NULL,
-    material_code VARCHAR(50) NOT NULL,
-    material_desc VARCHAR(50) NOT NULL,
-    uom_id VARCHAR(10) NOT NULL,
-    quantity DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (ogp_sub_process_id) REFERENCES ogp_master_po(ogp_sub_process_id) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (material_code) REFERENCES material_master(material_code) ON UPDATE CASCADE
 );
 
 CREATE TABLE ogp_detail(
@@ -396,4 +373,35 @@ CREATE TABLE asset_disposal_detail(
     disposal_mode VARCHAR(50) NOT NULL,
     sales_note_filename VARCHAR(255),
     FOREIGN KEY (disposal_id) REFERENCES asset_disposal(disposal_id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+
+CREATE TABLE ogp_master_po (
+    ogp_sub_process_id INT AUTO_INCREMENT PRIMARY KEY,
+    ogp_type VARCHAR(20),
+    po_id VARCHAR(255) NOT NULL,
+    ogp_date DATE NOT NULL,
+    location_id VARCHAR(255) NOT NULL,
+    created_by INT NOT NULL,
+    create_date DATETIME NOT NULL
+);
+
+CREATE TABLE ogp_po_detail (
+    detail_id INT AUTO_INCREMENT PRIMARY KEY,
+    ogp_sub_process_id INT NOT NULL,
+    material_code VARCHAR(255) NOT NULL,
+    material_desc VARCHAR(255) NOT NULL,
+    uom_id VARCHAR(255) NOT NULL,
+    quantity DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (ogp_sub_process_id) REFERENCES ogp_master_po(ogp_sub_process_id)
+);
+
+CREATE TABLE igp_po_detail (
+    detail_id INT AUTO_INCREMENT PRIMARY KEY,
+    igp_sub_process_id INT NOT NULL,
+    material_code VARCHAR(255) NOT NULL,
+    material_desc VARCHAR(255) NOT NULL,
+    uom_id VARCHAR(255) NOT NULL,
+    quantity DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (igp_sub_process_id) REFERENCES igp_master(igp_sub_process_id)
 );

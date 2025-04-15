@@ -10,5 +10,6 @@ public class OgpPoDto {
     private String ogpDate;
     private String locationId;
     private Integer createdBy;
+    private String ogpType;
     private List<OgpPoDtlDto> materialDtlList;
 }

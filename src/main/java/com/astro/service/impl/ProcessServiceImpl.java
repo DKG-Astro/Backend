@@ -8,6 +8,7 @@ import com.astro.dto.workflow.InventoryModule.igp.IgpDto;
 import com.astro.dto.workflow.InventoryModule.isn.IsnDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
 import com.astro.entity.InventoryModule.IsnAssetOhqDtlsDto;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
@@ -178,5 +179,10 @@ public class ProcessServiceImpl implements ProcessService {
     @Override
     public String savePoOgp(OgpPoDto request) {
         return ogpService.savePoOgp(request);
+    }
+
+    @Override
+    public OgpPoResponseDto getPoOgp(String processNo){
+        return ogpService.getPoOgp(processNo);
     }
 }

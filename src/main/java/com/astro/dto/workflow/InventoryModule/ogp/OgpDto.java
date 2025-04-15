@@ -10,5 +10,6 @@ public class OgpDto {
     private String locationId;
     private Integer createdBy;
     private String ogpId;
+    private String ogpType;
     private List<OgpMaterialDtlDto> materialDtlList;
 }

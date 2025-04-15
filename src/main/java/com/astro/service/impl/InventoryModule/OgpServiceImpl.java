@@ -22,6 +22,8 @@ import com.astro.dto.workflow.InventoryModule.ogp.OgpDetailReportDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpMaterialDtlDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpPoMaterialDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpReportDto;
 import com.astro.entity.InventoryModule.OgpDetailEntity;
 import com.astro.entity.InventoryModule.OgpMasterEntity;
@@ -102,6 +104,7 @@ public class OgpServiceImpl implements OgpService {
         ogpMaster.setOgpProcessId("INV" + issueNoteId);
         ogpMaster.setCreatedBy(req.getCreatedBy());
         ogpMaster.setLocationId(req.getLocationId());
+        ogpMaster.setOgpType(req.getOgpType());
 
         final OgpMasterEntity savedOgpMaster = ogpMasterRepository.save(ogpMaster);
 
@@ -249,6 +252,7 @@ public class OgpServiceImpl implements OgpService {
         ogpMasterPo.setLocationId(request.getLocationId());
         ogpMasterPo.setCreatedBy(request.getCreatedBy());
         ogpMasterPo.setCreateDate(LocalDateTime.now());
+        ogpMasterPo.setOgpType(request.getOgpType());
 
         OgpMasterPoEntity savedMaster = ogpMasterPoRepository.save(ogpMasterPo);
 
@@ -268,5 +272,54 @@ public class OgpServiceImpl implements OgpService {
         ogpPoDetailRepository.saveAll(details);
 
         return "INV/" + savedMaster.getOgpSubProcessId().toString();
+    }
+    
+    @Override
+    public OgpPoResponseDto getPoOgp(String processNo) {
+        String[] processNoSplit = processNo.split("/");
+        if (processNoSplit.length != 2) {
+            throw new InvalidInputException(new ErrorDetails(
+                AppConstant.USER_INVALID_INPUT,
+                AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                AppConstant.ERROR_TYPE_VALIDATION,
+                "Invalid process number format"));
+        }
+
+        Integer ogpSubProcessId = Integer.parseInt(processNoSplit[1]);
+        
+        // Get OGP PO master
+        OgpMasterPoEntity ogpMasterPo = ogpMasterPoRepository.findById(ogpSubProcessId)
+            .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                AppConstant.ERROR_CODE_RESOURCE,
+                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                AppConstant.ERROR_TYPE_RESOURCE,
+                "OGP PO not found")));
+
+        // Get OGP PO details
+        List<OgpPoDetailEntity> ogpPoDetails = ogpPoDetailRepository.findByOgpSubProcessId(ogpSubProcessId);
+
+        // Map to response DTO
+        OgpPoResponseDto response = new OgpPoResponseDto();
+        response.setOgpId("INV/" + ogpMasterPo.getOgpSubProcessId());
+        response.setPoId(ogpMasterPo.getPoId());
+        response.setOgpDate(CommonUtils.convertDateToString(ogpMasterPo.getOgpDate()));
+        response.setLocationId(ogpMasterPo.getLocationId());
+        response.setCreatedBy(ogpMasterPo.getCreatedBy());
+        response.setOgpType(ogpMasterPo.getOgpType());
+
+        // Map details
+        List<OgpPoMaterialDto> materialDtls = ogpPoDetails.stream()
+            .map(detail -> {
+                OgpPoMaterialDto dto = new OgpPoMaterialDto();
+                dto.setMaterialCode(detail.getMaterialCode());
+                dto.setMaterialDescription(detail.getMaterialDescription());
+                dto.setUomId(detail.getUomId());
+                dto.setQuantity(detail.getQuantity());
+                return dto;
+            })
+            .collect(Collectors.toList());
+
+        response.setMaterialDtlList(materialDtls);
+        return response;
     }
 }
