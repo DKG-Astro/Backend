@@ -39,14 +39,14 @@ public class MaterialMasterUtilServiceImpl implements MaterialMasterUtilService 
     public MaterialMasterUtilResponseDto createMaterial(MaterialMasterUtilRequestDto dto) {
         MaterialMasterUtil material = new MaterialMasterUtil();
 
-        Integer maxNumber = materialMasterUtilRepository.findMaxMaterialNumber();
-        int nextNumber = (maxNumber == null) ? 1001 : maxNumber + 1;
+      //  Integer maxNumber = materialMasterUtilRepository.findMaxMaterialNumber();
+       // int nextNumber = (maxNumber == null) ? 1001 : maxNumber + 1;
 
-        String materialId = "M" + nextNumber;
-       // String materialId = "M" + System.currentTimeMillis();
+       // String materialId = "M" + nextNumber;
+       String materialId = "M" + System.currentTimeMillis();
 
         material.setMaterialCode(materialId);
-        material.setMaterialNumber(nextNumber);
+        material.setMaterialNumber(0);
         material.setCategory(dto.getCategory());
         material.setSubCategory(dto.getSubCategory());
         material.setDescription(dto.getDescription());
