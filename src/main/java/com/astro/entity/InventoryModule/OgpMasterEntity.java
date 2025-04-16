@@ -35,4 +35,13 @@ public class OgpMasterEntity {
     @Column(name = "ogp_type")
     private String ogpType;
 
+    @Column(name="receiver_name")
+    private String receiverName;
+
+    @Column(name="receiver_location")
+    private String receiverLocation;
+
+    @Column(name="date_of_return")
+    private LocalDate dateOfReturn;
+
 }

@@ -25,6 +25,7 @@ import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderReposit
 
 import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.repository.ProjectMasterRepository;
+import com.astro.repository.InventoryModule.GprnRepository.GprnMaterialDtlRepository;
 import com.astro.service.IndentCreationService;
 import com.astro.service.PurchaseOrderService;
 import com.astro.service.TenderRequestService;
@@ -221,92 +222,105 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         return mapToResponseDTO(purchaseOrder);
     }
 
-    public poWithTenderAndIndentResponseDTO getPurchaseOrderById(String poId) {
-        PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(poId)
-                .orElseThrow(() -> new BusinessException(
-                        new ErrorDetails(
-                                AppConstant.ERROR_CODE_RESOURCE,
-                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
-                                AppConstant.ERROR_TYPE_RESOURCE,
-                                "Purchase order not found for the provided asset ID.")
-                ));
-
-        // Fetch related Tender & Indent
-        TenderWithIndentResponseDTO tenderWithIndent = tenderRequestService.getTenderRequestById(purchaseOrder.getTenderId());
-        Map<String, MaterialDetailsResponseDTO> indentMaterialMap = new HashMap<>();
-
-        for (IndentCreationResponseDTO indent : tenderWithIndent.getIndentResponseDTO()) {
-            for (MaterialDetailsResponseDTO material : indent.getMaterialDetails()) {
-                indentMaterialMap.put(material.getMaterialCode(), material);
+    @Autowired
+            private GprnMaterialDtlRepository gprnMaterialDtlRepository;
+    
+            public poWithTenderAndIndentResponseDTO getPurchaseOrderById(String poId) {
+                PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(poId)
+                        .orElseThrow(() -> new BusinessException(
+                                new ErrorDetails(
+                                        AppConstant.ERROR_CODE_RESOURCE,
+                                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                        AppConstant.ERROR_TYPE_RESOURCE,
+                                        "Purchase order not found for the provided asset ID.")
+                        ));
+    
+                // Fetch related Tender & Indent
+                TenderWithIndentResponseDTO tenderWithIndent = tenderRequestService.getTenderRequestById(purchaseOrder.getTenderId());
+                Map<String, MaterialDetailsResponseDTO> indentMaterialMap = new HashMap<>();
+    
+                for (IndentCreationResponseDTO indent : tenderWithIndent.getIndentResponseDTO()) {
+                    for (MaterialDetailsResponseDTO material : indent.getMaterialDetails()) {
+                        indentMaterialMap.put(material.getMaterialCode(), material);
+                    }
+                }
+    
+    
+                poWithTenderAndIndentResponseDTO responseDTO = new poWithTenderAndIndentResponseDTO();
+                responseDTO.setPoId(purchaseOrder.getPoId());
+                responseDTO.setTenderId(purchaseOrder.getTenderId());
+                responseDTO.setIndentId(purchaseOrder.getIndentId());
+                responseDTO.setWarranty(purchaseOrder.getWarranty());
+                responseDTO.setConsignesAddress(purchaseOrder.getConsignesAddress());
+                responseDTO.setBillingAddress(purchaseOrder.getBillingAddress());
+                responseDTO.setDeliveryPeriod(purchaseOrder.getDeliveryPeriod());
+                responseDTO.setIfLdClauseApplicable(purchaseOrder.getIfLdClauseApplicable());
+                responseDTO.setIncoTerms(purchaseOrder.getIncoTerms());
+                responseDTO.setPaymentTerms(purchaseOrder.getPaymentTerms());
+                responseDTO.setVendorName(purchaseOrder.getVendorName());
+                responseDTO.setVendorAddress(purchaseOrder.getVendorAddress());
+                responseDTO.setApplicablePbgToBeSubmitted(purchaseOrder.getApplicablePbgToBeSubmitted());
+                responseDTO.setTransporterAndFreightForWarderDetails(purchaseOrder.getTransporterAndFreightForWarderDetails());
+                responseDTO.setVendorAccountNumber(purchaseOrder.getVendorAccountNumber());
+                responseDTO.setVendorsIfscCode(purchaseOrder.getVendorsZfscCode());
+                responseDTO.setVendorAccountName(purchaseOrder.getVendorAccountName());
+                responseDTO.setVendorId(purchaseOrder.getVendorId());
+                //  responseDTO.setProjectName(purchaseOrder.getProjectName());
+                responseDTO.setTotalValueOfPo(tenderWithIndent.getTotalTenderValue());
+                responseDTO.setCreatedBy(purchaseOrder.getCreatedBy());
+                responseDTO.setUpdatedBy(purchaseOrder.getUpdatedBy());
+                responseDTO.setCreatedDate(purchaseOrder.getCreatedDate());
+                responseDTO.setUpdatedDate(purchaseOrder.getUpdatedDate());
+                List<String> indentIds = indentIdRepository.findTenderWithIndent(purchaseOrder.getTenderId());
+    
+                responseDTO.setIndentIds(indentIds);
+    
+                responseDTO.setPurchaseOrderAttributes(purchaseOrder.getPurchaseOrderAttributes().stream()
+                        .map(attribute -> {
+                            PurchaseOrderAttributesResponseDTO attributeDTO = new PurchaseOrderAttributesResponseDTO();
+                            attributeDTO.setMaterialCode(attribute.getMaterialCode());
+                            attributeDTO.setMaterialDescription(attribute.getMaterialDescription());
+                            
+                            // Get sum of GPRN quantities for this material
+                            BigDecimal gprnQuantity = gprnMaterialDtlRepository
+                                .findByPoIdAndMaterialCode(poId, attribute.getMaterialCode())
+                                .stream()
+                                .map(gprn -> gprn.getReceivedQuantity())
+                                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                            
+                            // Set remaining quantity
+                            attributeDTO.setQuantity(attribute.getQuantity().subtract(gprnQuantity));
+                            
+                            attributeDTO.setRate(attribute.getRate());
+                            attributeDTO.setCurrency(attribute.getCurrency());
+                            attributeDTO.setExchangeRate(attribute.getExchangeRate());
+                            attributeDTO.setGst(attribute.getGst());
+                            attributeDTO.setDuties(attribute.getDuties());
+                            attributeDTO.setFreightCharge(attribute.getFreightCharge());
+                            attributeDTO.setBudgetCode(attribute.getBudgetCode());
+                            MaterialDetailsResponseDTO indentMaterial = indentMaterialMap.get(attribute.getMaterialCode());
+                            attributeDTO.setUnitPrice(indentMaterial.getUnitPrice());
+                            attributeDTO.setUom(indentMaterial.getUom());
+                            return attributeDTO;
+                        })
+                        .collect(Collectors.toList()));
+                String projectName = tenderWithIndent.getIndentResponseDTO()
+                        .stream()
+                        .findFirst()
+                        .map(IndentCreationResponseDTO::getProjectName)
+                        .orElse(null);
+                BigDecimal projectLimit = tenderWithIndent.getIndentResponseDTO()
+                        .stream()
+                        .findFirst()
+                        .map(IndentCreationResponseDTO::getProjectLimit)
+                        .orElse(null);
+                responseDTO.setProjectName(projectName);
+                responseDTO.setProjectLimit(projectLimit);
+                // Set Tender & Indent details
+                responseDTO.setTenderDetails(tenderWithIndent);
+                return responseDTO;
+    
             }
-        }
-
-
-        poWithTenderAndIndentResponseDTO responseDTO = new poWithTenderAndIndentResponseDTO();
-        responseDTO.setPoId(purchaseOrder.getPoId());
-        responseDTO.setTenderId(purchaseOrder.getTenderId());
-        responseDTO.setIndentId(purchaseOrder.getIndentId());
-        responseDTO.setWarranty(purchaseOrder.getWarranty());
-        responseDTO.setConsignesAddress(purchaseOrder.getConsignesAddress());
-        responseDTO.setBillingAddress(purchaseOrder.getBillingAddress());
-        responseDTO.setDeliveryPeriod(purchaseOrder.getDeliveryPeriod());
-        responseDTO.setIfLdClauseApplicable(purchaseOrder.getIfLdClauseApplicable());
-        responseDTO.setIncoTerms(purchaseOrder.getIncoTerms());
-        responseDTO.setPaymentTerms(purchaseOrder.getPaymentTerms());
-        responseDTO.setVendorName(purchaseOrder.getVendorName());
-        responseDTO.setVendorAddress(purchaseOrder.getVendorAddress());
-        responseDTO.setApplicablePbgToBeSubmitted(purchaseOrder.getApplicablePbgToBeSubmitted());
-        responseDTO.setTransporterAndFreightForWarderDetails(purchaseOrder.getTransporterAndFreightForWarderDetails());
-        responseDTO.setVendorAccountNumber(purchaseOrder.getVendorAccountNumber());
-        responseDTO.setVendorsIfscCode(purchaseOrder.getVendorsZfscCode());
-        responseDTO.setVendorAccountName(purchaseOrder.getVendorAccountName());
-        responseDTO.setVendorId(purchaseOrder.getVendorId());
-        //  responseDTO.setProjectName(purchaseOrder.getProjectName());
-        responseDTO.setTotalValueOfPo(tenderWithIndent.getTotalTenderValue());
-        responseDTO.setCreatedBy(purchaseOrder.getCreatedBy());
-        responseDTO.setUpdatedBy(purchaseOrder.getUpdatedBy());
-        responseDTO.setCreatedDate(purchaseOrder.getCreatedDate());
-        responseDTO.setUpdatedDate(purchaseOrder.getUpdatedDate());
-        List<String> indentIds = indentIdRepository.findTenderWithIndent(purchaseOrder.getTenderId());
-
-        responseDTO.setIndentIds(indentIds);
-
-        responseDTO.setPurchaseOrderAttributes(purchaseOrder.getPurchaseOrderAttributes().stream()
-                .map(attribute -> {
-                    PurchaseOrderAttributesResponseDTO attributeDTO = new PurchaseOrderAttributesResponseDTO();
-                    attributeDTO.setMaterialCode(attribute.getMaterialCode());
-                    attributeDTO.setMaterialDescription(attribute.getMaterialDescription());
-                    attributeDTO.setQuantity(attribute.getQuantity());
-                    attributeDTO.setRate(attribute.getRate());
-                    attributeDTO.setCurrency(attribute.getCurrency());
-                    attributeDTO.setExchangeRate(attribute.getExchangeRate());
-                    attributeDTO.setGst(attribute.getGst());
-                    attributeDTO.setDuties(attribute.getDuties());
-                    attributeDTO.setFreightCharge(attribute.getFreightCharge());
-                    attributeDTO.setBudgetCode(attribute.getBudgetCode());
-                    MaterialDetailsResponseDTO indentMaterial = indentMaterialMap.get(attribute.getMaterialCode());
-                    attributeDTO.setUnitPrice(indentMaterial.getUnitPrice());
-                    attributeDTO.setUom(indentMaterial.getUom());
-                    return attributeDTO;
-                })
-                .collect(Collectors.toList()));
-        String projectName = tenderWithIndent.getIndentResponseDTO()
-                .stream()
-                .findFirst()
-                .map(IndentCreationResponseDTO::getProjectName)
-                .orElse(null);
-        BigDecimal projectLimit = tenderWithIndent.getIndentResponseDTO()
-                .stream()
-                .findFirst()
-                .map(IndentCreationResponseDTO::getProjectLimit)
-                .orElse(null);
-        responseDTO.setProjectName(projectName);
-        responseDTO.setProjectLimit(projectLimit);
-        // Set Tender & Indent details
-        responseDTO.setTenderDetails(tenderWithIndent);
-        return responseDTO;
-
-    }
 
 
     @Override

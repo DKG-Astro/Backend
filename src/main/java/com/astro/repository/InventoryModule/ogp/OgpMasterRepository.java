@@ -14,6 +14,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OgpMasterRepository extends JpaRepository<OgpMasterEntity, Integer> {
     boolean existsByIssueNoteId(Integer issueNoteId);
+
+    
     
     Optional<OgpMasterEntity> findById(Integer ogpSubProcessId);
     

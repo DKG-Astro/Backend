@@ -10,4 +10,5 @@ import com.astro.entity.InventoryModule.OgpPoDetailEntity;
 @Repository
 public interface OgpPoDetailRepository extends JpaRepository<OgpPoDetailEntity, Integer> {
     List<OgpPoDetailEntity> findByOgpSubProcessId(Integer ogpSubProcessId);
+    List<OgpPoDetailEntity> findByOgpSubProcessIdAndMaterialCode(Integer ogpSubProcessId, String materialCode);
 }

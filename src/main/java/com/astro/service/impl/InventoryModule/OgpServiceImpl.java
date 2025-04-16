@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import javax.transaction.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -15,12 +16,13 @@ import com.astro.repository.InventoryModule.isn.IssueNoteMasterRepository;
 import com.astro.repository.InventoryModule.ogp.OgpDetailRepository;
 import com.astro.repository.InventoryModule.ogp.OgpMasterPoRepository;
 import com.astro.repository.InventoryModule.ogp.OgpPoDetailRepository;
-
+import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;
 import com.astro.repository.InventoryModule.ogp.OgpMasterRepository;
 import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDetailReportDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpMaterialDtlDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDtlDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoMaterialDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
@@ -29,6 +31,7 @@ import com.astro.entity.InventoryModule.OgpDetailEntity;
 import com.astro.entity.InventoryModule.OgpMasterEntity;
 import com.astro.entity.InventoryModule.OgpMasterPoEntity;
 import com.astro.entity.InventoryModule.OgpPoDetailEntity;
+import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
@@ -63,6 +66,9 @@ public class OgpServiceImpl implements OgpService {
 
     @Autowired
     private AssetMasterRepository amr;
+
+    @Autowired
+    private PurchaseOrderAttributesRepository poMasterRepository;
 
     @Override
     @Transactional
@@ -105,6 +111,11 @@ public class OgpServiceImpl implements OgpService {
         ogpMaster.setCreatedBy(req.getCreatedBy());
         ogpMaster.setLocationId(req.getLocationId());
         ogpMaster.setOgpType(req.getOgpType());
+        if(Objects.nonNull(req.getDateOfReturn())){
+            ogpMaster.setDateOfReturn(CommonUtils.convertStringToDateObject(req.getDateOfReturn()));
+        }
+        ogpMaster.setReceiverLocation(req.getReceiverLocation());
+        ogpMaster.setReceiverName(req.getReceiverName());
 
         final OgpMasterEntity savedOgpMaster = ogpMasterRepository.save(ogpMaster);
 
@@ -236,13 +247,50 @@ public class OgpServiceImpl implements OgpService {
     @Override
     @Transactional
     public String savePoOgp(OgpPoDto request) {
-        // Check if OGP already exists for the PO
-        if (ogpMasterPoRepository.existsByPoId(request.getPoId())) {
+        // Get existing OGP quantities for this PO
+        List<OgpMasterPoEntity> existingOgps = ogpMasterPoRepository.findByPoId(request.getPoId());
+        
+        // Validate quantities against PO
+        StringBuilder errorMessage = new StringBuilder();
+        Boolean errorFound = false;
+        
+        for (OgpPoDtlDto dtl : request.getMaterialDtlList()) {
+            // Get sum of existing OGP quantities for this material
+            BigDecimal existingQuantity = existingOgps.stream()
+                .flatMap(ogp -> ogpPoDetailRepository.findByOgpSubProcessIdAndMaterialCode(
+                    ogp.getOgpSubProcessId(), 
+                    dtl.getMaterialCode()
+                ).stream())
+                .map(OgpPoDetailEntity::getQuantity)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+            
+            // Add current quantity
+            BigDecimal totalQuantity = existingQuantity.add(dtl.getQuantity());
+            
+            // Get PO quantity from PO master
+            BigDecimal poQuantity = poMasterRepository.findQuantityByPoIdAndMaterialCode(
+                request.getPoId(), 
+                dtl.getMaterialCode()
+            ).orElse(BigDecimal.ZERO);
+            
+            if (totalQuantity.compareTo(poQuantity) > 0) {
+                errorMessage.append("Total OGP quantity for material ")
+                    .append(dtl.getMaterialCode())
+                    .append(" exceeds PO quantity. PO quantity: ")
+                    .append(poQuantity)
+                    .append(", Total OGP quantity: ")
+                    .append(totalQuantity)
+                    .append(". ");
+                errorFound = true;
+            }
+        }
+
+        if (errorFound) {
             throw new InvalidInputException(new ErrorDetails(
                 AppConstant.USER_INVALID_INPUT,
                 AppConstant.ERROR_TYPE_CODE_VALIDATION,
                 AppConstant.ERROR_TYPE_VALIDATION,
-                "OGP already exists for PO ID: " + request.getPoId()));
+                errorMessage.toString()));
         }
 
         // Create and save OGP Master PO
@@ -253,6 +301,11 @@ public class OgpServiceImpl implements OgpService {
         ogpMasterPo.setCreatedBy(request.getCreatedBy());
         ogpMasterPo.setCreateDate(LocalDateTime.now());
         ogpMasterPo.setOgpType(request.getOgpType());
+        if(Objects.nonNull(request.getDateOfReturn())){
+            ogpMasterPo.setDateOfReturn(CommonUtils.convertStringToDateObject(request.getDateOfReturn()));
+        }
+        ogpMasterPo.setReceiverLocation(request.getReceiverLocation());
+        ogpMasterPo.setReceiverName(request.getReceiverName());
 
         OgpMasterPoEntity savedMaster = ogpMasterPoRepository.save(ogpMasterPo);
 
