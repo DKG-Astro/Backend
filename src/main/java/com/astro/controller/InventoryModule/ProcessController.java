@@ -5,8 +5,10 @@ import com.astro.dto.workflow.InventoryModule.GprnDto.SaveGprnDto;
 import com.astro.dto.workflow.InventoryModule.gprn.GprnPendingInspectionDto;
 import com.astro.dto.workflow.InventoryModule.grn.GrnDto;
 import com.astro.dto.workflow.InventoryModule.grv.GrvDto;
+import com.astro.dto.workflow.InventoryModule.igp.IgpCombinedDetailDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpDetailReportDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpDto;
+import com.astro.dto.workflow.InventoryModule.igp.IgpReportDto;
 import com.astro.dto.workflow.InventoryModule.isn.IsnDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
@@ -137,7 +139,7 @@ public class ProcessController {
     }
     @GetMapping("/getGatePassReport")
     public ResponseEntity<Object> getGatePassReport() {
-        List<IgpDetailReportDto> res = igpService.getIgpDetails();
+        List<IgpCombinedDetailDto> res = igpService.getIgpDetails();
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
     

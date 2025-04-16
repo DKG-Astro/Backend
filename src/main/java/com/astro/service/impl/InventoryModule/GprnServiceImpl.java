@@ -67,18 +67,18 @@ public class GprnServiceImpl implements GprnService {
 
         for (MaterialDtlDto dtl : req.getMaterialDtlList()) {
             List<GprnMaterialDtlEntity> gmdeList = gmdr.findByPoIdAndMaterialCode(req.getPoId(), dtl.getMaterialCode());
-
+    
             BigDecimal prevRecQuant = gmdeList.stream()
                 .map(GprnMaterialDtlEntity::getReceivedQuantity)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-
+    
             BigDecimal totalRecQuant = prevRecQuant.add(dtl.getReceivedQuantity());
             if (totalRecQuant.compareTo(dtl.getOrderedQuantity()) > 0) {
                 errorMessage.append("Total received quantity for " + dtl.getMaterialCode() + " is more than ordered quantity.");
                 errorFound = true;
                 continue;
             }
-
+    
             GprnMaterialDtlEntity gmde = new GprnMaterialDtlEntity();
             mapper.map(dtl, gmde);
             gmde.setProcessId(gme.getProcessId());
@@ -86,16 +86,20 @@ public class GprnServiceImpl implements GprnService {
             gmde.setSubProcessId(gme.getSubProcessId());
             
             try {
-                String imageFileName = CommonUtils.saveBase64Image(dtl.getImageBase64(), basePath);
-                gmde.setFileName(imageFileName);
+                List<String> imageFileNames = new ArrayList<>();
+                for (String base64Image : dtl.getImageBase64()) {
+                    String imageFileName = CommonUtils.saveBase64Image(base64Image, basePath);
+                    imageFileNames.add(imageFileName);
+                }
+                gmde.setFileName(String.join(",", imageFileNames));
             } catch (Exception e) {
                 throw new InvalidInputException(new ErrorDetails(
                     AppConstant.FILE_UPLOAD_ERROR,
                     AppConstant.USER_INVALID_INPUT,
                     AppConstant.ERROR_TYPE_CORRUPTED,
-                    "Error while uploading image."));
+                    "Error while uploading images."));
             }
-
+    
             saveDtlEntityList.add(gmde);
         }
 
@@ -137,8 +141,13 @@ public class GprnServiceImpl implements GprnService {
             .map(gmde -> {
                 MaterialDtlDto mdd = mapper.map(gmde, MaterialDtlDto.class);
                 try {
-                    String imageBase64 = CommonUtils.convertImageToBase64(gmde.getFileName(), basePath);
-                    mdd.setImageBase64(imageBase64);
+                    List<String> imageBase64List = new ArrayList<>();
+                    String[] fileNames = gmde.getFileName().split(",");
+                    for (String fileName : fileNames) {
+                        String imageBase64 = CommonUtils.convertImageToBase64(fileName.trim(), basePath);
+                        imageBase64List.add(imageBase64);
+                    }
+                    mdd.setImageBase64(imageBase64List);
                 } catch (Exception e) {
                     // Log exception
                 }

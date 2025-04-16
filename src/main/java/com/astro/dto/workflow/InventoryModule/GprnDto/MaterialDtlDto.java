@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Base64;
+import java.util.List;
 
 
 @Data
@@ -19,7 +20,7 @@ public class MaterialDtlDto {
    private String serialNo;
    private String warrantyTerms;
    private String note;
-   private String imageBase64;
+   private List<String> imageBase64;
 }
 
 

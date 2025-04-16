@@ -331,23 +331,53 @@ public class IgpServiceImpl implements IgpService {
     }
     
     @Override
-    public List<IgpDetailReportDto> getIgpDetails() {
+    public List<IgpCombinedDetailDto> getIgpDetails() {
         List<Object[]> results = igpDetailRepository.findAllIgpDetails();
+        ObjectMapper mapper = new ObjectMapper();
         
-        return results.stream()
-            .map(row -> {
-                IgpDetailReportDto dto = new IgpDetailReportDto();
-                dto.setDetailId((Integer) row[0]);
-                dto.setIgpSubProcessId((Integer) row[1]);
-                dto.setMaterialCode((String) row[2]);
-                dto.setMaterialDesc((String) row[3]);
-                dto.setAssetId((Integer) row[4]);
-                dto.setLocatorId((Integer) row[5]);
-                dto.setUomId((String) row[6]);
-                dto.setQuantity((BigDecimal) row[7]);
-                dto.setType((String) row[8]);
-                return dto;
-            })
-            .collect(Collectors.toList());
+        return results.stream().map(row -> {
+            IgpCombinedDetailDto dto = new IgpCombinedDetailDto();
+            
+            dto.setIssueNoteId(row[0] != null ? Integer.valueOf(row[0].toString()) : null);
+            dto.setOgpSubProcessId(row[1] != null ? Integer.valueOf(row[1].toString()) : null);
+            dto.setIgpSubProcessId(row[2] != null ? Integer.valueOf(row[2].toString()) : null);
+            dto.setPoId((String) row[3]);
+            
+            try {
+                String detailsJson = (String) row[4];
+                if (detailsJson != null && !detailsJson.isEmpty()) {
+                    List<IgpItemDetailDto> details = mapper.readValue(
+                        detailsJson,
+                        mapper.getTypeFactory().constructCollectionType(List.class, IgpItemDetailDto.class)
+                    );
+                    dto.setDetails(details);
+                }
+            } catch (Exception e) {
+                dto.setDetails(new ArrayList<>());
+            }
+            
+            return dto;
+        }).collect(Collectors.toList());
     }
+    
+    // @Override
+    // public List<IgpDetailReportDto> getIgpDetails() {
+    //     List<Object[]> results = igpDetailRepository.findAllIgpDetails();
+        
+    //     return results.stream()
+    //         .map(row -> {
+    //             IgpDetailReportDto dto = new IgpDetailReportDto();
+    //             dto.setDetailId((Integer) row[0]);
+    //             dto.setIgpSubProcessId((Integer) row[1]);
+    //             dto.setMaterialCode((String) row[2]);
+    //             dto.setMaterialDesc((String) row[3]);
+    //             dto.setAssetId((Integer) row[4]);
+    //             dto.setLocatorId((Integer) row[5]);
+    //             dto.setUomId((String) row[6]);
+    //             dto.setQuantity((BigDecimal) row[7]);
+    //             dto.setType((String) row[8]);
+    //             return dto;
+    //         })
+    //         .collect(Collectors.toList());
+    // }
 }
