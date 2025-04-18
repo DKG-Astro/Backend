@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MaterialMasterUtilRepository extends JpaRepository<MaterialMasterUtil, String> {
@@ -15,4 +16,5 @@ public interface MaterialMasterUtilRepository extends JpaRepository<MaterialMast
     @Query("SELECT MAX(i.materialNumber) FROM MaterialMasterUtil i")
     Integer findMaxMaterialNumber();
 
+    Optional<MaterialMasterUtil> findByMaterialCode(String materialCode);
 }

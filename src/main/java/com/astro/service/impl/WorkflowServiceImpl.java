@@ -93,6 +93,10 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     @Autowired
     private MaterialMasterUtilService materialMasterUtilService;
+    @Autowired
+    private MaterialMasterUtilRepository materialMasterUtilRepository;
+    @Autowired
+    private UserMasterRepository userMasterRepository;
 
 
     @Override
@@ -1080,9 +1084,18 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     private QueueResponse mapMaterialToQueueResponse(MaterialMasterUtilResponseDto material) {
 
+        String materialCode = material.getMaterialCode();
+
+        Optional<MaterialMasterUtil> Material = materialMasterUtilRepository.findByMaterialCode(materialCode);
+
+        MaterialMasterUtil ma = Material.get();
+        UserMaster us  =userMasterRepository.findByUserId(ma.getCreatedBy());
         QueueResponse response = new QueueResponse();
         response.setRequestId(material.getMaterialCode());
         response.setWorkflowName("Material Workflow");
+        response.setWorkflowId(9);
+        response.setAmount(ma.getUnitPrice());
+        response.setIndentorName(us.getUserName());
         response.setStatus(material.getApprovalStatus());
         return response;
     }
@@ -1130,6 +1143,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         queueResponse.setCreatedDate(workflowTransition.getCreatedDate());
 
         String requestId = workflowTransition.getRequestId();
+
         // boolean isMatched = false;
 
         if (requestId.startsWith("IND")) {
@@ -1226,6 +1240,7 @@ public class WorkflowServiceImpl implements WorkflowService {
                 //  queueResponse.setIndentTitle(tenderDetails.getTitleOfTender());
                 //  queueResponse.setModeOfProcurement(tenderDetails.getModeOfProcurement());
             }
+
         }
         return queueResponse;
 

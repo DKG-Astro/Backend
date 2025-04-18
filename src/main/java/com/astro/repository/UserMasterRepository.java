@@ -12,4 +12,6 @@ public interface UserMasterRepository extends JpaRepository<UserMaster, Integer>
 
    // Optional<UserMaster> findByCreatedBy(String createdBy);
    Optional<UserMaster> findByCreatedBy(String createdBy);
+
+    UserMaster findByUserId(Integer createdBy);
 }
