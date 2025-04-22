@@ -40,6 +40,12 @@ public class VendorMasterUtilController {
 
     }
 
+    @PostMapping("/performBulkAction")
+    public ResponseEntity<Object> approveOrRejectBulkVendor(@RequestBody List<ApprovalAndRejectionRequestDTO> request) {
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(vendorMasterUtil.performAllAction(request)), HttpStatus.OK);
+
+    }
+
     @GetMapping("/{vendorId}")
     public ResponseEntity<Object> getVendorMasterUtilById(@PathVariable String vendorId) {
         VendorRegistrationResponseDTO responseDTO = vendorMasterUtil.getVendorMasterUtilById(vendorId);

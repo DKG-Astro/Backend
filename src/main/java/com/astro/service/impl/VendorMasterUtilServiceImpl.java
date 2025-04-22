@@ -156,6 +156,16 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
     }
 
     @Override
+    public String performAllAction(List<ApprovalAndRejectionRequestDTO> request) {
+
+        String response =null;
+        for(ApprovalAndRejectionRequestDTO dto: request){
+            response=performAction(dto);
+        }
+        return response;
+    }
+
+    @Override
     public VendorRegistrationResponseDTO getVendorMasterUtilById(String vendorId) {
         VendorMasterUtil vendorMasterUtil= vendorMasterUtilRepository.findById(vendorId)
                 .orElseThrow(() -> new BusinessException(

@@ -1434,6 +1434,18 @@ public class WorkflowServiceImpl implements WorkflowService {
        return workflowQueueDtoList;
    }
 
+    @Override
+    public List<WorkflowTransitionDto> performAllTransitionAction(List<TransitionActionReqDto> transitionActionReqDto) {
+
+       List<WorkflowTransitionDto> workflow = new ArrayList<>();
+
+       for(TransitionActionReqDto action: transitionActionReqDto){
+          WorkflowTransitionDto dto = performTransitionAction(action);
+           workflow.add(dto);
+       }
+
+        return workflow;
+    }
 
 
 }

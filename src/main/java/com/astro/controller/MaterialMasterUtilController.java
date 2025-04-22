@@ -44,6 +44,11 @@ public class MaterialMasterUtilController {
 
     }
 
+    @PostMapping("/performBulkActionForMaterial")
+    public ResponseEntity<Object> approveOrRejectAllMaterial(@RequestBody List<ApprovalAndRejectionRequestDTO> request) {
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(materialMasterUtilService.performAllActionForMaterial(request)), HttpStatus.OK);
+    }
+
     @GetMapping("/MaterialTransitionHistory/{materialCode}")
     public ResponseEntity<Object>  getMatrialHistory(String materialCode ) {
         List<MaterialTransitionHistory> materials = materialMasterUtilService.getMaterialStatusByCode(materialCode);

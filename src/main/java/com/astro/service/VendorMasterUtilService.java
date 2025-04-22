@@ -17,6 +17,8 @@ public interface VendorMasterUtilService {
 
     public String performAction(ApprovalAndRejectionRequestDTO request);
 
+    public String performAllAction(List<ApprovalAndRejectionRequestDTO> request);
+
     public VendorRegistrationResponseDTO getVendorMasterUtilById(String vendorId);
 
 }

@@ -209,7 +209,14 @@ public class MaterialMasterUtilServiceImpl implements MaterialMasterUtilService 
        return "Invalid operation for user role.";
    }
 
-
+    @Override
+    public String performAllActionForMaterial(List<ApprovalAndRejectionRequestDTO> request) {
+       String response = null;
+       for(ApprovalAndRejectionRequestDTO dto : request){
+          response =performActionForMaterial(dto);
+       }
+        return response;
+    }
 
 
     private String changeRequestVendor(MaterialMasterUtil material, String remarks, Integer actionBy) {

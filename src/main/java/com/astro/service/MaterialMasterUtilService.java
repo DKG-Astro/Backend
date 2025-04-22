@@ -16,6 +16,7 @@ public interface MaterialMasterUtilService{
     public List<MaterialMasterUtilResponseDto> getAllChangeRequestMaterials();
 
     public String performActionForMaterial(ApprovalAndRejectionRequestDTO request);
+    public String performAllActionForMaterial(List<ApprovalAndRejectionRequestDTO> request);
 
     List<MaterialTransitionHistory> getMaterialStatusByCode(String materialCode);
     public MaterialMasterUtilResponseDto updateMaterialMasterUtil(String materialCode, MaterialMasterUtilRequestDto dto);
