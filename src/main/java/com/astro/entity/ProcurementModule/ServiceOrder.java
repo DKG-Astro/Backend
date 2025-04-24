@@ -29,6 +29,8 @@ public class ServiceOrder {
     private String incoTerms;
     @Column(name = "payment_terms")
     private String paymentTerms;
+    @Column(name = "vendor_id")
+    private String vendorId;
     @Column(name = "vendor_name")
     private String vendorName;
     @Column(name = "vendor_address")

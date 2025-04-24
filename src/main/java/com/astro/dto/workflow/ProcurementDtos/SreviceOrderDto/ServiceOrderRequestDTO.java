@@ -20,6 +20,7 @@ public class ServiceOrderRequestDTO {
     private String vendorName;
     private String vendorAddress;
     private String applicablePBGToBeSubmitted;
+    private String vendorId;
     private String vendorsAccountNo;
     private String vendorsZRSCCode;
     private String vendorsAccountName;

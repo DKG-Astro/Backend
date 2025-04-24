@@ -23,6 +23,7 @@ public class soWithTenderAndIndentResponseDTO {
     private String vendorsAccountNo;
     private String vendorsZRSCCode;
     private String vendorsAccountName;
+    private String vendorId;
     private BigDecimal totalValueOfSo;
     private String projectName;
     private BigDecimal projectLimit;

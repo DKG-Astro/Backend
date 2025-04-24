@@ -85,6 +85,7 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         serviceOrder.setVendorsAccountNo(serviceOrderRequestDTO.getVendorsAccountNo());
         serviceOrder.setVendorsZRSCCode(serviceOrderRequestDTO.getVendorsZRSCCode());
         serviceOrder.setVendorsAccountName(serviceOrderRequestDTO.getVendorsAccountName());
+        serviceOrder.setVendorId(serviceOrderRequestDTO.getVendorId());
         //  serviceOrder.setTotalValueOfSo(serviceOrderRequestDTO.getTotalValueOfSo());
         serviceOrder.setProjectName(serviceOrderRequestDTO.getProjectName());
         serviceOrder.setCreatedBy(serviceOrderRequestDTO.getCreatedBy());
@@ -142,6 +143,7 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         existingServiceOrder.setVendorsZRSCCode(serviceOrderRequestDTO.getVendorsZRSCCode());
         existingServiceOrder.setVendorsAccountName(serviceOrderRequestDTO.getVendorsAccountName());
         existingServiceOrder.setProjectName(serviceOrderRequestDTO.getProjectName());
+        existingServiceOrder.setVendorId(serviceOrderRequestDTO.getVendorId());
         //  existingServiceOrder.setTotalValueOfSo(serviceOrderRequestDTO.getTotalValueOfSo());
 
         existingServiceOrder.setUpdatedBy(serviceOrderRequestDTO.getUpdatedBy());
@@ -219,6 +221,7 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         response.setCreatedDate(serviceOrder.getCreatedDate());
         response.setUpdatedDate(serviceOrder.getUpdatedDate());
         response.setTotalValueOfSo(tenderWithIndent.getTotalTenderValue());
+        response.setVendorId(serviceOrder.getVendorId());
         response.setMaterials(serviceOrder.getMaterials().stream()
                 .map(dto -> {
                     ServiceOrderMaterialResponseDTO material = new ServiceOrderMaterialResponseDTO();
@@ -294,6 +297,7 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         response.setVendorsAccountNo(ServiceOrder.getVendorsAccountNo());
         response.setVendorsZRSCCode(ServiceOrder.getVendorsZRSCCode());
         response.setVendorsAccountName(ServiceOrder.getVendorsAccountName());
+        response.setVendorId(ServiceOrder.getVendorId());
         // response.setTotalValueOfSo(ServiceOrder.getTotalValueOfSo());
         response.setProjectName(ServiceOrder.getProjectName());
         response.setCreatedBy(ServiceOrder.getCreatedBy());
