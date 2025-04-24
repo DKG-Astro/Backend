@@ -19,4 +19,5 @@ public class PurchaseOrderAttributesResponseDTO {
     private String budgetCode;
     private String uom;
     private BigDecimal unitPrice;
+    private String category;
 }

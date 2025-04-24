@@ -223,7 +223,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
     }
 
     @Autowired
-            private GprnMaterialDtlRepository gprnMaterialDtlRepository;
+    private GprnMaterialDtlRepository gprnMaterialDtlRepository;
     
             public poWithTenderAndIndentResponseDTO getPurchaseOrderById(String poId) {
                 PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(poId)
@@ -301,6 +301,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                             MaterialDetailsResponseDTO indentMaterial = indentMaterialMap.get(attribute.getMaterialCode());
                             attributeDTO.setUnitPrice(indentMaterial.getUnitPrice());
                             attributeDTO.setUom(indentMaterial.getUom());
+                            attributeDTO.setCategory(indentMaterial.getMaterialCategory());
                             return attributeDTO;
                         })
                         .collect(Collectors.toList()));
