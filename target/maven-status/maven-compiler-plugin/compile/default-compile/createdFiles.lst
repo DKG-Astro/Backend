@@ -367,6 +367,7 @@ com\astro\dto\workflow\RoleRequestDto.class
 com\astro\entity\InventoryModule\OgpMasterPoEntity.class
 com\astro\entity\InventoryModule\GiMasterEntity.class
 com\astro\dto\workflow\UomMasterRequestDto.class
+com\astro\repository\VendorIdSequenceRepository.class
 com\astro\entity\InventoryModule\IgpMasterEntity.class
 com\astro\repository\InventoryModule\igp\IgpDetailRepository.class
 com\astro\service\impl\InventoryModule\GiServiceImpl.class
@@ -381,6 +382,7 @@ com\astro\service\MaterialDisposalService.class
 com\astro\dto\workflow\MaterialMasterRequestDto.class
 com\astro\dto\workflow\ProcurementDtos\TenderEvaluationRequestDto.class
 com\astro\controller\FileProcessingController.class
+com\astro\entity\VendorIdSequence.class
 com\astro\repository\InventoryModule\GoodsTransferRepository.class
 com\astro\dto\workflow\ProcurementDtos\purchaseOrder\poWithTenderAndIndentResponseDTO.class
 com\astro\dto\workflow\InventoryModule\AssetDisposalDto.class

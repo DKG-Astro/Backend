@@ -5,12 +5,14 @@ import com.astro.dto.workflow.ApprovalAndRejectionRequestDTO;
 import com.astro.dto.workflow.VendorRegistrationRequestDTO;
 import com.astro.dto.workflow.VendorRegistrationResponseDTO;
 import com.astro.entity.UserRoleMaster;
+import com.astro.entity.VendorIdSequence;
 import com.astro.entity.VendorMaster;
 import com.astro.entity.VendorMasterUtil;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.UserRoleMasterRepository;
+import com.astro.repository.VendorIdSequenceRepository;
 import com.astro.repository.VendorMasterRepository;
 import com.astro.repository.VendorMasterUtilRepository;
 import com.astro.service.VendorMasterUtilService;
@@ -31,19 +33,25 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
     private UserRoleMasterRepository userRoleMasterRepository;
     @Autowired
     private VendorMasterRepository vendorMasterRepository;
+    @Autowired
+    private VendorIdSequenceRepository vendorIdSequenceRepository;
 
     @Override
     public VendorRegistrationResponseDTO registerVendor(VendorRegistrationRequestDTO dto) {
         VendorMasterUtil vendor = new VendorMasterUtil();
 
-        Integer maxNumber = vendorMasterUtilRepository.findMaxVendorNumber();
+      //  Integer maxNumber = vendorMasterUtilRepository.findMaxVendorNumber();
+        Integer maxNumber = vendorIdSequenceRepository.findMaxVendorId();
         int nextNumber = (maxNumber == null) ? 1001 : maxNumber + 1;
 
         String vendorId = "V" + nextNumber;
 
-     //   String vendorId = "V" + System.currentTimeMillis();
+     // String vendorId = "V" + System.currentTimeMillis();
+        VendorIdSequence vendorIdSequence = new VendorIdSequence();
+        vendorIdSequence.setVendorId(nextNumber);
+        vendorIdSequenceRepository.save(vendorIdSequence);
         vendor.setVendorId(vendorId);
-        vendor.setVendorNumber(maxNumber);
+        vendor.setVendorNumber(nextNumber);
         vendor.setVendorName(dto.getVendorName());
         vendor.setVendorType(dto.getVendorType());
         vendor.setContactNumber(dto.getContactNumber());
