@@ -446,7 +446,7 @@ public class OgpServiceImpl implements OgpService {
                     AppConstant.ERROR_TYPE_RESOURCE,
                     "OGP not found")));
 
-            ogpMaster.setStatus("APPROVED");
+            ogpMaster.setStatus("REJECTED");
             ogpMasterRepository.save(ogpMaster);
         } else {
             // Handle PO type OGP
@@ -457,7 +457,7 @@ public class OgpServiceImpl implements OgpService {
                     AppConstant.ERROR_TYPE_RESOURCE,
                     "OGP PO not found")));
 
-            poOgp.setStatus("APPROVED");
+            poOgp.setStatus("REJECTED");
             ogpMasterPoRepository.save(poOgp);
         }
     }
