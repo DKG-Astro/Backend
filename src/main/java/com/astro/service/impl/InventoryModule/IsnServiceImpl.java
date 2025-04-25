@@ -164,6 +164,7 @@ public class IsnServiceImpl implements IsnService {
             assetDto.setAssetDesc(asset.getAssetDesc());
             assetDto.setUomId(asset.getUomId());
             assetDto.setUnitPrice(asset.getUnitPrice());
+            assetDto.setPoId(asset.getPoId()); // Added poId field
 
             List<IsnOhqDtlsDto> ohqDtoList = new ArrayList<>();
             for (OhqMasterEntity ohq : ohqList) {

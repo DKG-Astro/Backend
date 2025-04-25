@@ -11,6 +11,7 @@ public class IsnAssetOhqDtlsDto {
     private String assetDesc;
     private String uomId;
     private BigDecimal unitPrice;
+    private String poId;
 
     private List<IsnOhqDtlsDto> qtyList;
 }
