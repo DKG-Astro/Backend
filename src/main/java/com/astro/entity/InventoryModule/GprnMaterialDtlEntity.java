@@ -22,6 +22,9 @@ public class GprnMaterialDtlEntity {
     @Column(name="process_id")
     private String processId;
 
+    @Column(name="category")
+    private String category;
+
     @Column(name = "sub_process_id")
     private Integer subProcessId;
 

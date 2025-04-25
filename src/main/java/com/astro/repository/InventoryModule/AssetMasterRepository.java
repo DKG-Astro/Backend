@@ -22,7 +22,7 @@ public interface AssetMasterRepository extends JpaRepository<AssetMasterEntity, 
     
     boolean existsBySerialNo(String serialNo);
 
-    Optional<AssetMasterEntity> findByMaterialCodeAndMaterialDescAndMakeNoAndModelNoAndSerialNoAndUomId(String materialCode, String materialDesc, String makeNo, String modelNo, String serialNo, String uomId);
+    Optional<AssetMasterEntity> findByMaterialCodeAndMaterialDescAndMakeNoAndModelNoAndSerialNoAndUomIdAndPoId(String materialCode, String materialDesc, String makeNo, String modelNo, String serialNo, String uomId, String poId);
     boolean existsByMaterialCodeAndMaterialDescAndMakeNoAndModelNoAndSerialNoAndUomId(
             @Param("materialCode") String materialCode,
             @Param("materialDesc") String materialDesc,

@@ -23,6 +23,9 @@ public class OgpMasterEntity {
     @Column(name = "ogp_date")
     private LocalDate ogpDate;
 
+    @Column(name = "status")
+    private String status;
+
     @Column(name = "location_id")
     private String locationId;
 

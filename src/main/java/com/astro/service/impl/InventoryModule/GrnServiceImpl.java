@@ -14,6 +14,8 @@ import com.astro.repository.InventoryModule.grn.*;
 import com.astro.repository.InventoryModule.igp.IgpMasterRepository;
 import com.astro.repository.InventoryModule.GiRepository.GiMaterialDtlRepository;
 import com.astro.repository.InventoryModule.AssetMasterRepository;
+import com.astro.repository.InventoryModule.GoodsInspectionConsumableDetailRepository;
+import com.astro.repository.InventoryModule.OhqMasterConsumableRepository;
 import com.astro.repository.ohq.OhqMasterRepository;
 import com.astro.entity.InventoryModule.*;
 import com.astro.dto.workflow.InventoryModule.grn.*;
@@ -44,6 +46,15 @@ public class GrnServiceImpl implements GrnService {
 
     @Autowired
     private IgpMasterRepository igpMasterRepository;
+
+    @Autowired
+    private GoodsInspectionConsumableDetailRepository gicdr;
+
+    @Autowired 
+    private GrnConsumableDtlRepository gcdr;
+
+    @Autowired
+    private OhqMasterConsumableRepository omcr;
 
     @Override
     @Transactional
@@ -86,6 +97,7 @@ public class GrnServiceImpl implements GrnService {
         grnMaster = grnmr.save(grnMaster);
 
         List<GrnMaterialDtlEntity> grnMaterialDtlList = new ArrayList<>();
+        List<GrnConsumableDtlEntity> gcdeList = new ArrayList<>();
         StringBuilder errorMessage = new StringBuilder();
         Boolean errorFound = false;
 
@@ -93,8 +105,12 @@ public class GrnServiceImpl implements GrnService {
             // GI validation logic
             List<GiMaterialDtlEntity> giMaterialList = gimdr.findByInspectionSubProcessId(
                     Integer.parseInt(req.getGiNo().split("/")[1]));
+            List<GoodsInspectionConsumableDetailEntity> giConsumableList = gicdr.findByInspectionSubProcessId(Integer.parseInt(req.getGiNo().split("/")[1]));
 
             for (GrnMaterialDtlDto materialDtl : req.getMaterialDtlList()) {
+                if(Objects.nonNull(materialDtl.getAssetId())){
+
+                
                 Optional<GiMaterialDtlEntity> giMaterial = giMaterialList.stream()
                         .filter(gi -> gi.getAssetId().equals(materialDtl.getAssetId()))
                         .findFirst();
@@ -130,6 +146,72 @@ public class GrnServiceImpl implements GrnService {
                 grnMaterialDtlList.add(grnMaterialDtl);
 
                 updateAssetAndOhq(materialDtl);
+            }
+
+            else{
+
+                System.out.println("NOT ASSET ID");
+                Optional<GoodsInspectionConsumableDetailEntity> giConsumable = giConsumableList.stream()
+                       .filter(consumable -> consumable.getMaterialCode().equals(materialDtl.getMaterialCode()))
+                       .findFirst();
+                       if (giConsumable.isEmpty()) {
+                        errorMessage.append("Material Code " + materialDtl.getMaterialCode() + " not found in GI. ");
+                        errorFound = true;
+                        continue;
+                    }
+                BigDecimal prevRecQuant =  gcdr.findByGiSubProcessIdAndMaterialCode(
+                    Integer.parseInt(req.getGiNo().split("/")[1]),
+                    materialDtl.getMaterialCode())
+                    .stream()
+                    .map(GrnConsumableDtlEntity::getQuantity)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+                
+                BigDecimal totRecQuant = prevRecQuant.add(materialDtl.getAcceptedQuantity());
+
+                if(totRecQuant.compareTo(giConsumable.get().getAcceptedQuantity()) > 0){
+                    errorMessage.append("Total received quantity for Asset ID " + materialDtl.getAssetId() +
+                            " exceeds accepted quantity in GI. ");
+                    errorFound = true;
+                    continue;
+                }
+
+                GrnConsumableDtlEntity gcde = new GrnConsumableDtlEntity();
+                mapper.map(materialDtl, gcde);  // Change from mapping giConsumable to mapping materialDtl
+                gcde.setQuantity(materialDtl.getAcceptedQuantity());
+                gcde.setGrnProcessId(grnMaster.getGrnProcessId());
+                gcde.setGiSubProcessId(Integer.parseInt(req.getGiNo().split("/")[1]));
+                gcde.setGrnSubProcessId(grnMaster.getGrnSubProcessId());
+                gcde.setBookValue(materialDtl.getBookValue());         // Set book value
+                gcde.setDepriciationRate(materialDtl.getDepriciationRate()); // Set depreciation rate
+                gcdeList.add(gcde);
+
+                System.out.println("ADDED TO LIST");
+
+                // UPDATE FUNC FOR CONSUMABLE OHQ
+                Optional<OhqMasterConsumableEntity> existingOhq = omcr.findByMaterialCodeAndLocatorId(
+                    materialDtl.getMaterialCode(),
+                    materialDtl.getLocatorId());
+
+                OhqMasterConsumableEntity ohq;
+                if (existingOhq.isPresent()) {
+                    ohq = existingOhq.get();
+                    BigDecimal currentQty = ohq.getQuantity() != null ? ohq.getQuantity() : BigDecimal.ZERO;
+                    ohq.setQuantity(currentQty.add(materialDtl.getAcceptedQuantity()));
+                } else {
+                    ohq = new OhqMasterConsumableEntity();
+                    ohq.setMaterialCode(materialDtl.getMaterialCode());
+                    ohq.setLocatorId(materialDtl.getLocatorId());
+                    ohq.setQuantity(materialDtl.getAcceptedQuantity());
+                    System.out.println("INSIDE ELSE ABOVE BV");
+                    ohq.setBookValue(materialDtl.getBookValue());
+                    System.out.println("INSIDE ELSE BELOW BV");
+                    ohq.setDepriciationRate(materialDtl.getDepriciationRate());
+                    ohq.setUnitPrice(materialDtl.getBookValue());
+                }
+                System.out.println("BEFORE OMCR SAVING");
+                omcr.save(ohq);
+                System.out.println("AFTER OMCR SAVING");
+            }
             }
         } else {
             // IGP validation logic - skip GI-specific validations
@@ -170,7 +252,9 @@ public class GrnServiceImpl implements GrnService {
         }
 
         grnmdr.saveAll(grnMaterialDtlList);
-
+        System.out.println("BEFORE GCDR SAVING");
+        gcdr.saveAll(gcdeList);
+        System.out.println("AFTER GCDR SAVING");
         return "INV" + grnMaster.getGrnProcessId() + "/" + grnMaster.getGrnSubProcessId();
     }
 

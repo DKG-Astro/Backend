@@ -7,6 +7,8 @@ import lombok.Data;
 public class GrnMaterialDtlDto {
     private Integer assetId;
     private String assetDesc;
+    private String materialCode;
+    private String materialDesc;
     private String uomId;
     private Integer locatorId;
     private BigDecimal bookValue;

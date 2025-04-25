@@ -68,13 +68,15 @@ public class GprnServiceImpl implements GprnService {
         for (MaterialDtlDto dtl : req.getMaterialDtlList()) {
             List<GprnMaterialDtlEntity> gmdeList = gmdr.findByPoIdAndMaterialCode(req.getPoId(), dtl.getMaterialCode());
     
-            BigDecimal prevRecQuant = gmdeList.stream()
-                .map(GprnMaterialDtlEntity::getReceivedQuantity)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+            // BigDecimal prevRecQuant = gmdeList.stream()
+            //     .map(GprnMaterialDtlEntity::getReceivedQuantity)
+            //     .reduce(BigDecimal.ZERO, BigDecimal::add);
+            // System.out.println("PREV REC QUANT: " + prevRecQuant);
+            // System.out.println("NEW WUANT: " + dtl.getReceivedQuantity());
     
-            BigDecimal totalRecQuant = prevRecQuant.add(dtl.getReceivedQuantity());
-            if (totalRecQuant.compareTo(dtl.getOrderedQuantity()) > 0) {
-                errorMessage.append("Total received quantity for " + dtl.getMaterialCode() + " is more than ordered quantity.");
+            // BigDecimal totalRecQuant = prevRecQuant.add(dtl.getReceivedQuantity());
+            if (dtl.getOrderedQuantity().compareTo(dtl.getReceivedQuantity()) < 0) {
+                errorMessage.append("Received quantity for " + dtl.getMaterialCode() + " is more than ordered quantity.");
                 errorFound = true;
                 continue;
             }

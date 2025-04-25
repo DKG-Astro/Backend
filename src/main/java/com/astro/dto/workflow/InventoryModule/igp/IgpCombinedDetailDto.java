@@ -13,5 +13,6 @@ public class IgpCombinedDetailDto {
     private Integer ogpSubProcessId;
     private Integer igpSubProcessId;
     private String poId;
+    private String status;
     private List<IgpItemDetailDto> details;
 }

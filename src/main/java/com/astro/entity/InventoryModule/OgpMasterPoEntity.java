@@ -38,6 +38,9 @@ public class OgpMasterPoEntity {
 
     @Column(name = "ogp_type")
     private String ogpType;
+    
+    @Column(name = "status")
+    private String status;
 
     @Column(name="receiver_name")
     private String receiverName;

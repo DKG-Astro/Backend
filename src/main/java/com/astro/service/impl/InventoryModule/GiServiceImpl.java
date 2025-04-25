@@ -17,9 +17,11 @@ import com.astro.service.InventoryModule.GprnService;
 import com.astro.repository.InventoryModule.GiRepository.*;
 import com.astro.repository.MaterialMasterRepository;
 import com.astro.repository.InventoryModule.AssetMasterRepository;
+import com.astro.repository.InventoryModule.GoodsInspectionConsumableDetailRepository;
 import com.astro.entity.MaterialMaster;
 import com.astro.entity.InventoryModule.*;
 import com.astro.dto.workflow.InventoryModule.GiDto.*;
+import com.astro.dto.workflow.InventoryModule.GprnDto.SaveGprnDto;
 import com.astro.dto.workflow.InventoryModule.gprn.GprnPendingInspectionDetailDto;
 import com.astro.dto.workflow.InventoryModule.gprn.GprnPendingInspectionDto;
 import com.astro.exception.*;
@@ -54,6 +56,9 @@ public class GiServiceImpl implements GiService {
     @Autowired
     private IssueNoteMasterRepository issueNoteMasterRepository;
 
+    @Autowired
+    private GoodsInspectionConsumableDetailRepository gicdr;
+
     private final String basePath;
 
 
@@ -65,6 +70,7 @@ public class GiServiceImpl implements GiService {
     @Transactional
     public String saveGi(SaveGiDto req) {
         gprnService.validateGprnSubProcessId(req.getGprnNo());
+        SaveGprnDto gprnDto = gprnService.getGprnDtls(req.getGprnNo());
 
         ModelMapper mapper = new ModelMapper();
         GiMasterEntity gime = new GiMasterEntity();
@@ -79,10 +85,49 @@ public class GiServiceImpl implements GiService {
         gime = gimr.save(gime);
 
         List<GiMaterialDtlEntity> gimdeList = new ArrayList<>();
+        List<GoodsInspectionConsumableDetailEntity> gicdeList = new ArrayList<>();
         StringBuilder errorMessage = new StringBuilder();
         Boolean errorFound = false;
 
         for (GiMaterialDtlDto gmdd : req.getMaterialDtlList()) {
+
+            if(gmdd.getCategory().equalsIgnoreCase("consumable")) {
+                System.out.println("INSIDE CONSUMABLE");
+                Optional<GoodsInspectionConsumableDetailEntity> gicdeOpt = gicdr.findByGprnSubProcessIdAndMaterialCode(
+                        Integer.parseInt(req.getGprnNo().split("/")[1]), gmdd.getMaterialCode());
+                        
+                if (gicdeOpt.isPresent()) {
+                    errorMessage.append("Inspection already done for the provided GPRN No. " + req.getGprnNo()
+                            + " and Material Code " + gmdd.getMaterialCode());
+                    errorFound = true;
+                    continue;
+                } else if (!gicdeOpt.isPresent()
+                        && (gmdd.getReceivedQuantity()
+                                .compareTo(gmdd.getAcceptedQuantity().add(gmdd.getRejectedQuantity())) != 0)) {
+                    errorMessage.append("Total received quantity for " + gmdd.getMaterialCode()
+                            + " is not equal to accepted quantity + rejected quantity.");
+                    errorFound = true;
+                    continue;
+                }
+
+                GoodsInspectionConsumableDetailEntity gicde = new GoodsInspectionConsumableDetailEntity();
+                mapper.map(gmdd, gicde);
+
+                gicde.setInspectionSubProcessId(gime.getInspectionSubProcessId());
+                gicde.setGprnSubProcessId(Integer.parseInt(req.getGprnNo().split("/")[1]));
+                gicde.setGprnProcessId(Integer.parseInt(req.getGprnNo().split("/")[0].substring(3)));
+
+                try {
+                    String instlRepFileName = CommonUtils.saveBase64Image(gmdd.getInstallationReportBase64(), basePath);
+                    gicde.setInstallationReportFilename(instlRepFileName);
+                } catch (Exception e) {
+                    // Log error
+                }
+
+                gicdeList.add(gicde);
+            }
+            else{
+                System.out.println("INSID CPTLLLL");
             Optional<GiMaterialDtlEntity> gimdeOpt = gimdr.findByGprnSubProcessIdAndMaterialCode(
                     Integer.parseInt(req.getGprnNo().split("/")[1]), gmdd.getMaterialCode());
                     
@@ -102,7 +147,7 @@ public class GiServiceImpl implements GiService {
 
             Integer assetId = null;
             if(gmdd.getAcceptedQuantity().compareTo(BigDecimal.ZERO) > 0) {
-                assetId = createNewAsset(gmdd, req.getCreatedBy());
+                assetId = createNewAsset(gmdd, req.getCreatedBy(), gprnDto.getPoId());
             }
 
             GiMaterialDtlEntity gimde = new GiMaterialDtlEntity();
@@ -120,6 +165,7 @@ public class GiServiceImpl implements GiService {
             }
 
             gimdeList.add(gimde);
+            }
         }
 
         if (errorFound) {
@@ -131,6 +177,7 @@ public class GiServiceImpl implements GiService {
         }
 
         gimdr.saveAll(gimdeList);
+        gicdr.saveAll(gicdeList);
         return "INV" + gime.getGprnProcessId() + "/" + gime.getInspectionSubProcessId();
     }
 
@@ -156,7 +203,21 @@ public class GiServiceImpl implements GiService {
                         "Goods Inspection not found for the provided process ID.")));
 
         List<GiMaterialDtlEntity> gimdeList = gimdr.findByInspectionSubProcessId(gime.getInspectionSubProcessId());
-        List<GiMaterialDtlDto> materialDtlListRes = gimdeList.stream()
+        List<GoodsInspectionConsumableDetailEntity> gicdeList = gicdr.findByInspectionSubProcessId(gime.getInspectionSubProcessId());
+        List<GiMaterialDtlDto> materialDtlListRes = gicdeList.stream()
+              .map(gicde -> {
+                  GiMaterialDtlDto gmdd = mapper.map(gicde, GiMaterialDtlDto.class);
+                  try {
+                    String imageBase64 = CommonUtils.convertImageToBase64(gicde.getInstallationReportFilename(),
+                            basePath);
+                    gmdd.setInstallationReportBase64(imageBase64);
+                } catch (Exception e) {
+                    // Log error
+                }
+                return gmdd;
+              }).collect(Collectors.toList());
+
+        List<GiMaterialDtlDto> materialDtlListRes1 = gimdeList.stream()
                 .map(gimde -> {
                     GiMaterialDtlDto gmdd = mapper.map(gimde, GiMaterialDtlDto.class);
                     gmdd.setAssetId(gimde.getAssetId());
@@ -183,6 +244,7 @@ public class GiServiceImpl implements GiService {
         giRes.setGprnNo(processNo);
         giRes.setInstallationDate(CommonUtils.convertDateToString(gime.getInstallationDate()));
         giRes.setCommissioningDate(CommonUtils.convertDateToString(gime.getCommissioningDate()));
+        materialDtlListRes.addAll(materialDtlListRes1);
         giRes.setMaterialDtlList(materialDtlListRes);
 
         Map<String, Object> combinedRes = new HashMap<>();
@@ -192,20 +254,21 @@ public class GiServiceImpl implements GiService {
         return combinedRes;
     }
 
-    private Integer createNewAsset(GiMaterialDtlDto materialDtl, Integer createdBy) {
+    private Integer createNewAsset(GiMaterialDtlDto materialDtl, Integer createdBy, String poId) {
         MaterialMaster mme = mmr.findById(materialDtl.getMaterialCode())
             .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
                     AppConstant.ERROR_CODE_RESOURCE,
                     AppConstant.ERROR_TYPE_CODE_RESOURCE,
                     AppConstant.ERROR_TYPE_RESOURCE,
                     "Material not found for the provided material code.")));
-        Optional<AssetMasterEntity> ameOpt = amr.findByMaterialCodeAndMaterialDescAndMakeNoAndModelNoAndSerialNoAndUomId(
+        Optional<AssetMasterEntity> ameOpt = amr.findByMaterialCodeAndMaterialDescAndMakeNoAndModelNoAndSerialNoAndUomIdAndPoId(
                 materialDtl.getMaterialCode(),
                 materialDtl.getMaterialDesc(),
                 materialDtl.getMakeNo(),
                 materialDtl.getModelNo(),
                 materialDtl.getSerialNo(),
-                materialDtl.getUomId()
+                materialDtl.getUomId(),
+                poId
         );
 
         if(ameOpt.isEmpty()) {

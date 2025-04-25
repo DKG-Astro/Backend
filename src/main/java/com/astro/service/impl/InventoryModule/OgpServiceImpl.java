@@ -111,6 +111,7 @@ public class OgpServiceImpl implements OgpService {
         ogpMaster.setCreatedBy(req.getCreatedBy());
         ogpMaster.setLocationId(req.getLocationId());
         ogpMaster.setOgpType(req.getOgpType());
+        ogpMaster.setStatus("AWAITING APPROVAL");
         if(Objects.nonNull(req.getDateOfReturn())){
             ogpMaster.setDateOfReturn(CommonUtils.convertStringToDateObject(req.getDateOfReturn()));
         }
@@ -296,6 +297,7 @@ public class OgpServiceImpl implements OgpService {
         // Create and save OGP Master PO
         OgpMasterPoEntity ogpMasterPo = new OgpMasterPoEntity();
         ogpMasterPo.setPoId(request.getPoId());
+        ogpMasterPo.setStatus("AWAITING APPROVAL");
         ogpMasterPo.setOgpDate(CommonUtils.convertStringToDateObject(request.getOgpDate()));
         ogpMasterPo.setLocationId(request.getLocationId());
         ogpMasterPo.setCreatedBy(request.getCreatedBy());

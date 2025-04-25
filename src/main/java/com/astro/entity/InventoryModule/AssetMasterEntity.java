@@ -32,6 +32,7 @@ public class AssetMasterEntity {
     private String componentName;
     private Integer componentId;
     private BigDecimal initQuantity;
+    private String poId;
 
     @Column(name = "unit_price")
     private BigDecimal unitPrice;
