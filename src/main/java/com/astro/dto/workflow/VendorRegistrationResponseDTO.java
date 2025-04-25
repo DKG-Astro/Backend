@@ -25,6 +25,7 @@ public class VendorRegistrationResponseDTO {
     private String accountNumber;
     private String ifscCode;
     private String approvalStatus;
+    private String comments;
     private String updatedBy;
     private Integer createdBy;
     private LocalDateTime createdDate;

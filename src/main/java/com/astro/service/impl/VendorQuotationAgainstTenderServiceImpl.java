@@ -1,13 +1,19 @@
 package com.astro.service.impl;
 
 import com.astro.dto.workflow.VendorQuotationAgainstTenderDto;
+import com.astro.dto.workflow.VendorStatusDto;
+import com.astro.entity.VendorMaster;
+import com.astro.entity.VendorMasterUtil;
 import com.astro.entity.VendorQuotationAgainstTender;
+import com.astro.repository.VendorMasterRepository;
+import com.astro.repository.VendorMasterUtilRepository;
 import com.astro.repository.VendorQuotationAgainstTenderRepository;
 import com.astro.service.VendorQuotationAgainstTenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -15,6 +21,10 @@ public class VendorQuotationAgainstTenderServiceImpl implements VendorQuotationA
 
     @Autowired
     private VendorQuotationAgainstTenderRepository vendorQuotationAgainstTenderRepository;
+    @Autowired
+    private VendorMasterRepository vendorMasterRepository;
+    @Autowired
+    private VendorMasterUtilRepository vendorMasterUtilRepository;
 
     @Override
     public VendorQuotationAgainstTenderDto saveQuotation(VendorQuotationAgainstTenderDto dto) {
@@ -43,6 +53,36 @@ public class VendorQuotationAgainstTenderServiceImpl implements VendorQuotationA
             dto.setCreatedBy(vq.getCreatedBy());
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public VendorStatusDto getVendorStatus(String vendorId) {
+
+        VendorStatusDto dto = new VendorStatusDto();
+        dto.setVendorId(vendorId);
+
+        // Checking for approved vendors
+        Optional<VendorMaster> approved = vendorMasterRepository.findByVendorId(vendorId);
+        if (approved.isPresent()) {
+            VendorMaster vm = approved.get();
+            dto.setStatus(vm.getStatus());
+            dto.setComments("Vendor is approved.");
+            return dto;
+        }
+
+        // Checking for rejected/awaiting vendors
+        Optional<VendorMasterUtil> pendingOrRej = vendorMasterUtilRepository.findByVendorId(vendorId);
+        if (pendingOrRej.isPresent()) {
+            VendorMasterUtil vendor = pendingOrRej.get();
+            dto.setStatus(vendor.getApprovalStatus().name()); // rejected or awaiting for approval
+            dto.setComments(vendor.getComments());
+            return dto;
+        }
+
+        // Not found anywhere
+        dto.setStatus("NOT_FOUND");
+        dto.setComments("Vendor ID is not available in the system.");
+        return dto;
     }
 
     private VendorQuotationAgainstTenderDto mapToResponse(VendorQuotationAgainstTender dto) {

@@ -2,6 +2,7 @@ package com.astro.controller;
 
 import com.astro.dto.workflow.VendorMasterResponseDto;
 import com.astro.dto.workflow.VendorQuotationAgainstTenderDto;
+import com.astro.dto.workflow.VendorStatusDto;
 import com.astro.service.VendorQuotationAgainstTenderService;
 import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,12 @@ public class VendorQuotationController {
     @GetMapping("/{tenderId}")
     public ResponseEntity<Object> getVendorQuotationByTenderId(@PathVariable String tenderId) {
         List<VendorQuotationAgainstTenderDto> responseDTO = vqService.getQuotationsByTenderId(tenderId);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
+    }
+
+    @GetMapping("VendorStatus/{vendorId}")
+    public ResponseEntity<Object> getVendorStatus(@PathVariable String vendorId) {
+        VendorStatusDto responseDTO = vqService.getVendorStatus(vendorId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 

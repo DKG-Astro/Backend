@@ -112,7 +112,7 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
         vendorResponse.setUpdatedBy(vendor.getUpdatedBy());
         vendorResponse.setCreatedDate(vendor.getCreatedDate());
         vendorResponse.setUpdatedDate(vendor.getUpdatedDate());
-        // vendorResponse.setComments(vendor.getComments());
+        vendorResponse.setComments(vendor.getComments());
 
         return vendorResponse;
 
