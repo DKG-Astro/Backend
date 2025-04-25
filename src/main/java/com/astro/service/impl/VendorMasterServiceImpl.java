@@ -5,15 +5,20 @@ import com.astro.dto.workflow.RegisteredVendorsDataDto;
 import com.astro.dto.workflow.VendorContractReportDTO;
 import com.astro.dto.workflow.VendorMasterRequestDto;
 import com.astro.dto.workflow.VendorMasterResponseDto;
+import com.astro.entity.ProcurementModule.IndentId;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.TenderRequest;
 import com.astro.entity.VendorMaster;
+import com.astro.entity.VendorNamesForJobWorkMaterial;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
+import com.astro.repository.ProcurementModule.IndentIdRepository;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderRepository;
 import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.repository.VendorMasterRepository;
+import com.astro.repository.VendorNamesForJobWorkMaterialRepository;
+import com.astro.repository.WorkflowTransitionRepository;
 import com.astro.service.VendorMasterService;
 import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +38,14 @@ public class VendorMasterServiceImpl implements VendorMasterService {
     private PurchaseOrderRepository purchaseOrderRepository;
     @Autowired
     private TenderRequestRepository tenderRequestRepository;
+
+    @Autowired
+    private IndentIdRepository indentIdRepository;
+    @Autowired
+    private VendorNamesForJobWorkMaterialRepository vendorNamesForJobWorkMaterialRepository;
+
+    @Autowired
+    private WorkflowTransitionRepository workflowTransitionRepository;
 
     @Override
     public VendorMasterResponseDto createVendorMaster(VendorMasterRequestDto vendorMasterRequestDto) {
@@ -169,6 +182,8 @@ public class VendorMasterServiceImpl implements VendorMasterService {
                 .collect(Collectors.toList());
     }
 
+
+
     @Override
     public List<RegisteredVendorsDataDto> getVendorPurchaseOrders(String vendorId) {
 
@@ -194,6 +209,33 @@ public class VendorMasterServiceImpl implements VendorMasterService {
         }
 
         return result;
+    }
+
+    @Override
+    public List<String> getTenderIds(String vendorId) {
+
+        List<VendorNamesForJobWorkMaterial> vendorMaterials =
+                vendorNamesForJobWorkMaterialRepository.findByVendorName(vendorId);
+
+        // 2. Extract unique indent IDs
+        List<String> indentIds = vendorMaterials.stream()
+                .map(VendorNamesForJobWorkMaterial::getIndentId)
+                .distinct()
+                .collect(Collectors.toList());
+
+        // 3. Use indent IDs to find tender IDs
+        List<IndentId> indentEntities = indentIdRepository.findByIndentIdIn(indentIds);
+        List<String> approvedTenderIds = workflowTransitionRepository.findApprovedTenderIds();
+        List<String> tenderIds = indentEntities.stream()
+                .map(indent -> indent.getTenderRequest().getTenderId())
+                .filter(approvedTenderIds::contains)
+                .distinct()
+                .collect(Collectors.toList());
+
+
+        return tenderIds;
+
+        
     }
 
 

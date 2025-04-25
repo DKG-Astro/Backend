@@ -65,6 +65,11 @@ public class VendorMasterController {
         List<RegisteredVendorsDataDto> response = vendorMasterService.getVendorPurchaseOrders(vendorId);
         return ResponseEntity.ok(ResponseBuilder.getSuccessResponse(response));
     }
+    @GetMapping("/approvedtenderIDs/{vendorId}")
+    public ResponseEntity<Object> getAllTenderIdsByVendor(@PathVariable String vendorId) {
+        List<String> response = vendorMasterService.getTenderIds(vendorId);
+        return ResponseEntity.ok(ResponseBuilder.getSuccessResponse(response));
+    }
 
 
 

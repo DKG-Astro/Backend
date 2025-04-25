@@ -17,4 +17,5 @@ public interface VendorNamesForJobWorkMaterialRepository extends JpaRepository<V
     List<VendorNamesForJobWorkMaterial> findByWorkCode(String workCode);
 
     List<VendorNamesForJobWorkMaterial> findByMaterialId(Long id);
+    List<VendorNamesForJobWorkMaterial> findByVendorName(String vendorName);
 }

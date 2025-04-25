@@ -22,6 +22,8 @@ public interface VendorMasterService {
 
     public List<RegisteredVendorsDataDto> getVendorPurchaseOrders(String vendorId);
 
+    public List<String> getTenderIds(String vendorId);
+
 
  //   List<VendorContractReportDTO> getVendorContracts(String startDate, String endDate);
 }

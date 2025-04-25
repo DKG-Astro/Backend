@@ -175,6 +175,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                     VendorNamesForJobWorkMaterial vendor = new VendorNamesForJobWorkMaterial();
                     vendor.setVendorName(vendorName);
                     vendor.setMaterialId(savedMaterial.getId());
+                    vendor.setIndentId(indentId);
                     vendor.setMaterialCode(savedMaterial.getMaterialCode());
                     vendorList.add(vendor);
                 }

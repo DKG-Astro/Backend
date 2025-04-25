@@ -15,6 +15,7 @@ public class VendorNamesForJobWorkMaterial {
     private Long id;
 
     private Long materialId;
+    private String indentId;
 
     @Column(name = "vendor_name", nullable = false)
     private String vendorName;
