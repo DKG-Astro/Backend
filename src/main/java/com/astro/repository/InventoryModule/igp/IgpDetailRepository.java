@@ -74,7 +74,8 @@ public interface IgpDetailRepository extends JpaRepository<IgpDetailEntity, Inte
                     END,
                     'type', 'ASSET'
                 )
-            ) as details
+            ) as details,
+            om.status
         FROM ogp_master om
         JOIN issue_note_master inm ON om.issue_note_id = inm.issue_note_id
         JOIN issue_note_detail ind ON inm.issue_note_id = ind.issue_note_id
@@ -86,7 +87,8 @@ public interface IgpDetailRepository extends JpaRepository<IgpDetailEntity, Inte
             WHEN od.asset_id IS NOT NULL THEN od.asset_id
             ELSE ind.asset_id
         END = am.asset_id
-        GROUP BY om.issue_note_id, om.ogp_sub_process_id, im.igp_sub_process_id
+        WHERE im.igp_sub_process_id IS NULL
+        GROUP BY om.issue_note_id, om.ogp_sub_process_id, im.igp_sub_process_id, om.status
         
         UNION ALL
         
@@ -107,12 +109,14 @@ public interface IgpDetailRepository extends JpaRepository<IgpDetailEntity, Inte
                     'quantity', COALESCE(ipd.quantity, opd.quantity),
                     'type', 'MATERIAL'
                 )
-            ) as details
+            ) as details,
+            omp.status
         FROM ogp_master_po omp
         LEFT JOIN igp_master im ON omp.ogp_sub_process_id = im.ogp_sub_process_id
         LEFT JOIN igp_po_detail ipd ON im.igp_sub_process_id = ipd.igp_sub_process_id
         LEFT JOIN ogp_po_detail opd ON omp.ogp_sub_process_id = opd.ogp_sub_process_id
-        GROUP BY omp.po_id, omp.ogp_sub_process_id, im.igp_sub_process_id
+        WHERE im.igp_sub_process_id IS NULL
+        GROUP BY omp.po_id, omp.ogp_sub_process_id, im.igp_sub_process_id, omp.status
         """, 
         nativeQuery = true)
     List<Object[]> findAllIgpDetails();

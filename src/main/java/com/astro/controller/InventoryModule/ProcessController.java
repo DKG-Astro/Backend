@@ -10,6 +10,7 @@ import com.astro.dto.workflow.InventoryModule.igp.IgpDetailReportDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpReportDto;
 import com.astro.dto.workflow.InventoryModule.isn.IsnDto;
+import com.astro.dto.workflow.InventoryModule.ogp.GprApprovalDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
@@ -143,4 +144,20 @@ public class ProcessController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
     
+    @PostMapping("/approveOgp")
+    public ResponseEntity<Object> approveOgp(@RequestBody GprApprovalDto req) {
+        processService.approveOgp(req);
+        Map<String, String> res = new HashMap<>();
+        res.put("message", "OGP approved successfully");
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @PostMapping("/rejectOgp")
+    public ResponseEntity<Object> rejectOgp(@RequestBody GprApprovalDto req) {
+        processService.rejectOgp(req);
+        Map<String, String> res = new HashMap<>();
+        res.put("message", "OGP rejected successfully");
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
 }

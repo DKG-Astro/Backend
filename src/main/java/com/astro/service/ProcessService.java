@@ -5,6 +5,7 @@ import com.astro.dto.workflow.InventoryModule.grn.GrnDto;
 import com.astro.dto.workflow.InventoryModule.grv.GrvDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpDto;
 import com.astro.dto.workflow.InventoryModule.isn.IsnDto;
+import com.astro.dto.workflow.InventoryModule.ogp.GprApprovalDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
@@ -40,4 +41,7 @@ public List<OhqReportDto> getOhqReport();
     public List<String> getPendingGprn();
 
     public OgpPoResponseDto getPoOgp(String processNo);
+
+    public void approveOgp(GprApprovalDto req);
+    public void rejectOgp(GprApprovalDto req);
 }

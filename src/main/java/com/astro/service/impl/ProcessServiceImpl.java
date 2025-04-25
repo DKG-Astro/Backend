@@ -6,6 +6,7 @@ import com.astro.dto.workflow.InventoryModule.grn.GrnDto;
 import com.astro.dto.workflow.InventoryModule.grv.GrvDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpDto;
 import com.astro.dto.workflow.InventoryModule.isn.IsnDto;
+import com.astro.dto.workflow.InventoryModule.ogp.GprApprovalDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
@@ -184,5 +185,14 @@ public class ProcessServiceImpl implements ProcessService {
     @Override
     public OgpPoResponseDto getPoOgp(String processNo){
         return ogpService.getPoOgp(processNo);
+    }
+
+    @Override
+    public void approveOgp(GprApprovalDto req) {
+        ogpService.approveOgp(req);
+    }
+    @Override
+    public void rejectOgp(GprApprovalDto req) {
+        ogpService.rejectOgp(req);
     }
 }

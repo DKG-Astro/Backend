@@ -19,6 +19,7 @@ import com.astro.repository.InventoryModule.ogp.OgpPoDetailRepository;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;
 import com.astro.repository.InventoryModule.ogp.OgpMasterRepository;
 import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.InventoryModule.ogp.GprApprovalDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDetailReportDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpMaterialDtlDto;
@@ -112,6 +113,7 @@ public class OgpServiceImpl implements OgpService {
         ogpMaster.setLocationId(req.getLocationId());
         ogpMaster.setOgpType(req.getOgpType());
         ogpMaster.setStatus("AWAITING APPROVAL");
+        System.out.println("STATUS SET");
         if(Objects.nonNull(req.getDateOfReturn())){
             ogpMaster.setDateOfReturn(CommonUtils.convertStringToDateObject(req.getDateOfReturn()));
         }
@@ -376,5 +378,79 @@ public class OgpServiceImpl implements OgpService {
 
         response.setMaterialDtlList(materialDtls);
         return response;
+    }
+
+    @Override
+    @Transactional
+    public void approveOgp(GprApprovalDto req) {
+        String processNo = req.getProcessNo();
+        String type = req.getType();
+        String[] processNoSplit = processNo.split("/");
+        if (processNoSplit.length != 2) {
+            throw new InvalidInputException(new ErrorDetails(
+                AppConstant.USER_INVALID_INPUT,
+                AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                AppConstant.ERROR_TYPE_VALIDATION,
+                "Invalid process number format"));
+        }
+
+        Integer ogpSubProcessId = Integer.parseInt(processNoSplit[1]);
+        
+        if ("ISN".equals(type)) {
+            // Handle ISN type OGP
+            OgpMasterEntity ogpMaster = ogpMasterRepository.findById(ogpSubProcessId)
+                .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                    AppConstant.ERROR_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_RESOURCE,
+                    "OGP not found")));
+
+            ogpMaster.setStatus("APPROVED");
+            ogpMasterRepository.save(ogpMaster);
+        } else {
+            // Handle PO type OGP
+            OgpMasterPoEntity poOgp = ogpMasterPoRepository.findById(ogpSubProcessId)
+                .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                    AppConstant.ERROR_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_RESOURCE,
+                    "OGP PO not found")));
+
+            poOgp.setStatus("APPROVED");
+            ogpMasterPoRepository.save(poOgp);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void rejectOgp(GprApprovalDto req) {
+        String[] processNoSplit = processNo.split("/");
+        if (processNoSplit.length != 2) {
+            throw new InvalidInputException(new ErrorDetails(
+                AppConstant.USER_INVALID_INPUT,
+                AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                AppConstant.ERROR_TYPE_VALIDATION,
+                "Invalid process number format"));
+        }
+
+        Integer ogpSubProcessId = Integer.parseInt(processNoSplit[1]);
+        
+        // Try to find and update OGP master
+        OgpMasterEntity ogpMaster = ogpMasterRepository.findById(ogpSubProcessId)
+            .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                AppConstant.ERROR_CODE_RESOURCE,
+                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                AppConstant.ERROR_TYPE_RESOURCE,
+                "OGP not found")));
+
+        ogpMaster.setStatus("REJECTED");
+        ogpMasterRepository.save(ogpMaster);
+
+        // Also check and update PO OGP if exists
+        ogpMasterPoRepository.findById(ogpSubProcessId)
+            .ifPresent(poOgp -> {
+                poOgp.setStatus("REJECTED");
+                ogpMasterPoRepository.save(poOgp);
+            });
     }
 }

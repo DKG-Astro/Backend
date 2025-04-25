@@ -2,6 +2,7 @@ package com.astro.service.InventoryModule;
 
 import java.util.List;
 
+import com.astro.dto.workflow.InventoryModule.ogp.GprApprovalDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
@@ -17,4 +18,8 @@ public interface OgpService {
     public String savePoOgp(OgpPoDto request);
 
     public OgpPoResponseDto getPoOgp(String processNo);
+
+    void approveOgp(GprApprovalDto req);
+
+    void rejectOgp(GprApprovalDto req);
 }
