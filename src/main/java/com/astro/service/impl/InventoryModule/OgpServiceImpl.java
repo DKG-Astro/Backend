@@ -424,6 +424,8 @@ public class OgpServiceImpl implements OgpService {
     @Override
     @Transactional
     public void rejectOgp(GprApprovalDto req) {
+        String processNo = req.getProcessNo();
+        String type = req.getType();
         String[] processNoSplit = processNo.split("/");
         if (processNoSplit.length != 2) {
             throw new InvalidInputException(new ErrorDetails(
@@ -435,22 +437,28 @@ public class OgpServiceImpl implements OgpService {
 
         Integer ogpSubProcessId = Integer.parseInt(processNoSplit[1]);
         
-        // Try to find and update OGP master
-        OgpMasterEntity ogpMaster = ogpMasterRepository.findById(ogpSubProcessId)
-            .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
-                AppConstant.ERROR_CODE_RESOURCE,
-                AppConstant.ERROR_TYPE_CODE_RESOURCE,
-                AppConstant.ERROR_TYPE_RESOURCE,
-                "OGP not found")));
+        if ("ISN".equals(type)) {
+            // Handle ISN type OGP
+            OgpMasterEntity ogpMaster = ogpMasterRepository.findById(ogpSubProcessId)
+                .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                    AppConstant.ERROR_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_RESOURCE,
+                    "OGP not found")));
 
-        ogpMaster.setStatus("REJECTED");
-        ogpMasterRepository.save(ogpMaster);
+            ogpMaster.setStatus("APPROVED");
+            ogpMasterRepository.save(ogpMaster);
+        } else {
+            // Handle PO type OGP
+            OgpMasterPoEntity poOgp = ogpMasterPoRepository.findById(ogpSubProcessId)
+                .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                    AppConstant.ERROR_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_RESOURCE,
+                    "OGP PO not found")));
 
-        // Also check and update PO OGP if exists
-        ogpMasterPoRepository.findById(ogpSubProcessId)
-            .ifPresent(poOgp -> {
-                poOgp.setStatus("REJECTED");
-                ogpMasterPoRepository.save(poOgp);
-            });
+            poOgp.setStatus("APPROVED");
+            ogpMasterPoRepository.save(poOgp);
+        }
     }
 }
