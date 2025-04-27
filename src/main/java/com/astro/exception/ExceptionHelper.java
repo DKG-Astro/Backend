@@ -52,4 +52,11 @@ public class ExceptionHelper {
         return new ResponseEntity<Object>(ResponseBuilder.getErrorResponse(errorDetails), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(value = { EmailNotSentException.class })
+    public ResponseEntity<Object> handleEmailNotSentException(EmailNotSentException ex, WebRequest request) {
+        ex.printStackTrace();
+        return new ResponseEntity<Object>(ResponseBuilder.getErrorResponse(ex.getErrorDetails()), HttpStatus.BAD_REQUEST);
+    }
+
+
 }

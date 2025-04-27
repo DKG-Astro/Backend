@@ -9,5 +9,7 @@ public class VendorStatusDto {
     private String status;
     private String comments;
 
+    private Boolean emailStatus;
+    private String password;
 
 }

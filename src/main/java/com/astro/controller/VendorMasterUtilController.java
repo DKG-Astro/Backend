@@ -1,9 +1,6 @@
 package com.astro.controller;
 
-import com.astro.dto.workflow.ApprovalAndRejectionRequestDTO;
-import com.astro.dto.workflow.VendorMasterResponseDto;
-import com.astro.dto.workflow.VendorRegistrationRequestDTO;
-import com.astro.dto.workflow.VendorRegistrationResponseDTO;
+import com.astro.dto.workflow.*;
 import com.astro.service.VendorMasterUtilService;
 import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +19,7 @@ public class VendorMasterUtilController {
 
     @PostMapping("/register")
     public ResponseEntity<Object> registerVendor(@RequestBody VendorRegistrationRequestDTO dto) {
-        VendorRegistrationResponseDTO vendor = vendorMasterUtil.registerVendor(dto);
+        VendorRegiEmailResponseDTO vendor = vendorMasterUtil.registerVendor(dto);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(vendor), HttpStatus.OK);
     }
 

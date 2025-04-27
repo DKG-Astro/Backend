@@ -3,6 +3,7 @@ com\astro\dto\workflow\ProcurementDtos\purchaseOrder\PurchaseOrderResponseDTO.cl
 com\astro\entity\EmployeeDepartmentMaster.class
 com\astro\dto\workflow\InventoryModule\igp\IgpDetailReportDto.class
 com\astro\service\impl\WorkflowServiceImpl.class
+com\astro\util\PasswordGenerator.class
 com\astro\entity\MaterialMasterUtil.class
 com\astro\entity\InventoryModule\GprnMaterialDtlEntity.class
 com\astro\controller\JobMasterController.class
@@ -22,6 +23,7 @@ com\astro\service\InventoryModule\GprnService.class
 com\astro\dto\workflow\InventoryModule\GatepassResponseDTO.class
 com\astro\controller\InventoryModule\ProcessController.class
 com\astro\entity\WorkflowMaster.class
+com\astro\repository\VendorLoginDetailsRepository.class
 com\astro\repository\UserRoleMasterRepository.class
 com\astro\dto\workflow\InventoryModule\igp\IgpMaterialDtlDto.class
 com\astro\repository\InventoryModule\AssetMasterRepository.class
@@ -34,6 +36,7 @@ com\astro\dto\workflow\StateDto.class
 com\astro\entity\UserRoleMaster.class
 com\astro\config\ResponseHandler.class
 com\astro\repository\LocationMasterRepository.class
+com\astro\entity\InventoryModule\GoodsInspectionConsumableDetailEntity.class
 com\astro\dto\workflow\InventoryModule\grv\GrvMaterialDtlDto.class
 com\astro\dto\workflow\ProcurementDtos\SreviceOrderDto\ServiceOrderMaterialResponseDTO.class
 com\astro\dto\workflow\userRequestDto.class
@@ -41,6 +44,7 @@ com\astro\constant\AppConstant.class
 com\astro\service\impl\VendorMasterServiceImpl.class
 com\astro\service\MaterialMasterService.class
 com\astro\dto\workflow\QueueResponse.class
+com\astro\entity\InventoryModule\OhqMasterConsumableEntity.class
 com\astro\dto\workflow\WorkMasterRequestDto.class
 com\astro\entity\InventoryModule\IsnMasterEntity$IssueNoteType.class
 com\astro\service\impl\ContigencyPurchaseServiceImpl.class
@@ -63,6 +67,7 @@ com\astro\dto\workflow\ProcurementDtos\IndentDto\IndentReportDetailsDTO.class
 com\astro\dto\workflow\InventoryModule\GiDto\SaveGiDto.class
 com\astro\util\ResponseBuilder.class
 com\astro\entity\ProcurementModule\PurchaseOrderAttributes.class
+com\astro\entity\VendorLoginDetails.class
 com\astro\service\GoodsReceiptInspectionService.class
 com\astro\service\RoleMasterService.class
 com\astro\dto\workflow\InventoryModule\igp\IgpItemDetailDto.class
@@ -105,6 +110,7 @@ com\astro\dto\workflow\ProcurementDtos\SreviceOrderDto\ServiceOrderResponseDTO.c
 com\astro\entity\InventoryModule\GatepassOutAndIn.class
 com\astro\dto\workflow\InventoryModule\igp\IgpReportDto.class
 com\astro\dto\workflow\InventoryModule\GoodsReceiptInspectionResponseDto.class
+com\astro\exception\EmailNotSentException.class
 com\astro\service\ContigencyPurchaseService.class
 com\astro\service\impl\InventoryModule\OgpServiceImpl.class
 com\astro\entity\InventoryModule\OhqMasterEntity.class
@@ -120,6 +126,7 @@ com\astro\entity\InventoryModule\MaterialDisposal.class
 com\astro\repository\InventoryModule\GatePassRepository.class
 com\astro\entity\InventoryModule\IsnMaterialDtlEntity.class
 com\astro\entity\InventoryModule\GprnMasterEntity.class
+com\astro\controller\VendorQuotationController.class
 com\astro\controller\ProcurementModuleController\ContigencyPurchaseController.class
 com\astro\entity\InventoryModule\GoodsReturn.class
 com\astro\service\GoodsTransferService.class
@@ -142,6 +149,7 @@ com\astro\service\TenderEvaluationService.class
 com\astro\dto\workflow\InventoryModule\ohq\OhqLocatorDetailDto.class
 com\astro\entity\ProcurementModule\IndentCreation.class
 com\astro\service\VendorMasterUtilService.class
+com\astro\repository\InventoryModule\GoodsInspectionConsumableDetailRepository.class
 com\astro\repository\InventoryModule\ogp\OgpDetailRepository.class
 com\astro\entity\InventoryModule\GrvMasterEntity.class
 com\astro\entity\ProcurementModule\IndentId.class
@@ -177,6 +185,7 @@ com\astro\controller\ProcurementModuleController\IndentCreationController.class
 com\astro\controller\UomMasterController.class
 com\astro\repository\ProcurementModule\IndentIdRepository.class
 com\astro\entity\MaterialMasterUtil$ApprovalStatus.class
+com\astro\repository\VendorQuotationAgainstTenderRepository.class
 com\astro\dto\workflow\LocatorMasterResDto.class
 com\astro\entity\SubWorkflowTransition.class
 com\astro\dto\workflow\InventoryModule\GoodsReturnResponseDto.class
@@ -189,6 +198,7 @@ com\astro\controller\InventoryModule\GatepassController.class
 com\astro\dto\workflow\VendorMasterResponseDto.class
 com\astro\service\impl\InventoryModule\OgpServiceImpl$1.class
 com\astro\repository\InventoryModule\ogp\IgpPoDtlRepository.class
+com\astro\entity\VendorQuotationAgainstTender.class
 com\astro\service\impl\UomMasterServiceImpl.class
 com\astro\config\WebSecurityConfig.class
 com\astro\dto\workflow\InventoryModule\GiDto\GiMaterialDtlDto.class
@@ -197,6 +207,7 @@ com\astro\entity\InventoryModule\GoodsReceiptInspection.class
 com\astro\dto\workflow\InventoryModule\GprnDto\MaterialDtlDto.class
 com\astro\repository\WorkMasterRepository.class
 com\astro\dto\workflow\VendorRegistrationResponseDTO.class
+com\astro\entity\InventoryModule\GrnConsumableDtlEntity.class
 com\astro\repository\InventoryModule\GiRepository\GiMasterRepository.class
 com\astro\dto\workflow\ActionDto.class
 com\astro\dto\workflow\InventoryModule\AssetRequestDTO.class
@@ -211,17 +222,21 @@ com\astro\dto\workflow\SubWorkflowTransitionDto.class
 com\astro\dto\workflow\MaterialTransitionHistory.class
 com\astro\dto\workflow\JobMasterRequestDto.class
 com\astro\dto\workflow\InventoryModule\GoodsReturnRequestDto.class
+com\astro\repository\InventoryModule\OhqMasterConsumableRepository.class
 com\astro\controller\ProjectMasterController.class
+com\astro\service\impl\VendorQuotationAgainstTenderServiceImpl.class
 com\astro\dto\workflow\EmployeeDepartmentMasterRequestDto.class
 com\astro\dto\workflow\InventoryModule\GoodsTransferRequestDto.class
 com\astro\dto\workflow\InventoryModule\GoodsReceiptInspectionRequestDto.class
 com\astro\dto\workflow\ProcurementDtos\ProcurementActivityReportResponse.class
 com\astro\dto\workflow\InventoryModule\ogp\OgpPoMaterialDto.class
 com\astro\service\EmployeeDepartmentMasterService.class
+com\astro\util\EmailService.class
 com\astro\dto\workflow\VendorContractReportDTO.class
 com\astro\entity\InventoryModule\IgpDetailEntity.class
 com\astro\exception\InvalidInputException.class
 com\astro\service\UomMasterService.class
+com\astro\dto\workflow\VendorRegiEmailResponseDTO.class
 com\astro\entity\InventoryModule\GrnMaterialDtlEntity.class
 com\astro\entity\InventoryModule\IsnOhqDtlsDto.class
 com\astro\dto\workflow\InventoryModule\ohq\OhqReportDto.class
@@ -271,6 +286,7 @@ com\astro\dto\workflow\TransitionDto.class
 com\astro\dto\workflow\VendorMasterRequestDto.class
 com\astro\repository\InventoryModule\ogp\OgpMasterPoRepository.class
 com\astro\controller\EmployeeDepartmentMasterController.class
+com\astro\dto\workflow\VendorStatusDto.class
 com\astro\repository\MaterialStatusRepository.class
 com\astro\repository\InventoryModule\GoodsInspectionRepository.class
 com\astro\repository\ProcurementModule\IndentCreation\IndentCreationRepository.class
@@ -303,11 +319,13 @@ com\astro\dto\workflow\InventoryModule\AssetMasterDto.class
 com\astro\repository\InventoryModule\grv\GrvMaterialDtlRepository.class
 com\astro\controller\InventoryModule\MaterialDisposalController.class
 com\astro\entity\JobMaster.class
+com\astro\dto\workflow\InventoryModule\ogp\GprApprovalDto.class
 com\astro\dto\workflow\InventoryModule\GoodsInspectionResponseDto.class
 com\astro\repository\WorkflowMasterRepository.class
 com\astro\dto\workflow\InventoryModule\ogp\OgpPoDtlDto.class
 com\astro\repository\InventoryModule\AssetDisposalMasterRepository.class
 com\astro\entity\ProcurementModule\TenderRequest.class
+com\astro\repository\InventoryModule\grn\GrnConsumableDtlRepository.class
 com\astro\entity\MaterialCreation.class
 com\astro\util\Base64ToByteArrayConverter.class
 com\astro\entity\InventoryModule\GiMaterialDtlEntity.class
@@ -368,10 +386,12 @@ com\astro\entity\InventoryModule\OgpMasterPoEntity.class
 com\astro\entity\InventoryModule\GiMasterEntity.class
 com\astro\dto\workflow\UomMasterRequestDto.class
 com\astro\repository\VendorIdSequenceRepository.class
+com\astro\service\VendorQuotationAgainstTenderService.class
 com\astro\entity\InventoryModule\IgpMasterEntity.class
 com\astro\repository\InventoryModule\igp\IgpDetailRepository.class
 com\astro\service\impl\InventoryModule\GiServiceImpl.class
 com\astro\repository\ProjectMasterRepository.class
+com\astro\dto\workflow\VendorQuotationAgainstTenderDto.class
 com\astro\entity\ProjectMaster.class
 com\astro\entity\InventoryModule\GoodsInspection.class
 com\astro\dto\workflow\InventoryModule\asset\AssetMasterDto.class

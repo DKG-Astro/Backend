@@ -2,9 +2,11 @@ package com.astro.service.impl;
 
 import com.astro.dto.workflow.VendorQuotationAgainstTenderDto;
 import com.astro.dto.workflow.VendorStatusDto;
+import com.astro.entity.VendorLoginDetails;
 import com.astro.entity.VendorMaster;
 import com.astro.entity.VendorMasterUtil;
 import com.astro.entity.VendorQuotationAgainstTender;
+import com.astro.repository.VendorLoginDetailsRepository;
 import com.astro.repository.VendorMasterRepository;
 import com.astro.repository.VendorMasterUtilRepository;
 import com.astro.repository.VendorQuotationAgainstTenderRepository;
@@ -25,6 +27,8 @@ public class VendorQuotationAgainstTenderServiceImpl implements VendorQuotationA
     private VendorMasterRepository vendorMasterRepository;
     @Autowired
     private VendorMasterUtilRepository vendorMasterUtilRepository;
+    @Autowired
+    private VendorLoginDetailsRepository vendorLoginDetailsRepository;
 
     @Override
     public VendorQuotationAgainstTenderDto saveQuotation(VendorQuotationAgainstTenderDto dto) {
@@ -61,21 +65,27 @@ public class VendorQuotationAgainstTenderServiceImpl implements VendorQuotationA
         VendorStatusDto dto = new VendorStatusDto();
         dto.setVendorId(vendorId);
 
-        // Checking for approved vendors
+        // approved vendors
         Optional<VendorMaster> approved = vendorMasterRepository.findByVendorId(vendorId);
+        Optional<VendorLoginDetails> vendorLogin =vendorLoginDetailsRepository.findByVendorId(vendorId);
+        VendorLoginDetails vl = vendorLogin.get();
         if (approved.isPresent()) {
             VendorMaster vm = approved.get();
             dto.setStatus(vm.getStatus());
             dto.setComments("Vendor is approved.");
+            dto.setPassword(vl.getPassword());
+            dto.setEmailStatus(vl.getEmailSent());
             return dto;
         }
 
-        // Checking for rejected/awaiting vendors
+        // rejected/awaiting vendors
         Optional<VendorMasterUtil> pendingOrRej = vendorMasterUtilRepository.findByVendorId(vendorId);
         if (pendingOrRej.isPresent()) {
             VendorMasterUtil vendor = pendingOrRej.get();
             dto.setStatus(vendor.getApprovalStatus().name()); // rejected or awaiting for approval
             dto.setComments(vendor.getComments());
+            dto.setPassword(vl.getPassword());
+            dto.setEmailStatus(vl.getEmailSent());
             return dto;
         }
 

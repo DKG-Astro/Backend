@@ -64,6 +64,12 @@
 			<artifactId>azure-storage-blob</artifactId>
 			<version>12.13.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.sendgrid</groupId>
+			<artifactId>sendgrid-java</artifactId>
+			<version>4.7.2</version>
+		</dependency>
+
 
 		<dependency>
     <groupId>org.modelmapper</groupId>

@@ -2,26 +2,26 @@ package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.ApprovalAndRejectionRequestDTO;
+import com.astro.dto.workflow.VendorRegiEmailResponseDTO;
 import com.astro.dto.workflow.VendorRegistrationRequestDTO;
 import com.astro.dto.workflow.VendorRegistrationResponseDTO;
-import com.astro.entity.UserRoleMaster;
-import com.astro.entity.VendorIdSequence;
-import com.astro.entity.VendorMaster;
-import com.astro.entity.VendorMasterUtil;
+import com.astro.entity.*;
 import com.astro.exception.BusinessException;
+import com.astro.exception.EmailNotSentException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
-import com.astro.repository.UserRoleMasterRepository;
-import com.astro.repository.VendorIdSequenceRepository;
-import com.astro.repository.VendorMasterRepository;
-import com.astro.repository.VendorMasterUtilRepository;
+import com.astro.repository.*;
 import com.astro.service.VendorMasterUtilService;
+import com.astro.util.EmailService;
+import com.astro.util.PasswordGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.Column;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,9 +35,12 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
     private VendorMasterRepository vendorMasterRepository;
     @Autowired
     private VendorIdSequenceRepository vendorIdSequenceRepository;
-
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private VendorLoginDetailsRepository vendorLoginDetailsRepository;
     @Override
-    public VendorRegistrationResponseDTO registerVendor(VendorRegistrationRequestDTO dto) {
+    public VendorRegiEmailResponseDTO registerVendor(VendorRegistrationRequestDTO dto) {
         VendorMasterUtil vendor = new VendorMasterUtil();
 
       //  Integer maxNumber = vendorMasterUtilRepository.findMaxVendorNumber();
@@ -73,8 +76,67 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
         vendor.setCreatedBy(dto.getCreatedBy());
         vendor.setUpdatedBy(dto.getUpdatedBy());
 
-        vendorMasterUtilRepository.save(vendor);
-        return mapToResponse(vendor);
+       VendorMasterUtil vm = vendorMasterUtilRepository.save(vendor);
+
+        String password = PasswordGenerator.generateRandomPassword();
+        try {
+            //sending email to vendor
+            emailService.sendEmail(vm.getEmailAddress(), vm.getVendorId(), password);
+
+            VendorLoginDetails vendorLoginDetails = new VendorLoginDetails();
+            vendorLoginDetails.setVendorId(vm.getVendorId());
+            vendorLoginDetails.setEmailAddress(vm.getEmailAddress());
+            vendorLoginDetails.setPassword(password);
+            vendorLoginDetails.setEmailSent(true); //sent mail to vendor
+            vendorLoginDetailsRepository.save(vendorLoginDetails);
+        } catch (IOException e) {
+            String errorMessage = "Failed to send email to vendor: " + vm.getEmailAddress();
+            VendorLoginDetails vendorLoginDetails = new VendorLoginDetails();
+            vendorLoginDetails.setVendorId(vm.getVendorId());
+            vendorLoginDetails.setEmailAddress(vm.getEmailAddress());
+            vendorLoginDetails.setPassword(password);
+            vendorLoginDetails.setEmailSent(false); // failed while sending mail to vendor
+
+            vendorLoginDetailsRepository.save(vendorLoginDetails);
+            throw new EmailNotSentException(errorMessage);
+        }
+        return mapToRigisterResponse(vendor);
+    }
+
+    private VendorRegiEmailResponseDTO mapToRigisterResponse(VendorMasterUtil vendor) {
+
+        VendorRegiEmailResponseDTO vendorResponse = new VendorRegiEmailResponseDTO();
+
+        vendorResponse.setVendorId(vendor.getVendorId());
+        vendorResponse.setVendorName(vendor.getVendorName());
+        vendorResponse.setVendorType(vendor.getVendorType());
+        vendorResponse.setContactNumber(vendor.getContactNumber());
+        vendorResponse.setEmailAddress(vendor.getEmailAddress());
+        vendorResponse.setRegisteredPlatform(vendor.getRegisteredPlatform());
+        vendorResponse.setPfmsVendorCode(vendor.getPfmsVendorCode());
+        vendorResponse.setPrimaryBusiness(vendor.getPrimaryBusiness());
+        vendorResponse.setAddress(vendor.getAddress());
+        vendorResponse.setLandlineNumber(vendor.getLandlineNumber());
+        vendorResponse.setMobileNumber(vendor.getMobileNumber());
+        vendorResponse.setFaxNumber(vendor.getFaxNumber());
+        vendorResponse.setPanNumber(vendor.getPanNumber());
+        vendorResponse.setGstNumber(vendor.getGstNumber());
+        vendorResponse.setBankName(vendor.getBankName());
+        vendorResponse.setAccountNumber(vendor.getAccountNumber());
+        vendorResponse.setIfscCode(vendor.getIfscCode());
+        vendorResponse.setApprovalStatus(vendor.getApprovalStatus().name());
+        vendorResponse.setCreatedBy(vendor.getCreatedBy());
+        vendorResponse.setUpdatedBy(vendor.getUpdatedBy());
+        vendorResponse.setCreatedDate(vendor.getCreatedDate());
+        vendorResponse.setUpdatedDate(vendor.getUpdatedDate());
+        vendorResponse.setComments(vendor.getComments());
+       Optional<VendorLoginDetails> vendorLogin = vendorLoginDetailsRepository.findByVendorId(vendor.getVendorId());
+       VendorLoginDetails vl = vendorLogin.get();
+       vendorResponse.setEmailStatus(vl.getEmailSent());
+
+
+        return vendorResponse;
+
     }
 
     @Override

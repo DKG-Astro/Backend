@@ -25,6 +25,10 @@ public class AppConstant {
     public static final String ERROR_TYPE_ERROR = "error";
     public static final String ERROR_TYPE_VALIDATION = "validation";
     public static final String ERROR_TYPE_RESOURCE = "missing resource";
+
+    // Error Codes for Email Failures
+    public static final int EMAIL_NOT_SENT_ERROR_CODE = 2001;
+    public static final String ERROR_TYPE_EMAIL = "email";
     public static final String ERROR_TYPE_CORRUPTED = "corrupted resource";
     public static final String ERROR_TYPE_INVALID = "invalid arguments";
 
