@@ -81,6 +81,7 @@ public class GiServiceImpl implements GiService {
         gime.setCreateDate(LocalDateTime.now());
         gime.setCreatedBy(req.getCreatedBy());
         gime.setLocationId(req.getLocationId());
+        gime.setStatus("AWAITING APPROVAL");
 
         gime = gimr.save(gime);
 
@@ -92,7 +93,6 @@ public class GiServiceImpl implements GiService {
         for (GiMaterialDtlDto gmdd : req.getMaterialDtlList()) {
 
             if(gmdd.getCategory().equalsIgnoreCase("consumable")) {
-                System.out.println("INSIDE CONSUMABLE");
                 Optional<GoodsInspectionConsumableDetailEntity> gicdeOpt = gicdr.findByGprnSubProcessIdAndMaterialCode(
                         Integer.parseInt(req.getGprnNo().split("/")[1]), gmdd.getMaterialCode());
                         
@@ -127,7 +127,6 @@ public class GiServiceImpl implements GiService {
                 gicdeList.add(gicde);
             }
             else{
-                System.out.println("INSID CPTLLLL");
             Optional<GiMaterialDtlEntity> gimdeOpt = gimdr.findByGprnSubProcessIdAndMaterialCode(
                     Integer.parseInt(req.getGprnNo().split("/")[1]), gmdd.getMaterialCode());
                     
@@ -347,6 +346,8 @@ public class GiServiceImpl implements GiService {
             } catch (Exception e) {
                 dto.setMaterialDetails(new ArrayList<>());
             }
+
+            dto.setStatus((String) row[16]);
             
             return dto;
         }).collect(Collectors.toList());

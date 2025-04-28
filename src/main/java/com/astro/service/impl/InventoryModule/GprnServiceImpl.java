@@ -58,6 +58,7 @@ public class GprnServiceImpl implements GprnService {
         gme.setProcessId(req.getPoId().substring(2));
         gme.setLocationId(req.getLocationId());
         gme.setCreatedBy(req.getCreatedBy());
+        gme.setStatus("AWAITING APPROVAL");
 
         gme = gmr.save(gme);
 
@@ -195,12 +196,70 @@ public class GprnServiceImpl implements GprnService {
         }
 
         Integer subProcessId = Integer.parseInt(processNoSplit[1]);
-        if (!gmr.existsById(subProcessId)) {
+        GprnMasterEntity gprnMaster = gmr.findById(subProcessId)
+            .orElseThrow(() -> new BusinessException(new ErrorDetails(
+                AppConstant.ERROR_CODE_RESOURCE,
+                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                AppConstant.ERROR_TYPE_RESOURCE,
+                "Provided GPRN No. is not valid.")));
+
+        if (!"APPROVED".equals(gprnMaster.getStatus())) {
             throw new BusinessException(new ErrorDetails(
                 AppConstant.ERROR_CODE_RESOURCE,
                 AppConstant.ERROR_TYPE_CODE_RESOURCE,
                 AppConstant.ERROR_TYPE_RESOURCE,
-                "Provided GPRN No. is not valid."));
+                "GPRN must be approved before proceeding."));
         }
+    }
+
+
+    @Override
+    @Transactional
+    public void rejectGprn(String processNo) {
+        String[] processNoSplit = processNo.split("/");
+        if (processNoSplit.length != 2) {
+            throw new InvalidInputException(new ErrorDetails(
+                AppConstant.USER_INVALID_INPUT,
+                AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                AppConstant.ERROR_TYPE_VALIDATION,
+                "Invalid process number format"));
+        }
+
+        Integer inspectionId = Integer.parseInt(processNoSplit[1]);
+        
+        GprnMasterEntity giMaster = gmr.findById(inspectionId)
+            .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                AppConstant.ERROR_CODE_RESOURCE,
+                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                AppConstant.ERROR_TYPE_RESOURCE,
+                "Goods Inspection not found")));
+
+        giMaster.setStatus("REJECTED");
+        gmr.save(giMaster);
+    }
+
+    @Override
+    @Transactional
+    public void approveGprn(String processNo) {
+        String[] processNoSplit = processNo.split("/");
+        if (processNoSplit.length != 2) {
+            throw new InvalidInputException(new ErrorDetails(
+                AppConstant.USER_INVALID_INPUT,
+                AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                AppConstant.ERROR_TYPE_VALIDATION,
+                "Invalid process number format"));
+        }
+
+        Integer inspectionId = Integer.parseInt(processNoSplit[1]);
+        
+        GprnMasterEntity giMaster = gmr.findById(inspectionId)
+            .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                AppConstant.ERROR_CODE_RESOURCE,
+                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                AppConstant.ERROR_TYPE_RESOURCE,
+                "Goods Inspection not found")));
+
+        giMaster.setStatus("APPROVED");
+        gmr.save(giMaster);
     }
 }

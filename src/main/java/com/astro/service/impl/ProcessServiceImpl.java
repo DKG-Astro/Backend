@@ -195,4 +195,12 @@ public class ProcessServiceImpl implements ProcessService {
     public void rejectOgp(GprApprovalDto req) {
         ogpService.rejectOgp(req);
     }
+    @Override
+    public void approveGprn(String processNo) {
+        gprnService.approveGprn(processNo);
+    }
+    @Override
+    public void rejectGprn(String processNo) {
+        gprnService.rejectGprn(processNo);
+    }
 }

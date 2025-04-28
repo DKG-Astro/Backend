@@ -44,4 +44,6 @@ public List<OhqReportDto> getOhqReport();
 
     public void approveOgp(GprApprovalDto req);
     public void rejectOgp(GprApprovalDto req);
+    public void rejectGprn(String processNo);
+    public void approveGprn(String processNo);
 }

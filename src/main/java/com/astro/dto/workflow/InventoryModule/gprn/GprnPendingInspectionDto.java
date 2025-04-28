@@ -21,5 +21,6 @@ public class GprnPendingInspectionDto {
     private BigDecimal warrantyYears;
     private String project;
     private String receivedBy;
+    private String status;
     private List<GprnPendingInspectionDetailDto> materialDetails;
 }

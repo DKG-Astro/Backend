@@ -160,4 +160,20 @@ public class ProcessController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
 
+    @PostMapping("/approveGprn")
+    public ResponseEntity<Object> approveGi(@RequestBody GprApprovalDto req) {
+        processService.approveGprn(req.getProcessNo());
+        Map<String, String> res = new HashMap<>();
+        res.put("message", "GPRN approved successfully");
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @PostMapping("/rejectGprn")
+    public ResponseEntity<Object> rejectGi(@RequestBody GprApprovalDto req) {
+        processService.rejectGprn(req.getProcessNo());
+        Map<String, String> res = new HashMap<>();
+        res.put("message", "GPRN rejected successfully");
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
 }

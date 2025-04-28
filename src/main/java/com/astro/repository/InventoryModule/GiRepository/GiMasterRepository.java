@@ -47,7 +47,8 @@ public interface GiMasterRepository extends JpaRepository<GiMasterEntity, Intege
                     'note', gmd.note,
                     'photoPath', gmd.photo_path
                 )
-            ) as material_details
+            ) as material_details,
+        gm.status
         FROM 
             gprn_master gm
         LEFT JOIN 

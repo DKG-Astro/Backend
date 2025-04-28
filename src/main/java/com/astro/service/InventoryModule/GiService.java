@@ -11,4 +11,6 @@ public interface GiService {
     Map<String, Object> getGiDtls(String processNo);
     void validateGiSubProcessId(String processNo);
     public List<GprnPendingInspectionDto> getPendingGi();
+    // public void approveGi(String processNo);
+    // public void rejectGi(String processNo);
 }

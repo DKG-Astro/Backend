@@ -10,4 +10,6 @@ public interface GprnService {
     void validateGprnSubProcessId(String processNo);
 
     public List<String> getPendingGprn();
+    public void rejectGprn(String processNo);
+public void approveGprn(String processNo);
 }

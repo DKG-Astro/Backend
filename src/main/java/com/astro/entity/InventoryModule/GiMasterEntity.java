@@ -32,6 +32,9 @@ public class GiMasterEntity {
     @Column(name="create_date")
     private LocalDateTime createDate = LocalDateTime.now();
 
+    @Column(name="status")
+    private String status;
+
     @Column(name="created_by")
     private Integer createdBy;
 
