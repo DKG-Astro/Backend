@@ -407,6 +407,8 @@ public class OgpServiceImpl implements OgpService {
 
             ogpMaster.setStatus("APPROVED");
             ogpMasterRepository.save(ogpMaster);
+
+
         } else {
             // Handle PO type OGP
             OgpMasterPoEntity poOgp = ogpMasterPoRepository.findById(ogpSubProcessId)
@@ -448,6 +450,7 @@ public class OgpServiceImpl implements OgpService {
 
             ogpMaster.setStatus("REJECTED");
             ogpMasterRepository.save(ogpMaster);
+
         } else {
             // Handle PO type OGP
             OgpMasterPoEntity poOgp = ogpMasterPoRepository.findById(ogpSubProcessId)
@@ -461,4 +464,5 @@ public class OgpServiceImpl implements OgpService {
             ogpMasterPoRepository.save(poOgp);
         }
     }
+
 }
