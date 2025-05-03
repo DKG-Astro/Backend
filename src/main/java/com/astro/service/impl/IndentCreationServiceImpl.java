@@ -119,6 +119,15 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setProprietaryJustification(indentRequestDTO.getProprietaryJustification());
         indentCreation.setBuyBack(indentRequestDTO.getBuyBack());
         indentCreation.setUploadBuyBackFileNames(indentRequestDTO.getUploadBuyBackFileNames());
+        indentCreation.setSerialNumber(indentRequestDTO.getSerialNumber());
+        indentCreation.setModelNumber(indentRequestDTO.getModelNumber());
+        String dateOfPurchase = indentRequestDTO.getDateOfPurchase();
+        if (dateOfPurchase != null) {
+            indentCreation.setDateOfPurchase(CommonUtils.convertStringToDateObject(dateOfPurchase));
+
+        } else {
+            indentCreation.setDateOfPurchase(null);
+        }
         indentCreation.setReason(indentRequestDTO.getReason());
         indentCreation.setCreatedBy(indentRequestDTO.getCreatedBy());
         indentCreation.setUpdatedBy(indentRequestDTO.getUpdatedBy());
@@ -234,6 +243,15 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setReason(indentRequestDTO.getReason());
         indentCreation.setBuyBack(indentRequestDTO.getBuyBack());
         indentCreation.setUploadBuyBackFileNames(indentRequestDTO.getUploadBuyBackFileNames());
+        indentCreation.setSerialNumber(indentRequestDTO.getSerialNumber());
+        indentCreation.setModelNumber(indentRequestDTO.getModelNumber());
+        String dateOfPurchase = indentRequestDTO.getDateOfPurchase();
+        if (dateOfPurchase != null) {
+            indentCreation.setDateOfPurchase(CommonUtils.convertStringToDateObject(dateOfPurchase));
+
+        } else {
+            indentCreation.setDateOfPurchase(null);
+        }
         indentCreation.setFileType(indentRequestDTO.getFileType());
         indentCreation.setUpdatedBy(indentRequestDTO.getUpdatedBy());
         indentCreation.setCreatedBy(indentRequestDTO.getCreatedBy());
@@ -338,6 +356,14 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         response.setFileType(indentCreation.getFileType());
         response.setBuyBack(indentCreation.getBuyBack());
         response.setUploadBuyBackFileNames(indentCreation.getUploadBuyBackFileNames());
+        response.setSerialNumber(indentCreation.getSerialNumber());
+        response.setModelNumber(indentCreation.getModelNumber());
+        LocalDate dateOfPurchase = indentCreation.getDateOfPurchase();
+        if (dateOfPurchase != null) {
+            response.setDateOfPurchase(CommonUtils.convertDateToString(dateOfPurchase));
+        } else {
+            indentCreation.setDateOfPurchase(null);
+        }
         response.setCreatedBy(indentCreation.getCreatedBy());
         response.setUpdatedBy(indentCreation.getUpdatedBy());
 

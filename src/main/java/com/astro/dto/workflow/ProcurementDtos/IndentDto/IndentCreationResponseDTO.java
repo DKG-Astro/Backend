@@ -43,6 +43,9 @@ public class IndentCreationResponseDTO {
     private String quarter;
     private String purpose;
     private String reason;
+    private String modelNumber;
+    private String serialNumber;
+    private String dateOfPurchase;
     private String proprietaryJustification;
     private Boolean buyBack;
     private String uploadBuyBackFileNames;

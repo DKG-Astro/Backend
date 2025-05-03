@@ -277,6 +277,7 @@ public class GiServiceImpl implements GiService {
             ame.setCreatedBy(createdBy);
             ame.setUpdatedDate(LocalDateTime.now());
             ame.setUnitPrice(mme.getUnitPrice());
+            ame.setPoId(poId);
             amr.save(ame);
             return ame.getAssetId();
         }

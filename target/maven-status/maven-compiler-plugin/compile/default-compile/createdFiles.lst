@@ -87,6 +87,7 @@ com\astro\entity\VendorNamesForJobWorkMaterial.class
 com\astro\service\InventoryModule\IsnService.class
 com\astro\repository\ProcurementModule\WorkOrder\WorkOrderRepository.class
 com\astro\dto\workflow\ProcurementDtos\SreviceOrderDto\ServiceOrderRequestDTO.class
+com\astro\entity\MaterialIdSequence.class
 com\astro\repository\ProcurementModule\TenderEvaluationRepository.class
 com\astro\entity\UomMaster.class
 com\astro\entity\TransitionMaster.class
@@ -119,6 +120,7 @@ com\astro\controller\Reports.class
 com\astro\exception\ErrorDetails.class
 com\astro\dto\workflow\InventoryModule\gprn\GprnPendingInspectionDto.class
 com\astro\repository\InventoryModule\grv\GrvMasterRepository.class
+com\astro\repository\MaterialIdSequenceRepository.class
 com\astro\dto\workflow\ProcurementDtos\IndentDto\MaterialDetailsRequestDTO.class
 com\astro\dto\workflow\ProjectMaster\ProjectMasterRequestDTO.class
 com\astro\entity\InventoryModule\GrnMasterEntity.class

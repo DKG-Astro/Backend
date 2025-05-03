@@ -9,10 +9,7 @@ import com.astro.entity.*;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
-import com.astro.repository.MaterialMasterRepository;
-import com.astro.repository.MaterialMasterUtilRepository;
-import com.astro.repository.MaterialStatusRepository;
-import com.astro.repository.UserRoleMasterRepository;
+import com.astro.repository.*;
 import com.astro.service.MaterialMasterUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +31,8 @@ public class MaterialMasterUtilServiceImpl implements MaterialMasterUtilService 
     private MaterialMasterRepository materialMasterRepository;
     @Autowired
     private MaterialStatusRepository materialStatusRepository;
+    @Autowired
+    private MaterialIdSequenceRepository materialIdRepo;
 
     @Override
     public MaterialMasterUtilResponseDto createMaterial(MaterialMasterUtilRequestDto dto) {
@@ -43,7 +42,16 @@ public class MaterialMasterUtilServiceImpl implements MaterialMasterUtilService 
       //  int nextNumber = (maxNumber == null) ? 1001 : maxNumber + 1;
 
       //  String materialId = "M" + nextNumber;
-        String materialId = "M" + System.currentTimeMillis();
+        //String materialId = "M" + System.currentTimeMillis();
+        Integer maxNumber = materialIdRepo.findMaxMaterialId();
+        int nextNumber = (maxNumber == null) ? 1100 : maxNumber + 1;
+
+        String materialId = "M" + nextNumber;
+
+        // String vendorId = "V" + System.currentTimeMillis();
+        MaterialIdSequence materialIdSequence = new MaterialIdSequence();
+        materialIdSequence.setMaterialId(nextNumber);
+        materialIdRepo.save(materialIdSequence);
 
         material.setMaterialCode(materialId);
         material.setMaterialNumber(0);

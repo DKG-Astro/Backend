@@ -52,6 +52,9 @@ public class IndentCreationRequestDTO {
     private String reason;
     private String proprietaryJustification;
     private Boolean buyBack;
+    private String modelNumber;
+    private String serialNumber;
+    private String dateOfPurchase;
     private String uploadBuyBackFileNames;
     private List<MaterialDetailsRequestDTO> materialDetails;
     private String updatedBy;

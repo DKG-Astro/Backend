@@ -100,6 +100,9 @@ public class IndentCreation {
         private String reason;
         private String proprietaryJustification;
         private Boolean buyBack;
+        private String modelNumber;
+        private String serialNumber;
+        private LocalDate dateOfPurchase;
         private String uploadBuyBackFileNames;
 
       //  private String totalAmount;
