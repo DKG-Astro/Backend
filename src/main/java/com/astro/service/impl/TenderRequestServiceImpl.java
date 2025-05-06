@@ -112,15 +112,25 @@ public class TenderRequestServiceImpl implements TenderRequestService {
       //  tenderRequest.setUploadGeneralTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
         tenderRequest.setFileType(tenderRequestDto.getFileType());
 
-        String uploadSpecificTermsAndConditionsFileName = saveBase64Files(tenderRequestDto.getUploadSpecificTermsAndConditions(), basePath);
-        tenderRequest.setUploadSpecificTermsAndConditionsFileName(uploadSpecificTermsAndConditionsFileName);
+        if(tenderRequestDto.getUploadSpecificTermsAndConditions() == null || tenderRequestDto.getUploadSpecificTermsAndConditions().isEmpty()){
+            tenderRequest.setUploadSpecificTermsAndConditionsFileName(null);
 
-        String  tenderDoc = saveBase64Files(tenderRequestDto.getUploadTenderDocuments(), basePath);
-        tenderRequest.setUploadTenderDocumentsFileName(tenderDoc);
-
-        String generalDoc =saveBase64Files(tenderRequestDto.getUploadGeneralTermsAndConditions(), basePath);
-        tenderRequest.setUploadGeneralTermsAndConditionsFileName(generalDoc);
-
+        }else {
+            String uploadSpecificTermsAndConditionsFileName = saveBase64Files(tenderRequestDto.getUploadSpecificTermsAndConditions(), basePath);
+            tenderRequest.setUploadSpecificTermsAndConditionsFileName(uploadSpecificTermsAndConditionsFileName);
+        }
+        if(tenderRequestDto.getUploadTenderDocuments() == null || tenderRequestDto.getUploadTenderDocuments().isEmpty()){
+            tenderRequest.setUploadTenderDocumentsFileName(null);
+        }else {
+            String tenderDoc = saveBase64Files(tenderRequestDto.getUploadTenderDocuments(), basePath);
+            tenderRequest.setUploadTenderDocumentsFileName(tenderDoc);
+        }
+        if(tenderRequestDto.getUploadGeneralTermsAndConditions() == null || tenderRequestDto.getUploadGeneralTermsAndConditions().isEmpty()){
+            tenderRequest.setUploadGeneralTermsAndConditionsFileName(null);
+        }else {
+            String generalDoc = saveBase64Files(tenderRequestDto.getUploadGeneralTermsAndConditions(), basePath);
+            tenderRequest.setUploadGeneralTermsAndConditionsFileName(generalDoc);
+        }
         // Convert List<String> indentIds from DTO into List<IndentId> entities
         List<IndentId> indentIdList = tenderRequestDto.getIndentIds().stream().map(indentIdStr -> {
             IndentId indentId = new IndentId();
@@ -214,15 +224,25 @@ public class TenderRequestServiceImpl implements TenderRequestService {
        // existingTR.setUploadTenderDocumentsFileName(tenderRequestDto.getUploadTenderDocuments());
       //  existingTR.setUploadSpecificTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
        // existingTR.setUploadGeneralTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
-        String uploadSpecificTermsAndConditionsFileName = saveBase64Files(tenderRequestDto.getUploadSpecificTermsAndConditions(), basePath);
-        existingTR.setUploadSpecificTermsAndConditionsFileName(uploadSpecificTermsAndConditionsFileName);
+        if(tenderRequestDto.getUploadSpecificTermsAndConditions() == null || tenderRequestDto.getUploadSpecificTermsAndConditions().isEmpty()){
+            existingTR.setUploadSpecificTermsAndConditionsFileName(null);
 
-        String  tenderDoc = saveBase64Files(tenderRequestDto.getUploadTenderDocuments(), basePath);
-        existingTR.setUploadTenderDocumentsFileName(tenderDoc);
-
-        String generalDoc =saveBase64Files(tenderRequestDto.getUploadGeneralTermsAndConditions(), basePath);
-        existingTR.setUploadGeneralTermsAndConditionsFileName(generalDoc);
-
+        }else {
+            String uploadSpecificTermsAndConditionsFileName = saveBase64Files(tenderRequestDto.getUploadSpecificTermsAndConditions(), basePath);
+            existingTR.setUploadSpecificTermsAndConditionsFileName(uploadSpecificTermsAndConditionsFileName);
+        }
+        if(tenderRequestDto.getUploadTenderDocuments() == null || tenderRequestDto.getUploadTenderDocuments().isEmpty()){
+            existingTR.setUploadTenderDocumentsFileName(null);
+        }else {
+            String tenderDoc = saveBase64Files(tenderRequestDto.getUploadTenderDocuments(), basePath);
+            existingTR.setUploadTenderDocumentsFileName(tenderDoc);
+        }
+        if(tenderRequestDto.getUploadGeneralTermsAndConditions() == null || tenderRequestDto.getUploadGeneralTermsAndConditions().isEmpty()){
+            existingTR.setUploadGeneralTermsAndConditionsFileName(null);
+        }else {
+            String generalDoc = saveBase64Files(tenderRequestDto.getUploadGeneralTermsAndConditions(), basePath);
+            existingTR.setUploadGeneralTermsAndConditionsFileName(generalDoc);
+        }
         existingTR.setFileType(tenderRequestDto.getFileType());
 
     // Update Indent IDs

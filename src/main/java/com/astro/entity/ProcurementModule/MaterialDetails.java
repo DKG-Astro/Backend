@@ -19,7 +19,7 @@ public class MaterialDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "material_code", nullable = false, unique = true)
+    @Column(name = "material_code", nullable = false)
     private String materialCode;
     @Column(name = "indent_id")
     private String indentId;

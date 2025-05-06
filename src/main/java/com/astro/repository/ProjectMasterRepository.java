@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface ProjectMasterRepository extends JpaRepository<ProjectMaster, String> {
 
     Optional<ProjectMaster> findByProjectNameDescription(String projectNameDescription);
+
+   Optional<ProjectMaster> findByProjectCode(String projectName);
 }
