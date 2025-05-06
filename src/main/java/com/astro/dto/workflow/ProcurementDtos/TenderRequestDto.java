@@ -32,15 +32,15 @@ public class TenderRequestDto {
 
     //private MultipartFile uploadTenderDocuments;
     private String singleAndMultipleVendors;
-    private String uploadTenderDocuments;
-    private String uploadGeneralTermsAndConditions;
+    private List<String> uploadTenderDocuments;
+    private List<String> uploadGeneralTermsAndConditions;
     private String billinngAddress;
     private String consignes;
     private String fileType;
 
     //   private MultipartFile uploadGeneralTermsAndConditions;
 
-    // private MultipartFile uploadSpecificTermsAndConditions;
+    private List<String> uploadSpecificTermsAndConditions;
     private String preBidDisscussions;
     private String updatedBy;
     private Integer createdBy;

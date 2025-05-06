@@ -44,6 +44,10 @@ public class JobMasterServiceImpl implements JobMasterService {
         jobMaster.setUom(jobMasterRequestDto.getUom());
         jobMaster.setValue(jobMasterRequestDto.getValue());
      //   jobMaster.setModeOfProcurement(jobMasterRequestDto.getModeOfProcurement());
+        jobMaster.setCurrency(jobMasterRequestDto.getCurrency());
+        jobMaster.setEstimatedPriceWithCcy(jobMasterRequestDto.getEstimatedPriceWithCcy());
+        jobMaster.setBriefDescription(jobMasterRequestDto.getBriefDescription());
+        jobMaster.setSubCategory(jobMasterRequestDto.getSubCategory());
         jobMaster.setCreatedBy(jobMasterRequestDto.getCreatedBy());
         jobMaster.setUpdatedBy(jobMasterRequestDto.getUpdatedBy());
         jobMasterRepository.save(jobMaster);
@@ -166,6 +170,10 @@ public class JobMasterServiceImpl implements JobMasterService {
         responseDto.setAssetId(jobMaster.getAssetId());
         responseDto.setUom(jobMaster.getUom());
         responseDto.setValue(jobMaster.getValue());
+        responseDto.setBriefDescription(jobMaster.getBriefDescription());
+        responseDto.setEstimatedPriceWithCcy(jobMaster.getEstimatedPriceWithCcy());
+        responseDto.setCurrency(jobMaster.getCurrency());
+        responseDto.setSubCategory(jobMaster.getSubCategory());
       //  responseDto.setModeOfProcurement(jobMaster.getModeOfProcurement());
         responseDto.setUpdatedBy(jobMaster.getUpdatedBy());
         responseDto.setCreatedBy(jobMaster.getCreatedBy());

@@ -2,6 +2,7 @@ package com.astro.dto.workflow;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -14,6 +15,10 @@ public class JobMasterRequestDto {
     private String assetId;
     private String uom;
     private BigDecimal value;
+    private String currency;
+    private BigDecimal estimatedPriceWithCcy;
+    private String briefDescription;
+    private String subCategory;
   //  private String modeOfProcurement;
    // private List<String> vendorNames;
     private String updatedBy;

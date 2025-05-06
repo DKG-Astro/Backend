@@ -26,10 +26,10 @@ public class IndentCreationRequestDTO {
     private String indentorEmailAddress;
     private String consignesLocation;
     private String fileType;
-    private String uploadingPriorApprovalsFileName;
-    private String technicalSpecificationsFileName;
-    private String draftEOIOrRFPFileName;
-    private String uploadPACOrBrandPACFileName;
+    private List<String> uploadingPriorApprovalsFileName;
+    private List<String> technicalSpecificationsFileName;
+    private List<String> draftEOIOrRFPFileName;
+    private List<String> uploadPACOrBrandPACFileName;
     //private MultipartFile uploadingPriorApprovals;
   //  private MultipartFile uploadTenderDocuments;
   //  private MultipartFile uploadGOIOrRFP;
@@ -55,7 +55,7 @@ public class IndentCreationRequestDTO {
     private String modelNumber;
     private String serialNumber;
     private String dateOfPurchase;
-    private String uploadBuyBackFileNames;
+    private List<String> uploadBuyBackFileNames;
     private List<MaterialDetailsRequestDTO> materialDetails;
     private String updatedBy;
     private Integer createdBy;

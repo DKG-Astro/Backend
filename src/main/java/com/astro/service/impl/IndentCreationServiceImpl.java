@@ -18,6 +18,7 @@ import com.astro.repository.VendorNamesForJobWorkMaterialRepository;
 import com.astro.service.IndentCreationService;
 import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -50,6 +51,13 @@ public class IndentCreationServiceImpl implements IndentCreationService {
 
     @Autowired
     private VendorNamesForJobWorkMaterialRepository vendorNameRepository;
+    @Value("${filePath}")
+    private String bp;
+    private final String basePath;
+
+    public IndentCreationServiceImpl(@Value("${filePath}") String bp) {
+        this.basePath = bp + "/Indent";
+    }
 
     @Transactional
     public IndentCreationResponseDTO createIndent(IndentCreationRequestDTO indentRequestDTO) {
@@ -91,7 +99,9 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setIndentorMobileNo(indentRequestDTO.getIndentorMobileNo());
         indentCreation.setIndentorEmailAddress(indentRequestDTO.getIndentorEmailAddress());
         indentCreation.setConsignesLocation(indentRequestDTO.getConsignesLocation());
-        indentCreation.setUploadingPriorApprovalsFileName(indentRequestDTO.getUploadingPriorApprovalsFileName());
+       // indentCreation.setUploadingPriorApprovalsFileName(indentRequestDTO.getUploadingPriorApprovalsFileName());
+        String prior = saveBase64Files(indentRequestDTO.getUploadingPriorApprovalsFileName(), basePath);
+        indentCreation.setUploadingPriorApprovalsFileName(prior);
         indentCreation.setProjectName(indentRequestDTO.getProjectName());
         indentCreation.setIsPreBitMeetingRequired(indentRequestDTO.getIsPreBidMeetingRequired());
         String Date = indentRequestDTO.getPreBidMeetingDate();
@@ -108,9 +118,20 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setPeriodOfContract(indentRequestDTO.getPeriodOfContract());
         indentCreation.setSingleAndMultipleJob(indentRequestDTO.getSingleAndMultipleJob());
         indentCreation.setFileType(indentRequestDTO.getFileType());
-        indentCreation.setTechnicalSpecificationsFileName(indentRequestDTO.getTechnicalSpecificationsFileName());
-        indentCreation.setDraftEOIOrRFPFileName(indentRequestDTO.getDraftEOIOrRFPFileName());
-        indentCreation.setUploadPACOrBrandPACFileName(indentRequestDTO.getUploadPACOrBrandPACFileName());
+
+       // indentCreation.setTechnicalSpecificationsFileName(indentRequestDTO.getTechnicalSpecificationsFileName());
+      //  indentCreation.setDraftEOIOrRFPFileName(indentRequestDTO.getDraftEOIOrRFPFileName());
+       // indentCreation.setUploadPACOrBrandPACFileName(indentRequestDTO.getUploadPACOrBrandPACFileName());
+
+        String technical = saveBase64Files(indentRequestDTO.getTechnicalSpecificationsFileName(), basePath);
+        indentCreation.setTechnicalSpecificationsFileName(technical);
+
+        String draft = saveBase64Files(indentRequestDTO.getDraftEOIOrRFPFileName(), basePath);
+        indentCreation.setDraftEOIOrRFPFileName(draft);
+
+        String pac = saveBase64Files(indentRequestDTO.getUploadPACOrBrandPACFileName(), basePath);
+        indentCreation.setUploadPACOrBrandPACFileName(pac);
+
         indentCreation.setBrandPac(indentRequestDTO.getBrandPac());
         indentCreation.setJustification(indentRequestDTO.getJustification());
         indentCreation.setBrandAndModel(indentRequestDTO.getBrandAndModel());
@@ -118,7 +139,9 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setQuarter(indentRequestDTO.getQuarter());
         indentCreation.setProprietaryJustification(indentRequestDTO.getProprietaryJustification());
         indentCreation.setBuyBack(indentRequestDTO.getBuyBack());
-        indentCreation.setUploadBuyBackFileNames(indentRequestDTO.getUploadBuyBackFileNames());
+     //   indentCreation.setUploadBuyBackFileNames(indentRequestDTO.getUploadBuyBackFileNames());
+        String buy = saveBase64Files(indentRequestDTO.getUploadBuyBackFileNames(), basePath);
+        indentCreation.setUploadBuyBackFileNames(buy);
         indentCreation.setSerialNumber(indentRequestDTO.getSerialNumber());
         indentCreation.setModelNumber(indentRequestDTO.getModelNumber());
         String dateOfPurchase = indentRequestDTO.getDateOfPurchase();
@@ -199,6 +222,22 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         return mapToResponseDTO(indentCreations);
     }
 
+    public String saveBase64Files(List<String> base64Files, String basePath) {
+        try {
+            List<String> fileNames = new ArrayList<>();
+            for (String base64File : base64Files) {
+                String fileName = CommonUtils.saveBase64Image(base64File, basePath);
+                fileNames.add(fileName);
+            }
+            return String.join(",", fileNames);
+        } catch (Exception e) {
+            throw new InvalidInputException(new ErrorDetails(
+                    AppConstant.FILE_UPLOAD_ERROR,
+                    AppConstant.USER_INVALID_INPUT,
+                    AppConstant.ERROR_TYPE_CORRUPTED,
+                    "Error while uploading files."));
+        }
+    }
 
     public IndentCreationResponseDTO updateIndent(String indentId, IndentCreationRequestDTO indentRequestDTO) {
         //,String uploadingPriorApprovalsFileName,String uploadTenderDocumentsFileName,String uploadGOIOrRFPFileName,String uploadPACOrBrandPACFileName) {
@@ -230,10 +269,22 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setEstimatedRate(indentRequestDTO.getEstimatedRate());
         indentCreation.setPeriodOfContract(indentRequestDTO.getPeriodOfContract());
         indentCreation.setSingleAndMultipleJob(indentRequestDTO.getSingleAndMultipleJob());
-        indentCreation.setTechnicalSpecificationsFileName(indentRequestDTO.getTechnicalSpecificationsFileName());
-        indentCreation.setDraftEOIOrRFPFileName(indentRequestDTO.getDraftEOIOrRFPFileName());
-        indentCreation.setUploadPACOrBrandPACFileName(indentRequestDTO.getUploadPACOrBrandPACFileName());
-        indentCreation.setUploadingPriorApprovalsFileName(indentRequestDTO.getUploadingPriorApprovalsFileName());
+      //  indentCreation.setTechnicalSpecificationsFileName(indentRequestDTO.getTechnicalSpecificationsFileName());
+       // indentCreation.setDraftEOIOrRFPFileName(indentRequestDTO.getDraftEOIOrRFPFileName());
+     //   indentCreation.setUploadPACOrBrandPACFileName(indentRequestDTO.getUploadPACOrBrandPACFileName());
+       // indentCreation.setUploadingPriorApprovalsFileName(indentRequestDTO.getUploadingPriorApprovalsFileName());
+        String prior = saveBase64Files(indentRequestDTO.getUploadingPriorApprovalsFileName(), basePath);
+        indentCreation.setUploadingPriorApprovalsFileName(prior);
+
+        String technical = saveBase64Files(indentRequestDTO.getTechnicalSpecificationsFileName(), basePath);
+        indentCreation.setTechnicalSpecificationsFileName(technical);
+
+        String draft = saveBase64Files(indentRequestDTO.getDraftEOIOrRFPFileName(), basePath);
+        indentCreation.setDraftEOIOrRFPFileName(draft);
+
+        String pac = saveBase64Files(indentRequestDTO.getUploadPACOrBrandPACFileName(), basePath);
+        indentCreation.setUploadPACOrBrandPACFileName(pac);
+
         indentCreation.setBrandPac(indentRequestDTO.getBrandPac());
         indentCreation.setJustification(indentRequestDTO.getJustification());
         indentCreation.setBrandAndModel(indentRequestDTO.getBrandAndModel());
@@ -242,7 +293,9 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setProprietaryJustification(indentRequestDTO.getProprietaryJustification());
         indentCreation.setReason(indentRequestDTO.getReason());
         indentCreation.setBuyBack(indentRequestDTO.getBuyBack());
-        indentCreation.setUploadBuyBackFileNames(indentRequestDTO.getUploadBuyBackFileNames());
+        //indentCreation.setUploadBuyBackFileNames(indentRequestDTO.getUploadBuyBackFileNames());
+        String buy = saveBase64Files(indentRequestDTO.getUploadBuyBackFileNames(), basePath);
+        indentCreation.setUploadBuyBackFileNames(buy);
         indentCreation.setSerialNumber(indentRequestDTO.getSerialNumber());
         indentCreation.setModelNumber(indentRequestDTO.getModelNumber());
         String dateOfPurchase = indentRequestDTO.getDateOfPurchase();

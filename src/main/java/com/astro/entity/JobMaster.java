@@ -5,7 +5,6 @@ import lombok.Data;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "job_master")
@@ -19,6 +18,8 @@ public class JobMaster {
     @Column(name = "category")
     private String category;
 
+    private String subCategory;
+
     @Column(name = "job_description")
     private String jobDescription;
 
@@ -30,6 +31,13 @@ public class JobMaster {
 
     @Column(name = "value")
     private BigDecimal value;
+    @Column(name = "currency")
+    private String currency;
+
+    @Column(name = "estimated_price_with_ccy")
+    private BigDecimal estimatedPriceWithCcy;
+
+    private String briefDescription;
 
    // @Column(name = "mode_of_procurement")
   //  private String modeOfProcurement;
