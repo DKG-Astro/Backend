@@ -290,7 +290,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                             
                             // Set remaining quantity
                             attributeDTO.setQuantity(attribute.getQuantity().subtract(gprnQuantity));
-                            
+                            attributeDTO.setReceivedQuantity(attribute.getReceivedQuantity());
                             attributeDTO.setRate(attribute.getRate());
                             attributeDTO.setCurrency(attribute.getCurrency());
                             attributeDTO.setExchangeRate(attribute.getExchangeRate());

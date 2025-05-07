@@ -20,5 +20,5 @@ public class PurchaseOrderAttributesResponseDTO {
     private String uom;
     private BigDecimal unitPrice;
     private String category;
-
+    private BigDecimal receivedQuantity;
 }

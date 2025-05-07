@@ -1,5 +1,7 @@
 package com.astro.service.impl.InventoryModule;
 
+import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
+import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.astro.service.InventoryModule.GprnService;
@@ -36,6 +39,8 @@ public class GprnServiceImpl implements GprnService {
     
     @Autowired
     private VendorMasterRepository vmr;
+    @Autowired
+    private PurchaseOrderAttributesRepository poMaterialRepo;
 
     private final String basePath;
 
@@ -104,6 +109,15 @@ public class GprnServiceImpl implements GprnService {
             }
     
             saveDtlEntityList.add(gmde);
+            Optional<PurchaseOrderAttributes> optionalPoMaterial = poMaterialRepo.findByPoIdAndMaterialCode(gme.getPoId(), dtl.getMaterialCode());
+
+            if (optionalPoMaterial.isPresent()) {
+                PurchaseOrderAttributes poMaterial = optionalPoMaterial.get();
+                BigDecimal updatedReceivedQty = poMaterial.getReceivedQuantity().add(dtl.getReceivedQuantity());
+                poMaterial.setReceivedQuantity(updatedReceivedQty);
+                poMaterialRepo.save(poMaterial);
+            }
+
         }
 
         if (errorFound) {
@@ -115,6 +129,9 @@ public class GprnServiceImpl implements GprnService {
         }
 
         gmdr.saveAll(saveDtlEntityList);
+
+
+
         return "INV" + gme.getProcessId() + "/" + gme.getSubProcessId();
     }
 
