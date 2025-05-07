@@ -26,6 +26,7 @@ public class PurchaseOrderRequestDTO{
         private String vendorAccountNumber;
         private String vendorsIfscCode;
         private String vendorAccountName;
+        private String deliveryDate;
        // private BigDecimal totalValueOfPo;
         private String projectName;
         private String vendorId;

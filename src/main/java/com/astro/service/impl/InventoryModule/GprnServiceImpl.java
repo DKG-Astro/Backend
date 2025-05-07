@@ -109,13 +109,13 @@ public class GprnServiceImpl implements GprnService {
             }
     
             saveDtlEntityList.add(gmde);
-            Optional<PurchaseOrderAttributes> optionalPoMaterial = poMaterialRepo.findByPoIdAndMaterialCode(gme.getPoId(), dtl.getMaterialCode());
+            Optional<PurchaseOrderAttributes> poMaterial = poMaterialRepo.findByPoIdAndMaterialCode(gme.getPoId(), dtl.getMaterialCode());
 
-            if (optionalPoMaterial.isPresent()) {
-                PurchaseOrderAttributes poMaterial = optionalPoMaterial.get();
-                BigDecimal updatedReceivedQty = poMaterial.getReceivedQuantity().add(dtl.getReceivedQuantity());
-                poMaterial.setReceivedQuantity(updatedReceivedQty);
-                poMaterialRepo.save(poMaterial);
+            if (poMaterial.isPresent()) {
+                PurchaseOrderAttributes pom = poMaterial.get();
+                BigDecimal updatedReceivedQty = pom.getReceivedQuantity().add(dtl.getReceivedQuantity());
+                pom.setReceivedQuantity(updatedReceivedQty);
+                poMaterialRepo.save(pom);
             }
 
         }

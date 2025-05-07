@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -56,6 +57,8 @@ public class PurchaseOrder {
     private BigDecimal totalValueOfPo;
     @Column(name = "project_name")
     private String projectName;
+    @Column(name = "delivery_date")
+    private LocalDate deliveryDate;
 
    // @OneToMany(cascade = CascadeType.ALL)
    // @JoinColumn(name = "purchase_order_id")

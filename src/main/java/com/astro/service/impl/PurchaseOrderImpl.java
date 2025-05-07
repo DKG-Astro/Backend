@@ -34,10 +34,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -109,6 +107,12 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setVendorAccountName(purchaseOrderRequestDTO.getVendorAccountName());
         purchaseOrder.setVendorId(purchaseOrderRequestDTO.getVendorId());
         //  purchaseOrder.setTotalValueOfPo(purchaseOrderRequestDTO.getTotalValueOfPo());
+        String Date = purchaseOrderRequestDTO.getDeliveryDate();
+        if(Date != null){
+            purchaseOrder.setDeliveryDate(CommonUtils.convertStringToDateObject(Date));
+        }else {
+            purchaseOrder.setDeliveryDate(null);
+        }
         purchaseOrder.setProjectName(purchaseOrderRequestDTO.getProjectName());
         purchaseOrder.setCreatedBy(purchaseOrderRequestDTO.getCreatedBy());
         purchaseOrder.setUpdatedBy(purchaseOrderRequestDTO.getUpdatedBy());
@@ -183,6 +187,12 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setVendorAccountName(purchaseOrderRequestDTO.getVendorAccountName());
         purchaseOrder.setProjectName(purchaseOrderRequestDTO.getProjectName());
         purchaseOrder.setVendorId(purchaseOrderRequestDTO.getVendorId());
+        String Date = purchaseOrderRequestDTO.getDeliveryDate();
+        if(Date != null){
+            purchaseOrder.setDeliveryDate(CommonUtils.convertStringToDateObject(Date));
+        }else {
+            purchaseOrder.setDeliveryDate(null);
+        }
         //   purchaseOrder.setTotalValueOfPo(purchaseOrderRequestDTO.getTotalValueOfPo());
         purchaseOrder.setUpdatedBy(purchaseOrderRequestDTO.getUpdatedBy());
         purchaseOrder.setCreatedBy(purchaseOrderRequestDTO.getCreatedBy());
@@ -267,6 +277,12 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                 responseDTO.setVendorId(purchaseOrder.getVendorId());
                 //  responseDTO.setProjectName(purchaseOrder.getProjectName());
                 responseDTO.setTotalValueOfPo(tenderWithIndent.getTotalTenderValue());
+                LocalDate date = purchaseOrder.getDeliveryDate();
+                if(date!= null){
+                    responseDTO.setDeliveryDate(CommonUtils.convertDateToString(date));
+                }else{
+                    responseDTO.setDeliveryDate(null);
+                }
                 responseDTO.setCreatedBy(purchaseOrder.getCreatedBy());
                 responseDTO.setUpdatedBy(purchaseOrder.getUpdatedBy());
                 responseDTO.setCreatedDate(purchaseOrder.getCreatedDate());
@@ -381,6 +397,12 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         responseDTO.setVendorId(purchaseOrder.getVendorId());
         responseDTO.setProjectName(purchaseOrder.getProjectName());
         //  responseDTO.setTotalValueOfPo(purchaseOrder.getTotalValueOfPo());
+        LocalDate date = purchaseOrder.getDeliveryDate();
+        if(date!= null){
+            responseDTO.setDeliveryDate(CommonUtils.convertDateToString(date));
+        }else{
+            responseDTO.setDeliveryDate(null);
+        }
         responseDTO.setCreatedBy(purchaseOrder.getCreatedBy());
         responseDTO.setUpdatedBy(purchaseOrder.getUpdatedBy());
         responseDTO.setCreatedDate(purchaseOrder.getCreatedDate());

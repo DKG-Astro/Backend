@@ -32,6 +32,7 @@ public class poWithTenderAndIndentResponseDTO {
  private String projectName;
  private BigDecimal projectLimit;
  private List<String> indentIds;
+ private String deliveryDate;
  private List<PurchaseOrderAttributesResponseDTO> purchaseOrderAttributes;
  private Integer createdBy;
  private String updatedBy;
