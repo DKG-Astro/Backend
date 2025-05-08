@@ -5,8 +5,10 @@ import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseReportDto;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseResponseDto;
 
+import com.astro.dto.workflow.ProcurementDtos.CpMaterialResponseDto;
 import com.astro.entity.ProcurementModule.ContigencyPurchase;
 
+import com.astro.entity.ProcurementModule.CpMaterials;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
@@ -14,6 +16,7 @@ import com.astro.repository.ProcurementModule.ContigencyPurchaseRepository;
 import com.astro.service.ContigencyPurchaseService;
 import com.astro.util.CommonUtils;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,38 +51,40 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
         String cpId = "CP" + nextNumber;
 
        // String cpId = "CP" + System.currentTimeMillis();
-        ContigencyPurchase contigencyPurchase= new ContigencyPurchase();
+        ModelMapper mapper = new ModelMapper();
+        ContigencyPurchase cp = mapper.map(contigencyPurchaseDto, ContigencyPurchase.class);
+        cp.setContigencyId(cpId);
+        cp.setCpNumber(nextNumber);
+        cp.setVendorsName(contigencyPurchaseDto.getVendorName());
+        cp.setVendorsInvoiceNo(contigencyPurchaseDto.getVendorInvoiceNo());
+        cp.setPredifinedPurchaseStatement(contigencyPurchaseDto.getPredifinedPurchaseStatement());
+        cp.setRemarksForPurchase(contigencyPurchaseDto.getRemarksForPurchase());
+        String Date = contigencyPurchaseDto.getDate();
+        if (Date != null) {
+            cp.setDate(CommonUtils.convertStringToDateObject(contigencyPurchaseDto.getDate()));
+        }else{
+            cp.setDate(null);
+        }
+        cp.setCreatedBy(contigencyPurchaseDto.getCreatedBy());
 
-       // contigencyPurchase.setContigencyId(contigencyPurchaseDto.getContigencyId());
-        contigencyPurchase.setContigencyId(cpId);
-        contigencyPurchase.setCpNumber(nextNumber);
-        contigencyPurchase.setVendorsName(contigencyPurchaseDto.getVendorsName());
-        contigencyPurchase.setVendorsInvoiceNo(contigencyPurchaseDto.getVendorsInvoiceNo());
-        String date = contigencyPurchaseDto.getDate();
-        contigencyPurchase.setDate(CommonUtils.convertStringToDateObject(date));
-        contigencyPurchase.setMaterialCode(contigencyPurchaseDto.getMaterialCode());
-        contigencyPurchase.setMaterialDescription(contigencyPurchaseDto.getMaterialDescription());
-        contigencyPurchase.setQuantity(contigencyPurchaseDto.getQuantity());
-        contigencyPurchase.setUnitPrice(contigencyPurchaseDto.getUnitPrice());
-        contigencyPurchase.setRemarksForPurchase(contigencyPurchaseDto.getRemarksForPurchase());
-        contigencyPurchase.setAmountToBePaid(contigencyPurchaseDto.getAmountToBePaid());
-        contigencyPurchase.setUploadCopyOfInvoiceFileName(contigencyPurchaseDto.getUploadCopyOfInvoice());
-        contigencyPurchase.setFileType(contigencyPurchaseDto.getFileType());
-        contigencyPurchase.setProjectName(contigencyPurchaseDto.getProjectName());
-       // handleFileUpload(contigencyPurchase, contigencyPurchaseDto.getUploadCopyOfInvoice(),
-      //          contigencyPurchase::setUploadCopyOfInvoice);
-        contigencyPurchase.setPredifinedPurchaseStatement(contigencyPurchaseDto.getPredifinedPurchaseStatement());
-        contigencyPurchase.setProjectDetail(contigencyPurchaseDto.getProjectDetail());
-        contigencyPurchase.setUpdatedBy(contigencyPurchaseDto.getUpdatedBy());
-        contigencyPurchase.setCreatedBy(contigencyPurchaseDto.getCreatedBy());
-        CPrepo.save(contigencyPurchase);
+        List<CpMaterials> materials = contigencyPurchaseDto.getCpMaterials().stream().map(materialDto -> {
+            CpMaterials material = mapper.map(materialDto, CpMaterials.class);
+            // material.setContigencyId(cpId);
+            material.setContigencyPurchase(cp);
+            return material;
+        }).collect(Collectors.toList());
 
-        return mapToResponseDTO(contigencyPurchase);
+        cp.setCpMaterials(materials);
+        CPrepo.save(cp);
+
+
+
+        return mapToResponseDTO(cp);
     }
 
 
 
-    @Override
+ /*   @Override
     public ContigencyPurchaseResponseDto updateContigencyPurchase(String contigencyId, ContigencyPurchaseRequestDto contigencyPurchaseDto){
             //,String uploadCopyOfInvoiceFileName) {
         ContigencyPurchase existingCP = CPrepo.findById(contigencyId)
@@ -112,7 +117,7 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
    CPrepo.save(existingCP);
 
         return mapToResponseDTO(existingCP);
-    }
+    }*/
 
     @Override
     public ContigencyPurchaseResponseDto getContigencyPurchaseById(String contigencyId) {
@@ -181,28 +186,48 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
     }
 
     private ContigencyPurchaseResponseDto mapToResponseDTO(ContigencyPurchase contigencyPurchase) {
-        ContigencyPurchaseResponseDto contigencyPurchaseResponseDto = new ContigencyPurchaseResponseDto();
-        contigencyPurchaseResponseDto.setContigencyId(contigencyPurchase.getContigencyId());
-        contigencyPurchaseResponseDto.setVendorsName(contigencyPurchase.getVendorsName());
-        contigencyPurchaseResponseDto.setVendorsInvoiceNo(contigencyPurchase.getVendorsInvoiceNo());
-        LocalDate Date = contigencyPurchase.getDate();
-        contigencyPurchaseResponseDto.setDate(CommonUtils.convertDateToString(Date));
-        contigencyPurchaseResponseDto.setMaterialCode(contigencyPurchase.getMaterialCode());
-        contigencyPurchaseResponseDto.setMaterialDescription(contigencyPurchase.getMaterialDescription());
-        contigencyPurchaseResponseDto.setQuantity(contigencyPurchase.getQuantity());
-        contigencyPurchaseResponseDto.setUnitPrice(contigencyPurchase.getUnitPrice());
-        contigencyPurchaseResponseDto.setRemarksForPurchase(contigencyPurchase.getRemarksForPurchase());
-        contigencyPurchaseResponseDto.setAmountToBePaid(contigencyPurchase.getAmountToBePaid());
-        contigencyPurchaseResponseDto.setUploadCopyOfInvoice(contigencyPurchase.getUploadCopyOfInvoiceFileName());
-        contigencyPurchaseResponseDto.setFileType(contigencyPurchase.getFileType());
-        contigencyPurchaseResponseDto.setPredifinedPurchaseStatement(contigencyPurchase.getPredifinedPurchaseStatement());
-        contigencyPurchaseResponseDto.setProjectDetail(contigencyPurchase.getProjectDetail());
-        contigencyPurchaseResponseDto.setProjectName(contigencyPurchase.getProjectName());
-        contigencyPurchaseResponseDto.setUpdatedBy(contigencyPurchase.getUpdatedBy());
-        contigencyPurchaseResponseDto.setCreatedBy(contigencyPurchase.getCreatedBy());
-        contigencyPurchaseResponseDto.setUpdatedDate(contigencyPurchase.getUpdatedDate());
-        contigencyPurchaseResponseDto.setCreatedDate(contigencyPurchase.getCreatedDate());
-        return contigencyPurchaseResponseDto;
+        ContigencyPurchaseResponseDto dto = new ContigencyPurchaseResponseDto();
+
+        dto.setContigencyId(contigencyPurchase.getContigencyId());
+        //  dto.setCpNumber(contigencyPurchase.getCpNumber());
+        dto.setVendorName(contigencyPurchase.getVendorsName());
+        dto.setVendorInvoiceNo(contigencyPurchase.getVendorsInvoiceNo());
+
+        LocalDate date = contigencyPurchase.getDate();
+        dto.setDate(CommonUtils.convertDateToString(date));
+
+        dto.setRemarksForPurchase(contigencyPurchase.getRemarksForPurchase());
+        //   dto.setAmountToBePaid(contigencyPurchase.getAmountToBePaid());
+        dto.setUploadCopyOfInvoice(contigencyPurchase.getUploadCopyOfInvoiceFileName());
+        dto.setFileType(contigencyPurchase.getFileType());
+        dto.setPredifinedPurchaseStatement(contigencyPurchase.getPredifinedPurchaseStatement());
+        dto.setProjectDetail(contigencyPurchase.getProjectDetail());
+        dto.setProjectName(contigencyPurchase.getProjectName());
+        dto.setUpdatedBy(contigencyPurchase.getUpdatedBy());
+        dto.setCreatedBy(contigencyPurchase.getCreatedBy());
+        dto.setUpdatedDate(contigencyPurchase.getUpdatedDate());
+        dto.setCreatedDate(contigencyPurchase.getCreatedDate());
+
+        // Map list of CpMaterials to CpMaterialsResponseDto
+        List<CpMaterialResponseDto> materialsDtoList = contigencyPurchase.getCpMaterials().stream()
+                .map(material -> {
+                    CpMaterialResponseDto mDto = new CpMaterialResponseDto();
+                    mDto.setMaterialCode(material.getMaterialCode());
+                    mDto.setMaterialDescription(material.getMaterialDescription());
+                    mDto.setQuantity(material.getQuantity());
+                    mDto.setUnitPrice(material.getUnitPrice());
+                    mDto.setUom(material.getUom());
+                    mDto.setTotalPrice(material.getTotalPrice());
+                    mDto.setBudgetCode(material.getBudgetCode());
+                    mDto.setMaterialCategory(material.getMaterialCategory());
+                    mDto.setMaterialSubCategory(material.getMaterialSubCategory());
+                    mDto.setCurrency(material.getCurrency());
+                    return mDto;
+                }).collect(Collectors.toList());
+
+        dto.setCpMaterials(materialsDtoList);
+
+        return dto;
 
     }
 

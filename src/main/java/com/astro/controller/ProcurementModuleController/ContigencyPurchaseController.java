@@ -65,7 +65,7 @@ public class ContigencyPurchaseController {
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(created), HttpStatus.OK);
     }
 
-    @PutMapping(value = "/{contigencyId}")
+  /*  @PutMapping(value = "/{contigencyId}")
     public ResponseEntity<Object> updateContingencyPurchaseRequest(
             @PathVariable String contigencyId,
             @RequestBody ContigencyPurchaseRequestDto contigencyPurchaseDTO
@@ -73,7 +73,7 @@ public class ContigencyPurchaseController {
             @RequestPart("contigencyPurchaseDto") String contigencyPurchaseDto,
             @RequestPart(value = "uploadCopyOfInvoice") MultipartFile uploadCopyOfInvoice
 
-             */
+
     ) throws JsonProcessingException {
         //ContigencyPurchaseRequestDto contigencyPurchaseDTO = mapper.readValue(contigencyPurchaseDto,ContigencyPurchaseRequestDto.class);
        //     contigencyPurchaseDTO.setUploadCopyOfInvoice(uploadCopyOfInvoice);
@@ -83,7 +83,7 @@ public class ContigencyPurchaseController {
 
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(updated), HttpStatus.OK);
     }
-
+*/
 
     @GetMapping("/cp/report")
     public List<ContigencyPurchaseReportDto> getContigencyPurchaseReport(

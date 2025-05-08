@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -24,18 +25,18 @@ public class ContigencyPurchase {
     private String vendorsInvoiceNo;
     @Column(name = "Date")
     private LocalDate Date;
-    @Column(name = "material_code")
-    private String materialCode;
-    @Column(name = "material_description")
-    private String materialDescription;
-    @Column(name = "quantity")
-    private BigDecimal quantity;
-    @Column(name = "unit_price")
-    private BigDecimal unitPrice;
+    // @Column(name = "material_code")
+    //private String materialCode;
+    // @Column(name = "material_description")
+    // private String materialDescription;
+    // @Column(name = "quantity")
+    // private BigDecimal quantity;
+    //  @Column(name = "unit_price")
+    // private BigDecimal unitPrice;
     @Column(name = "remarks_for_purchase")
     private String remarksForPurchase;
-    @Column(name = "amount_to_be_paid")
-    private BigDecimal amountToBePaid;
+    //  @Column(name = "amount_to_be_paid")
+    //  private BigDecimal amountToBePaid;
     @Lob
     @Column(name = "upload_copy_of_invoice")
     private byte[] uploadCopyOfInvoice;
@@ -49,10 +50,13 @@ public class ContigencyPurchase {
     private String projectName;
     @Column(name="file_type")
     private String fileType;
-    @Column(name = "created_by")
-    private String updatedBy;
+
     @Column(name = "updated_by")
+    private String updatedBy;
+    @Column(name = "created_by")
     private Integer createdBy;
+    @OneToMany(mappedBy = "contigencyPurchase", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CpMaterials> cpMaterials;
 
     private LocalDateTime createdDate = LocalDateTime.now();
 

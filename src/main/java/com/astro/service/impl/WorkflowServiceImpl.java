@@ -1198,7 +1198,7 @@ public class WorkflowServiceImpl implements WorkflowService {
                 // ContigencyPurchase cp = cpTable.get();
                 //  queueResponse.setIndentorName("Null");
                 queueResponse.setProjectName(cp.getProjectName());
-                queueResponse.setAmount(cp.getAmountToBePaid());
+              //  queueResponse.setAmount(cp.getAmountToBePaid());
                 //  queueResponse.setBudgetName("Null");
                 //  queueResponse.setIndentTitle("NUll");
                 //queueResponse.setModeOfProcurement("NULL");

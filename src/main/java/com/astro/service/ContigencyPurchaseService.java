@@ -13,7 +13,7 @@ public interface ContigencyPurchaseService {
 
     public ContigencyPurchaseResponseDto createContigencyPurchase(ContigencyPurchaseRequestDto contigencyPurchaseDto);
             //,String uploadCopyOfInvoiceFileName);
-    public ContigencyPurchaseResponseDto updateContigencyPurchase(String contigencyId, ContigencyPurchaseRequestDto contigencyPurchaseDto);
+   // public ContigencyPurchaseResponseDto updateContigencyPurchase(String contigencyId, ContigencyPurchaseRequestDto contigencyPurchaseDto);
             //,String uploadCopyOfInvoiceFileName);
     public ContigencyPurchaseResponseDto getContigencyPurchaseById(String contigencyId);
     public List<ContigencyPurchaseResponseDto> getAllContigencyPurchase();
