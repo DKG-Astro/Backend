@@ -97,6 +97,8 @@ public class WorkflowServiceImpl implements WorkflowService {
     private MaterialMasterUtilRepository materialMasterUtilRepository;
     @Autowired
     private UserMasterRepository userMasterRepository;
+    @Autowired
+    private ProjectMasterRepository projectMasterRepository;
 
 
     @Override
@@ -970,9 +972,52 @@ public class WorkflowServiceImpl implements WorkflowService {
         return transitionDto;
     }
 
-    public List<String> getApprovedIndents() {
-        return workflowTransitionRepository.findApprovedIndentRequestIds();
+    public List<ApprovedIndentsDto> getApprovedIndents() {
+        // Step 1: Retrieve all the approved indent request IDs
+        List<String> approvedIndentIds = workflowTransitionRepository.findApprovedIndentRequestIds();
+
+        // Step 2: Fetch the project names based on the indent IDs and project codes
+        List<ApprovedIndentsDto> approvedIndents = new ArrayList<>();
+
+        for (String indentId : approvedIndentIds) {
+            // Fetch the indent details from the IndentCreation entity
+            IndentCreation indentCreation = indentCreationRepository.findByIndentId(indentId);
+
+            // Step 3: Check if indentCreation is null
+            if (indentCreation != null) {
+                // Get the projectCode from IndentCreation
+                String projectCode = indentCreation.getProjectName();
+
+                // Fetch the project name from ProjectMaster using the projectCode
+                Optional<ProjectMaster> projectMaster = projectMasterRepository.findByProjectCode(projectCode);
+
+                if (projectMaster.isPresent()) {
+                    ProjectMaster pm = projectMaster.get();
+                    // Create ApprovedIndentsDto object with the indentId and projectName
+                    ApprovedIndentsDto dto = new ApprovedIndentsDto();
+                    dto.setIndentId(indentCreation.getIndentId());
+                    dto.setProjectName(pm.getProjectNameDescription());
+
+                    approvedIndents.add(dto);
+                } else {
+                    // Handle case where project is not found
+                    ApprovedIndentsDto dto = new ApprovedIndentsDto();
+                    dto.setIndentId(indentCreation.getIndentId());
+                    dto.setProjectName(null);
+                    approvedIndents.add(dto);
+                }
+            } else {
+                // Handle case where indent is not found
+                ApprovedIndentsDto dto = new ApprovedIndentsDto();
+                dto.setIndentId(indentId);
+                dto.setProjectName("Indent not found");
+                approvedIndents.add(dto);
+            }
+        }
+
+        return approvedIndents;
     }
+
 
     @Override
     public List<String> getApprovedTenderIdsForPOAndSO() {

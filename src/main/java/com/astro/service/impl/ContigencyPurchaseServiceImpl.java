@@ -71,6 +71,7 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
             CpMaterials material = mapper.map(materialDto, CpMaterials.class);
             // material.setContigencyId(cpId);
             material.setContigencyPurchase(cp);
+            material.setGst(materialDto.getGst());
             return material;
         }).collect(Collectors.toList());
 
@@ -222,6 +223,7 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
                     mDto.setMaterialCategory(material.getMaterialCategory());
                     mDto.setMaterialSubCategory(material.getMaterialSubCategory());
                     mDto.setCurrency(material.getCurrency());
+                    mDto.setGst(material.getGst());
                     return mDto;
                 }).collect(Collectors.toList());
 

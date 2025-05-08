@@ -1,6 +1,7 @@
 package com.astro.controller;
 
 
+import com.astro.dto.workflow.ApprovedIndentsDto;
 import com.astro.dto.workflow.ApprovedPoIdsDto;
 import com.astro.dto.workflow.TransitionActionReqDto;
 import com.astro.service.WorkflowService;
@@ -108,7 +109,7 @@ public class WorkflowController {
 
     @GetMapping("/approved-indents")
     public ResponseEntity<Object>  getApprovedIndents() {
-        List<String> response= workflowService.getApprovedIndents();
+        List<ApprovedIndentsDto> response= workflowService.getApprovedIndents();
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
 

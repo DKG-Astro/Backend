@@ -79,13 +79,24 @@ public class TenderRequestServiceImpl implements TenderRequestService {
       //  String tenderId = "T" + System.currentTimeMillis();
        // tenderRequest.setTenderId(tenderRequestDto.getTenderId());
         tenderRequest.setTenderId(tenderId);
+        System.out.println("tenderId:" + tenderId );
         tenderRequest.setTenderNumber(nextNumber);
         tenderRequest.setTitleOfTender(tenderRequestDto.getTitleOfTender());
         String openingDate = tenderRequestDto.getOpeningDate();
-        tenderRequest.setOpeningDate(CommonUtils.convertStringToDateObject(openingDate));
-        String closeingDate = tenderRequestDto.getClosingDate();
-        tenderRequest.setClosingDate(CommonUtils.convertStringToDateObject(closeingDate));
-      //  tenderRequest.setIndentId(tenderRequestDto.getIndentId());
+        if (openingDate != null && !openingDate.trim().isEmpty()) {
+            tenderRequest.setOpeningDate(CommonUtils.convertStringToDateObject(openingDate));
+        } else {
+            tenderRequest.setOpeningDate(null);
+        }
+
+        String closingDate = tenderRequestDto.getClosingDate();
+        if (closingDate != null && !closingDate.trim().isEmpty()) {
+            tenderRequest.setClosingDate(CommonUtils.convertStringToDateObject(closingDate));
+        } else {
+            tenderRequest.setClosingDate(null);
+        }
+
+        //  tenderRequest.setIndentId(tenderRequestDto.getIndentId());
 
         tenderRequest.setIndentMaterials(tenderRequestDto.getIndentMaterials());
         tenderRequest.setModeOfProcurement(tenderRequestDto.getModeOfProcurement());
@@ -132,7 +143,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
             tenderRequest.setUploadGeneralTermsAndConditionsFileName(generalDoc);
         }
         // Convert List<String> indentIds from DTO into List<IndentId> entities
-        List<IndentId> indentIdList = tenderRequestDto.getIndentIds().stream().map(indentIdStr -> {
+        List<IndentId> indentIdList = tenderRequestDto.getIndentId().stream().map(indentIdStr -> {
             IndentId indentId = new IndentId();
             indentId.setIndentId(indentIdStr); // Directly assign the string value
             indentId.setTenderRequest(tenderRequest);
@@ -141,7 +152,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
 
 // Set indentIds in TenderRequest
         tenderRequest.setIndentIds(indentIdList);
-        List<String> projectNames = indentCreationRepository.findDistinctProjectNames(tenderRequestDto.getIndentIds());
+        List<String> projectNames = indentCreationRepository.findDistinctProjectNames(tenderRequestDto.getIndentId());
         //at least one project name exists, assign the first one. If no project name exists, set it to null
         if (!projectNames.isEmpty()) {
             tenderRequest.setProjectName(projectNames.get(0));
@@ -246,7 +257,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         existingTR.setFileType(tenderRequestDto.getFileType());
 
     // Update Indent IDs
-        List<String> newIndentIds = tenderRequestDto.getIndentIds();
+        List<String> newIndentIds = tenderRequestDto.getIndentId();
 
         // Remove old indent IDs that are no longer in the updated list
         existingTR.getIndentIds().removeIf(indentId -> !newIndentIds.contains(indentId.getIndentId()));

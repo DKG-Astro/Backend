@@ -16,5 +16,6 @@ public class CpMaterialResponseDto {
     private String materialCategory;
     private String materialSubCategory;
     private String currency;
+    private BigDecimal gst;
 
 }

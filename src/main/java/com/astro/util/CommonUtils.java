@@ -131,10 +131,18 @@ public class CommonUtils {
         return incm;
     }
 
-    public static LocalDate convertStringToDateObject(String dateString) {
+   /* public static LocalDate convertStringToDateObject(String dateString) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         return LocalDate.parse(dateString, formatter);
-    }
+    }*/
+   public static LocalDate convertStringToDateObject(String dateString) {
+       if (dateString == null || dateString.trim().isEmpty()) {
+           return null;
+       }
+       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+       return LocalDate.parse(dateString, formatter);
+   }
+
 
     public static String convertDateToString(LocalDate date) {
         if (date != null) {

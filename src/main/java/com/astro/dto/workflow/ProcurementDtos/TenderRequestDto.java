@@ -44,7 +44,7 @@ public class TenderRequestDto {
     private String preBidDisscussions;
     private String updatedBy;
     private Integer createdBy;
-    private List<String> indentIds; // Updated
+    private List<String> indentId; // Updated
 
 
 }

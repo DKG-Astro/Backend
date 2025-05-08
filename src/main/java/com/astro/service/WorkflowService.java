@@ -20,7 +20,7 @@ public interface WorkflowService {
     public List<WorkflowTransitionDto> approvedWorkflowTransition(Integer modifiedBy);
     public List<SubWorkflowTransitionDto> getSubWorkflowTransition(Integer modifiedBy);
     public void approveSubWorkflow(Integer subWorkflowTransitionId);
-    public List<String> getApprovedIndents();
+    public List<ApprovedIndentsDto> getApprovedIndents();
    // public List<String> getApprovedTender();
    public List<ApprovedTenderDto> getApprovedTender();
 

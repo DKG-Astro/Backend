@@ -43,6 +43,7 @@ public class CpMaterials {
 
     @Column(name="currency")
     private String currency;
+    private BigDecimal gst;
 
     // @Column(name = "contigency_id")
     // private String contigencyId;
