@@ -1016,8 +1016,45 @@ public class WorkflowServiceImpl implements WorkflowService {
         }
 
         return approvedIndents;
+    }/*
+public List<ApprovedIndentsDto> getApprovedIndents() {
+    List<String> approvedIndentIds = workflowTransitionRepository.findApprovedIndentRequestIds();
+
+    List<IndentCreation> indentCreations = indentCreationRepository.findByIndentIdIn(approvedIndentIds);
+
+    Map<String, IndentCreation> indentMap = indentCreations.stream()
+            .collect(Collectors.toMap(IndentCreation::getIndentId, ic -> ic));
+
+    Set<String> projectCodes = indentCreations.stream()
+            .map(IndentCreation::getProjectName)
+            .collect(Collectors.toSet());
+
+    List<ProjectMaster> projectMasters = projectMasterRepository.findByProjectCodeIn(projectCodes);
+
+    Map<String, String> projectCodeToNameMap = projectMasters.stream()
+            .collect(Collectors.toMap(ProjectMaster::getProjectCode, ProjectMaster::getProjectNameDescription));
+
+    List<ApprovedIndentsDto> approvedIndents = new ArrayList<>();
+
+    for (String indentId : approvedIndentIds) {
+        ApprovedIndentsDto dto = new ApprovedIndentsDto();
+        dto.setIndentId(indentId);
+
+        IndentCreation ic = indentMap.get(indentId);
+        if (ic != null) {
+            String projectName = projectCodeToNameMap.get(ic.getProjectName());
+            dto.setProjectName(projectName != null ? projectName : "Project not found");
+        } else {
+            dto.setProjectName("Indent not found");
+        }
+
+        approvedIndents.add(dto);
     }
 
+    return approvedIndents;
+}
+
+*/
 
     @Override
     public List<String> getApprovedTenderIdsForPOAndSO() {
