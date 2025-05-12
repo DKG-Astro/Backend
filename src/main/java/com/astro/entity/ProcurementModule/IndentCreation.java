@@ -105,6 +105,8 @@ public class IndentCreation {
         private LocalDate dateOfPurchase;
         private String uploadBuyBackFileNames;
 
+        @Column(name = "proprietary_and_limited_declaration")
+        private String proprietaryAndLimitedDeclaration;
       //  private String totalAmount;
       //  @OneToMany(mappedBy = "indentCreation", cascade = CascadeType.ALL, orphanRemoval = true)
       //@ManyToMany(cascade = CascadeType.PERSIST)

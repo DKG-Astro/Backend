@@ -41,6 +41,7 @@ public class IndentDataResponseDto {
     private String dateOfPurchase;
     private String proprietaryJustification;
     private Boolean buyBack;
+    private String proprietaryAndLimitedDeclaration;
     private List<String> uploadBuyBackFileNames;
     private Integer createdBy;
     private String updatedBy;

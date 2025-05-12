@@ -55,6 +55,7 @@ public class IndentCreationRequestDTO {
     private String modelNumber;
     private String serialNumber;
     private String dateOfPurchase;
+    private String proprietaryAndLimitedDeclaration;
     private List<String> uploadBuyBackFileNames;
     private List<MaterialDetailsRequestDTO> materialDetails;
     private String updatedBy;

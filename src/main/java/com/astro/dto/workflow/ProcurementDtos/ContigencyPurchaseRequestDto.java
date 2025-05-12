@@ -26,6 +26,9 @@ public class ContigencyPurchaseRequestDto {
     private String predifinedPurchaseStatement;
     private String projectDetail;
     private String projectName;
+    private String paymentTo;
+    private String paymentToVendor;
+    private String paymentToEmployee;
     private String updatedBy;
     private Integer createdBy;
     private List<CpMaterialRequestDto> cpMaterials;

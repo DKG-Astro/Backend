@@ -17,7 +17,7 @@ import static org.springframework.data.repository.query.parser.Part.Type.BETWEEN
 @Repository
 public interface ContigencyPurchaseRepository extends JpaRepository<ContigencyPurchase,String> {
 
-    @Query(value = """
+   /* @Query(value = """
         SELECT
             cp.contigency_id AS Id,
             cp.material_description AS Material,
@@ -38,8 +38,31 @@ public interface ContigencyPurchaseRepository extends JpaRepository<ContigencyPu
             cp.Date BETWEEN :startDate AND :endDate
         ORDER BY
             cp.Date
-    """, nativeQuery = true)
-    List<Object[]> findContigencyPurchaseReport(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    """, nativeQuery = true)*/
+   @Query(value = """
+         
+                 SELECT
+                     cp.contigency_id AS id,
+                     GROUP_CONCAT(cm.material_description SEPARATOR ', ') AS material,
+                     GROUP_CONCAT(cm.material_category SEPARATOR ', ') AS materialCategory,
+                     GROUP_CONCAT(cm.material_sub_category SEPARATOR ', ') AS materialSubCategory,
+                     cp.remarks_for_purchase AS endUser,
+                     SUM(cm.total_price) AS value,
+                     cp.vendors_name AS paidTo,
+                     cp.vendors_name AS vendorName,
+                     cp.project_name AS project
+                 FROM
+                     contigency_purchase cp
+                 JOIN
+                     cp_materials cm ON cp.contigency_id = cm.contigency_id
+                 WHERE
+                     cp.Date BETWEEN :startDate AND :endDate
+                 GROUP BY
+                     cp.contigency_id, cp.remarks_for_purchase, cp.vendors_name, cp.project_name
+                 ORDER BY
+                     cp.Date
+        """, nativeQuery = true)
+        List<Object[]> findContigencyPurchaseReport(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
     @Query("SELECT MAX(i.cpNumber) FROM ContigencyPurchase i")
     Integer findMaxCpNumber();

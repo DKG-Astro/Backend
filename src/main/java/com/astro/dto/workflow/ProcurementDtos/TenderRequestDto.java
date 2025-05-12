@@ -34,7 +34,7 @@ public class TenderRequestDto {
     private String singleAndMultipleVendors;
     private List<String> uploadTenderDocuments;
     private List<String> uploadGeneralTermsAndConditions;
-    private String billinngAddress;
+    private String billingAddress;
     private String consignes;
     private String fileType;
 

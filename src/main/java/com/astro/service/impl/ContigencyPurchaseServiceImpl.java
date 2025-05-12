@@ -209,6 +209,9 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
         dto.setUpdatedDate(contigencyPurchase.getUpdatedDate());
         dto.setCreatedDate(contigencyPurchase.getCreatedDate());
 
+        dto.setPaymentTo(contigencyPurchase.getPaymentTo());
+        dto.setPaymentToVendor(contigencyPurchase.getPaymentToVendor());
+        dto.setPaymentToEmployee(contigencyPurchase.getPaymentToEmployee());
         // Map list of CpMaterials to CpMaterialsResponseDto
         List<CpMaterialResponseDto> materialsDtoList = contigencyPurchase.getCpMaterials().stream()
                 .map(material -> {

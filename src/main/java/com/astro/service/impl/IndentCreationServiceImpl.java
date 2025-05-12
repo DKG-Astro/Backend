@@ -120,6 +120,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setPeriodOfContract(indentRequestDTO.getPeriodOfContract());
         indentCreation.setSingleAndMultipleJob(indentRequestDTO.getSingleAndMultipleJob());
         indentCreation.setFileType(indentRequestDTO.getFileType());
+        indentCreation.setProprietaryAndLimitedDeclaration(indentRequestDTO.getProprietaryAndLimitedDeclaration());
 
        // indentCreation.setTechnicalSpecificationsFileName(indentRequestDTO.getTechnicalSpecificationsFileName());
       //  indentCreation.setDraftEOIOrRFPFileName(indentRequestDTO.getDraftEOIOrRFPFileName());
@@ -280,6 +281,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setConsignesLocation(indentRequestDTO.getConsignesLocation());
         indentCreation.setProjectName(indentRequestDTO.getProjectName());
         indentCreation.setIsPreBitMeetingRequired(indentRequestDTO.getIsPreBidMeetingRequired());
+        indentCreation.setProprietaryAndLimitedDeclaration(indentRequestDTO.getProprietaryAndLimitedDeclaration());
         String Date = indentRequestDTO.getPreBidMeetingDate();
         if (Date != null) {
             indentCreation.setPreBidMeetingDate(CommonUtils.convertStringToDateObject(Date));
@@ -428,6 +430,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         response.setConsignesLocation(indentCreation.getConsignesLocation());
        // response.setUploadingPriorApprovalsFileName(indentCreation.getUploadingPriorApprovalsFileName());
         response.setProjectName(indentCreation.getProjectName());
+        response.setProprietaryAndLimitedDeclaration(indentCreation.getProprietaryAndLimitedDeclaration());
         response.setIsPreBidMeetingRequired(indentCreation.getIsPreBitMeetingRequired());
         LocalDate Date = indentCreation.getPreBidMeetingDate();
         if (Date != null) {
@@ -595,6 +598,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         response.setConsignesLocation(indentCreation.getConsignesLocation());
         response.setUploadingPriorApprovalsFileName(indentCreation.getUploadingPriorApprovalsFileName());
         response.setProjectName(indentCreation.getProjectName());
+        response.setProprietaryAndLimitedDeclaration(indentCreation.getProprietaryAndLimitedDeclaration());
         response.setIsPreBidMeetingRequired(indentCreation.getIsPreBitMeetingRequired());
         LocalDate Date = indentCreation.getPreBidMeetingDate();
         if (Date != null) {

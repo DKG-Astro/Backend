@@ -51,6 +51,9 @@ public class ContigencyPurchase {
     @Column(name="file_type")
     private String fileType;
 
+    private String paymentTo;
+    private String paymentToVendor;
+    private String paymentToEmployee;
     @Column(name = "updated_by")
     private String updatedBy;
     @Column(name = "created_by")

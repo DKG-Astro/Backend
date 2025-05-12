@@ -106,7 +106,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         tenderRequest.setApplicableTaxes(tenderRequestDto.getApplicableTaxes());
       //  tenderRequest.setConsignesAndBillinngAddress(tenderRequestDto.getConsignesAndBillinngAddress());
         tenderRequest.setConsignes(tenderRequestDto.getConsignes());
-        tenderRequest.setBillinngAddress(tenderRequestDto.getBillinngAddress());
+        tenderRequest.setBillinngAddress(tenderRequestDto.getBillingAddress());
         tenderRequest.setIncoTerms(tenderRequestDto.getIncoTerms());
         tenderRequest.setPaymentTerms(tenderRequestDto.getPaymentTerms());
         tenderRequest.setLdClause(tenderRequestDto.getLdClause());
@@ -219,7 +219,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         existingTR.setLastDateOfSubmission(CommonUtils.convertStringToDateObject(LastDateOfSubmission));
         existingTR.setApplicableTaxes(tenderRequestDto.getApplicableTaxes());
        // existingTR.setConsignesAndBillinngAddress(tenderRequestDto.getConsignesAndBillinngAddress());
-        existingTR.setBillinngAddress(tenderRequestDto.getBillinngAddress());
+        existingTR.setBillinngAddress(tenderRequestDto.getBillingAddress());
         existingTR.setConsignes(tenderRequestDto.getConsignes());
         existingTR.setIncoTerms(tenderRequestDto.getIncoTerms());
         existingTR.setPaymentTerms(tenderRequestDto.getPaymentTerms());
