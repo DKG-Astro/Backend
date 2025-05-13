@@ -2,6 +2,8 @@ package com.astro.service.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -109,7 +111,7 @@ public class FileProcessingServiceImpl implements FileProcessingService {
     }
 
    */
-  @Override
+ /* @Override
   public Resource viewFile(String fileType, String fileName) {
       if (!FILE_TYPE_LIST.contains(fileType)) {
           throw new FilesNotFoundException(new ErrorDetails(AppConstant.INVALID_FILE_TYPE,
@@ -127,6 +129,52 @@ public class FileProcessingServiceImpl implements FileProcessingService {
 
       return file;
   }
+*/
+
+    @Override
+    public Resource viewFile(String fileType, String fileName) {
+        if (!FILE_TYPE_LIST.contains(fileType)) {
+            throw new FilesNotFoundException(new ErrorDetails(AppConstant.INVALID_FILE_TYPE,
+                    AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION, "Invalid File type."));
+        }
+
+        // Decode only if file name is Base64-encoded
+       // String actualFileName = isBase64Encoded(fileName) ? decodeBase64(fileName) : fileName;
+        String actualFileName = isBase64Encoded(fileName) ? decodeBase64(fileName) : fileName;
+        String contentType = getContentType(actualFileName);
+
+        System.out.println("Actual file name: " + actualFileName);
+
+        Resource file = downloadFile(fileType, actualFileName);
+
+        if (file == null) {
+            throw new FilesNotFoundException(new ErrorDetails(AppConstant.FILE_NOT_FOUND,
+                    AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION, "File not found."));
+        }
+
+        return file;
+    }
+
+    private boolean isBase64Encoded(String str) {
+        try {
+            // Try decoding and re-encoding to see if it matches (basic check)
+            return Base64.getEncoder().encodeToString(Base64.getDecoder().decode(str)).equals(str);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    private String decodeBase64(String encoded) {
+        try {
+            String urlDecoded = URLDecoder.decode(encoded, StandardCharsets.UTF_8.name());
+            return new String(Base64.getDecoder().decode(urlDecoded));
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to decode base64 filename", e);
+        }
+    }
+
 
     // Business logic to determine content type
     public String getContentType(String fileName) {

@@ -91,7 +91,7 @@ public class FileProcessingController {
 
    */
 
-    @GetMapping(value = "/view/{fileType}/{fileName}")
+    @GetMapping(value = "/view/{fileType}/{fileName:.+}")
     public ResponseEntity<Resource> viewFile(@PathVariable("fileType") String fileType,
                                              @PathVariable("fileName") String fileName) {
         Resource file = fileProcessingService.viewFile(fileType, fileName);

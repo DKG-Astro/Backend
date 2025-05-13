@@ -109,6 +109,7 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\controller\Invent
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\ProcurementModule\PurchaseOrder\PurchaseOrderAttributesRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\InventoryModule\grv\GrvMaterialDtlDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\InventoryModule\OgpPoDetailEntity.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\IndentDto\IndentDataResponseDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\InventoryModule\OgpDetailEntity.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ProcurementDtos\ContigencyPurchaseRequestDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\InventoryModule\GoodsReceiptInspectionResponseDto.java
@@ -205,6 +206,7 @@ C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\Loca
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\InventoryModule\grv\GrvMaterialDtlRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\StateMaster.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\ProcurementModule\TenderRequestRepository.java
+C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\dto\workflow\ApprovedIndentsDto.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\repository\InventoryModule\GoodsReturnRepository.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\InventoryModule\IsnMaterialDtlEntity.java
 C:\Users\UDAY CHOWDARY\Desktop\Backend\src\main\java\com\astro\entity\ProcurementModule\PurchaseOrderAttributes.java
