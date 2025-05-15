@@ -5,6 +5,7 @@ import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationRequestDTO
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentDataResponseDto;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.materialHistoryDto;
 import com.astro.dto.workflow.WorkflowTransitionDto;
 import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.entity.UserMaster;
@@ -155,6 +156,12 @@ public class IndentCreationController {
     @GetMapping("/indentData/{indentId}")
     public ResponseEntity<Object> getIndentDataById(@PathVariable String indentId) throws IOException {
         IndentDataResponseDto responseDTO = indentCreationService.getIndentDataById(indentId);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
+    }
+
+    @GetMapping("/materialHistory/{materialCode}")
+    public ResponseEntity<Object> getMaterialHistory(@PathVariable String materialCode) {
+        List<materialHistoryDto> responseDTO = indentCreationService.getIndentIdAndUserId(materialCode);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 

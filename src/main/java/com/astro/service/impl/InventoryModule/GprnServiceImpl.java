@@ -113,9 +113,15 @@ public class GprnServiceImpl implements GprnService {
 
             if (poMaterial.isPresent()) {
                 PurchaseOrderAttributes pom = poMaterial.get();
-                BigDecimal updatedReceivedQty = pom.getReceivedQuantity().add(dtl.getReceivedQuantity());
+                BigDecimal existingQty = pom.getReceivedQuantity() != null
+                        ? pom.getReceivedQuantity()
+                        : BigDecimal.ZERO;
+                BigDecimal updatedReceivedQty = existingQty.add(dtl.getReceivedQuantity());
                 pom.setReceivedQuantity(updatedReceivedQty);
                 poMaterialRepo.save(pom);
+               // BigDecimal updatedReceivedQty = pom.getReceivedQuantity().add(dtl.getReceivedQuantity());
+              //  pom.setReceivedQuantity(updatedReceivedQty);
+               // poMaterialRepo.save(pom);
             }
 
         }

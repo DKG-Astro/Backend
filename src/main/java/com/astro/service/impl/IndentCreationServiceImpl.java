@@ -50,6 +50,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
     private IndentMaterialMappingRepository indentMaterialMappingRepository;
     @Autowired
     private ProjectMasterRepository projectMasterRepository;
+    @Autowired
+    private MaterialDetailsRepository materialRepo;
 
     @Autowired
     private VendorNamesForJobWorkMaterialRepository vendorNameRepository;
@@ -824,6 +826,25 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                 (String) obj[4]
         )).collect(Collectors.toList());
 
+    }
+
+    @Override
+    public List<materialHistoryDto> getIndentIdAndUserId(String materialCode) {
+        List<String> indentIds = materialDetailsRepository.findIndentIdsByMaterialCode(materialCode);
+
+        return indentIds.stream()
+                .map(id -> {
+                    materialHistoryDto dto = new materialHistoryDto();
+                    dto.setIndentId(id);
+                    IndentCreation indent = indentCreationRepository.findById(id).orElse(null);
+                    if (indent != null) {
+                        dto.setUserId(indent.getCreatedBy());
+                    } else {
+                        dto.setUserId(null);
+                    }
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     public void handleFileUpload(IndentCreation indentCreation, MultipartFile file, Consumer<byte[]> fileSetter) {
