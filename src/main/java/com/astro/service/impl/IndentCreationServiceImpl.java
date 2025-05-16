@@ -599,7 +599,12 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         response.setIndentorEmailAddress(indentCreation.getIndentorEmailAddress());
         response.setConsignesLocation(indentCreation.getConsignesLocation());
         response.setUploadingPriorApprovalsFileName(indentCreation.getUploadingPriorApprovalsFileName());
-        response.setProjectName(indentCreation.getProjectName());
+      //  response.setProjectName(indentCreation.getProjectName());
+        response.setProjectName(
+                (indentCreation.getProjectName() != null && !indentCreation.getProjectName().isBlank())
+                        ? indentCreation.getProjectName()
+                        : null
+        );
         response.setProprietaryAndLimitedDeclaration(indentCreation.getProprietaryAndLimitedDeclaration());
         response.setIsPreBidMeetingRequired(indentCreation.getIsPreBitMeetingRequired());
         LocalDate Date = indentCreation.getPreBidMeetingDate();
@@ -645,6 +650,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         // Converting "Capital" or "Consumable" to "Normal"
         if ("Capital".equalsIgnoreCase(materialCategory) || "Consumable".equalsIgnoreCase(materialCategory)) {
             materialCategory = "Normal";
+        }else if("Computer".equalsIgnoreCase(materialCategory)){
+            materialCategory ="Computer";
         }
         response.setMaterialCategory(materialCategory);  //set material category to indent response
 

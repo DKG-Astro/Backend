@@ -324,17 +324,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         return allPreviousRole;
     }
     */
-/*
-   public List<String> allPreviousRoleWorkflowTransition(Integer workflowId, String requestId) {
-       List<WorkflowTransition> workflowTransitionList =
-               workflowTransitionRepository.findByWorkflowIdAndRequestIdOrderByWorkflowTransitionIdAsc(workflowId, requestId);
 
-       return workflowTransitionList.stream()
-               .map(WorkflowTransition::getCurrentRole)
-               .distinct()
-               .collect(Collectors.toList());
-   }
-*/
    public List<String> allPreviousRoleWorkflowTransition(Integer workflowId, String requestId) {
        List<String> allPreviousRole = new ArrayList<>();
 
