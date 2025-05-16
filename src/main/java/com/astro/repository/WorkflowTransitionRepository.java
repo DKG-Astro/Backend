@@ -38,4 +38,6 @@ public interface WorkflowTransitionRepository extends JpaRepository<WorkflowTran
     List<String> findApprovedPoIds();
     @Query("SELECT wt.requestId FROM WorkflowTransition wt WHERE wt.workflowName = 'Tender Approver Workflow' AND wt.status = 'Completed' AND wt.nextAction IS NULL")
     List<String> findApprovedTenderIds();
+
+    List<WorkflowTransition> findByWorkflowIdAndRequestIdOrderByWorkflowTransitionIdAsc(Integer workflowId, String requestId);
 }

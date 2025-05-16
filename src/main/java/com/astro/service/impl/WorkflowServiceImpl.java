@@ -313,7 +313,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         return workflowTransitionDtoList;
     }
 
-    @Override
+   /* @Override
     public List<String> allPreviousRoleWorkflowTransition(Integer workflowId, String requestId) {
         List<String> allPreviousRole = new ArrayList<>();
 
@@ -323,6 +323,36 @@ public class WorkflowServiceImpl implements WorkflowService {
         }
         return allPreviousRole;
     }
+    */
+/*
+   public List<String> allPreviousRoleWorkflowTransition(Integer workflowId, String requestId) {
+       List<WorkflowTransition> workflowTransitionList =
+               workflowTransitionRepository.findByWorkflowIdAndRequestIdOrderByWorkflowTransitionIdAsc(workflowId, requestId);
+
+       return workflowTransitionList.stream()
+               .map(WorkflowTransition::getCurrentRole)
+               .distinct()
+               .collect(Collectors.toList());
+   }
+*/
+   public List<String> allPreviousRoleWorkflowTransition(Integer workflowId, String requestId) {
+       List<String> allPreviousRole = new ArrayList<>();
+
+       List<WorkflowTransition> workflowTransitionList =
+               workflowTransitionRepository.findByWorkflowIdAndRequestId(workflowId, requestId);
+
+       if (workflowTransitionList != null && !workflowTransitionList.isEmpty()) {
+           allPreviousRole = workflowTransitionList.stream()
+                   .sorted(Comparator.comparing(WorkflowTransition::getWorkflowTransitionId))
+                   .map(WorkflowTransition::getCurrentRole)
+                   .filter(Objects::nonNull)
+                   .distinct()
+                   .collect(Collectors.toList());
+       }
+
+       return allPreviousRole;
+   }
+
 
     private WorkflowTransitionDto mapWorkflowTransitionDto(WorkflowTransition workflowTransition) {
         WorkflowTransitionDto workflowTransitionDto = new WorkflowTransitionDto();
@@ -613,12 +643,20 @@ public class WorkflowServiceImpl implements WorkflowService {
         }
     }
 
+    private static final Set<String> CREATOR_ROLES = Set.of(
+            "Request Creator",
+            "Indent Creator",
+            "Tender Creator",
+            "PO Creator",
+            "SO Creator",
+            "CP Creator"
+    );
     private WorkflowTransition getLatestWorkflowTransiton(WorkflowTransition currentWorkflowTransition, TransitionActionReqDto transitionActionReqDto) {
         WorkflowTransition workflowTransition = null;
         List<WorkflowTransition> workflowTransitionList = workflowTransitionRepository.findByWorkflowIdAndRequestIdAndNextRole(currentWorkflowTransition.getWorkflowId(), currentWorkflowTransition.getRequestId(), transitionActionReqDto.getAssignmentRole());
         if (Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()) {
             workflowTransition = workflowTransitionList.stream().sorted(Comparator.comparing(WorkflowTransition::getWorkflowTransitionId).reversed()).limit(1).collect(Collectors.toList()).get(0);
-        } else if (transitionActionReqDto.getAssignmentRole().equalsIgnoreCase("Request Creator")) {
+        } else if (CREATOR_ROLES.contains(transitionActionReqDto.getAssignmentRole())){//else if (transitionActionReqDto.getAssignmentRole().equalsIgnoreCase("Request Creator")) {
             workflowTransitionList = workflowTransitionRepository.findByWorkflowIdAndRequestIdAndCurrentRole(currentWorkflowTransition.getWorkflowId(), currentWorkflowTransition.getRequestId(), transitionActionReqDto.getAssignmentRole());
             if (Objects.nonNull(workflowTransitionList)) {
                 workflowTransition = workflowTransitionList.get(0);
