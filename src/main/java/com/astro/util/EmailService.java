@@ -14,7 +14,7 @@ import java.io.IOException;
 @Service
 public class EmailService {
 
-        private static final String SENDGRID_API_KEY = "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"; // API key(we can change based on email)
+        private static final String SENDGRID_API_KEY = ""; // API key(we can change based on email)
 
         public void sendEmail(String toEmail, String username, String password) throws IOException {
             Email from = new Email("udaychowdhary743@gmail.com"); // must be verified in SendGrid

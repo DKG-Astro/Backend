@@ -38,7 +38,7 @@ public class TenderRequestDto {
     private String billingAddress;
     private String consignes;
     private String fileType;
-    private List<String> bidSecurityDownload;
+  //  private List<String> bidSecurityDownload;
     private List<String> bidSecurityDeclarationFileName;
     private List<String> mllStatusDeclarationFileName;
 
