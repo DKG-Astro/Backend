@@ -20,7 +20,7 @@ public interface VendorMasterService {
 
    public List<VendorMasterResponseDto> getAllNotApprovedVendors();
 
-    public List<RegisteredVendorsDataDto> getVendorPurchaseOrders(String vendorId);
+    public RegisteredVendorsDataDto getVendorPurchaseOrders(String tenderId);
 
     public List<String> getTenderIds(String vendorId);
 

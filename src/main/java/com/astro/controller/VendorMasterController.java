@@ -60,9 +60,9 @@ public class VendorMasterController {
 
  */
 
-    @GetMapping("/approvedVendorData/{vendorId}")
-    public ResponseEntity<Object> getAllVendorData(@PathVariable String vendorId) {
-        List<RegisteredVendorsDataDto> response = vendorMasterService.getVendorPurchaseOrders(vendorId);
+    @GetMapping("/approvedVendorData/{tenderId}")
+    public ResponseEntity<Object> getAllVendorData(@PathVariable String tenderId) {
+        RegisteredVendorsDataDto response = vendorMasterService.getVendorPurchaseOrders(tenderId);
         return ResponseEntity.ok(ResponseBuilder.getSuccessResponse(response));
     }
     @GetMapping("/approvedtenderIDs/{vendorId}")

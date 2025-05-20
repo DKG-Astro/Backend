@@ -74,6 +74,14 @@ public class TenderRequest {
     @Column(name = "upload_specific_terms_and_conditions_file_name")
     private String uploadSpecificTermsAndConditionsFileName;
 
+    @Column(name = "bid_security_declaration_file_name")
+    private String bidSecurityDeclarationFileName;
+    @Column(name = "mll_status_declaration_file_name")
+    private String mllStatusDeclarationFileName;
+    @Column(name="vendor_id")
+    private String vendorId;
+    @Column(name="quotation_file_name")
+    private String quotationFileName;
     @Lob
     @Column(name = "upload_specific_terms_and_conditions")
     private byte[] uploadSpecificTermsAndConditions;

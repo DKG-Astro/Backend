@@ -185,15 +185,13 @@ public class VendorMasterServiceImpl implements VendorMasterService {
 
 
     @Override
-    public List<RegisteredVendorsDataDto> getVendorPurchaseOrders(String vendorId) {
+    public RegisteredVendorsDataDto getVendorPurchaseOrders(String tenderId) {
 
 
-        List<PurchaseOrder> purchaseOrders = purchaseOrderRepository.findByVendorId(vendorId);
-        List<RegisteredVendorsDataDto> result = new ArrayList<>();
+      //  List<PurchaseOrder> purchaseOrders = purchaseOrderRepository.findByVendorId(vendorId);
+        PurchaseOrder  po =  purchaseOrderRepository.findByTenderId(tenderId);
 
-        for(PurchaseOrder po : purchaseOrders){
-
-            Optional<TenderRequest> tender= tenderRequestRepository.findByTenderId(po.getTenderId());
+            Optional<TenderRequest> tender= tenderRequestRepository.findByTenderId(tenderId);
             TenderRequest tr= tender.get();
             RegisteredVendorsDataDto dto = new RegisteredVendorsDataDto();
             dto.setPurchaseOrder(po.getPoId());
@@ -201,14 +199,16 @@ public class VendorMasterServiceImpl implements VendorMasterService {
             dto.setDeliveryAndAcceptanceStatus("null");
             dto.setPaymentStatus("null");
             dto.setPaymentUTRNumber("null");
-            dto.setUploadTenderDocumentsFileName(tr.getUploadTenderDocumentsFileName());
-            dto.setUploadSpecificTermsAndConditionsFileName(tr.getUploadSpecificTermsAndConditionsFileName());
-            dto.setUploadGeneralTermsAndConditionsFileName(dto.getUploadGeneralTermsAndConditionsFileName());
+            dto.setTenderRequestCopy("null");
+            dto.setPoCopy("null");
+          //  dto.setUploadTenderDocumentsFileName(tr.getUploadTenderDocumentsFileName());
+           // dto.setUploadSpecificTermsAndConditionsFileName(tr.getUploadSpecificTermsAndConditionsFileName());
+          //  dto.setUploadGeneralTermsAndConditionsFileName(dto.getUploadGeneralTermsAndConditionsFileName());
 
-            result.add(dto);
-        }
+          //  result.add(dto);
+      //  }
 
-        return result;
+        return dto;
     }
 
     @Override
@@ -216,14 +216,10 @@ public class VendorMasterServiceImpl implements VendorMasterService {
 
         List<VendorNamesForJobWorkMaterial> vendorMaterials =
                 vendorNamesForJobWorkMaterialRepository.findByVendorName(vendorId);
-
-        // 2. Extract unique indent IDs
         List<String> indentIds = vendorMaterials.stream()
                 .map(VendorNamesForJobWorkMaterial::getIndentId)
                 .distinct()
                 .collect(Collectors.toList());
-
-        // 3. Use indent IDs to find tender IDs
         List<IndentId> indentEntities = indentIdRepository.findByIndentIdIn(indentIds);
         List<String> approvedTenderIds = workflowTransitionRepository.findApprovedTenderIds();
         List<String> tenderIds = indentEntities.stream()

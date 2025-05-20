@@ -4,6 +4,7 @@ import com.astro.dto.workflow.ProcurementDtos.TenderRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.TenderResponseDto;
 
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.tenderUpdateDto;
 import com.astro.dto.workflow.WorkflowTransitionDto;
 import com.astro.service.TenderRequestService;
 
@@ -60,11 +61,28 @@ public class TenderRequestController {
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(updated), HttpStatus.OK);
     }
 
+    @PutMapping(value = "/update/{tenderId}")
+    public ResponseEntity<Object> updateTender(@PathVariable String tenderId, @RequestBody tenderUpdateDto tenderRequestDTO) {// Set files in DTO if provided
+
+        // Call service to update tender request
+        TenderResponseDto updated = TRService.updateTender(tenderId, tenderRequestDTO);
+
+        // Return success response
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(updated), HttpStatus.OK);
+    }
+
     @GetMapping
     public ResponseEntity<Object> getAllTenderRequests() {
 
         List<TenderResponseDto>  tenderRequest = TRService.getAllTenderRequests();
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(tenderRequest), HttpStatus.OK);
+    }
+
+    @GetMapping("vendor/{tenderId}")
+    public ResponseEntity<Object> vendorCheck(@PathVariable String tenderId) {
+
+        String  vendorId = TRService.vendorCheck(tenderId);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(vendorId), HttpStatus.OK);
     }
 
     @GetMapping("/{tenderId}")
@@ -74,6 +92,14 @@ public class TenderRequestController {
 
 
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(tenderRequest), HttpStatus.OK);
+    }
+
+    @GetMapping("/data/{tenderId}")
+    public ResponseEntity<Object> getTenderDataById(@PathVariable String tenderId) {
+
+        TenderResponseDto tenderRequest = TRService.getTenderData(tenderId);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(tenderRequest), HttpStatus.OK);
+
     }
 
     @DeleteMapping("/{tenderId}")

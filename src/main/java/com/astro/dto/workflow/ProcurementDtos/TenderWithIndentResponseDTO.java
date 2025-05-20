@@ -44,6 +44,8 @@ public class TenderWithIndentResponseDTO {
     private LocalDateTime updatedDate;
     private List<IndentCreationResponseDTO> indentResponseDTO;
     private BigDecimal totalTenderValue;
+    private String vendorId;
+    private String quotationFileName;
     //   private List<IndentIdDto> indentIds;
 
 

@@ -14,8 +14,12 @@ public class RegisteredVendorsDataDto {
     private String paymentStatus;
     private String paymentUTRNumber;
     private LocalDate date;
-    private String uploadTenderDocumentsFileName;
-    private String uploadGeneralTermsAndConditionsFileName;
-    private String uploadSpecificTermsAndConditionsFileName;
+    private String tenderRequestCopy;
+    private String poCopy;
+
+
+ //   private String uploadTenderDocumentsFileName;
+   // private String uploadGeneralTermsAndConditionsFileName;
+   // private String uploadSpecificTermsAndConditionsFileName;
 
 }

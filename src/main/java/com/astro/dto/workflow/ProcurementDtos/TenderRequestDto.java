@@ -29,7 +29,8 @@ public class TenderRequestDto {
     private String performanceAndWarrantySecurity;
     private Boolean bidSecurityDeclaration;
     private Boolean mllStatusDeclaration;
-
+    private String vendorId;
+    private String quotationFileName;
     //private MultipartFile uploadTenderDocuments;
     private String singleAndMultipleVendors;
     private List<String> uploadTenderDocuments;
@@ -37,6 +38,9 @@ public class TenderRequestDto {
     private String billingAddress;
     private String consignes;
     private String fileType;
+    private List<String> bidSecurityDownload;
+    private List<String> bidSecurityDeclarationFileName;
+    private List<String> mllStatusDeclarationFileName;
 
     //   private MultipartFile uploadGeneralTermsAndConditions;
 

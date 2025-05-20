@@ -6,14 +6,14 @@ import com.astro.entity.VendorLoginDetails;
 import com.astro.entity.VendorMaster;
 import com.astro.entity.VendorMasterUtil;
 import com.astro.entity.VendorQuotationAgainstTender;
-import com.astro.repository.VendorLoginDetailsRepository;
-import com.astro.repository.VendorMasterRepository;
-import com.astro.repository.VendorMasterUtilRepository;
-import com.astro.repository.VendorQuotationAgainstTenderRepository;
+import com.astro.repository.*;
+import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
+import com.astro.repository.ProcurementModule.IndentIdRepository;
 import com.astro.service.VendorQuotationAgainstTenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,7 +29,10 @@ public class VendorQuotationAgainstTenderServiceImpl implements VendorQuotationA
     private VendorMasterUtilRepository vendorMasterUtilRepository;
     @Autowired
     private VendorLoginDetailsRepository vendorLoginDetailsRepository;
-
+    @Autowired
+    private IndentIdRepository indentRepo;
+    @Autowired
+    private VendorNamesForJobWorkMaterialRepository vRepo;
     @Override
     public VendorQuotationAgainstTenderDto saveQuotation(VendorQuotationAgainstTenderDto dto) {
         VendorQuotationAgainstTender quotation = new VendorQuotationAgainstTender();
@@ -57,6 +60,20 @@ public class VendorQuotationAgainstTenderServiceImpl implements VendorQuotationA
             dto.setCreatedBy(vq.getCreatedBy());
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getVendorsWhoDidNotSubmitQuotation(String tenderId) {
+
+        List<String> indentIds = indentRepo.findTenderWithIndent(tenderId);
+        List<String> allVendorIds = new ArrayList<>();
+        for (String indentId : indentIds) {
+            List<String> vendorIds = vRepo.findVendorNamesByIndentId(indentId);
+            allVendorIds.addAll(vendorIds);
+        }
+        List<String> submittedVendorIds = vendorQuotationAgainstTenderRepository.findVendorIdsByTenderId(tenderId);
+        allVendorIds.removeAll(submittedVendorIds);
+        return allVendorIds;
     }
 
     @Override

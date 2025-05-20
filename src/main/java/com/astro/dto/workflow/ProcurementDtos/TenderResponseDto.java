@@ -33,6 +33,8 @@ public class TenderResponseDto {
     private String uploadGeneralTermsAndConditions;
     private String uploadSpecificTermsAndConditions;
     private String fileType;
+    private String bidSecurityDeclarationFileName;
+    private String mllStatusDeclarationFileName;
     private String preBidDisscussions;
     private BigDecimal totalTenderValue;
     private String projectName;
@@ -44,4 +46,6 @@ public class TenderResponseDto {
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
     private List<String> indentIds;
+    //private String vendorId;
+     // private String quotationFileName;
 }

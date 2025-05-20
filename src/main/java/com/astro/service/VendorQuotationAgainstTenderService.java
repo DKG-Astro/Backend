@@ -14,5 +14,6 @@ public interface VendorQuotationAgainstTenderService {
     public List<VendorQuotationAgainstTenderDto> getQuotationsByTenderId(String tenderId);
 
     public VendorStatusDto getVendorStatus(String vendorId);
+    public List<String> getVendorsWhoDidNotSubmitQuotation(String tenderId);
 
 }

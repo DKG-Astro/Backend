@@ -16,4 +16,6 @@ public interface IndentIdRepository extends JpaRepository<IndentId,Long> {
 
 
     List<IndentId> findByIndentIdIn(List<String> indentIds);
+
+  //  List<String> findIndentIdsByTenderId(String tenderId);
 }

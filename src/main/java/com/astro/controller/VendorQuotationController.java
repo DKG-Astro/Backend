@@ -30,6 +30,11 @@ public class VendorQuotationController {
         List<VendorQuotationAgainstTenderDto> responseDTO = vqService.getQuotationsByTenderId(tenderId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
+    @GetMapping("NotSubmitVendors/{tenderId}")
+    public ResponseEntity<Object> getVendorNotSubmittedQuotationByTenderId(@PathVariable String tenderId) {
+        List<String> responseDTO = vqService.getVendorsWhoDidNotSubmitQuotation(tenderId);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
+    }
 
     @GetMapping("VendorStatus/{vendorId}")
     public ResponseEntity<Object> getVendorStatus(@PathVariable String vendorId) {

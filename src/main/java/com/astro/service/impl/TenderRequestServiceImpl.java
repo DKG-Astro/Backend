@@ -6,6 +6,7 @@ import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderMateri
 import com.astro.dto.workflow.ProcurementDtos.TenderRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.TenderResponseDto;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.tenderUpdateDto;
 import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.entity.ProcurementModule.IndentId;
 import com.astro.entity.ProcurementModule.ServiceOrder;
@@ -142,6 +143,18 @@ public class TenderRequestServiceImpl implements TenderRequestService {
             String generalDoc = saveBase64Files(tenderRequestDto.getUploadGeneralTermsAndConditions(), basePath);
             tenderRequest.setUploadGeneralTermsAndConditionsFileName(generalDoc);
         }
+        if(tenderRequestDto.getBidSecurityDeclarationFileName() == null || tenderRequestDto.getBidSecurityDeclarationFileName().isEmpty()){
+            tenderRequest.setBidSecurityDeclarationFileName(null);
+        }else {
+            String bidDoc = saveBase64Files(tenderRequestDto.getBidSecurityDeclarationFileName(), basePath);
+            tenderRequest.setBidSecurityDeclarationFileName(bidDoc);
+        }
+        if(tenderRequestDto.getMllStatusDeclarationFileName() == null || tenderRequestDto.getMllStatusDeclarationFileName().isEmpty()){
+            tenderRequest.setMllStatusDeclarationFileName(null);
+        }else {
+            String mllDoc = saveBase64Files(tenderRequestDto.getMllStatusDeclarationFileName(), basePath);
+            tenderRequest.setMllStatusDeclarationFileName(mllDoc);
+        }
         // Convert List<String> indentIds from DTO into List<IndentId> entities
         List<IndentId> indentIdList = tenderRequestDto.getIndentId().stream().map(indentIdStr -> {
             IndentId indentId = new IndentId();
@@ -224,6 +237,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         existingTR.setIncoTerms(tenderRequestDto.getIncoTerms());
         existingTR.setPaymentTerms(tenderRequestDto.getPaymentTerms());
         existingTR.setLdClause(tenderRequestDto.getLdClause());
+        existingTR.setVendorId(tenderRequestDto.getVendorId());
+        existingTR.setQuotationFileName(tenderRequestDto.getQuotationFileName());
        // existingTR.setApplicablePerformance(tenderRequestDto.getApplicablePerformance());
         existingTR.setPerformanceAndWarrantySecurity(tenderRequestDto.getPerformanceAndWarrantySecurity());
         existingTR.setBidSecurityDeclaration(tenderRequestDto.getBidSecurityDeclaration());
@@ -254,6 +269,19 @@ public class TenderRequestServiceImpl implements TenderRequestService {
             String generalDoc = saveBase64Files(tenderRequestDto.getUploadGeneralTermsAndConditions(), basePath);
             existingTR.setUploadGeneralTermsAndConditionsFileName(generalDoc);
         }
+
+        if(tenderRequestDto.getBidSecurityDeclarationFileName() == null || tenderRequestDto.getBidSecurityDeclarationFileName().isEmpty()){
+            existingTR.setBidSecurityDeclarationFileName(null);
+        }else {
+            String bidDoc = saveBase64Files(tenderRequestDto.getBidSecurityDeclarationFileName(), basePath);
+            existingTR.setBidSecurityDeclarationFileName(bidDoc);
+        }
+        if(tenderRequestDto.getMllStatusDeclarationFileName() == null || tenderRequestDto.getMllStatusDeclarationFileName().isEmpty()){
+            existingTR.setMllStatusDeclarationFileName(null);
+        }else {
+            String mllDoc = saveBase64Files(tenderRequestDto.getMllStatusDeclarationFileName(), basePath);
+            existingTR.setMllStatusDeclarationFileName(mllDoc);
+        }
         existingTR.setFileType(tenderRequestDto.getFileType());
 
     // Update Indent IDs
@@ -281,6 +309,48 @@ public class TenderRequestServiceImpl implements TenderRequestService {
 
         return mapToResponseDTO(existingTR);
     }
+    @Override
+    public TenderResponseDto updateTender(String tenderId, tenderUpdateDto dto) {
+
+        TenderRequest existing = TRrepo.findById(tenderId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "Tender request not found for the provided ID."
+                        )
+                ));
+
+        existing.setVendorId(dto.getVendorId());
+        existing.setQuotationFileName(dto.getQuotationFileName());
+
+
+        TenderRequest saved = TRrepo.save(existing);
+
+
+        return mapToResponseDTO(saved);
+    }
+
+    @Override
+    public String vendorCheck(String tenderId) {
+        TenderRequest tenderRequest =TRrepo.findById(tenderId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Tender not found for the provided asset ID.")
+                ));
+        String vendorId = tenderRequest.getVendorId();
+
+        if (vendorId != null && !vendorId.isEmpty()) {
+            return vendorId;
+        } else {
+            return null;
+        }
+    }
+
 
     @Override
     public  TenderWithIndentResponseDTO getTenderRequestById(String tenderId) {
@@ -324,6 +394,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         responseDTO.setIncoTerms(tenderRequest.getIncoTerms());
         responseDTO.setPaymentTerms(tenderRequest.getPaymentTerms());
         responseDTO.setLdClause(tenderRequest.getLdClause());
+        responseDTO.setVendorId(tenderRequest.getVendorId());
+        responseDTO.setQuotationFileName(tenderRequest.getQuotationFileName());
       //  responseDTO.setApplicablePerformance(tenderRequest.getApplicablePerformance());
         responseDTO.setPerformanceAndWarrantySecurity(tenderRequest.getPerformanceAndWarrantySecurity());
         responseDTO.setBidSecurityDeclaration(tenderRequest.getBidSecurityDeclaration());
@@ -345,6 +417,19 @@ public class TenderRequestServiceImpl implements TenderRequestService {
 
         return responseDTO;
 
+    }
+
+    @Override
+    public TenderResponseDto getTenderData(String tenderId) {
+        TenderRequest tender= TRrepo.findByTenderId(tenderId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Tender not found for the provided Tender ID.")
+                ));
+        return mapToResponseDTO(tender);
     }
 
     @Override
@@ -413,6 +498,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         tenderResponseDto.setSingleAndMultipleVendors(tenderRequest.getSingleAndMultipleVendors());
         tenderResponseDto.setUploadGeneralTermsAndConditions(tenderRequest.getUploadGeneralTermsAndConditionsFileName());
         tenderResponseDto.setUploadSpecificTermsAndConditions(tenderRequest.getUploadSpecificTermsAndConditionsFileName());
+        tenderResponseDto.setMllStatusDeclarationFileName(tenderRequest.getMllStatusDeclarationFileName());
+        tenderResponseDto.setBidSecurityDeclarationFileName(tenderRequest.getBidSecurityDeclarationFileName());
         tenderResponseDto.setPreBidDisscussions(tenderRequest.getPreBidDisscussions());
         tenderResponseDto.setFileType(tenderRequest.getFileType());
         tenderResponseDto.setUpdatedBy(tenderRequest.getUpdatedBy());
