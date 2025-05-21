@@ -396,7 +396,10 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         responseDTO.setLdClause(tenderRequest.getLdClause());
         responseDTO.setVendorId(tenderRequest.getVendorId());
         responseDTO.setQuotationFileName(tenderRequest.getQuotationFileName());
-      //  responseDTO.setApplicablePerformance(tenderRequest.getApplicablePerformance());
+        responseDTO.setMllStatusDeclarationFileName(tenderRequest.getMllStatusDeclarationFileName());
+        responseDTO.setBidSecurityDeclarationFileName(tenderRequest.getBidSecurityDeclarationFileName());
+
+        //  responseDTO.setApplicablePerformance(tenderRequest.getApplicablePerformance());
         responseDTO.setPerformanceAndWarrantySecurity(tenderRequest.getPerformanceAndWarrantySecurity());
         responseDTO.setBidSecurityDeclaration(tenderRequest.getBidSecurityDeclaration());
         responseDTO.setMllStatusDeclaration(tenderRequest.getMllStatusDeclaration());

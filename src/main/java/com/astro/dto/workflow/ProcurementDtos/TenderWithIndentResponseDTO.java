@@ -31,6 +31,8 @@ public class TenderWithIndentResponseDTO {
     private Boolean bidSecurityDeclaration;
     private Boolean mllStatusDeclaration;
     private String uploadTenderDocuments;
+    private String bidSecurityDeclarationFileName;
+    private String mllStatusDeclarationFileName;
     private String singleAndMultipleVendors;
     private String uploadGeneralTermsAndConditions;
     private String uploadSpecificTermsAndConditions;

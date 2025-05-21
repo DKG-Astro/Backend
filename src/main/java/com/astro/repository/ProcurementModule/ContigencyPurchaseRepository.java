@@ -40,29 +40,32 @@ public interface ContigencyPurchaseRepository extends JpaRepository<ContigencyPu
             cp.Date
     """, nativeQuery = true)*/
    @Query(value = """
-         
-                 SELECT
-                     cp.contigency_id AS id,
-                     GROUP_CONCAT(cm.material_description SEPARATOR ', ') AS material,
-                     GROUP_CONCAT(cm.material_category SEPARATOR ', ') AS materialCategory,
-                     GROUP_CONCAT(cm.material_sub_category SEPARATOR ', ') AS materialSubCategory,
-                     cp.remarks_for_purchase AS endUser,
-                     SUM(cm.total_price) AS value,
-                     cp.vendors_name AS paidTo,
-                     cp.vendors_name AS vendorName,
-                     cp.project_name AS project
-                 FROM
-                     contigency_purchase cp
-                 JOIN
-                     cp_materials cm ON cp.contigency_id = cm.contigency_id
-                 WHERE
-                     cp.Date BETWEEN :startDate AND :endDate
-                 GROUP BY
-                     cp.contigency_id, cp.remarks_for_purchase, cp.vendors_name, cp.project_name
-                 ORDER BY
-                     cp.Date
-        """, nativeQuery = true)
-        List<Object[]> findContigencyPurchaseReport(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    SELECT
+      cp.contigency_id          AS Id,
+      cm.material_description    AS Material,
+      cm.material_category       AS Material_category,
+      cm.material_sub_category   AS Material_sub_category,
+      cp.remarks_for_purchase    AS End_user,
+      cm.total_price             AS Value,
+      cp.vendors_name            AS Paid_to,
+      cp.vendors_name            AS Vendor_name,
+      cp.project_name            AS Project
+    FROM
+      contigency_purchase cp
+      JOIN cp_materials cm
+        ON cp.contigency_id = cm.contigency_id
+    WHERE
+      cp.Date BETWEEN :startDate AND :endDate
+    ORDER BY
+      cp.Date
+  """,
+           nativeQuery = true)
+   List<Object[]> findContigencyPurchaseReport(
+           @Param("startDate") LocalDate startDate,
+           @Param("endDate")   LocalDate endDate
+   );
+
+    //   List<Object[]> findContigencyPurchaseReport(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
     @Query("SELECT MAX(i.cpNumber) FROM ContigencyPurchase i")
     Integer findMaxCpNumber();

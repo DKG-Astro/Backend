@@ -23,7 +23,7 @@ public class EmailService {
 
             String contentText = "Hello,\n\n" +
                     "Here are your vendor login details:\n" +
-                    "Username: " + username + "\n" +
+                    "Vendor Id: " + username + "\n" +
                     "Password: " + password + "\n\n" +
                     "Thanks!"+
                     "IIA Group";
