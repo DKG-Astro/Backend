@@ -863,6 +863,23 @@ public class WorkflowServiceImpl implements WorkflowService {
                                 dataValue = indentCreationResponseDTO.getTotalPriceOfAllMaterials();
                                 BigDecimal projectLimit = indentCreationResponseDTO.getProjectLimit();
                                 conditionCheckFlag = ((BigDecimal) dataValue).doubleValue() <= ((BigDecimal) projectLimit).doubleValue();
+                            }else if (conditionKey.equalsIgnoreCase("TotalPriceOfAllMaterialsAndDept")) {
+                                dataValue = indentCreationResponseDTO.getTotalPriceOfAllMaterials();
+                                String department = indentCreationResponseDTO.getEmployeeDepartment();
+                                System.out.println(dataValue);
+                                System.out.println(department);
+
+                                if (conditionValue != null && conditionValue.contains("(") && conditionValue.endsWith(")")) {
+                                    String[] valueParts = conditionValue.replace(")", "").split("\\(");
+                                    if (valueParts.length == 2) {
+                                        double priceLimit = Double.parseDouble(valueParts[0]);
+                                        String requiredDept = valueParts[1];
+
+                                        conditionCheckFlag = dataValue != null && department != null &&
+                                                ((BigDecimal) dataValue).doubleValue() <= priceLimit &&
+                                                department.equalsIgnoreCase(requiredDept);
+                                    }
+                                }
                             }
                             if (conditionCheckFlag) {
                                 transitionDto = dto;

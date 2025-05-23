@@ -5,12 +5,14 @@ import com.astro.dto.workflow.UserDto;
 import com.astro.dto.workflow.UserRoleDto;
 
 import com.astro.dto.workflow.userRequestDto;
+import com.astro.entity.EmployeeDepartmentMaster;
 import com.astro.entity.RoleMaster;
 import com.astro.entity.UserMaster;
 import com.astro.exception.BusinessException;
 import com.astro.entity.UserRoleMaster;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
+import com.astro.repository.EmployeeDepartmentMasterRepository;
 import com.astro.repository.RoleMasterRepository;
 import com.astro.repository.UserMasterRepository;
 import com.astro.repository.UserRoleMasterRepository;
@@ -37,6 +39,8 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     RoleMasterRepository roleMasterRepository;
+    @Autowired
+    EmployeeDepartmentMasterRepository employeeRepo;
 
 
     @Override
@@ -58,6 +62,8 @@ public class UserServiceImpl implements UserService {
             }
 
             UserRoleMaster userRoleMaster = userRoleMasterRepository.findByUserId(userMaster.getUserId());
+            Optional<EmployeeDepartmentMaster> employee = employeeRepo.findByEmployeeId(userMaster.getEmployeeId());
+
             userRoleDto = new UserRoleDto();
             userRoleDto.setUserId(userRoleMaster.getUserId());
             userRoleDto.setUserRoleId(userRoleMaster.getUserRoleId());
@@ -70,6 +76,12 @@ public class UserServiceImpl implements UserService {
             userRoleDto.setUserName(userMaster.getUserName());
             userRoleDto.setMobileNumber(userMaster.getMobileNumber());
             userRoleDto.setEmail(userMaster.getEmail());
+            if(employee.isPresent()){
+                EmployeeDepartmentMaster emp = employee.get();
+                userRoleDto.setEmployeeDepartment(emp.getDepartmentName());
+            }else {
+                userRoleDto.setEmployeeDepartment(null);
+            }
         }else{
             throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid input."));
@@ -108,6 +120,7 @@ public class UserServiceImpl implements UserService {
         userMaster.setPassword(userDto.getPassword());
         userMaster.setEmail(userDto.getEmail());
         userMaster.setCreatedBy(userDto.getCreatedBy());
+        userMaster.setEmployeeId(userDto.getEmployeeId());
         userMasterRepository.save(userMaster);
         // Step 2: Fetch the role where roleName matches userName
         RoleMaster role = roleMasterRepository.findByRoleName(userDto.getRoleName())

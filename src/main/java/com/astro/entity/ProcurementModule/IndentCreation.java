@@ -104,6 +104,7 @@ public class IndentCreation {
         private String serialNumber;
         private LocalDate dateOfPurchase;
         private String uploadBuyBackFileNames;
+        private String employeeDepartment;
 
         @Column(name = "proprietary_and_limited_declaration")
         private String proprietaryAndLimitedDeclaration;

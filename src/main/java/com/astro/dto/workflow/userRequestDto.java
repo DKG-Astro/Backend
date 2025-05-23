@@ -11,6 +11,7 @@ public class userRequestDto {
     private String roleName;
     private String email;
     private String mobileNumber;
+    private String employeeId;
     private String createdBy;
 
 }

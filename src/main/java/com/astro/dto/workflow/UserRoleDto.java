@@ -14,6 +14,7 @@ public class UserRoleDto {
     private String userName;
     private String mobileNumber;
     private String email;
+    private String employeeDepartment;
     private boolean readPermission;
     private boolean writePermission;
     private String createdBy;

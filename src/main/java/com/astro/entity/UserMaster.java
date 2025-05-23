@@ -22,6 +22,8 @@ public class UserMaster {
     @Column(name = "role_name")
     private String roleName;
 
+    private String employeeId;
+
     @Column(name = "PASSWORD")
     private String password;
 

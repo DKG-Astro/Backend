@@ -53,6 +53,7 @@ public class IndentCreationRequestDTO {
     private String proprietaryJustification;
     private Boolean buyBack;
     private String modelNumber;
+    private String employeeDepartment;
     private String serialNumber;
     private String dateOfPurchase;
     private String proprietaryAndLimitedDeclaration;

@@ -122,6 +122,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setPeriodOfContract(indentRequestDTO.getPeriodOfContract());
         indentCreation.setSingleAndMultipleJob(indentRequestDTO.getSingleAndMultipleJob());
         indentCreation.setFileType(indentRequestDTO.getFileType());
+        indentCreation.setEmployeeDepartment(indentRequestDTO.getEmployeeDepartment());
         indentCreation.setProprietaryAndLimitedDeclaration(indentRequestDTO.getProprietaryAndLimitedDeclaration());
 
        // indentCreation.setTechnicalSpecificationsFileName(indentRequestDTO.getTechnicalSpecificationsFileName());
@@ -354,7 +355,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setFileType(indentRequestDTO.getFileType());
         indentCreation.setUpdatedBy(indentRequestDTO.getUpdatedBy());
         indentCreation.setCreatedBy(indentRequestDTO.getCreatedBy());
-
+        indentCreation.setEmployeeDepartment(indentRequestDTO.getEmployeeDepartment());
         //  Delete old material details
         materialDetailsRepository.deleteAll(indentCreation.getMaterialDetails());
 
@@ -390,6 +391,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
           */
             return material;
         }).collect(Collectors.toList());
+
 
         indentCreation.getMaterialDetails().clear();
         indentCreation.getMaterialDetails().addAll(materialDetailsList);
@@ -700,6 +702,12 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                 .map(ProjectMaster::getAllocatedAmount)
                 .orElse(BigDecimal.ZERO);
         response.setProjectLimit(allocatedAmount);
+        if ("Engineering".equals(indentCreation.getEmployeeDepartment())) {
+            response.setEmployeeDepartment(indentCreation.getEmployeeDepartment());
+        } else {
+            response.setEmployeeDepartment("OtherDept");
+        }
+
 
         System.out.println("allocatedAmount: " + allocatedAmount);
         response.setTotalPriceOfAllMaterials(totalPriceOfAllMaterials);

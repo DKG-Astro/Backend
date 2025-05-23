@@ -405,10 +405,3 @@ CREATE TABLE igp_po_detail (
     quantity DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (igp_sub_process_id) REFERENCES igp_master(igp_sub_process_id)
 );
-
-ALTER TABLE gprn_material_detail
-ADD COLUMN quantity_delivered DECIMAL(10, 2);
-ALTER TABLE gprn_material_detail
-ADD COLUMN ordered_quantity DECIMAL(10, 2);
-ALTER TABLE asset_master
-ADD COLUMN locator DECIMAL(10, 2);
