@@ -50,6 +50,7 @@ public class IndentCreationResponseDTO {
     private String proprietaryAndLimitedDeclaration;
     private Boolean buyBack;
     private String uploadBuyBackFileNames;
+    private String employeeDepartment;
     private Integer createdBy;
     private String updatedBy;
 
