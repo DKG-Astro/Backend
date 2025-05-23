@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface AssetMasterRepository extends JpaRepository<AssetMasterEntity, Integer> {
     
     List<AssetMasterEntity> findByMaterialCode(String materialCode);
+
+    Optional<AssetMasterEntity> findById(Integer id);
     
     Optional<AssetMasterEntity> findBySerialNo(String serialNo);
     
@@ -42,4 +44,7 @@ public interface AssetMasterRepository extends JpaRepository<AssetMasterEntity, 
         FROM asset_master
         """, nativeQuery = true)
     List<Object[]> getAssetReport();
+
+    @Query("SELECT a.assetId FROM AssetMasterEntity a")
+    List<Integer> findAllAssetIds();
 }

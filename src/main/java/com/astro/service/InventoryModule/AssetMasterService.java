@@ -11,4 +11,5 @@ public interface AssetMasterService {
     public String saveAssetDisposal(AssetDisposalDto request);
     AssetMasterDto getAssetDetails(Integer assetId);
     public List<AssetMasterDto> getAssetReport();
+    List<Integer> getAllAssetIds();
 }

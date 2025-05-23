@@ -461,4 +461,118 @@ public class OgpServiceImpl implements OgpService {
             ogpMasterPoRepository.save(poOgp);
         }
     }
+    
+    // @Override
+    // @Transactional
+//     public void updateOgp(OgpDto updateRequest) {
+//         String processNo = updateRequest.getOgpId();
+//         String[] processNoSplit = processNo.split("/");
+//         if (processNoSplit.length != 2) {
+//             throw new InvalidInputException(new ErrorDetails(
+//                 AppConstant.USER_INVALID_INPUT,
+//                 AppConstant.ERROR_TYPE_CODE_VALIDATION,
+//                 AppConstant.ERROR_TYPE_VALIDATION,
+//                 "Invalid process number format"));
+//         }
+    
+//         Integer ogpSubProcessId = Integer.parseInt(processNoSplit[1]);
+        
+//         OgpMasterEntity ogpMaster = ogpMasterRepository.findById(ogpSubProcessId)
+//             .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+//                 AppConstant.ERROR_CODE_RESOURCE,
+//                 AppConstant.ERROR_TYPE_CODE_RESOURCE,
+//                 AppConstant.ERROR_TYPE_RESOURCE,
+//                 "OGP not found")));
+        
+//         // Only allow updates for OGPs in AWAITING APPROVAL or CHANGE REQUEST status
+//         if (!ogpMaster.getStatus().equals("AWAITING APPROVAL") && !ogpMaster.getStatus().equals("CHANGE REQUEST")) {
+//             throw new InvalidInputException(new ErrorDetails(
+//                 AppConstant.USER_INVALID_INPUT,
+//                 AppConstant.ERROR_TYPE_CODE_VALIDATION,
+//                 AppConstant.ERROR_TYPE_VALIDATION,
+//                 "Cannot update OGP in " + ogpMaster.getStatus() + " status"));
+//         }
+        
+//         // Update master fields
+//         ogpMaster.setOgpDate(CommonUtils.convertStringToDateObject(updateRequest.getOgpDate()));
+//         ogpMaster.setDateOfReturn(CommonUtils.convertStringToDateObject(updateRequest.getDateOfReturn()));
+//         ogpMaster.setReceiverLocation(updateRequest.getReceiverLocation());
+//         ogpMaster.setReceiverName(updateRequest.getReceiverName());
+//         ogpMaster.setOgpType(updateRequest.getOgpType());
+//         ogpMaster.setUpdateDate(LocalDateTime.now());
+//         ogpMaster.setStatus("AWAITING APPROVAL"); // Reset status to awaiting approval
+        
+//         ogpMasterRepository.save(ogpMaster);
+        
+//         // Update material details if provided
+//         if (updateRequest.getMaterialDtlList() != null && !updateRequest.getMaterialDtlList().isEmpty()) {
+//             List<OgpDetailEntity> existingDetails = ogpDetailRepository.findByOgpSubProcessId(ogpSubProcessId);
+            
+//             // Create a map of existing details for easy lookup
+//             Map<String, OgpDetailEntity> existingDetailsMap = existingDetails.stream()
+//                 .collect(Collectors.toMap(
+//                     detail -> detail.getAssetId() + "-" + detail.getLocatorId(),
+//                     detail -> detail
+//                 ));
+            
+//             StringBuilder errorMessage = new StringBuilder();
+//             Boolean errorFound = false;
+            
+//             // Process each material in the update request
+//             for (OgpMaterialDtlDto materialDto : updateRequest.getMaterialDtlList()) {
+//                 String key = materialDto.getAssetId() + "-" + materialDto.getLocatorId();
+//                 OgpDetailEntity detail = existingDetailsMap.get(key);
+                
+//                 if (detail == null) {
+//                     errorMessage.append("Material with Asset ID ")
+//                         .append(materialDto.getAssetId())
+//                         .append(" and Locator ID ")
+//                         .append(materialDto.getLocatorId())
+//                         .append(" not found in OGP. ");
+//                     errorFound = true;
+//                     continue;
+//                 }
+                
+//                 // Calculate quantity difference
+//                 BigDecimal existingQuantity = detail.getQuantity();
+//                 BigDecimal newQuantity = materialDto.getQuantity();
+//                 BigDecimal quantityDifference = newQuantity.subtract(existingQuantity);
+                
+//                 // If quantity is increased, check OHQ availability
+//                 if (quantityDifference.compareTo(BigDecimal.ZERO) > 0) {
+//                     // Check OHQ availability (assuming you have a repository method for this)
+//                     BigDecimal availableQuantity = amr.findAvailableQuantityByAssetIdAndLocatorId(
+//                         materialDto.getAssetId(), 
+//                         materialDto.getLocatorId()
+//                     ).orElse(BigDecimal.ZERO);
+                    
+//                     if (availableQuantity.compareTo(quantityDifference) < 0) {
+//                         errorMessage.append("Insufficient quantity available for Asset ID ")
+//                             .append(materialDto.getAssetId())
+//                             .append(" at Locator ID ")
+//                             .append(materialDto.getLocatorId())
+//                             .append(". Available: ")
+//                             .append(availableQuantity)
+//                             .append(", Additional needed: ")
+//                             .append(quantityDifference)
+//                             .append(". ");
+//                         errorFound = true;
+//                         continue;
+//                     }
+//                 }
+                
+//                 // Update quantity
+//                 detail.setQuantity(newQuantity);
+//                 ogpDetailRepository.save(detail);
+//             }
+            
+//             if (errorFound) {
+//                 throw new InvalidInputException(new ErrorDetails(
+//                     AppConstant.USER_INVALID_INPUT,
+//                     AppConstant.ERROR_TYPE_CODE_VALIDATION,
+//                     AppConstant.ERROR_TYPE_VALIDATION,
+//                     errorMessage.toString()));
+//             }
+//         }
+//     }
 }

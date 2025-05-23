@@ -42,6 +42,11 @@ public class GprnMaterialDtlEntity {
 
     @Column(name = "received_quantity")
     private BigDecimal receivedQuantity;
+    @Column(name = "quantity_delivered")
+    private BigDecimal quantityDelivered;
+    
+    @Column(name = "ordered_quantity")
+    private BigDecimal orderedQuantity;
 
     @Column(name = "unit_price")
     private BigDecimal unitPrice;

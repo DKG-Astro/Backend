@@ -285,4 +285,168 @@ public class GprnServiceImpl implements GprnService {
         giMaster.setStatus("APPROVED");
         gmr.save(giMaster);
     }
+
+    @Override
+    @Transactional
+    public void changeReqGprn(String processNo) {
+        String[] processNoSplit = processNo.split("/");
+        if (processNoSplit.length != 2) {
+            throw new InvalidInputException(new ErrorDetails(
+                AppConstant.USER_INVALID_INPUT,
+                AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                AppConstant.ERROR_TYPE_VALIDATION,
+                "Invalid process number format"));
+        }
+
+        Integer inspectionId = Integer.parseInt(processNoSplit[1]);
+        
+        GprnMasterEntity giMaster = gmr.findById(inspectionId)
+            .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                AppConstant.ERROR_CODE_RESOURCE,
+                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                AppConstant.ERROR_TYPE_RESOURCE,
+                "Goods Inspection not found")));
+
+        giMaster.setStatus("CHANGE REQUEST");
+        gmr.save(giMaster);
+    }
+
+    @Override
+    @Transactional
+    public void updateGprn(SaveGprnDto updateRequest) {
+        String[] processNoSplit = updateRequest.getProcessId().split("/");
+        if (processNoSplit.length != 2) {
+            throw new InvalidInputException(new ErrorDetails(
+                AppConstant.USER_INVALID_INPUT,
+                AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                AppConstant.ERROR_TYPE_VALIDATION,
+                "Invalid process number format"));
+        }
+    
+        Integer subProcessId = Integer.parseInt(processNoSplit[1]);
+        
+        GprnMasterEntity gprnMaster = gmr.findById(subProcessId)
+            .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                AppConstant.ERROR_CODE_RESOURCE,
+                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                AppConstant.ERROR_TYPE_RESOURCE,
+                "GPRN not found for the provided process ID.")));
+        
+        // Update master fields
+        ModelMapper mapper = new ModelMapper();
+        mapper.map(updateRequest, gprnMaster);
+        gprnMaster.setProcessId(processNoSplit[0].substring(3));
+        gprnMaster.setStatus("AWAITING APPROVAL");
+        
+        
+        // Handle date fields separately
+        if (updateRequest.getDate() != null) {
+            gprnMaster.setDate(CommonUtils.convertStringToDateObject(updateRequest.getDate()));
+        }
+        if (updateRequest.getDeliveryDate() != null) {
+            gprnMaster.setDeliveryDate(CommonUtils.convertStringToDateObject(updateRequest.getDeliveryDate()));
+        }
+        if (updateRequest.getSupplyExpectedDate() != null) {
+            gprnMaster.setSupplyExpectedDate(CommonUtils.convertStringToDateObject(updateRequest.getSupplyExpectedDate()));
+        }
+        
+        gprnMaster.setUpdateDate(LocalDateTime.now());
+        
+        // Save the updated master
+        gmr.save(gprnMaster);
+        
+        // Process material details
+        if (updateRequest.getMaterialDtlList() != null && !updateRequest.getMaterialDtlList().isEmpty()) {
+            StringBuilder errorMessage = new StringBuilder();
+            Boolean errorFound = false;
+            
+            for (MaterialDtlDto updatedMaterial : updateRequest.getMaterialDtlList()) {
+                // Find the existing GPRN material detail
+                List<GprnMaterialDtlEntity> existingGprnMaterials = gmdr.findBySubProcessIdAndMaterialCode(
+                    subProcessId, updatedMaterial.getMaterialCode());
+                
+                if (existingGprnMaterials.isEmpty()) {
+                    errorMessage.append("Material code ").append(updatedMaterial.getMaterialCode())
+                        .append(" not found in the GPRN. ");
+                    errorFound = true;
+                    continue;
+                }
+                
+                GprnMaterialDtlEntity existingGprnMaterial = existingGprnMaterials.get(0);
+                
+                // Find the corresponding PO material
+                Optional<PurchaseOrderAttributes> poMaterialOpt = poMaterialRepo.findByPoIdAndMaterialCode(
+                    gprnMaster.getPoId(), updatedMaterial.getMaterialCode());
+                
+                if (!poMaterialOpt.isPresent()) {
+                    errorMessage.append("Material code ").append(updatedMaterial.getMaterialCode())
+                        .append(" not found in the Purchase Order. ");
+                    errorFound = true;
+                    continue;
+                }
+                
+                PurchaseOrderAttributes poMaterial = poMaterialOpt.get();
+                
+                // Calculate the difference between the updated and existing received quantities
+                BigDecimal existingReceivedQty = existingGprnMaterial.getReceivedQuantity();
+                BigDecimal updatedReceivedQty = updatedMaterial.getReceivedQuantity();
+                BigDecimal quantityDifference = updatedReceivedQty.subtract(existingReceivedQty);
+                
+                // Check if the updated quantity is valid
+                BigDecimal totalOrderedQty = poMaterial.getQuantity();
+                BigDecimal currentReceivedQty = poMaterial.getReceivedQuantity();
+                BigDecimal newTotalReceivedQty = currentReceivedQty.add(quantityDifference);
+                
+                if (newTotalReceivedQty.compareTo(BigDecimal.ZERO) < 0) {
+                    errorMessage.append("Updated quantity for ").append(updatedMaterial.getMaterialCode())
+                        .append(" results in negative received quantity. ");
+                    errorFound = true;
+                    continue;
+                }
+                
+                if (newTotalReceivedQty.compareTo(totalOrderedQty) > 0) {
+                    errorMessage.append("Updated quantity for ").append(updatedMaterial.getMaterialCode())
+                        .append(" exceeds ordered quantity. Ordered: ").append(totalOrderedQty)
+                        .append(", Total received would be: ").append(newTotalReceivedQty).append(". ");
+                    errorFound = true;
+                    continue;
+                }
+                
+                // Update the GPRN material detail
+                mapper.map(updatedMaterial, existingGprnMaterial);
+                
+                // Handle image updates if provided
+                if (updatedMaterial.getImageBase64() != null && !updatedMaterial.getImageBase64().isEmpty()) {
+                    try {
+                        List<String> imageFileNames = new ArrayList<>();
+                        for (String base64Image : updatedMaterial.getImageBase64()) {
+                            String imageFileName = CommonUtils.saveBase64Image(base64Image, basePath);
+                            imageFileNames.add(imageFileName);
+                        }
+                        existingGprnMaterial.setFileName(String.join(",", imageFileNames));
+                    } catch (Exception e) {
+                        throw new InvalidInputException(new ErrorDetails(
+                            AppConstant.FILE_UPLOAD_ERROR,
+                            AppConstant.USER_INVALID_INPUT,
+                            AppConstant.ERROR_TYPE_CORRUPTED,
+                            "Error while uploading images."));
+                    }
+                }
+                
+                gmdr.save(existingGprnMaterial);
+                
+                // Update the PO material received quantity
+                poMaterial.setReceivedQuantity(newTotalReceivedQty);
+                poMaterialRepo.save(poMaterial);
+            }
+            
+            if (errorFound) {
+                throw new InvalidInputException(new ErrorDetails(
+                    AppConstant.USER_INVALID_INPUT,
+                    AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION,
+                    errorMessage.toString()));
+            }
+        }
+    }
 }

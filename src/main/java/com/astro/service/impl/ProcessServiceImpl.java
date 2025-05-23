@@ -203,4 +203,14 @@ public class ProcessServiceImpl implements ProcessService {
     public void rejectGprn(String processNo) {
         gprnService.rejectGprn(processNo);
     }
+
+    @Override
+    public void updateGprn(SaveGprnDto req) {
+        gprnService.updateGprn(req);
+    }
+
+    @Override
+    public void changeReqGprn(String processNo) {
+        gprnService.changeReqGprn(processNo);
+    }
 }

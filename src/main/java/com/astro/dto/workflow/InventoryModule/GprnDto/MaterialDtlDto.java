@@ -15,6 +15,7 @@ public class MaterialDtlDto {
    private String category;
    private BigDecimal receivedQuantity;
    private BigDecimal orderedQuantity;
+   private BigDecimal quantityDelivered;
    private BigDecimal unitPrice;
    private String makeNo;
    private String modelNo;

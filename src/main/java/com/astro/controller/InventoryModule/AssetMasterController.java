@@ -1,6 +1,7 @@
 package com.astro.controller.InventoryModule;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,4 +58,10 @@ public class AssetMasterController {
         AssetMasterDto response = assetMasterService.getAssetDetails(assetId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
+
+    @GetMapping("/assetIds")
+    public ResponseEntity<Object> getAllAssetIds() {
+        List<Integer> assetIds = assetMasterService.getAllAssetIds();
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(assetIds), HttpStatus.OK);
+}
 }

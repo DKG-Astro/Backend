@@ -52,6 +52,9 @@ public class AssetMasterEntity {
     @Column(name = "shelf_life")
     private String shelfLife;
 
+    @Column(name = "locator_id")
+    private Integer locatorId;
+
     @Column(name = "create_date", updatable = false)
     private LocalDateTime createDate;
     

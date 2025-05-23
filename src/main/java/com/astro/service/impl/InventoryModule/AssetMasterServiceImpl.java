@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.astro.util.CommonUtils;
+
 import javax.transaction.Transactional;
 
 import com.astro.service.InventoryModule.AssetMasterService;
@@ -118,6 +120,7 @@ public class AssetMasterServiceImpl implements AssetMasterService {
         }
         
         existingAsset.setUpdatedDate(LocalDateTime.now());
+        existingAsset.setDepriciationRate(request.getDepriciationRate());
         
         assetMasterRepository.save(existingAsset);
         return existingAsset.getAssetId().toString();
@@ -217,12 +220,15 @@ public class AssetMasterServiceImpl implements AssetMasterService {
 
     @Override
     public AssetMasterDto getAssetDetails(Integer assetId) {
+        System.out.println("CALLED");
         AssetMasterEntity asset = assetMasterRepository.findById(assetId)
                 .orElseThrow(() -> new BusinessException(new ErrorDetails(
                         AppConstant.ERROR_CODE_RESOURCE,
                         AppConstant.ERROR_TYPE_CODE_RESOURCE,
                         AppConstant.ERROR_TYPE_RESOURCE,
                         "Asset not found with ID: " + assetId)));
+
+        // System.out.println("ASEET" + asset);
 
         AssetMasterDto response = new AssetMasterDto();
         response.setAssetId(asset.getAssetId());
@@ -240,6 +246,7 @@ public class AssetMasterServiceImpl implements AssetMasterService {
         response.setStockLevels(asset.getStockLevels());
         response.setConditionOfGoods(asset.getConditionOfGoods());
         response.setShelfLife(asset.getShelfLife());
+        response.setLocatorId(asset.getLocatorId());
         
         if (asset.getEndOfLife() != null) {
             response.setEndOfLife(asset.getEndOfLife().toString());
@@ -278,5 +285,10 @@ public List<AssetMasterDto> getAssetReport() {
         dto.setUpdatedBy((Integer) row[20]);
         return dto;
     }).collect(Collectors.toList());
+}
+
+@Override
+public List<Integer> getAllAssetIds() {
+    return assetMasterRepository.findAllAssetIds();
 }
 }

@@ -12,4 +12,6 @@ public interface GprnMaterialDtlRepository extends JpaRepository<GprnMaterialDtl
     List<GprnMaterialDtlEntity> findByPoIdAndMaterialCode(String poId, String materialCode);
 
     List<GprnMaterialDtlEntity> findBySubProcessId(Integer subProcessId);
+
+    List<GprnMaterialDtlEntity> findBySubProcessIdAndMaterialCode(Integer subProcessId, String materialCode);
 }

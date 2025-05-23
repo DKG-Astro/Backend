@@ -167,6 +167,13 @@ public class ProcessController {
         res.put("message", "GPRN approved successfully");
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
+    @PostMapping("/changeReqGprn")
+    public ResponseEntity<Object> changeReqGprn(@RequestBody GprApprovalDto req) {
+        processService.changeReqGprn(req.getProcessNo());
+        Map<String, String> res = new HashMap<>();
+        res.put("message", "GPRN change request successful.");
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
 
     @PostMapping("/rejectGprn")
     public ResponseEntity<Object> rejectGi(@RequestBody GprApprovalDto req) {
@@ -175,5 +182,13 @@ public class ProcessController {
         res.put("message", "GPRN rejected successfully");
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
+
+    @PostMapping("/updateGprn")
+    public ResponseEntity<Object> updateGprn(@RequestBody SaveGprnDto updateRequest) {
+        processService.updateGprn(updateRequest);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse("GPRN updated successfully"), HttpStatus.OK);
+
+    
+}
 
 }

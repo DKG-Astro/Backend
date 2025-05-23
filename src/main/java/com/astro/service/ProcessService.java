@@ -37,7 +37,7 @@ public interface ProcessService {
 
     public Object getSubProcessDtls(String processStage, String processId);
 
-public List<OhqReportDto> getOhqReport();
+    public List<OhqReportDto> getOhqReport();
     public List<String> getPendingGprn();
 
     public OgpPoResponseDto getPoOgp(String processNo);
@@ -46,4 +46,6 @@ public List<OhqReportDto> getOhqReport();
     public void rejectOgp(GprApprovalDto req);
     public void rejectGprn(String processNo);
     public void approveGprn(String processNo);
+    public void changeReqGprn(String processNo);
+    public void updateGprn(SaveGprnDto req);
 }
