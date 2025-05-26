@@ -306,8 +306,15 @@ public class GiServiceImpl implements GiService {
         }
     }
 
-    public List<GprnPendingInspectionDto> getPendingGi() {
-        List<Object[]> results = gimr.findPendingGi();
+    public List<GprnPendingInspectionDto> getGiStatusWise(String status, Optional<String> createdBy) {
+        // List<Object[]> results = gimr.getGiStatusWise(status);
+        List<Object[]> results = new ArrayList<>();
+        if(createdBy.isPresent()) {
+            results = gimr.getGiStatusWiseAndCreatedBy(status, createdBy.get());
+        }
+        else{
+            results = gimr.getGiStatusWise(status);
+        }
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);

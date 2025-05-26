@@ -23,6 +23,7 @@ import com.astro.util.ResponseBuilder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -119,9 +120,9 @@ public class ProcessController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
     
-    @GetMapping("/getPendingGi")
-    public ResponseEntity<Object> getPendingGi() {
-        List<GprnPendingInspectionDto> res = gis.getPendingGi();
+    @GetMapping("/getGiStatusWise")
+    public ResponseEntity<Object> getGiStatusWise(@RequestParam String status, @RequestParam Optional<String> createdBy) {
+        List<GprnPendingInspectionDto> res = gis.getGiStatusWise(status, createdBy);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
 

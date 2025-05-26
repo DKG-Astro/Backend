@@ -334,7 +334,9 @@ public class GprnServiceImpl implements GprnService {
         
         // Update master fields
         ModelMapper mapper = new ModelMapper();
+        String createdBy = gprnMaster.getCreatedBy();
         mapper.map(updateRequest, gprnMaster);
+        gprnMaster.setCreatedBy(createdBy);
         gprnMaster.setProcessId(processNoSplit[0].substring(3));
         gprnMaster.setStatus("AWAITING APPROVAL");
         
