@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 public class CommonUtils {
@@ -142,6 +143,25 @@ public class CommonUtils {
        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
        return LocalDate.parse(dateString, formatter);
    }
+    public static LocalDate convertIsoDateStringToDateObject(String dateString) {
+        if (dateString == null || dateString.trim().isEmpty()) {
+            return null;
+        }
+
+        List<DateTimeFormatter> formatters = Arrays.asList(
+                DateTimeFormatter.ofPattern("yyyy-MM-dd"),
+                DateTimeFormatter.ofPattern("yyyy/MM/dd")
+        );
+
+        for (DateTimeFormatter formatter : formatters) {
+            try {
+                return LocalDate.parse(dateString, formatter);
+            } catch (DateTimeParseException ignored) {
+            }
+        }
+
+        throw new DateTimeParseException("Invalid ISO date format: " + dateString, dateString, 0);
+    }
 
 
     public static String convertDateToString(LocalDate date) {

@@ -116,7 +116,9 @@ public class AssetMasterServiceImpl implements AssetMasterService {
         
         // Convert end of life string to LocalDate
         if (request.getEndOfLife() != null && !request.getEndOfLife().trim().isEmpty()) {
-            existingAsset.setEndOfLife(CommonUtils.convertStringToDateObject(request.getEndOfLife()));
+            existingAsset.setEndOfLife(CommonUtils.convertIsoDateStringToDateObject(request.getEndOfLife()));
+        }else{
+            existingAsset.setEndOfLife(null);
         }
         
         existingAsset.setUpdatedDate(LocalDateTime.now());
