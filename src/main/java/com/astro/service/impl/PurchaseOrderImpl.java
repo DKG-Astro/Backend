@@ -30,10 +30,15 @@ import com.astro.service.IndentCreationService;
 import com.astro.service.PurchaseOrderService;
 import com.astro.service.TenderRequestService;
 import com.astro.util.CommonUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -56,8 +61,6 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
     private TenderRequestRepository tenderRequestRepository;
     @Autowired
     private ProjectMasterRepository projectMasterRepository;
-
-
 
 
     public PurchaseOrderResponseDTO createPurchaseOrder(PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
@@ -87,7 +90,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         String tenderId = purchaseOrderRequestDTO.getTenderId();
         String poId = generatePoId(tenderId);
 
-      //  purchaseOrder.setPoId(purchaseOrderRequestDTO.getPoId());
+        //  purchaseOrder.setPoId(purchaseOrderRequestDTO.getPoId());
         purchaseOrder.setPoId(poId);
         purchaseOrder.setTenderId(purchaseOrderRequestDTO.getTenderId());
         purchaseOrder.setIndentId(purchaseOrderRequestDTO.getIndentId());
@@ -108,9 +111,9 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setVendorId(purchaseOrderRequestDTO.getVendorId());
         //  purchaseOrder.setTotalValueOfPo(purchaseOrderRequestDTO.getTotalValueOfPo());
         String Date = purchaseOrderRequestDTO.getDeliveryDate();
-        if(Date != null){
+        if (Date != null) {
             purchaseOrder.setDeliveryDate(CommonUtils.convertStringToDateObject(Date));
-        }else {
+        } else {
             purchaseOrder.setDeliveryDate(null);
         }
         purchaseOrder.setProjectName(purchaseOrderRequestDTO.getProjectName());
@@ -121,7 +124,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
 
                     PurchaseOrderAttributes attribute = new PurchaseOrderAttributes();
                     attribute.setMaterialCode(dto.getMaterialCode());
-                   // attribute.setPoId(purchaseOrderRequestDTO.getPoId());
+                    // attribute.setPoId(purchaseOrderRequestDTO.getPoId());
                     attribute.setPoId(poId);
                     attribute.setMaterialDescription(dto.getMaterialDescription());
                     attribute.setQuantity(dto.getQuantity());
@@ -188,9 +191,9 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setProjectName(purchaseOrderRequestDTO.getProjectName());
         purchaseOrder.setVendorId(purchaseOrderRequestDTO.getVendorId());
         String Date = purchaseOrderRequestDTO.getDeliveryDate();
-        if(Date != null){
+        if (Date != null) {
             purchaseOrder.setDeliveryDate(CommonUtils.convertStringToDateObject(Date));
-        }else {
+        } else {
             purchaseOrder.setDeliveryDate(null);
         }
         //   purchaseOrder.setTotalValueOfPo(purchaseOrderRequestDTO.getTotalValueOfPo());
@@ -207,7 +210,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
 
                     PurchaseOrderAttributes attribute = new PurchaseOrderAttributes();
                     attribute.setMaterialCode(dto.getMaterialCode());
-                 //   attribute.setPoId(purchaseOrderRequestDTO.getPoId());
+                    //   attribute.setPoId(purchaseOrderRequestDTO.getPoId());
                     attribute.setMaterialDescription(dto.getMaterialDescription());
                     attribute.setQuantity(dto.getQuantity());
                     attribute.setRate(dto.getRate());
@@ -234,110 +237,110 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
 
     @Autowired
     private GprnMaterialDtlRepository gprnMaterialDtlRepository;
-    
-            public poWithTenderAndIndentResponseDTO getPurchaseOrderById(String poId) {
-                PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(poId)
-                        .orElseThrow(() -> new BusinessException(
-                                new ErrorDetails(
-                                        AppConstant.ERROR_CODE_RESOURCE,
-                                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
-                                        AppConstant.ERROR_TYPE_RESOURCE,
-                                        "Purchase order not found for the provided asset ID.")
-                        ));
-    
-                // Fetch related Tender & Indent
-                TenderWithIndentResponseDTO tenderWithIndent = tenderRequestService.getTenderRequestById(purchaseOrder.getTenderId());
-                Map<String, MaterialDetailsResponseDTO> indentMaterialMap = new HashMap<>();
-    
-                for (IndentCreationResponseDTO indent : tenderWithIndent.getIndentResponseDTO()) {
-                    for (MaterialDetailsResponseDTO material : indent.getMaterialDetails()) {
-                        indentMaterialMap.put(material.getMaterialCode(), material);
-                    }
-                }
-    
-    
-                poWithTenderAndIndentResponseDTO responseDTO = new poWithTenderAndIndentResponseDTO();
-                responseDTO.setPoId(purchaseOrder.getPoId());
-                responseDTO.setTenderId(purchaseOrder.getTenderId());
-                responseDTO.setIndentId(purchaseOrder.getIndentId());
-                responseDTO.setWarranty(purchaseOrder.getWarranty());
-                responseDTO.setConsignesAddress(purchaseOrder.getConsignesAddress());
-                responseDTO.setBillingAddress(purchaseOrder.getBillingAddress());
-                responseDTO.setDeliveryPeriod(purchaseOrder.getDeliveryPeriod());
-                responseDTO.setIfLdClauseApplicable(purchaseOrder.getIfLdClauseApplicable());
-                responseDTO.setIncoTerms(purchaseOrder.getIncoTerms());
-                responseDTO.setPaymentTerms(purchaseOrder.getPaymentTerms());
-                responseDTO.setVendorName(purchaseOrder.getVendorName());
-                responseDTO.setVendorAddress(purchaseOrder.getVendorAddress());
-                responseDTO.setApplicablePbgToBeSubmitted(purchaseOrder.getApplicablePbgToBeSubmitted());
-                responseDTO.setTransporterAndFreightForWarderDetails(purchaseOrder.getTransporterAndFreightForWarderDetails());
-                responseDTO.setVendorAccountNumber(purchaseOrder.getVendorAccountNumber());
-                responseDTO.setVendorsIfscCode(purchaseOrder.getVendorsZfscCode());
-                responseDTO.setVendorAccountName(purchaseOrder.getVendorAccountName());
-                responseDTO.setVendorId(purchaseOrder.getVendorId());
-                //  responseDTO.setProjectName(purchaseOrder.getProjectName());
-                responseDTO.setTotalValueOfPo(tenderWithIndent.getTotalTenderValue());
-                LocalDate date = purchaseOrder.getDeliveryDate();
-                if(date!= null){
-                    responseDTO.setDeliveryDate(CommonUtils.convertDateToString(date));
-                }else{
-                    responseDTO.setDeliveryDate(null);
-                }
-                responseDTO.setCreatedBy(purchaseOrder.getCreatedBy());
-                responseDTO.setUpdatedBy(purchaseOrder.getUpdatedBy());
-                responseDTO.setCreatedDate(purchaseOrder.getCreatedDate());
-                responseDTO.setUpdatedDate(purchaseOrder.getUpdatedDate());
-                List<String> indentIds = indentIdRepository.findTenderWithIndent(purchaseOrder.getTenderId());
-    
-                responseDTO.setIndentIds(indentIds);
-    
-                responseDTO.setPurchaseOrderAttributes(purchaseOrder.getPurchaseOrderAttributes().stream()
-                        .map(attribute -> {
-                            PurchaseOrderAttributesResponseDTO attributeDTO = new PurchaseOrderAttributesResponseDTO();
-                            attributeDTO.setMaterialCode(attribute.getMaterialCode());
-                            attributeDTO.setMaterialDescription(attribute.getMaterialDescription());
-                            
-                            // Get sum of GPRN quantities for this material
-                            BigDecimal gprnQuantity = gprnMaterialDtlRepository
-                                .findByPoIdAndMaterialCode(poId, attribute.getMaterialCode())
-                                .stream()
-                                .map(gprn -> gprn.getReceivedQuantity())
-                                .reduce(BigDecimal.ZERO, BigDecimal::add);
-                            
-                            // Set remaining quantity
-                            attributeDTO.setQuantity(attribute.getQuantity().subtract(gprnQuantity));
-                            attributeDTO.setReceivedQuantity(attribute.getReceivedQuantity());
-                            attributeDTO.setRate(attribute.getRate());
-                            attributeDTO.setCurrency(attribute.getCurrency());
-                            attributeDTO.setExchangeRate(attribute.getExchangeRate());
-                            attributeDTO.setGst(attribute.getGst());
-                            attributeDTO.setDuties(attribute.getDuties());
-                            attributeDTO.setFreightCharge(attribute.getFreightCharge());
-                            attributeDTO.setBudgetCode(attribute.getBudgetCode());
-                            MaterialDetailsResponseDTO indentMaterial = indentMaterialMap.get(attribute.getMaterialCode());
-                            attributeDTO.setUnitPrice(indentMaterial.getUnitPrice());
-                            attributeDTO.setUom(indentMaterial.getUom());
-                            attributeDTO.setCategory(indentMaterial.getMaterialCategory());
-                            return attributeDTO;
-                        })
-                        .collect(Collectors.toList()));
-                String projectName = tenderWithIndent.getIndentResponseDTO()
-                        .stream()
-                        .findFirst()
-                        .map(IndentCreationResponseDTO::getProjectName)
-                        .orElse(null);
-                BigDecimal projectLimit = tenderWithIndent.getIndentResponseDTO()
-                        .stream()
-                        .findFirst()
-                        .map(IndentCreationResponseDTO::getProjectLimit)
-                        .orElse(null);
-                responseDTO.setProjectName(projectName);
-                responseDTO.setProjectLimit(projectLimit);
-                // Set Tender & Indent details
-                responseDTO.setTenderDetails(tenderWithIndent);
-                return responseDTO;
-    
+
+    public poWithTenderAndIndentResponseDTO getPurchaseOrderById(String poId) {
+        PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(poId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Purchase order not found for the provided asset ID.")
+                ));
+
+        // Fetch related Tender & Indent
+        TenderWithIndentResponseDTO tenderWithIndent = tenderRequestService.getTenderRequestById(purchaseOrder.getTenderId());
+        Map<String, MaterialDetailsResponseDTO> indentMaterialMap = new HashMap<>();
+
+        for (IndentCreationResponseDTO indent : tenderWithIndent.getIndentResponseDTO()) {
+            for (MaterialDetailsResponseDTO material : indent.getMaterialDetails()) {
+                indentMaterialMap.put(material.getMaterialCode(), material);
             }
+        }
+
+
+        poWithTenderAndIndentResponseDTO responseDTO = new poWithTenderAndIndentResponseDTO();
+        responseDTO.setPoId(purchaseOrder.getPoId());
+        responseDTO.setTenderId(purchaseOrder.getTenderId());
+        responseDTO.setIndentId(purchaseOrder.getIndentId());
+        responseDTO.setWarranty(purchaseOrder.getWarranty());
+        responseDTO.setConsignesAddress(purchaseOrder.getConsignesAddress());
+        responseDTO.setBillingAddress(purchaseOrder.getBillingAddress());
+        responseDTO.setDeliveryPeriod(purchaseOrder.getDeliveryPeriod());
+        responseDTO.setIfLdClauseApplicable(purchaseOrder.getIfLdClauseApplicable());
+        responseDTO.setIncoTerms(purchaseOrder.getIncoTerms());
+        responseDTO.setPaymentTerms(purchaseOrder.getPaymentTerms());
+        responseDTO.setVendorName(purchaseOrder.getVendorName());
+        responseDTO.setVendorAddress(purchaseOrder.getVendorAddress());
+        responseDTO.setApplicablePbgToBeSubmitted(purchaseOrder.getApplicablePbgToBeSubmitted());
+        responseDTO.setTransporterAndFreightForWarderDetails(purchaseOrder.getTransporterAndFreightForWarderDetails());
+        responseDTO.setVendorAccountNumber(purchaseOrder.getVendorAccountNumber());
+        responseDTO.setVendorsIfscCode(purchaseOrder.getVendorsZfscCode());
+        responseDTO.setVendorAccountName(purchaseOrder.getVendorAccountName());
+        responseDTO.setVendorId(purchaseOrder.getVendorId());
+        //  responseDTO.setProjectName(purchaseOrder.getProjectName());
+        responseDTO.setTotalValueOfPo(tenderWithIndent.getTotalTenderValue());
+        LocalDate date = purchaseOrder.getDeliveryDate();
+        if (date != null) {
+            responseDTO.setDeliveryDate(CommonUtils.convertDateToString(date));
+        } else {
+            responseDTO.setDeliveryDate(null);
+        }
+        responseDTO.setCreatedBy(purchaseOrder.getCreatedBy());
+        responseDTO.setUpdatedBy(purchaseOrder.getUpdatedBy());
+        responseDTO.setCreatedDate(purchaseOrder.getCreatedDate());
+        responseDTO.setUpdatedDate(purchaseOrder.getUpdatedDate());
+        List<String> indentIds = indentIdRepository.findTenderWithIndent(purchaseOrder.getTenderId());
+
+        responseDTO.setIndentIds(indentIds);
+
+        responseDTO.setPurchaseOrderAttributes(purchaseOrder.getPurchaseOrderAttributes().stream()
+                .map(attribute -> {
+                    PurchaseOrderAttributesResponseDTO attributeDTO = new PurchaseOrderAttributesResponseDTO();
+                    attributeDTO.setMaterialCode(attribute.getMaterialCode());
+                    attributeDTO.setMaterialDescription(attribute.getMaterialDescription());
+
+                    // Get sum of GPRN quantities for this material
+                    BigDecimal gprnQuantity = gprnMaterialDtlRepository
+                            .findByPoIdAndMaterialCode(poId, attribute.getMaterialCode())
+                            .stream()
+                            .map(gprn -> gprn.getReceivedQuantity())
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                    // Set remaining quantity
+                    attributeDTO.setQuantity(attribute.getQuantity().subtract(gprnQuantity));
+                    attributeDTO.setReceivedQuantity(attribute.getReceivedQuantity());
+                    attributeDTO.setRate(attribute.getRate());
+                    attributeDTO.setCurrency(attribute.getCurrency());
+                    attributeDTO.setExchangeRate(attribute.getExchangeRate());
+                    attributeDTO.setGst(attribute.getGst());
+                    attributeDTO.setDuties(attribute.getDuties());
+                    attributeDTO.setFreightCharge(attribute.getFreightCharge());
+                    attributeDTO.setBudgetCode(attribute.getBudgetCode());
+                    MaterialDetailsResponseDTO indentMaterial = indentMaterialMap.get(attribute.getMaterialCode());
+                    attributeDTO.setUnitPrice(indentMaterial.getUnitPrice());
+                    attributeDTO.setUom(indentMaterial.getUom());
+                    attributeDTO.setCategory(indentMaterial.getMaterialCategory());
+                    return attributeDTO;
+                })
+                .collect(Collectors.toList()));
+        String projectName = tenderWithIndent.getIndentResponseDTO()
+                .stream()
+                .findFirst()
+                .map(IndentCreationResponseDTO::getProjectName)
+                .orElse(null);
+        BigDecimal projectLimit = tenderWithIndent.getIndentResponseDTO()
+                .stream()
+                .findFirst()
+                .map(IndentCreationResponseDTO::getProjectLimit)
+                .orElse(null);
+        responseDTO.setProjectName(projectName);
+        responseDTO.setProjectLimit(projectLimit);
+        // Set Tender & Indent details
+        responseDTO.setTenderDetails(tenderWithIndent);
+        return responseDTO;
+
+    }
 
 
     @Override
@@ -398,9 +401,9 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         responseDTO.setProjectName(purchaseOrder.getProjectName());
         //  responseDTO.setTotalValueOfPo(purchaseOrder.getTotalValueOfPo());
         LocalDate date = purchaseOrder.getDeliveryDate();
-        if(date!= null){
+        if (date != null) {
             responseDTO.setDeliveryDate(CommonUtils.convertDateToString(date));
-        }else{
+        } else {
             responseDTO.setDeliveryDate(null);
         }
         responseDTO.setCreatedBy(purchaseOrder.getCreatedBy());
@@ -487,6 +490,108 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                 )
         ).collect(Collectors.toList());
     }
+
+
+    @Override
+    public List<ApprovedPoListReportDto> getApprovedPoReport(String startDate, String endDate) {
+        LocalDate from = CommonUtils.convertStringToDateObject(startDate);
+        LocalDate to = CommonUtils.convertStringToDateObject(endDate);
+
+        List<Object[]> rows = purchaseOrderRepository.getApprovedPoReport(from, to);
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        return rows.stream().map(row -> {
+            ApprovedPoListReportDto dto = new ApprovedPoListReportDto();
+
+            dto.setApprovedDate(CommonUtils.convertDateToString(row[0] != null
+                    ? ((Timestamp) row[0]).toLocalDateTime().toLocalDate()
+                    : null));
+            dto.setPoId((String) row[1]);
+            dto.setVendorName((String) row[2]);
+            dto.setValue(((BigDecimal) row[3]).doubleValue());
+            dto.setTenderId((String) row[4]);
+            dto.setProject((String) row[5]);
+            dto.setVendorId((String) row[6]);
+            dto.setIndentIds((String) row[7]);
+            dto.setModeOfProcurement((String) row[8]);
+
+            // Parse JSON array of attributes (column index 9)
+            String json = (String) row[9];
+            try {
+                List<PurchaseOrderAttributesResponseDTO> attrs = mapper.readValue(
+                        json,
+                        mapper.getTypeFactory().constructCollectionType(
+                                List.class,
+                                PurchaseOrderAttributesResponseDTO.class
+                        )
+                );
+                dto.setPurchaseOrderAttributes(attrs);
+            } catch (Exception e) {
+                dto.setPurchaseOrderAttributes(new ArrayList<>());
+            }
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+
+    @Override
+    public List<pendingPoReportDto> getPendingPoReport(String startDate, String endDate) {
+
+        LocalDate from = CommonUtils.convertStringToDateObject(startDate);
+        LocalDate to = CommonUtils.convertStringToDateObject(endDate);
+
+        List<Object[]> rows = purchaseOrderRepository.getPendingPoReport(from, to);
+
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        return rows.stream().map(row -> {
+            pendingPoReportDto dto = new pendingPoReportDto();
+            dto.setPoId((String) row[0]);
+            dto.setTenderId((String) row[1]);
+            dto.setIndentIds((String) row[2]);
+            dto.setValue(((BigDecimal) row[3]).doubleValue());
+            dto.setVendorName((String) row[4]);
+
+            if (row[5] != null) {
+                LocalDate submitted = ((Timestamp) row[5]).toLocalDateTime().toLocalDate();
+                dto.setSubmittedDate(CommonUtils.convertDateToString(submitted));
+            }
+            dto.setPendingWith((String) row[6]);
+            if (row[7] != null) {
+                LocalDate pending = ((Timestamp) row[7]).toLocalDateTime().toLocalDate();
+                dto.setPendingFrom(CommonUtils.convertDateToString(pending));
+            }
+
+            dto.setStatus((String) row[8]);
+            dto.setAsOnDate(LocalDate.now());
+
+            // parse the JSON array of attributes
+            String json = (String) row[9];
+            try {
+                List<PurchaseOrderAttributesResponseDTO> attrs = mapper.readValue(
+                        json,
+                        mapper.getTypeFactory().constructCollectionType(
+                                List.class,
+                                PurchaseOrderAttributesResponseDTO.class
+                        )
+                );
+                dto.setPurchaseOrderAttributes(attrs);
+            } catch (Exception e) {
+                dto.setPurchaseOrderAttributes(new ArrayList<>());
+            }
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+
 }
 
 

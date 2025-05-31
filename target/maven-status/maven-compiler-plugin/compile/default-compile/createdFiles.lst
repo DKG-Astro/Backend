@@ -316,6 +316,7 @@ com\astro\dto\workflow\SubWorkflowQueueDto.class
 com\astro\entity\WorkflowTransition.class
 com\astro\repository\ActionMasterRepository.class
 com\astro\service\PurchaseOrderService.class
+com\astro\dto\workflow\ProcurementDtos\IndentDto\materialHistoryDto.class
 com\astro\repository\InventoryModule\isn\IssueNoteMasterRepository.class
 com\astro\dto\workflow\InventoryModule\ogp\OgpPoResponseDto.class
 com\astro\repository\ProcurementModule\ContigencyPurchaseRepository.class
@@ -376,6 +377,7 @@ com\astro\service\impl\InventoryModule\GrvServiceImpl.class
 com\astro\service\VendorMasterService.class
 com\astro\repository\InventoryModule\ogp\OgpMasterRepository.class
 com\astro\service\impl\MaterialMasterServiceImpl.class
+com\astro\dto\workflow\ProcurementDtos\tenderUpdateDto.class
 com\astro\service\impl\GatepassServiceImpl.class
 com\astro\service\impl\RoleMasterServiceImpl.class
 com\astro\dto\workflow\InventoryModule\MaterialDisposalRequestDTO.class

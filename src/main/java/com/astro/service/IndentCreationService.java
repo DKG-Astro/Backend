@@ -1,6 +1,7 @@
 package com.astro.service;
 
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.*;
+import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ApprovedSoListReportDto;
 import com.astro.dto.workflow.ProcurementDtos.TechnoMomReportDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,5 +31,7 @@ public interface IndentCreationService {
     public List<TechnoMomReportDTO> getTechnoMomReport(String startDate, String endDate);
 
     public List<materialHistoryDto> getIndentIdAndUserId(String materialCode);
+
+    public List<IndentListReportDto> getAllIndentsReport(String startDate, String endDate);
 
 }

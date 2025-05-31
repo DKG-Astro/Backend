@@ -56,25 +56,9 @@ public class IndentCreationController {
  @PostMapping
  public ResponseEntity<Object> createIndent(
          @RequestBody IndentCreationRequestDTO indentRequestDTO
-      //   @RequestPart("indentRequestDto") String indentRequestDto
-       //, @RequestPart(value = "uploadingPriorApprovals") MultipartFile uploadingPriorApprovals,
-       // @RequestPart(value = "uploadTenderDocuments") MultipartFile uploadTenderDocuments,
-      //  @RequestPart(value = "uploadGOIOrRFP") MultipartFile uploadGOIOrRFP,
-       // @RequestPart(value = "uploadPACOrBrandPAC") MultipartFile uploadPACOrBrandPAC
 ) throws JsonProcessingException {
-   //  IndentCreationRequestDTO indentRequestDTO = mapper.readValue(indentRequestDto, IndentCreationRequestDTO.class);
-    // Set files in DTO
- //   indentRequestDTO.setUploadingPriorApprovals(uploadingPriorApprovals);
- //   indentRequestDTO.setUploadTenderDocuments(uploadTenderDocuments);
-  //  indentRequestDTO.setUploadGOIOrRFP(uploadGOIOrRFP);
-  //  indentRequestDTO.setUploadPACOrBrandPAC(uploadPACOrBrandPAC);
-  //   String uploadingPriorApprovalsFileName = uploadingPriorApprovals.getOriginalFilename();
-  //   String uploadTenderDocumentsFileName = uploadTenderDocuments.getOriginalFilename();
- //    String uploadGOIOrRFPFileName = uploadGOIOrRFP.getOriginalFilename();
-  //   String uploadPACOrBrandPACFileName = uploadPACOrBrandPAC.getOriginalFilename();
-     IndentCreationResponseDTO responseDTO = indentCreationService.createIndent(indentRequestDTO);
-           //  indentRequestDTO,uploadingPriorApprovalsFileName,uploadTenderDocumentsFileName,uploadGOIOrRFPFileName,uploadPACOrBrandPACFileName );
 
+     IndentCreationResponseDTO responseDTO = indentCreationService.createIndent(indentRequestDTO);
 
      String requestId = responseDTO.getIndentId(); // Useing the indent ID as the request ID
      String workflowName = "Indent Workflow";

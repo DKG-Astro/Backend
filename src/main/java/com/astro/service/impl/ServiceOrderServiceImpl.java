@@ -5,12 +5,13 @@ import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDT
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.*;
 
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
-import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderAttributesDTO;
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.ApprovedPoListReportDto;
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderAttributesResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.pendingPoReportDto;
 import com.astro.entity.ProcurementModule.*;
 import com.astro.entity.ProjectMaster;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
-import com.astro.exception.InvalidInputException;
 import com.astro.repository.ProcurementModule.IndentIdRepository;
 import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrderMaterialRepository;
 import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrderRepository;
@@ -19,13 +20,18 @@ import com.astro.repository.ProjectMasterRepository;
 import com.astro.service.IndentCreationService;
 import com.astro.service.ServiceOrderService;
 import com.astro.service.TenderRequestService;
+import com.astro.util.CommonUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,9 +74,9 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         String tenderId = serviceOrderRequestDTO.getTenderId();
         String soId = generatePoId(tenderId);
 
-      //  String soId = "SO" + System.currentTimeMillis();
+        //  String soId = "SO" + System.currentTimeMillis();
         ServiceOrder serviceOrder = new ServiceOrder();
-       // serviceOrder.setSoId(serviceOrderRequestDTO.getSoId());
+        // serviceOrder.setSoId(serviceOrderRequestDTO.getSoId());
         serviceOrder.setSoId(soId);
         serviceOrder.setTenderId(serviceOrderRequestDTO.getTenderId());
         serviceOrder.setConsignesAddress(serviceOrderRequestDTO.getConsignesAddress());
@@ -94,7 +100,7 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
                 .map(dto -> {
                     ServiceOrderMaterial material = new ServiceOrderMaterial();
                     material.setMaterialCode(dto.getMaterialCode());
-                   // material.setSoId(serviceOrderRequestDTO.getSoId());
+                    // material.setSoId(serviceOrderRequestDTO.getSoId());
                     material.setSoId(soId);
                     material.setMaterialDescription(dto.getMaterialDescription());
                     material.setQuantity(dto.getQuantity());
@@ -115,6 +121,7 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
 
         return mapToResponseDTO(serviceOrder);
     }
+
     public String generatePoId(String tenderId) {
         String numericPart = tenderId.replaceAll("\\D+", "");
         return "SO" + numericPart;
@@ -341,6 +348,118 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         response.setProjectLimit(allocatedAmount);
         System.out.println("allocatedAmount: " + allocatedAmount);
         return response;
+    }
+
+
+    @Override
+    public List<ApprovedSoListReportDto> getApprovedSoListReport(String startDate, String endDate) {
+        LocalDate from = CommonUtils.convertStringToDateObject(startDate);
+        LocalDate to = CommonUtils.convertStringToDateObject(endDate);
+
+        List<Object[]> rows = serviceOrderRepository.getApprovedSoReport(from, to);
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        return rows.stream().map(row -> {
+            ApprovedSoListReportDto dto = new ApprovedSoListReportDto();
+            dto.setApprovedDate(CommonUtils.convertDateToString(row[0] != null
+                    ? ((Timestamp) row[0]).toLocalDateTime().toLocalDate()
+                    : null));
+            dto.setSoId((String) row[1]);
+            dto.setVendorName((String) row[2]);
+            dto.setValue(row[3] != null
+                    ? ((BigDecimal) row[3]).doubleValue()
+                    : 0.0
+            );
+            dto.setTenderId((String) row[4]);
+            dto.setProject((String) row[5]);
+            dto.setVendorId((String) row[6]);
+            dto.setIndentIds((String) row[7]);
+            dto.setModeOfProcurement((String) row[8]);
+
+            String json = (String) row[9];
+            try {
+                List<ServiceOrderMaterialResponseDTO> materials = mapper.readValue(
+                        json,
+                        mapper.getTypeFactory().constructCollectionType(
+                                List.class,
+                                ServiceOrderMaterialResponseDTO.class
+                        )
+                );
+                dto.setMaterials(materials);
+            } catch (Exception e) {
+                dto.setMaterials(new ArrayList<>());
+            }
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+
+    @Override
+    public List<PendingSoReportDto> getPendingSoReport(String startDate, String endDate) {
+
+        LocalDate from = CommonUtils.convertStringToDateObject(startDate);
+        LocalDate to = CommonUtils.convertStringToDateObject(endDate);
+
+        List<Object[]> rows = serviceOrderRepository.getPendingSoReport(from, to);
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        List<PendingSoReportDto> result = new ArrayList<>();
+
+        for (Object[] row : rows) {
+            PendingSoReportDto dto = new PendingSoReportDto();
+
+            String soId = (String) row[0];
+            dto.setSoId(soId);
+            dto.setTenderId((String) row[1]);
+            dto.setIndentIds((String) row[2]);
+
+            if (row[3] != null) {
+                dto.setValue(((BigDecimal) row[3]).doubleValue());
+            } else {
+                dto.setValue(0.0);
+            }
+            dto.setVendorName((String) row[4]);
+
+            if (row[5] != null) {
+                LocalDate submitted = ((Timestamp) row[5]).toLocalDateTime().toLocalDate();
+                dto.setSubmittedDate(CommonUtils.convertDateToString(submitted));
+            }
+
+            dto.setPendingWith((String) row[6]);
+
+            if (row[7] != null) {
+                LocalDate pending = ((Timestamp) row[7]).toLocalDateTime().toLocalDate();
+                dto.setPendingFrom(CommonUtils.convertDateToString(pending));
+            }
+
+            dto.setStatus((String) row[8]);
+            dto.setAsOnDate(LocalDate.now());
+
+            String materialsJson = (String) row[9];
+            try {
+                List<ServiceOrderMaterialResponseDTO> materials = mapper.readValue(
+                        materialsJson,
+                        mapper.getTypeFactory().constructCollectionType(
+                                List.class,
+                                ServiceOrderMaterialResponseDTO.class
+                        )
+                );
+                dto.setMaterials(materials);
+            } catch (Exception e) {
+                dto.setMaterials(new ArrayList<>());
+            }
+
+            result.add(dto);
+        }
+
+        return result;
     }
 
 

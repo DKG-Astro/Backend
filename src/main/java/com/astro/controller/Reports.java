@@ -1,7 +1,12 @@
 package com.astro.controller;
 
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseReportDto;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentListReportDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentReportDetailsDTO;
+import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ApprovedSoListReportDto;
+import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.PendingSoReportDto;
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.ApprovedPoListReportDto;
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.pendingPoReportDto;
 import com.astro.repository.InventoryModule.AssetMasterRepository;
 import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
 import com.astro.dto.workflow.ProcurementDtos.TechnoMomReportDTO;
@@ -11,10 +16,7 @@ import com.astro.dto.workflow.InventoryModule.igp.IgpReportDto;
 import com.astro.dto.workflow.InventoryModule.isn.IsnReportDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpReportDto;
 import com.astro.dto.workflow.InventoryModule.ohq.OhqReportDto;
-import com.astro.service.ContigencyPurchaseService;
-import com.astro.service.IndentCreationService;
-import com.astro.service.ProcessService;
-import com.astro.service.PurchaseOrderService;
+import com.astro.service.*;
 import com.astro.service.InventoryModule.AssetMasterService;
 import com.astro.service.InventoryModule.IgpService;
 import com.astro.service.InventoryModule.IsnService;
@@ -56,6 +58,8 @@ public class Reports {
 
     @Autowired
     private IgpService igpService;
+    @Autowired
+    private ServiceOrderService serviceOrderService;
 
     @GetMapping("/indent")
     public ResponseEntity<Object> getIndentReport(
@@ -96,6 +100,52 @@ public class Reports {
             @RequestParam String endDate) {
 
         List<ProcurementActivityReportResponse> response = purchaseOrderService.getProcurementActivityReport(startDate, endDate);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+
+    }
+    @GetMapping("poList-report")
+    public ResponseEntity<Object> getPoListReport(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+
+        List<ApprovedPoListReportDto> response = purchaseOrderService.getApprovedPoReport(startDate, endDate);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+
+    }
+    @GetMapping("soList-report")
+    public ResponseEntity<Object> getSoListReport(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+
+        List<ApprovedSoListReportDto> response = serviceOrderService.getApprovedSoListReport(startDate, endDate);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+
+    }
+    @GetMapping("pending-po-report")
+    public ResponseEntity<Object> getPendingPoReport(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+
+        List<pendingPoReportDto> response = purchaseOrderService.getPendingPoReport(startDate, endDate);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+
+    }
+    @GetMapping("pending-so-report")
+    public ResponseEntity<Object> getPendingSoReport(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+
+        List<PendingSoReportDto> response = serviceOrderService.getPendingSoReport(startDate, endDate);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+
+    }
+
+    @GetMapping("indentList-report")
+    public ResponseEntity<Object> getIndentListReport(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+
+        List<IndentListReportDto> response = indentCreationService.getAllIndentsReport(startDate, endDate);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
 
     }

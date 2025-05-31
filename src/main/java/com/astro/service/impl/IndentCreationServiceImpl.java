@@ -17,6 +17,9 @@ import com.astro.repository.ProjectMasterRepository;
 import com.astro.repository.VendorNamesForJobWorkMaterialRepository;
 import com.astro.service.IndentCreationService;
 import com.astro.util.CommonUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,11 +30,10 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -92,10 +94,10 @@ public class IndentCreationServiceImpl implements IndentCreationService {
 
         String indentId = "IND" + nextNumber;
 
-        System.out.println("IndentId"+indentId);
+        System.out.println("IndentId" + indentId);
 
         IndentCreation indentCreation = new IndentCreation();
-     //   String indentId = "IND" + System.currentTimeMillis();
+        //   String indentId = "IND" + System.currentTimeMillis();
         indentCreation.setIndentorName(indentRequestDTO.getIndentorName());
         // indentCreation.setIndentId(indentRequestDTO.getIndentId());
         indentCreation.setIndentId(indentId);
@@ -103,9 +105,9 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setIndentorMobileNo(indentRequestDTO.getIndentorMobileNo());
         indentCreation.setIndentorEmailAddress(indentRequestDTO.getIndentorEmailAddress());
         indentCreation.setConsignesLocation(indentRequestDTO.getConsignesLocation());
-       // indentCreation.setUploadingPriorApprovalsFileName(indentRequestDTO.getUploadingPriorApprovalsFileName());
-     //   String prior = saveBase64Files(indentRequestDTO.getUploadingPriorApprovalsFileName(), basePath);
-     //   indentCreation.setUploadingPriorApprovalsFileName(prior);
+        // indentCreation.setUploadingPriorApprovalsFileName(indentRequestDTO.getUploadingPriorApprovalsFileName());
+        //   String prior = saveBase64Files(indentRequestDTO.getUploadingPriorApprovalsFileName(), basePath);
+        //   indentCreation.setUploadingPriorApprovalsFileName(prior);
         indentCreation.setProjectName(indentRequestDTO.getProjectName());
         indentCreation.setIsPreBitMeetingRequired(indentRequestDTO.getIsPreBidMeetingRequired());
         String Date = indentRequestDTO.getPreBidMeetingDate();
@@ -125,9 +127,9 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setEmployeeDepartment(indentRequestDTO.getEmployeeDepartment());
         indentCreation.setProprietaryAndLimitedDeclaration(indentRequestDTO.getProprietaryAndLimitedDeclaration());
 
-       // indentCreation.setTechnicalSpecificationsFileName(indentRequestDTO.getTechnicalSpecificationsFileName());
-      //  indentCreation.setDraftEOIOrRFPFileName(indentRequestDTO.getDraftEOIOrRFPFileName());
-       // indentCreation.setUploadPACOrBrandPACFileName(indentRequestDTO.getUploadPACOrBrandPACFileName());
+        // indentCreation.setTechnicalSpecificationsFileName(indentRequestDTO.getTechnicalSpecificationsFileName());
+        //  indentCreation.setDraftEOIOrRFPFileName(indentRequestDTO.getDraftEOIOrRFPFileName());
+        // indentCreation.setUploadPACOrBrandPACFileName(indentRequestDTO.getUploadPACOrBrandPACFileName());
         if (indentRequestDTO.getUploadingPriorApprovalsFileName() == null || indentRequestDTO.getUploadingPriorApprovalsFileName().isEmpty()) {
             indentCreation.setUploadingPriorApprovalsFileName(null);
         } else {
@@ -135,23 +137,23 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             indentCreation.setUploadingPriorApprovalsFileName(prior);
         }
 
-        if(indentRequestDTO.getTechnicalSpecificationsFileName() == null || indentRequestDTO.getTechnicalSpecificationsFileName().isEmpty()){
+        if (indentRequestDTO.getTechnicalSpecificationsFileName() == null || indentRequestDTO.getTechnicalSpecificationsFileName().isEmpty()) {
             indentCreation.setTechnicalSpecificationsFileName(null);
-        }else {
+        } else {
             String technical = saveBase64Files(indentRequestDTO.getTechnicalSpecificationsFileName(), basePath);
             indentCreation.setTechnicalSpecificationsFileName(technical);
         }
 
-        if(indentRequestDTO.getDraftEOIOrRFPFileName() == null || indentRequestDTO.getDraftEOIOrRFPFileName().isEmpty()){
+        if (indentRequestDTO.getDraftEOIOrRFPFileName() == null || indentRequestDTO.getDraftEOIOrRFPFileName().isEmpty()) {
             indentCreation.setDraftEOIOrRFPFileName(null);
-        }else {
+        } else {
             String draft = saveBase64Files(indentRequestDTO.getDraftEOIOrRFPFileName(), basePath);
             indentCreation.setDraftEOIOrRFPFileName(draft);
         }
 
-        if(indentRequestDTO.getUploadPACOrBrandPACFileName() == null || indentRequestDTO.getUploadPACOrBrandPACFileName().isEmpty()){
+        if (indentRequestDTO.getUploadPACOrBrandPACFileName() == null || indentRequestDTO.getUploadPACOrBrandPACFileName().isEmpty()) {
             indentCreation.setUploadPACOrBrandPACFileName(null);
-        }else {
+        } else {
             String pac = saveBase64Files(indentRequestDTO.getUploadPACOrBrandPACFileName(), basePath);
             indentCreation.setUploadPACOrBrandPACFileName(pac);
         }
@@ -163,10 +165,10 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setQuarter(indentRequestDTO.getQuarter());
         indentCreation.setProprietaryJustification(indentRequestDTO.getProprietaryJustification());
         indentCreation.setBuyBack(indentRequestDTO.getBuyBack());
-     //   indentCreation.setUploadBuyBackFileNames(indentRequestDTO.getUploadBuyBackFileNames());
-        if(indentRequestDTO.getUploadBuyBackFileNames() == null || indentRequestDTO.getUploadBuyBackFileNames().isEmpty()){
+        //   indentCreation.setUploadBuyBackFileNames(indentRequestDTO.getUploadBuyBackFileNames());
+        if (indentRequestDTO.getUploadBuyBackFileNames() == null || indentRequestDTO.getUploadBuyBackFileNames().isEmpty()) {
             indentCreation.setUploadBuyBackFileNames(null);
-        }else {
+        } else {
             String buy = saveBase64Files(indentRequestDTO.getUploadBuyBackFileNames(), basePath);
             indentCreation.setUploadBuyBackFileNames(buy);
         }
@@ -298,31 +300,31 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setEstimatedRate(indentRequestDTO.getEstimatedRate());
         indentCreation.setPeriodOfContract(indentRequestDTO.getPeriodOfContract());
         indentCreation.setSingleAndMultipleJob(indentRequestDTO.getSingleAndMultipleJob());
-      //  indentCreation.setTechnicalSpecificationsFileName(indentRequestDTO.getTechnicalSpecificationsFileName());
-       // indentCreation.setDraftEOIOrRFPFileName(indentRequestDTO.getDraftEOIOrRFPFileName());
-     //   indentCreation.setUploadPACOrBrandPACFileName(indentRequestDTO.getUploadPACOrBrandPACFileName());
-       // indentCreation.setUploadingPriorApprovalsFileName(indentRequestDTO.getUploadingPriorApprovalsFileName());
+        //  indentCreation.setTechnicalSpecificationsFileName(indentRequestDTO.getTechnicalSpecificationsFileName());
+        // indentCreation.setDraftEOIOrRFPFileName(indentRequestDTO.getDraftEOIOrRFPFileName());
+        //   indentCreation.setUploadPACOrBrandPACFileName(indentRequestDTO.getUploadPACOrBrandPACFileName());
+        // indentCreation.setUploadingPriorApprovalsFileName(indentRequestDTO.getUploadingPriorApprovalsFileName());
         if (indentRequestDTO.getUploadingPriorApprovalsFileName() == null || indentRequestDTO.getUploadingPriorApprovalsFileName().isEmpty()) {
             indentCreation.setUploadingPriorApprovalsFileName(null);
         } else {
             String prior = saveBase64Files(indentRequestDTO.getUploadingPriorApprovalsFileName(), basePath);
             indentCreation.setUploadingPriorApprovalsFileName(prior);
         }
-        if(indentRequestDTO.getTechnicalSpecificationsFileName()==null || indentRequestDTO.getTechnicalSpecificationsFileName().isEmpty()){
+        if (indentRequestDTO.getTechnicalSpecificationsFileName() == null || indentRequestDTO.getTechnicalSpecificationsFileName().isEmpty()) {
             indentCreation.setTechnicalSpecificationsFileName(null);
-        }else {
+        } else {
             String technical = saveBase64Files(indentRequestDTO.getTechnicalSpecificationsFileName(), basePath);
             indentCreation.setTechnicalSpecificationsFileName(technical);
         }
-        if(indentRequestDTO.getDraftEOIOrRFPFileName()==null || indentRequestDTO.getDraftEOIOrRFPFileName().isEmpty()){
+        if (indentRequestDTO.getDraftEOIOrRFPFileName() == null || indentRequestDTO.getDraftEOIOrRFPFileName().isEmpty()) {
             indentCreation.setDraftEOIOrRFPFileName(null);
-        }else {
+        } else {
             String draft = saveBase64Files(indentRequestDTO.getDraftEOIOrRFPFileName(), basePath);
             indentCreation.setDraftEOIOrRFPFileName(draft);
         }
-        if(indentRequestDTO.getUploadPACOrBrandPACFileName()==null || indentRequestDTO.getUploadPACOrBrandPACFileName().isEmpty()){
+        if (indentRequestDTO.getUploadPACOrBrandPACFileName() == null || indentRequestDTO.getUploadPACOrBrandPACFileName().isEmpty()) {
             indentCreation.setUploadPACOrBrandPACFileName(null);
-        }else {
+        } else {
 
             String pac = saveBase64Files(indentRequestDTO.getUploadPACOrBrandPACFileName(), basePath);
             indentCreation.setUploadPACOrBrandPACFileName(pac);
@@ -337,12 +339,12 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setReason(indentRequestDTO.getReason());
         indentCreation.setBuyBack(indentRequestDTO.getBuyBack());
         //indentCreation.setUploadBuyBackFileNames(indentRequestDTO.getUploadBuyBackFileNames());
-       if(indentRequestDTO.getUploadBuyBackFileNames()==null || indentRequestDTO.getUploadBuyBackFileNames().isEmpty()){
-           indentCreation.setUploadBuyBackFileNames(null);
-       }else {
-           String buy = saveBase64Files(indentRequestDTO.getUploadBuyBackFileNames(), basePath);
-           indentCreation.setUploadBuyBackFileNames(buy);
-       }
+        if (indentRequestDTO.getUploadBuyBackFileNames() == null || indentRequestDTO.getUploadBuyBackFileNames().isEmpty()) {
+            indentCreation.setUploadBuyBackFileNames(null);
+        } else {
+            String buy = saveBase64Files(indentRequestDTO.getUploadBuyBackFileNames(), basePath);
+            indentCreation.setUploadBuyBackFileNames(buy);
+        }
         indentCreation.setSerialNumber(indentRequestDTO.getSerialNumber());
         indentCreation.setModelNumber(indentRequestDTO.getModelNumber());
         String dateOfPurchase = indentRequestDTO.getDateOfPurchase();
@@ -432,7 +434,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         response.setIndentorMobileNo(indentCreation.getIndentorMobileNo());
         response.setIndentorEmailAddress(indentCreation.getIndentorEmailAddress());
         response.setConsignesLocation(indentCreation.getConsignesLocation());
-       // response.setUploadingPriorApprovalsFileName(indentCreation.getUploadingPriorApprovalsFileName());
+        // response.setUploadingPriorApprovalsFileName(indentCreation.getUploadingPriorApprovalsFileName());
         response.setProjectName(indentCreation.getProjectName());
         response.setProprietaryAndLimitedDeclaration(indentCreation.getProprietaryAndLimitedDeclaration());
         response.setIsPreBidMeetingRequired(indentCreation.getIsPreBitMeetingRequired());
@@ -447,34 +449,34 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         response.setEstimatedRate(indentCreation.getEstimatedRate());
         response.setPeriodOfContract(indentCreation.getPeriodOfContract());
         response.setSingleAndMultipleJob(indentCreation.getSingleAndMultipleJob());
-     //   response.setTechnicalSpecificationsFileName(indentCreation.getTechnicalSpecificationsFileName());
-      //  response.setDraftEOIOrRFPFileName(indentCreation.getDraftEOIOrRFPFileName());
-     //   response.setUploadPACOrBrandPACFileName(indentCreation.getUploadPACOrBrandPACFileName());
-       if(indentCreation.getUploadingPriorApprovalsFileName()==null || indentCreation.getUploadingPriorApprovalsFileName().isEmpty()){
-           response.setUploadingPriorApprovalsFileName(null);
-       }else {
-           response.setUploadingPriorApprovalsFileName(
-                   convertFilesToBase64(indentCreation.getUploadingPriorApprovalsFileName(), basePath));
-       }
-       if (indentCreation.getTechnicalSpecificationsFileName() == null || indentCreation.getTechnicalSpecificationsFileName().isEmpty()){
-           response.setTechnicalSpecificationsFileName(null);
-       }else {
-           response.setTechnicalSpecificationsFileName(
-                   convertFilesToBase64(indentCreation.getTechnicalSpecificationsFileName(), basePath));
-       }
-       if(indentCreation.getDraftEOIOrRFPFileName() == null || indentCreation.getDraftEOIOrRFPFileName().isEmpty()){
-           response.setDraftEOIOrRFPFileName(null);
-       }else {
-           response.setDraftEOIOrRFPFileName(
-                   convertFilesToBase64(indentCreation.getDraftEOIOrRFPFileName(), basePath));
-       }
+        //   response.setTechnicalSpecificationsFileName(indentCreation.getTechnicalSpecificationsFileName());
+        //  response.setDraftEOIOrRFPFileName(indentCreation.getDraftEOIOrRFPFileName());
+        //   response.setUploadPACOrBrandPACFileName(indentCreation.getUploadPACOrBrandPACFileName());
+        if (indentCreation.getUploadingPriorApprovalsFileName() == null || indentCreation.getUploadingPriorApprovalsFileName().isEmpty()) {
+            response.setUploadingPriorApprovalsFileName(null);
+        } else {
+            response.setUploadingPriorApprovalsFileName(
+                    convertFilesToBase64(indentCreation.getUploadingPriorApprovalsFileName(), basePath));
+        }
+        if (indentCreation.getTechnicalSpecificationsFileName() == null || indentCreation.getTechnicalSpecificationsFileName().isEmpty()) {
+            response.setTechnicalSpecificationsFileName(null);
+        } else {
+            response.setTechnicalSpecificationsFileName(
+                    convertFilesToBase64(indentCreation.getTechnicalSpecificationsFileName(), basePath));
+        }
+        if (indentCreation.getDraftEOIOrRFPFileName() == null || indentCreation.getDraftEOIOrRFPFileName().isEmpty()) {
+            response.setDraftEOIOrRFPFileName(null);
+        } else {
+            response.setDraftEOIOrRFPFileName(
+                    convertFilesToBase64(indentCreation.getDraftEOIOrRFPFileName(), basePath));
+        }
 
-       if(indentCreation.getUploadPACOrBrandPACFileName() ==null || indentCreation.getUploadPACOrBrandPACFileName().isEmpty()){
-           response.setUploadPACOrBrandPACFileName(null);
-       }else {
-           response.setUploadPACOrBrandPACFileName(
-                   convertFilesToBase64(indentCreation.getUploadPACOrBrandPACFileName(), basePath));
-       }
+        if (indentCreation.getUploadPACOrBrandPACFileName() == null || indentCreation.getUploadPACOrBrandPACFileName().isEmpty()) {
+            response.setUploadPACOrBrandPACFileName(null);
+        } else {
+            response.setUploadPACOrBrandPACFileName(
+                    convertFilesToBase64(indentCreation.getUploadPACOrBrandPACFileName(), basePath));
+        }
         response.setBrandPac(indentCreation.getBrandPac());
         response.setJustification(indentCreation.getJustification());
         response.setBrandAndModel(indentCreation.getBrandAndModel());
@@ -484,12 +486,12 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         response.setReason(indentCreation.getReason());
         response.setFileType(indentCreation.getFileType());
         response.setBuyBack(indentCreation.getBuyBack());
-        if(indentCreation.getUploadBuyBackFileNames() == null || indentCreation.getUploadBuyBackFileNames().isEmpty()){
+        if (indentCreation.getUploadBuyBackFileNames() == null || indentCreation.getUploadBuyBackFileNames().isEmpty()) {
             response.setUploadBuyBackFileNames(null);
-        }else {
+        } else {
             response.setUploadBuyBackFileNames(convertFilesToBase64(indentCreation.getUploadBuyBackFileNames(), basePath));
         }
-      //  response.setUploadBuyBackFileNames(indentCreation.getUploadBuyBackFileNames());
+        //  response.setUploadBuyBackFileNames(indentCreation.getUploadBuyBackFileNames());
         response.setSerialNumber(indentCreation.getSerialNumber());
         response.setModelNumber(indentCreation.getModelNumber());
         LocalDate dateOfPurchase = indentCreation.getDateOfPurchase();
@@ -566,6 +568,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         return response;
 
     }
+
     public static List<String> convertFilesToBase64(String fileNames, String basePath) throws IOException {
         List<String> base64List = new ArrayList<>();
 
@@ -601,7 +604,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         response.setIndentorEmailAddress(indentCreation.getIndentorEmailAddress());
         response.setConsignesLocation(indentCreation.getConsignesLocation());
         response.setUploadingPriorApprovalsFileName(indentCreation.getUploadingPriorApprovalsFileName());
-      //  response.setProjectName(indentCreation.getProjectName());
+        //  response.setProjectName(indentCreation.getProjectName());
         response.setProjectName(
                 (indentCreation.getProjectName() != null && !indentCreation.getProjectName().isBlank())
                         ? indentCreation.getProjectName()
@@ -652,8 +655,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         // Converting "Capital" or "Consumable" to "Normal"
         if ("Capital".equalsIgnoreCase(materialCategory) || "Consumable".equalsIgnoreCase(materialCategory)) {
             materialCategory = "Normal";
-        }else if("Computer".equalsIgnoreCase(materialCategory)){
-            materialCategory ="Computer";
+        } else if ("Computer".equalsIgnoreCase(materialCategory)) {
+            materialCategory = "Computer";
         }
         response.setMaterialCategory(materialCategory);  //set material category to indent response
 
@@ -696,9 +699,9 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                 .map(ProjectMaster::getAllocatedAmount)
                 .orElse(BigDecimal.ZERO);
         response.setProjectLimit(allocatedAmount);*/
-       // String projectCode = indentCreation.getProjectCode();
+        // String projectCode = indentCreation.getProjectCode();
         BigDecimal allocatedAmount = projectMasterRepository
-                .findByProjectCode(projectName)  
+                .findByProjectCode(projectName)
                 .map(ProjectMaster::getAllocatedAmount)
                 .orElse(BigDecimal.ZERO);
         response.setProjectLimit(allocatedAmount);
@@ -862,6 +865,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                 .collect(Collectors.toList());
     }
 
+
     public void handleFileUpload(IndentCreation indentCreation, MultipartFile file, Consumer<byte[]> fileSetter) {
         if (file != null) {
             try (InputStream inputStream = file.getInputStream()) {
@@ -875,6 +879,60 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         } else {
             fileSetter.accept(null);  // Handle gracefully if no file is uploaded
         }
+    }
+
+    @Override
+    public List<IndentListReportDto> getAllIndentsReport(String startDate, String endDate) {
+
+        List<LocalDateTime> range = CommonUtils.getDateRenge(startDate, endDate);
+        LocalDateTime from = range.get(0);
+        LocalDateTime to = range.get(1);
+
+        List<Object[]> rows = indentCreationRepository.getAllIndentListReport(from, to);
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        return rows.stream().map(row -> {
+            IndentListReportDto dto = new IndentListReportDto();
+            dto.setIndentId((String) row[0]);
+            dto.setIndentorName((String) row[1]);
+            dto.setIndentorMobileNo((String) row[2]);
+            dto.setIndentorEmailAddress((String) row[3]);
+            dto.setConsignesLocation((String) row[4]);
+            dto.setProjectName((String) row[5]);
+
+            if (row[6] != null) {
+                LocalDate submitted = ((Timestamp) row[6]).toLocalDateTime().toLocalDate();
+                dto.setSubmittedDate(CommonUtils.convertDateToString(submitted));
+            }
+            dto.setPendingWith((String) row[7]);
+            if (row[8] != null) {
+                LocalDate pending = ((Timestamp) row[8]).toLocalDateTime().toLocalDate();
+                dto.setPendingFrom(CommonUtils.convertDateToString(pending));
+            }
+            dto.setStatus((String) row[9]);
+            dto.setAsOnDate(LocalDate.now());
+            dto.setCreatedBy((Integer) row[10]);
+
+
+            String json = (String) row[11];
+            try {
+                List<IndentMaterialListReportDto> materials = mapper.readValue(
+                        json,
+                        mapper.getTypeFactory().constructCollectionType(
+                                List.class,
+                                IndentMaterialListReportDto.class
+                        )
+                );
+                dto.setMaterialDetails(materials);
+            } catch (Exception ex) {
+                dto.setMaterialDetails(new ArrayList<>());
+            }
+
+            return dto;
+        }).collect(Collectors.toList());
     }
 
 
