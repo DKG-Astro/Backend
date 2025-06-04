@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -159,6 +160,92 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, St
             @Param("fromDate") LocalDate fromDate,
             @Param("toDate") LocalDate toDate
     );
+
+    @Query(value = """
+            SELECT
+              po.po_id AS orderNo,
+              DATE(po.created_date) AS orderDate,
+              po.total_value_of_po AS value,
+              JSON_ARRAYAGG(
+                JSON_OBJECT(
+                  'materialCode', poa.material_code,
+                  'materialDescription', poa.material_description
+                )
+              ) AS descriptions,
+              po.vendor_name AS vendorName,
+              po.consignes_address AS location,
+              po.delivery_date AS deliveryDate
+            FROM purchase_order po
+            LEFT JOIN purchase_order_attributes poa ON po.po_id = poa.po_id
+            WHERE po.created_date BETWEEN :startDate AND :endDate
+            GROUP BY po.po_id, po.created_date, po.total_value_of_po, po.vendor_name, po.consignes_address, po.delivery_date
+            """, nativeQuery = true)
+    List<Object[]> findQuarterlyVigilanceReportDto(@Param("startDate") LocalDateTime startDate,
+                                                   @Param("endDate") LocalDateTime endDate);
+
+    @Query(value = """
+              SELECT
+              po.po_id AS poId,
+              po.tender_id AS tenderId,
+                      (
+              SELECT GROUP_CONCAT(i.indent_id SEPARATOR ', ')
+              FROM indent_id i
+              WHERE i.tender_id = po.tender_id
+            ) AS indentIds,
+              po.total_value_of_po AS value,
+              po.vendor_name AS vendorName,
+              wt.createdDate AS submittedDate,
+                      (
+              SELECT JSON_ARRAYAGG(
+                      JSON_OBJECT(
+                      'materialCode', attr.material_code,
+                         'materialDescription', attr.material_description
+                      )
+                     )
+              FROM purchase_order_attributes attr
+              WHERE attr.po_id = po.po_id
+            ) AS materials,
+              wt.remarks AS reason
+              FROM workflow_transition wt
+              JOIN purchase_order po
+              ON wt.requestId = po.po_id
+              WHERE wt.workflowName = 'PO Workflow'
+              AND wt.action = 'Rejected'
+              AND wt.createdDate BETWEEN :startDate AND :endDate
+              ORDER BY wt.createdDate, po.po_id
+              """, nativeQuery = true)
+    List<Object[]> findShortClosedCancelledOrder(@Param("startDate") LocalDate startDate,
+                                                 @Param("endDate") LocalDate endDate);
+
+    @Query(value = """
+    SELECT 
+        DATE_FORMAT(po.created_date, '%Y-%m') AS month,
+        po.po_id AS poNumber,
+        po.created_date AS date,
+        (
+            SELECT GROUP_CONCAT(i.indent_id SEPARATOR ', ')
+            FROM indent_id i
+            WHERE i.tender_id = po.tender_id
+        ) AS indentIds,
+        po.total_value_of_po AS value,
+        po.vendor_name AS vendorName,
+        (
+            SELECT md.mode_of_procurement
+            FROM material_details md
+            WHERE md.indent_id = (
+                SELECT i.indent_id
+                FROM indent_id i
+                WHERE i.tender_id = po.tender_id
+                LIMIT 1
+            )
+            LIMIT 1
+        ) AS modeOfProcurement
+    FROM purchase_order po
+    WHERE po.created_date BETWEEN :startDate AND :endDate
+    ORDER BY po.created_date, po.po_id
+    """, nativeQuery = true)
+    List<Object[]> getMonthlyProcurementReport(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
 
 
     // PurchaseOrder getByPoId(String poId);

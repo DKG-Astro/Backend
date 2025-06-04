@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -107,6 +108,61 @@ public interface ServiceOrderRepository extends JpaRepository<ServiceOrder, Stri
             @Param("fromDate") LocalDate fromDate,
             @Param("toDate") LocalDate toDate
     );
+    @Query(value = """
+    SELECT
+      so.so_id AS orderNo,
+      DATE(so.created_date) AS orderDate,
+      so.total_value_of_so AS value,
+      JSON_ARRAYAGG(
+        JSON_OBJECT(
+          'materialCode', soa.material_code,
+          'materialDescription', soa.material_description
+        )
+      ) AS descriptions,
+      so.vendor_name AS vendorName,
+      so.consignes_address AS location
+    FROM service_order so
+    LEFT JOIN service_order_material soa ON so.so_id = soa.so_id
+    WHERE so.created_date BETWEEN :startDate AND :endDate
+    GROUP BY so.so_id, so.created_date, so.total_value_of_so, so.vendor_name, so.vendor_address
+    """, nativeQuery = true)
+    List<Object[]> findQuarterlyVigilanceSoReportDto (@Param("startDate") LocalDateTime startDate,
+                                                    @Param("endDate") LocalDateTime endDate);
+
+    @Query(value = """
+              SELECT
+              so.so_id AS soId,
+              so.tender_id AS tenderId,
+                      (
+              SELECT GROUP_CONCAT(i.indent_id SEPARATOR ', ')
+              FROM indent_id i
+              WHERE i.tender_id = so.tender_id
+            ) AS indentIds,
+              so.total_value_of_so AS value,
+              so.vendor_name AS vendorName,
+              wt.createdDate AS submittedDate,
+                      (
+              SELECT JSON_ARRAYAGG(
+                      JSON_OBJECT(
+                      'materialCode', attr.material_code,
+                         'materialDescription', attr.material_description
+                      )
+                     )
+              FROM service_order_material attr
+              WHERE attr.so_id = so.so_id
+            ) AS materials,
+              wt.remarks AS reason
+              FROM workflow_transition wt
+              JOIN service_order so
+              ON wt.requestId = so.so_id
+              WHERE wt.workflowName = 'SO Workflow'
+              AND wt.action = 'Rejected'
+              AND wt.createdDate BETWEEN :startDate AND :endDate
+              ORDER BY wt.createdDate, so.so_id
+              """, nativeQuery = true)
+    List<Object[]> findShortClosedCancelledSoOrders(@Param("startDate") LocalDate startDate,
+                                                 @Param("endDate") LocalDate endDate);
+
 
 
     //ServiceOrder getSoId(String soId);

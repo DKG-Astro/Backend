@@ -5,8 +5,7 @@ import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentListReportDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentReportDetailsDTO;
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ApprovedSoListReportDto;
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.PendingSoReportDto;
-import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.ApprovedPoListReportDto;
-import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.pendingPoReportDto;
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.*;
 import com.astro.repository.InventoryModule.AssetMasterRepository;
 import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
 import com.astro.dto.workflow.ProcurementDtos.TechnoMomReportDTO;
@@ -121,12 +120,37 @@ public class Reports {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
 
     }
+    @GetMapping("ShortClosedCancelledOrderReport")
+    public ResponseEntity<Object> getShortClosedCancelledOrderReport(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+
+        List<ShortClosedCancelledOrderReportDto> response = purchaseOrderService.getShortClosedCancelledOrders(startDate, endDate);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+
+    }
+    @GetMapping("QuarterlyVigilanceReport")
+    public ResponseEntity<Object> getQuarterlyVigilanceReport() {
+
+        List<QuarterlyVigilanceReportDto> response = purchaseOrderService.getQuarterlyVigilanceReport();
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+
+    }
     @GetMapping("pending-po-report")
     public ResponseEntity<Object> getPendingPoReport(
             @RequestParam String startDate,
             @RequestParam String endDate) {
 
         List<pendingPoReportDto> response = purchaseOrderService.getPendingPoReport(startDate, endDate);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+
+    }
+    @GetMapping("MonthlyProcurementReport")
+    public ResponseEntity<Object> getMonthlyProcurementReport(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+
+        List<MonthlyProcurementReportDto> response = purchaseOrderService.getMonthlyProcurementReport(startDate, endDate);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
 
     }

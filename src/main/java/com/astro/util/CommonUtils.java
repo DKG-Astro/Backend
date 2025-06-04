@@ -282,4 +282,21 @@ public class CommonUtils {
         return dateFormat.format(date);
     }
 
+    public static LocalDate[] getPreviousQuarterRange() {
+        LocalDate now = LocalDate.now();
+        int currentQuarter = (now.getMonthValue() - 1) / 3 + 1;
+        int prevQuarter = currentQuarter - 1;
+        int year = now.getYear();
+        if (prevQuarter == 0) {
+            prevQuarter = 4;
+            year -= 1;
+        }
+
+        int startMonth = (prevQuarter - 1) * 3 + 1;
+        LocalDate start = LocalDate.of(year, startMonth, 1);
+        LocalDate end = start.plusMonths(3).minusDays(1);
+
+        return new LocalDate[]{start, end};
+    }
+
 }

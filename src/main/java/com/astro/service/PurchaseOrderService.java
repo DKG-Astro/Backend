@@ -26,4 +26,9 @@ public interface PurchaseOrderService {
 
     public List<ApprovedPoListReportDto> getApprovedPoReport(String startDate, String endDate);
     public List<pendingPoReportDto> getPendingPoReport(String startDate, String endDate);
+
+    public  List<QuarterlyVigilanceReportDto> getQuarterlyVigilanceReport();
+    public List<ShortClosedCancelledOrderReportDto> getShortClosedCancelledOrders(String startDate, String endDate);
+
+    public List<MonthlyProcurementReportDto> getMonthlyProcurementReport(String startDate, String endDate);
 }

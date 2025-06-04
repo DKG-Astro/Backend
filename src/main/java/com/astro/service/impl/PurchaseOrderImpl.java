@@ -23,6 +23,7 @@ import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttribu
 
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderRepository;
 
+import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrderRepository;
 import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.repository.ProjectMasterRepository;
 import com.astro.repository.InventoryModule.GprnRepository.GprnMaterialDtlRepository;
@@ -40,6 +41,7 @@ import java.math.BigDecimal;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -61,6 +63,8 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
     private TenderRequestRepository tenderRequestRepository;
     @Autowired
     private ProjectMasterRepository projectMasterRepository;
+    @Autowired
+    private ServiceOrderRepository serviceOrderRepository;
 
 
     public PurchaseOrderResponseDTO createPurchaseOrder(PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
@@ -590,6 +594,163 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
             return dto;
         }).collect(Collectors.toList());
     }
+
+    @Override
+    public List<QuarterlyVigilanceReportDto> getQuarterlyVigilanceReport() {
+        LocalDate[] range = CommonUtils.getPreviousQuarterRange();
+        LocalDateTime start = range[0].atStartOfDay();
+        LocalDateTime end = range[1].atTime(23, 59, 59);
+
+        List<Object[]> results = purchaseOrderRepository.findQuarterlyVigilanceReportDto(start, end);
+        List<Object[]> serviceresult = serviceOrderRepository.findQuarterlyVigilanceSoReportDto(start, end);
+
+        List<QuarterlyVigilanceReportDto> orders = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<Object[]> combined = new ArrayList<>();
+        combined.addAll(results);
+        combined.addAll(serviceresult);
+
+        for (Object[] row : combined) {
+            QuarterlyVigilanceReportDto dto = new QuarterlyVigilanceReportDto();
+
+            dto.setOrderNo((String) row[0]);
+
+            if (row[1] instanceof java.sql.Date) {
+                dto.setOrderDate(((java.sql.Date) row[1]).toLocalDate());
+            } else if (row[1] instanceof LocalDate) {
+                dto.setOrderDate((LocalDate) row[1]);
+            }
+
+            dto.setValue(row[2] != null ? ((Number) row[2]).doubleValue() : null);
+
+            try {
+                String descriptionsJson = (String) row[3];
+                List<PoMaterialReport> descriptions = mapper.readValue(
+                        descriptionsJson,
+                        mapper.getTypeFactory().constructCollectionType(List.class, PoMaterialReport.class)
+                );
+                dto.setDescriptions(descriptions);
+            } catch (Exception e) {
+                dto.setDescriptions(new ArrayList<>());
+            }
+
+            dto.setVendorName((String) row[4]);
+            dto.setLocation((String) row[5]);
+
+            //  deliveryDate may or may not be present
+            if (row.length > 6 && row[6] != null) {
+                dto.setDeliveryDate(CommonUtils.convertDateToString(((java.sql.Date) row[6]).toLocalDate()));
+            } else {
+                dto.setDeliveryDate(null);
+            }
+
+            orders.add(dto);
+        }
+
+        return orders;
+    }
+
+@Override
+public List<ShortClosedCancelledOrderReportDto> getShortClosedCancelledOrders(String startDate, String endDate) {
+
+    List<Object[]> poOrder = purchaseOrderRepository.findShortClosedCancelledOrder(
+            CommonUtils.convertStringToDateObject(startDate),
+            CommonUtils.convertStringToDateObject(endDate)
+    );
+
+    List<Object[]> soOrder = serviceOrderRepository.findShortClosedCancelledSoOrders(
+            CommonUtils.convertStringToDateObject(startDate),
+            CommonUtils.convertStringToDateObject(endDate)
+    );
+
+
+    ObjectMapper mapper = new ObjectMapper();
+    List<ShortClosedCancelledOrderReportDto> result = new ArrayList<>();
+
+
+    processOrders(poOrder, result, mapper);
+
+    processOrders(soOrder, result, mapper);
+
+    return result;
+}
+
+
+
+    private void processOrders(List<Object[]> orders, List<ShortClosedCancelledOrderReportDto> result, ObjectMapper mapper) {
+        for (Object[] row : orders) {
+            ShortClosedCancelledOrderReportDto dto = new ShortClosedCancelledOrderReportDto();
+
+            dto.setPoId((String) row[0]);
+            dto.setTenderId((String) row[1]);
+            dto.setIndentIds((String) row[2]);
+            dto.setValue(row[3] != null ? ((Number) row[3]).doubleValue() : null);
+            dto.setVendorName((String) row[4]);
+
+            if (row[5] != null) {
+                LocalDate submitted = ((Timestamp) row[5]).toLocalDateTime().toLocalDate();
+                dto.setSubmittedDate(CommonUtils.convertDateToString(submitted));
+            }
+
+            String materialJson = (String) row[6];
+            try {
+                List<PoMaterialReport> materials = mapper.readValue(
+                        materialJson,
+                        mapper.getTypeFactory().constructCollectionType(List.class, PoMaterialReport.class)
+                );
+                dto.setMaterials(materials);
+            } catch (Exception e) {
+                dto.setMaterials(new ArrayList<>());
+            }
+
+            dto.setReason((String) row[7]);
+
+            result.add(dto);
+        }
+    }
+
+    @Override
+    public List<MonthlyProcurementReportDto> getMonthlyProcurementReport(String startDate, String endDate) {
+
+        List<Object[]> rows = purchaseOrderRepository.getMonthlyProcurementReport( CommonUtils.convertStringToDateObject(startDate),
+                CommonUtils.convertStringToDateObject(endDate));
+        System.out.println(rows);
+        List<MonthlyProcurementReportDto> reports = new ArrayList<>();
+
+        for (Object[] row : rows) {
+            MonthlyProcurementReportDto dto = new MonthlyProcurementReportDto();
+            dto.setMonth(row[0] != null ? row[0].toString() : "Unknown");
+            dto.setPoNumber((String) row[1]);
+            dto.setDate(row[2].toString());
+            dto.setIndentIds((String) row[3]);
+            dto.setValue(row[4] != null ? ((Number) row[4]).doubleValue() : null);
+            dto.setVendorName((String) row[5]);
+
+            String mode = (String) row[6];
+            String mappedMode =null;
+            if(mode!= null){
+             mappedMode = switch (mode) {
+                case "GeM" -> "GeM";
+                case "Proprietary/Single Tender" -> "Non-GeM (Proprietary/Single Tender)";
+                case "Limited Pre Approved Vendor Tender" -> "Non-GeM (Limited Pre Approved Vendor Tender)";
+                case "Brand PAC" -> "Non-GeM (Brand PAC)";
+                case "Open Tender" -> "Non-GeM (Open Tender)";
+                case "Global Tender" -> "Non-GeM (Global Tender)";
+                default -> "Other";
+            };}else{
+                dto.setModeOfProcurement(null);
+            }
+
+            dto.setModeOfProcurement(mappedMode);
+
+            reports.add(dto);
+        }
+
+        return reports;
+
+    }
+
 
 
 }
