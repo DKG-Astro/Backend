@@ -1,622 +1,3 @@
-CREATE TABLE `astrodatabase`.`user_master` (
-  `userId` INT NOT NULL AUTO_INCREMENT,
-  `password` VARCHAR(100) NOT NULL,
-  `userName` VARCHAR(100) NULL,
-  `email` VARCHAR(255) NULL,
-  `mobileNumber` VARCHAR(10) NULL,
-  `createdDate` DATETIME NULL,
-  `createdBy` VARCHAR(45) NULL,
-  PRIMARY KEY (`userId`));
-
-CREATE TABLE `astrodatabase`.`role_master` (
-  `roleId` INT NOT NULL AUTO_INCREMENT,
-  `roleName` VARCHAR(100) NULL,
-  `createdDate` DATETIME NULL,
-  `createdBy` VARCHAR(45) NULL,
-  PRIMARY KEY (`roleId`));
-
-CREATE TABLE `astrodatabase`.`user_role_master` (
-  `userRoleId` INT NOT NULL AUTO_INCREMENT,
-  `userId` INT NOT NULL,
-  `roleId` INT NOT NULL,
-  `readPermission` boolean NOT NULL,
-  `writePermission` boolean NOT NULL,
-  `createdDate` DATETIME NULL,
-  `createdBy` VARCHAR(45) NULL,
-  PRIMARY KEY (`userRoleId`));
-
-CREATE TABLE `astrodatabase`.`workflow_master` (
-  `workflowId` INT NOT NULL AUTO_INCREMENT,
-  `workflowName` VARCHAR(255) NOT NULL,
-  `createdDate` DATETIME NULL,
-  `createdBy` VARCHAR(45) NULL,
-  PRIMARY KEY (`workflowId`));
-
-CREATE TABLE `astrodatabase`.`state_master` (
-  `stateId` INT NOT NULL AUTO_INCREMENT,
-  `stateName` VARCHAR(255) NOT NULL,
-  `createdDate` DATETIME NULL,
-  `createdBy` VARCHAR(45) NULL,
-  PRIMARY KEY (`stateId`));
-
- CREATE TABLE `astrodatabase`.`transition_master` (
-  `transitionId` INT NOT NULL AUTO_INCREMENT,
-  `transitionName` VARCHAR(255) NOT NULL,
-  `workflowId` INT NOT NULL,
-  `currentRoleId` INT NOT NULL,
-  `nextRoleId` INT NULL,
-  `previousRoleId` INT NULL,
-  `conditionId` INT NULL,
-  `transitionOrder` INT NOT NULL,
-  `transitionSubOrder` INT NOT NULL,
-  `createdDate` DATETIME NULL,
-  `createdBy` VARCHAR(45) NULL,
-  PRIMARY KEY (`transitionId`));
-
-  CREATE TABLE `astrodatabase`.`action_master` (
-  `actionId` INT NOT NULL AUTO_INCREMENT,
-  `actionName` VARCHAR(255) NOT NULL,
-  `createdDate` DATETIME NULL,
-  `createdBy` VARCHAR(45) NULL,
-  PRIMARY KEY (`actionId`));
-
-   CREATE TABLE `astrodatabase`.`workflow_transition` (
-  `workflowTransitionId` INT NOT NULL AUTO_INCREMENT,
-  `workflowId` INT NOT NULL,
-  `workflowName` VARCHAR(255) NOT NULL,
-  `transitionId` INT NOT NULL,
-  `requestId` VARCHAR(255) NOT NULL,
-  `createdBy` INT NOT NULL,
-  `modifiedBy` INT NULL,
-  `status` VARCHAR(255) NOT NULL,
-  `nextAction` VARCHAR(100) NULL,
-  `transitionOrder` INT NOT NULL,
-  `transitionSubOrder` INT NOT NULL,
-  `workflowSequence` INT NOT NULL,
-  `createdDate` DATETIME NULL,
-  `modificationDate` DATETIME NULL,
-  PRIMARY KEY (`workflowTransitionId`));
-
-   CREATE TABLE `astrodatabase`.`transition_condition_master` (
-    `conditionId` INT NOT NULL AUTO_INCREMENT,
-    `workflowId` INT NOT NULL,
-    `conditionKey` VARCHAR(255) NOT NULL,
-    `conditionValue` VARCHAR(255) NOT NULL,
-    `createdDate` DATETIME NULL,
-    `createdBy` VARCHAR(45) NULL,
-    PRIMARY KEY (`conditionId`));
-
-
-
---Inventory Modules
-CREATE TABLE gprn_master (
-    process_id VARCHAR(50) NOT NULL,
-    sub_process_id INT AUTO_INCREMENT PRIMARY KEY,
-    po_id VARCHAR(50) NOT NULL,
-    date DATE,
-    challan_no VARCHAR(50) NOT NULL,
-    delivery_date DATE NOT NULL,
-    vendor_id VARCHAR(50) NOT NULL,
-    field_station VARCHAR(50) NOT NULL,
-    indentor_name VARCHAR(50) NOT NULL,
-    supply_expected_date DATE NOT NULL,
-    consignee_detail VARCHAR(100) NOT NULL,
-    warranty_years DECIMAL(10,1),
-    project VARCHAR(50),
-    received_by VARCHAR(50) NOT NULL,
-    created_by INT,
-    updated_by VARCHAR(50),
-    created_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-
-CREATE TABLE gprn_material_detail (
-    detail_id INT AUTO_INCREMENT PRIMARY KEY,
-    process_id VARCHAR(50) NOT NULL,
-    sub_process_id INT NOT NULL,
-    po_id VARCHAR(50) NOT NULL,
-    material_code VARCHAR(50) NOT NULL,
-    material_desc VARCHAR(50) NOT NULL,
-    uom_id VARCHAR(10) NOT NULL,
-    received_quantity DECIMAL(10,2) NOT NULL,
-    unit_price DECIMAL(10,2) NOT NULL,
-    make_no VARCHAR(50),
-    serial_no VARCHAR(50),
-    model_no VARCHAR(50),
-    warrantyw_terms VARCHAR(100),
-    note VARCHAR(100),
-    photo_path VARCHAR(100),
-    FOREIGN KEY (process_id) REFERENCES gprn_master(process_id) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (sub_process_id) REFERENCES gprn_master(sub_process_id) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (material_code) REFERENCES material_master(material_code) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (uom_id) REFERENCES uom_master(uom_code) ON UPDATE CASCADE
-);
-CREATE TABLE material_disposal (
-    material_disposal_code VARCHAR(255) primary key,
-    disposal_category VARCHAR(255),
-    disposal_mode VARCHAR(255),
-    vendor_details VARCHAR(255),
-    disposal_date DATE,
-    current_book_value DECIMAL(19,2),
-    edit_reserve_value DECIMAL(19,2),
-    final_bid_value DECIMAL(19,2),
-    sale_note LONGBLOB,
-    sale_note_file_name VARCHAR(255),
-    edit_quantity DECIMAL(19,2),
-    edit_value_materials DECIMAL(19,2),
-    created_by VARCHAR(255),
-    updated_by VARCHAR(255),
-    created_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-
-
-CREATE TABLE goods_inspection (
-    goods_inspection_no BigInt AUTO_INCREMENT PRIMARY KEY,
-	receipt_inspection_no VARCHAR(255), -- Foreign key to Good Provisional Receipt entity
-    installation_date varchar(20),
-    commissioning_date varchar(20),
-    upload_installation_report Blob,
-    accepted_quantity INT NOT NULL,
-    rejected_quantity INT NOT NULL,
-	goods_return_permament_or_replacement VARCHAR(255),
-    goods_return_full_or_partial VARCHAR(255),
-    goods_return_reason VARCHAR(255),
-    material_rejection_advice_sent boolean,
-    po_amendment_notified boolean,
-    created_by VARCHAR(255),
-    updated_by varchar(200),
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-
-
-CREATE TABLE goods_return (
-    goods_return_id VARCHAR(255) PRIMARY KEY,
-    goods_return_note_no VARCHAR(255) ,
-    rejected_quantity INT ,
-    return_quantity INT,
-    type_of_return VARCHAR(100) ,
-    reason_of_return TEXT ,
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    created_by varchar(200),
-    updated_by varchar(200),
-    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE goods_receipt_inspection (
-    receipt_inspection_no VARCHAR(255)  PRIMARY KEY,
-    installation_date DATE,
-    commissioning_date DATE,
-    asset_code VARCHAR(255),
-    additional_material_description TEXT,
-    locator VARCHAR(255),
-    print_label_option BOOLEAN DEFAULT FALSE,
-    depreciation_rate DOUBLE,
-    book_value DOUBLE,
-    attach_component_popup VARCHAR(255),
-    updated_by VARCHAR(255),
-    created_by VARCHAR(255),
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-CREATE TABLE asset (
-    asset_code VARCHAR(255) PRIMARY KEY,
-    material_code VARCHAR(255),
-    description TEXT ,
-    uom VARCHAR(50) ,
-    make_no VARCHAR(100),
-    model_no VARCHAR(100),
-    serial_no VARCHAR(100),
-    component_name VARCHAR(255),
-    component_code VARCHAR(255),
-    quantity INT,
-    locator VARCHAR(255) ,
-    transaction_history TEXT,
-    current_condition VARCHAR(50) ,
-    updated_by varchar(200),
-    created_by varchar(200),
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE tender_request (
-    tender_id VARCHAR(255) PRIMARY KEY,
-    title_of_tender VARCHAR(255) NOT NULL,
-    opening_date DATE,
-    closing_date DATE,
-    --indent_id VARCHAR(255),
-    indent_materials VARCHAR(200),
-    mode_of_procurement VARCHAR(255),
-    bid_type VARCHAR(255),
-    last_date_of_submission DATE,
-    applicable_taxes TEXT,
-    consignes_and_billinng_address TEXT,
-    inco_terms VARCHAR(255),
-    payment_terms VARCHAR(255),
-    ld_clause VARCHAR(255),
-    applicable_performance VARCHAR(255),
-    bid_security_declaration BOOLEAN,
-    mll_status_declaration BOOLEAN,
-    upload_tender_documents BLOB,
-    single_and_multiple_vendors VARCHAR(255),
-    upload_general_terms_and_conditions BLOB,
-    upload_specific_terms_and_conditions BLOB,
-    pre_bid_disscussions TEXT,
-    total_tender_value DECIMAL(10,2),
-    created_by VARCHAR(200),
-    updated_by VARCHAR(255),
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE indent_id (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    indent_id VARCHAR(255),
-    tender_id Varchar(255),
-	FOREIGN KEY (tender_id) REFERENCES tender_request(tender_id)
-);
-
-CREATE TABLE contigency_purchase (
-    contigency_id VARCHAR(255) PRIMARY KEY,
-    vendors_name VARCHAR(255),
-    vendors_invoice_no VARCHAR(255),
-    Date DATE,
-    material_code VARCHAR(255),
-    material_description VARCHAR(255),
-    quantity DECIMAL(15, 2),
-    unit_price DECIMAL(15, 2),
-    remarks_for_purchase VARCHAR(255),
-    amount_to_be_paid DECIMAL(15, 2),
-    upload_copy_of_invoice BLOB,
-    predifined_purchase_statement VARCHAR(255),
-    project_detail VARCHAR(255),
-    created_by VARCHAR(255),
-    updated_by VARCHAR(255),
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE indent_creation (
-    indent_id VARCHAR(255) PRIMARY KEY,
-    indentor_name VARCHAR(255) NOT NULL,
-    indentor_mobile_no VARCHAR(20),
-    indentor_email_address VARCHAR(255),
-    consignes_location VARCHAR(255),
-    uploading_prior_approvals BLOB,
-    project_name VARCHAR(255),
-    upload_tender_documents BLOB,
-    is_pre_bit_meeting_required BOOLEAN,
-    pre_bid_meeting_date DATE,
-    pre_bid_meeting_venue VARCHAR(255),
-    is_it_a_rate_contract_indent BOOLEAN,
-    estimated_rate DECIMAL(10, 2),
-    period_of_contract DECIMAL(10, 2),
-    single_and_multiple_job VARCHAR(50),
-    upload_goi_or_rfp BLOB,
-    upload_pac_or_brand_pac BLOB,
-    created_by VARCHAR(255),
-    updated_by VARCHAR(255),
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-
-CREATE TABLE material_details (
-    material_code VARCHAR(255) PRIMARY KEY,
-    material_description TEXT,
-    quantity DECIMAL(10, 2),
-    unit_price DECIMAL(10, 2),
-    uom VARCHAR(50),
-    total_price DECIMAL(10, 2),
-    budget_code VARCHAR(255),
-    material_category VARCHAR(255),
-    material_sub_category VARCHAR(255),
-    material_and_job VARCHAR(255),
-    indent_creation_id VARCHAR(255),
-    FOREIGN KEY (indent_creation_id) REFERENCES indent_creation(indentor_id) ON DELETE CASCADE
-);
-
-CREATE TABLE purchase_order (
-    po_id VARCHAR(255) PRIMARY KEY,
-    tender_id VARCHAR(255),
-    indent_id VARCHAR(255),
-    warranty DECIMAL(10, 2),
-    consignes_address VARCHAR(255),
-    billing_address VARCHAR(255),
-    delivery_period DECIMAL(10, 2),
-    if_ld_clause_applicable BOOLEAN,
-    inco_terms VARCHAR(255),
-    payment_terms VARCHAR(255),
-    vendor_name VARCHAR(255),
-    vendor_address VARCHAR(255),
-    applicable_pbg_to_be_submitted VARCHAR(255),
-    transporter_and_freight_for_warder_details VARCHAR(255),
-    vendor_account_number VARCHAR(255),
-    vendors_zfsc_code VARCHAR(255),
-    vendor_account_name VARCHAR(255),
-    created_by VARCHAR(255),
-    updated_by VARCHAR(255),
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-drop table purchase_order_attributes
-CREATE TABLE purchase_order_attributes (
-    material_code VARCHAR(255) PRIMARY KEY,
-    material_description VARCHAR(255),
-    quantity DECIMAL(10, 2),
-    rate DECIMAL(10, 2),
-    currency VARCHAR(255),
-    exchange_rate DECIMAL(10, 2),
-    gst DECIMAL(10, 2),
-    duties DECIMAL(10, 2),
-    freight_charge DECIMAL(10, 2),
-    budget_code VARCHAR(255),
-    purchase_order_id VARCHAR(255),
-    FOREIGN KEY (purchase_order_id) REFERENCES purchase_order(po_id)
-);
-
-
-CREATE TABLE service_order (
-    so_id VARCHAR(255) PRIMARY KEY,
-    tender_id VARCHAR(255),
-    consignes_address VARCHAR(255),
-    billing_address VARCHAR(255),
-    job_completion_period DECIMAL(10, 2),
-    if_ld_clause_applicable BOOLEAN,
-    inco_terms VARCHAR(255),
-    payment_terms VARCHAR(255),
-    vendor_name VARCHAR(255),
-    vendor_address VARCHAR(255),
-    applicable_pbg_to_be_submitted VARCHAR(255),
-    vendors_account_no VARCHAR(255),
-    vendors_zrsc_code VARCHAR(255),
-    vendors_account_name VARCHAR(255),
-    created_by VARCHAR(200),
-    updated_by VARCHAR(200),
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE service_order_material (
-    material_code VARCHAR(255) PRIMARY KEY,
-    material_description VARCHAR(255),
-    quantity DECIMAL(10, 2),
-    rate DECIMAL(10, 2),
-    exchange_rate DECIMAL(10, 2),
-    currency VARCHAR(50),
-    gst DECIMAL(10, 2),
-    duties DECIMAL(10, 2),
-    budget_code VARCHAR(255),
-    service_order_id VARCHAR(255),
-    FOREIGN KEY (service_order_id) REFERENCES service_order(so_id) ON DELETE CASCADE
-);
-
-CREATE TABLE work_order (
-    wo_id VARCHAR(255) PRIMARY KEY,
-    tender_id VARCHAR(255),
-    consignes_address VARCHAR(255),
-    billing_address VARCHAR(255),
-    job_completion_period DECIMAL(10, 2),
-    if_ld_clause_applicable BOOLEAN,
-    inco_terms VARCHAR(255),
-    payment_terms VARCHAR(255),
-    vendor_name VARCHAR(255),
-    vendor_address VARCHAR(255),
-    applicable_pbg_to_be_submitted VARCHAR(255),
-    vendors_account_no VARCHAR(255),
-    vendors_zrsc_code VARCHAR(255),
-    vendors_account_name VARCHAR(255),
-    created_by VARCHAR(200),
-    updated_by VARCHAR(200),
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE work_order_material (
-    work_code VARCHAR(255) PRIMARY KEY,
-    work_description VARCHAR(255),
-    quantity DECIMAL(10, 2),
-    rate DECIMAL(10, 2),
-    exchange_rate DECIMAL(10, 2),
-    currency VARCHAR(50),
-    gst DECIMAL(10, 2),
-    duties DECIMAL(10, 2),
-    budget_code VARCHAR(255),
-    work_order_id VARCHAR(255),
-    FOREIGN KEY (work_order_id) REFERENCES work_order(wo_id) ON DELETE CASCADE
-);
---Masters Tables
-CREATE TABLE material_master (
-    material_code VARCHAR(50) PRIMARY KEY,
-    category VARCHAR(100),
-    sub_category VARCHAR(100),
-    description TEXT,
-    uom VARCHAR(50),
-    mode_of_procurement VARCHAR(100),
-    end_of_life VARCHAR(50),
-    depreciation_rate DECIMAL(10, 2),
-    stock_levels_min DECIMAL(10, 2),
-    stock_levels_max DECIMAL(10, 2),
-    re_order_level DECIMAL(10, 2),
-    condition_of_goods VARCHAR(100),
-    shelf_life VARCHAR(50),
-    upload_image LONGBLOB,
-    indigenous_or_imported BOOLEAN,
-    updated_by varchar(200),
-    created_by varchar(200),
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-
-CREATE TABLE project_master (
-    project_code VARCHAR(255) PRIMARY KEY,
-    project_name_description VARCHAR(255),
-    financial_year VARCHAR(20),
-    allocated_amount DECIMAL(15, 2),
-    department_division VARCHAR(255),
-    budget_type VARCHAR(255),
-    start_date DATE,
-    end_date DATE,
-    remarks_notes TEXT,
-    project_head VARCHAR(255),
-    created_by VARCHAR(255),
-    updated_by VARCHAR(255),
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-drop table job_master
-CREATE TABLE job_master (
-    job_code VARCHAR(255) PRIMARY KEY,
-    category VARCHAR(255),
-    job_description TEXT,
-    asset_id VARCHAR(255),
-    uom VARCHAR(50),
-    value DECIMAL(15, 2),
-    mode_of_procurement VARCHAR(255),
-	created_by INT,
-    updated_by VARCHAR(255),
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-select *from uom_master
-CREATE TABLE uom_master (
-    uom_code VARCHAR(50) PRIMARY KEY,
-    uom_name VARCHAR(255),
-    created_by VARCHAR(255),
-    updated_by VARCHAR(255),
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE location_master (
-    location_code VARCHAR(10) PRIMARY KEY,
-    location_name VARCHAR(255),
-    address TEXT,
-    created_by VARCHAR(255),
-    updated_by VARCHAR(255),
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-CREATE TABLE vendor_master (
-    vendor_id VARCHAR(250) PRIMARY KEY,
-    vendor_type VARCHAR(50),
-    vendor_name VARCHAR(100),
-    contact_no VARCHAR(20),
-    email_address VARCHAR(100),
-    registered_platform BOOLEAN,
-    pfms_vendor_code VARCHAR(20),
-    primary_business VARCHAR(50),
-    address TEXT,
-    landline VARCHAR(20),
-    mobile_no VARCHAR(20),
-    fax VARCHAR(20),
-    pan_no VARCHAR(20),
-    gst_no VARCHAR(20),
-    bank_name VARCHAR(50),
-    account_no VARCHAR(20),
-    ifsc_code VARCHAR(15),
-    purchase_history TEXT,
-    status VARCHAR(10),
-    remarks Varchar(255),
-    updated_by varchar(200),
-    created_by LONG,
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE employee_department_master (
-    employee_id varchar(100) PRIMARY KEY,
-    employee_name VARCHAR(100),
-    department_name VARCHAR(100),
-    designation VARCHAR(50),
-    contact_details VARCHAR(100),
-    updated_by varchar(200),
-    created_by varchar(200),
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE vendor_names_for_job_work_material (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    vendor_name VARCHAR(255) NOT NULL,
-    job_code VARCHAR(50),
-    material_code VARCHAR(50),
-    work_code VARCHAR(50),
-    FOREIGN KEY (job_code) REFERENCES job_master(job_code) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (material_code) REFERENCES material_master(material_code) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (work_code) REFERENCES work_master(work_code) ON UPDATE CASCADE ON DELETE CASCADE
-);
-  CREATE TABLE work_master (
-    work_code VARCHAR(255) PRIMARY KEY,
-    work_sub_category VARCHAR(255),
-    mode_of_procurement VARCHAR(255),
-    work_description TEXT,
-    created_by INT,
-    updated_by VARCHAR(255),
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE vendor_master_util (
-    vendor_id VARCHAR(50) PRIMARY KEY,
-    vendor_name VARCHAR(255),
-    vendor_type VARCHAR(100),
-    contact_number VARCHAR(20),
-    email_address VARCHAR(255),
-    registered_platform BOOLEAN,
-    pfms_vendor_code VARCHAR(100),
-    primary_business VARCHAR(255),
-    address TEXT,
-    landline_number VARCHAR(20),
-    mobile_number VARCHAR(20),
-    fax_number VARCHAR(50),
-    pan_number VARCHAR(50),
-    gst_number VARCHAR(50),
-    bank_name VARCHAR(255),
-    account_number VARCHAR(50),
-    ifsc_code VARCHAR(50),
-    approval_status ENUM('APPROVED', 'REJECTED', 'AWAITING_APPROVAL', 'CHANGE_REQUEST'),
-    comments TEXT
-);
-
-CREATE TABLE material_master_util (
-    material_code VARCHAR(255) PRIMARY KEY,
-    category VARCHAR(255),
-    sub_category VARCHAR(255),
-    description TEXT,
-    uom VARCHAR(50),
-    unit_price DECIMAL(15,2),
-    currency VARCHAR(10),
-    estimated_price_with_ccy DECIMAL(15,2),
-    upload_image_name VARCHAR(255),
-    indigenous_or_imported BOOLEAN,
-    approval_status ENUM('APPROVED', 'REJECTED', 'AWAITING_APPROVAL', 'CHANGE_REQUEST'),
-    comments TEXT,
-    created_by INT,
-    updated_by VARCHAR(255),
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-
-CREATE TABLE material_status(
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    material_code VARCHAR(255),
-    status VARCHAR(50) ,
-    action varchar(200),
-    comments TEXT,
-    created_by INT ,
-    updated_by INT,
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (material_code) REFERENCES material_master_util(material_code)
-);
 
 ##########################
 
@@ -706,7 +87,552 @@ CREATE TABLE `material_disposal` (
     CONSTRAINT `asset_disposal_detail_ibfk_1` FOREIGN KEY (`disposal_id`) REFERENCES `asset_disposal` (`disposal_id`) ON DELETE CASCADE ON UPDATE CASCADE
   )
 
+CREATE TABLE `gatepass_out_in` (
+   `gate_pass_id` varchar(255) NOT NULL,
+   `gate_pass_type` varchar(255) DEFAULT NULL,
+   `material_details` text,
+   `expected_date_of_return` date DEFAULT NULL,
+   `extendEDR` decimal(10,2) DEFAULT NULL,
+   `created_by` varchar(255) DEFAULT NULL,
+   `updated_by` varchar(255) DEFAULT NULL,
+   `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   `updated_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+   PRIMARY KEY (`gate_pass_id`)
+ )
 
+CREATE TABLE `goods_inspection` (
+   `id` bigint NOT NULL AUTO_INCREMENT,
+   `goods_inspection_no` varchar(50) NOT NULL,
+   `installation_date` varchar(20) DEFAULT NULL,
+   `commissioning_date` varchar(20) DEFAULT NULL,
+   `upload_installation_report` blob,
+   `accepted_quantity` int NOT NULL,
+   `rejected_quantity` int NOT NULL,
+   `created_by` varchar(255) DEFAULT NULL,
+   `updated_by` varchar(200) DEFAULT NULL,
+   `created_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+   `updated_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+   `upload_installation_report_file_name` varchar(100) DEFAULT NULL,
+   `receipt_inspection_no` varchar(200) DEFAULT NULL,
+   PRIMARY KEY (`id`)
+ )
+
+ CREATE TABLE `goods_receipt_inspection` (
+   `receipt_inspection_no` varchar(255) NOT NULL,
+   `installation_date` date DEFAULT NULL,
+   `commissioning_date` date DEFAULT NULL,
+   `asset_code` varchar(255) DEFAULT NULL,
+   `additional_material_description` text,
+   `locator` varchar(255) DEFAULT NULL,
+   `print_label_option` boolean DEFAULT '0',
+   `depreciation_rate` double DEFAULT NULL,
+   `book_value` double DEFAULT NULL,
+   `attach_component_popup` varchar(255) DEFAULT NULL,
+   `updated_by` varchar(255) DEFAULT NULL,
+   `created_by` varchar(255) DEFAULT NULL,
+   `created_date` datetime DEFAULT CURRENT_TIMESTAMP,
+   `updated_date` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+   PRIMARY KEY (`receipt_inspection_no`)
+ )
+
+ CREATE TABLE `goods_return` (
+   `goods_return_id` varchar(255) NOT NULL,
+   `goods_return_note_no` varchar(255) DEFAULT NULL,
+   `rejected_quantity` int DEFAULT NULL,
+   `return_quantity` int DEFAULT NULL,
+   `type_of_return` varchar(100) DEFAULT NULL,
+   `reason_of_return` text,
+   `created_date` datetime DEFAULT CURRENT_TIMESTAMP,
+   `created_by` varchar(200) DEFAULT NULL,
+   `updated_by` varchar(200) DEFAULT NULL,
+   `updated_date` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+   PRIMARY KEY (`goods_return_id`)
+ )
+
+
+ CREATE TABLE `gprn` (
+   `gprn_no` varchar(255) NOT NULL,
+   `po_id` varchar(255) DEFAULT NULL,
+   `date` date NOT NULL,
+   `delivery_challan_no` varchar(255) DEFAULT NULL,
+   `delivery_challan_date` date DEFAULT NULL,
+   `vendor_id` varchar(255) DEFAULT NULL,
+   `vendor_name` varchar(255) DEFAULT NULL,
+   `vendor_email` varchar(255) DEFAULT NULL,
+   `vendor_contact_no` bigint DEFAULT NULL,
+   `field_station` varchar(255) DEFAULT NULL,
+   `indentor_name` varchar(255) DEFAULT NULL,
+   `expected_supply_date` date DEFAULT NULL,
+   `consignee_detail` varchar(255) DEFAULT NULL,
+   `warranty_years` int DEFAULT NULL,
+   `project` varchar(255) DEFAULT NULL,
+   `received_qty` varchar(255) DEFAULT NULL,
+   `pending_qty` varchar(255) DEFAULT NULL,
+   `accepted_qty` varchar(255) DEFAULT NULL,
+   `provisional_receipt_certificate` blob,
+   `received_by` varchar(255) DEFAULT NULL,
+   `created_by` varchar(255) DEFAULT NULL,
+   `updated_by` varchar(255) DEFAULT NULL,
+   `created_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+   `updated_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+   PRIMARY KEY (`gprn_no`)
+ )
+
+ CREATE TABLE `gprn_master` (
+   `process_id` varchar(50) NOT NULL,
+   `sub_process_id` int NOT NULL AUTO_INCREMENT,
+   `po_id` varchar(50) NOT NULL,
+   `location_id` varchar(10) NOT NULL,
+   `date` date DEFAULT NULL,
+   `challan_no` varchar(50) NOT NULL,
+   `delivery_date` date NOT NULL,
+   `vendor_id` varchar(255) DEFAULT NULL,
+   `field_station` varchar(50) NOT NULL,
+   `indentor_name` varchar(50) NOT NULL,
+   `supply_expected_date` date NOT NULL,
+   `consignee_detail` varchar(100) NOT NULL,
+   `warranty_years` decimal(10,1) DEFAULT NULL,
+   `project` varchar(50) DEFAULT NULL,
+   `received_by` varchar(50) NOT NULL,
+   `created_by` varchar(50) NOT NULL,
+   `updated_by` varchar(50) DEFAULT NULL,
+   `create_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   `updated_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+   `warranty` varchar(100) DEFAULT NULL,
+   `status` varchar(20) DEFAULT NULL,
+   PRIMARY KEY (`sub_process_id`),
+   KEY `location_id` (`location_id`),
+   KEY `gprn_master_ibfk_1` (`vendor_id`),
+   CONSTRAINT `gprn_master_ibfk_1` FOREIGN KEY (`vendor_id`) REFERENCES `vendor_master` (`vendor_id`),
+   CONSTRAINT `gprn_master_ibfk_2` FOREIGN KEY (`location_id`) REFERENCES `location_master` (`location_code`) ON UPDATE CASCADE
+ )
+
+
+
+
+
+CREATE TABLE `gprn_material_detail` (
+   `detail_id` int NOT NULL AUTO_INCREMENT,
+   `process_id` varchar(50) NOT NULL,
+   `sub_process_id` int NOT NULL,
+   `po_id` varchar(50) NOT NULL,
+   `material_code` varchar(50) NOT NULL,
+   `material_desc` varchar(50) NOT NULL,
+   `uom_id` varchar(10) NOT NULL,
+   `received_quantity` decimal(10,2) NOT NULL,
+   `unit_price` decimal(10,2) NOT NULL,
+   `make_no` varchar(50) DEFAULT NULL,
+   `serial_no` varchar(50) DEFAULT NULL,
+   `model_no` varchar(50) DEFAULT NULL,
+   `warranty_terms` varchar(100) DEFAULT NULL,
+   `note` varchar(100) DEFAULT NULL,
+   `photo_path` varchar(100) DEFAULT NULL,
+   `category` varchar(50) DEFAULT NULL,
+   `ordered_quantity` decimal(10,2) DEFAULT NULL,
+   `quantity_delivered` decimal(10,2) DEFAULT NULL,
+   PRIMARY KEY (`detail_id`),
+   KEY `sub_process_id` (`sub_process_id`),
+   KEY `material_code` (`material_code`),
+   KEY `uom_id` (`uom_id`),
+   CONSTRAINT `gprn_material_detail_ibfk_1` FOREIGN KEY (`sub_process_id`) REFERENCES `gprn_master` (`sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+   CONSTRAINT `gprn_material_detail_ibfk_2` FOREIGN KEY (`material_code`) REFERENCES `material_master` (`material_code`) ON DELETE CASCADE ON UPDATE CASCADE,
+   CONSTRAINT `gprn_material_detail_ibfk_3` FOREIGN KEY (`uom_id`) REFERENCES `uom_master` (`uom_code`) ON UPDATE CASCADE
+ )
+ CREATE TABLE `gprn_materials` (
+   `material_code` varchar(255) NOT NULL,
+   `description` varchar(255) DEFAULT NULL,
+   `uom` varchar(50) DEFAULT NULL,
+   `ordered_quantity` int DEFAULT NULL,
+   `quantity_delivered` int DEFAULT NULL,
+   `received_quantity` int DEFAULT NULL,
+   `unit_price` double DEFAULT NULL,
+   `net_price` decimal(18,2) DEFAULT NULL,
+   `make_no` varchar(255) DEFAULT NULL,
+   `model_no` varchar(255) DEFAULT NULL,
+   `serial_no` varchar(255) DEFAULT NULL,
+   `warranty` varchar(255) DEFAULT NULL,
+   `note` varchar(255) DEFAULT NULL,
+   `photograph_path` blob,
+   `gprn_id` varchar(255) DEFAULT NULL,
+   `photo_file_name` varchar(100) DEFAULT NULL,
+   PRIMARY KEY (`material_code`),
+   KEY `gprn_id` (`gprn_id`),
+   CONSTRAINT `gprn_materials_ibfk_1` FOREIGN KEY (`gprn_id`) REFERENCES `gprn` (`gprn_no`)
+)
+
+ CREATE TABLE `issue_note_master` (
+   `issue_note_id` int NOT NULL AUTO_INCREMENT,
+   `issue_note_type` enum('Returnable','Non Returnable') DEFAULT NULL,
+   `issue_date` date NOT NULL,
+   `consignee_detail` varchar(50) DEFAULT NULL,
+   `indentor_name` varchar(50) DEFAULT NULL,
+   `field_station` varchar(50) DEFAULT NULL,
+   `created_by` int NOT NULL,
+   `create_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   `location_id` varchar(10) NOT NULL,
+   PRIMARY KEY (`issue_note_id`),
+   KEY `location_id` (`location_id`),
+   CONSTRAINT `issue_note_master_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `location_master` (`location_code`) ON UPDATE CASCADE
+ )
+ CREATE TABLE `issue_note_detail` (
+   `detail_id` int NOT NULL AUTO_INCREMENT,
+   `issue_note_id` int NOT NULL,
+   `asset_id` int NOT NULL,
+   `locator_id` int NOT NULL,
+   `quantity` decimal(10,2) NOT NULL,
+   PRIMARY KEY (`detail_id`),
+   KEY `issue_note_id` (`issue_note_id`),
+   KEY `asset_id` (`asset_id`),
+   KEY `locator_id` (`locator_id`),
+   CONSTRAINT `issue_note_detail_ibfk_1` FOREIGN KEY (`issue_note_id`) REFERENCES `issue_note_master` (`issue_note_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+   CONSTRAINT `issue_note_detail_ibfk_2` FOREIGN KEY (`asset_id`) REFERENCES `asset_master` (`asset_id`) ON UPDATE CASCADE,
+   CONSTRAINT `issue_note_detail_ibfk_3` FOREIGN KEY (`locator_id`) REFERENCES `locator_master` (`locator_id`) ON UPDATE CASCADE
+ )
+
+
+ CREATE TABLE `ogp_master` (
+   `ogp_process_id` varchar(50) NOT NULL,
+   `ogp_sub_process_id` int NOT NULL AUTO_INCREMENT,
+   `issue_note_id` int NOT NULL,
+   `ogp_date` date NOT NULL,
+   `location_id` varchar(10) NOT NULL,
+   `created_by` int NOT NULL,
+   `create_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   `ogp_type` varchar(20) NOT NULL,
+   `receiver_name` varchar(50) DEFAULT NULL,
+   `receiver_location` varchar(100) DEFAULT NULL,
+   `date_of_return` date DEFAULT NULL,
+   `status` varchar(20) DEFAULT NULL,
+   PRIMARY KEY (`ogp_sub_process_id`),
+   KEY `location_id` (`location_id`),
+   KEY `issue_note_id` (`issue_note_id`),
+   CONSTRAINT `ogp_master_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `location_master` (`location_code`) ON UPDATE CASCADE,
+   CONSTRAINT `ogp_master_ibfk_2` FOREIGN KEY (`issue_note_id`) REFERENCES `issue_note_master` (`issue_note_id`) ON DELETE CASCADE ON UPDATE CASCADE
+ )
+
+ CREATE TABLE `ogp_detail` (
+    `detail_id` int NOT NULL AUTO_INCREMENT,
+    `ogp_process_id` varchar(50) NOT NULL,
+    `issue_note_id` int DEFAULT NULL,
+    `ogp_sub_process_id` int NOT NULL,
+    `asset_id` int NOT NULL,
+    `locator_id` int NOT NULL,
+    `quantity` decimal(10,2) NOT NULL,
+    PRIMARY KEY (`detail_id`),
+    KEY `ogp_sub_process_id` (`ogp_sub_process_id`),
+    KEY `issue_note_id` (`issue_note_id`),
+    KEY `asset_id` (`asset_id`),
+    KEY `locator_id` (`locator_id`),
+    CONSTRAINT `ogp_detail_ibfk_1` FOREIGN KEY (`ogp_sub_process_id`) REFERENCES `ogp_master` (`ogp_sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `ogp_detail_ibfk_2` FOREIGN KEY (`issue_note_id`) REFERENCES `issue_note_master` (`issue_note_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `ogp_detail_ibfk_3` FOREIGN KEY (`asset_id`) REFERENCES `asset_master` (`asset_id`) ON UPDATE CASCADE,
+    CONSTRAINT `ogp_detail_ibfk_4` FOREIGN KEY (`locator_id`) REFERENCES `locator_master` (`locator_id`) ON UPDATE CASCADE
+  )
+
+CREATE TABLE `ogp_master_po` (
+   `ogp_sub_process_id` int NOT NULL AUTO_INCREMENT,
+   `po_id` varchar(50) NOT NULL,
+   `ogp_date` date NOT NULL,
+   `location_id` varchar(10) NOT NULL,
+   `created_by` int NOT NULL,
+   `create_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   `ogp_type` varchar(20) NOT NULL,
+   `receiver_name` varchar(50) DEFAULT NULL,
+   `receiver_location` varchar(100) DEFAULT NULL,
+   `date_of_return` date DEFAULT NULL,
+   `status` varchar(20) DEFAULT NULL,
+   PRIMARY KEY (`ogp_sub_process_id`),
+   KEY `location_id` (`location_id`),
+   KEY `po_id` (`po_id`),
+   CONSTRAINT `ogp_master_po_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `location_master` (`location_code`) ON UPDATE CASCADE,
+   CONSTRAINT `ogp_master_po_ibfk_2` FOREIGN KEY (`po_id`) REFERENCES `purchase_order` (`po_id`) ON DELETE CASCADE ON UPDATE CASCADE
+ )
+
+CREATE TABLE `ogp_po_detail` (
+   `detail_id` int NOT NULL AUTO_INCREMENT,
+   `ogp_sub_process_id` int NOT NULL,
+   `material_code` varchar(50) NOT NULL,
+   `material_desc` varchar(50) NOT NULL,
+   `uom_id` varchar(10) NOT NULL,
+   `quantity` decimal(10,2) NOT NULL,
+   PRIMARY KEY (`detail_id`),
+   KEY `ogp_sub_process_id` (`ogp_sub_process_id`),
+   KEY `material_code` (`material_code`),
+   CONSTRAINT `ogp_po_detail_ibfk_1` FOREIGN KEY (`ogp_sub_process_id`) REFERENCES `ogp_master_po` (`ogp_sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+   CONSTRAINT `ogp_po_detail_ibfk_2` FOREIGN KEY (`material_code`) REFERENCES `material_master` (`material_code`) ON UPDATE CASCADE
+ )
+
+CREATE TABLE `ohq_master` (
+   `ohq_id` int NOT NULL AUTO_INCREMENT,
+   `asset_id` int NOT NULL,
+   `locator_id` int NOT NULL,
+   `book_value` decimal(10,2) NOT NULL,
+   `depriciation_rate` decimal(10,2) NOT NULL,
+   `unit_price` decimal(10,2) NOT NULL,
+   `quantity` decimal(10,2) NOT NULL,
+   PRIMARY KEY (`ohq_id`),
+   KEY `asset_id` (`asset_id`),
+   KEY `locator_id` (`locator_id`),
+   CONSTRAINT `ohq_master_ibfk_1` FOREIGN KEY (`asset_id`) REFERENCES `asset_master` (`asset_id`) ON UPDATE CASCADE,
+   CONSTRAINT `ohq_master_ibfk_2` FOREIGN KEY (`locator_id`) REFERENCES `locator_master` (`locator_id`) ON UPDATE CASCADE
+ )
+ CREATE TABLE `ohq_master_consumable` (
+    `ohq_id` int NOT NULL AUTO_INCREMENT,
+    `material_code` varchar(50) NOT NULL,
+    `locator_id` int NOT NULL,
+    `book_value` decimal(10,2) NOT NULL,
+    `depriciation_rate` decimal(10,2) NOT NULL,
+    `unit_price` decimal(10,2) NOT NULL,
+    `quantity` decimal(10,2) NOT NULL,
+    PRIMARY KEY (`ohq_id`),
+    KEY `material_code` (`material_code`),
+    KEY `locator_id` (`locator_id`),
+    CONSTRAINT `ohq_master_consumable_ibfk_1` FOREIGN KEY (`material_code`) REFERENCES `material_master` (`material_code`) ON UPDATE CASCADE,
+    CONSTRAINT `ohq_master_consumable_ibfk_2` FOREIGN KEY (`locator_id`) REFERENCES `locator_master` (`locator_id`) ON UPDATE CASCADE
+  )
+
+ CREATE TABLE `goods_inspection_master` (
+   `inspection_sub_process_id` int NOT NULL AUTO_INCREMENT,
+   `gprn_process_id` varchar(50) NOT NULL,
+   `gprn_sub_process_id` int NOT NULL,
+   `installation_date` date DEFAULT NULL,
+   `commissioning_date` date DEFAULT NULL,
+   `location_id` varchar(10) DEFAULT NULL,
+   `create_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   `created_by` int NOT NULL,
+   `status` varchar(20) DEFAULT NULL,
+   PRIMARY KEY (`inspection_sub_process_id`),
+   KEY `idx_gprn_process` (`gprn_process_id`),
+   KEY `idx_gprn_subprocess` (`gprn_sub_process_id`),
+   KEY `location_id` (`location_id`),
+   CONSTRAINT `goods_inspection_master_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `location_master` (`location_code`) ON UPDATE CASCADE,
+   CONSTRAINT `goods_inspection_master_ibfk_2` FOREIGN KEY (`gprn_sub_process_id`) REFERENCES `gprn_master` (`sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE
+ )
+
+CREATE TABLE `goods_inspection_consumable_detail` (
+   `inspection_detail_id` int NOT NULL AUTO_INCREMENT,
+   `inspection_sub_process_id` int NOT NULL,
+   `gprn_sub_process_id` int NOT NULL,
+   `gprn_process_id` int NOT NULL,
+   `material_code` varchar(50) NOT NULL,
+   `material_desc` varchar(50) NOT NULL,
+   `uom_id` varchar(10) NOT NULL,
+   `installation_report_filename` varchar(255) DEFAULT NULL,
+   `received_quantity` decimal(10,2) NOT NULL,
+   `accepted_quantity` decimal(10,2) NOT NULL,
+   `rejected_quantity` decimal(10,2) NOT NULL,
+   PRIMARY KEY (`inspection_detail_id`),
+   KEY `idx_inspection_subprocess` (`inspection_sub_process_id`),
+   KEY `idx_gprn_subprocess` (`gprn_sub_process_id`),
+   KEY `idx_material` (`material_code`),
+   CONSTRAINT `goods_inspection_consumable_detail_ibfk_1` FOREIGN KEY (`inspection_sub_process_id`) REFERENCES `goods_inspection_master` (`inspection_sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+   CONSTRAINT `goods_inspection_consumable_detail_ibfk_2` FOREIGN KEY (`gprn_sub_process_id`) REFERENCES `gprn_master` (`sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE
+ )
+
+ CREATE TABLE `goods_inspection_detail` (
+   `inspection_detail_id` int NOT NULL AUTO_INCREMENT,
+   `inspection_sub_process_id` int NOT NULL,
+   `gprn_sub_process_id` int NOT NULL,
+   `gprn_process_id` int NOT NULL,
+   `material_code` varchar(50) NOT NULL,
+   `material_desc` varchar(50) NOT NULL,
+   `asset_id` int DEFAULT NULL,
+   `installation_report_filename` varchar(255) DEFAULT NULL,
+   `received_quantity` decimal(10,2) NOT NULL,
+   `accepted_quantity` decimal(10,2) NOT NULL,
+   `rejected_quantity` decimal(10,2) NOT NULL,
+   `reject_reason` varchar(100) DEFAULT NULL,
+   PRIMARY KEY (`inspection_detail_id`),
+   KEY `idx_inspection_subprocess` (`inspection_sub_process_id`),
+   KEY `idx_gprn_subprocess` (`gprn_sub_process_id`),
+   KEY `idx_material` (`material_code`),
+   KEY `asset_id` (`asset_id`),
+   CONSTRAINT `goods_inspection_detail_ibfk_1` FOREIGN KEY (`inspection_sub_process_id`) REFERENCES `goods_inspection_master` (`inspection_sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+   CONSTRAINT `goods_inspection_detail_ibfk_2` FOREIGN KEY (`gprn_sub_process_id`) REFERENCES `gprn_master` (`sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+   CONSTRAINT `goods_inspection_detail_ibfk_3` FOREIGN KEY (`asset_id`) REFERENCES `asset_master` (`asset_id`) ON UPDATE CASCADE
+ )
+
+ CREATE TABLE `igp_master` (
+   `igp_process_id` varchar(50) NOT NULL,
+   `igp_sub_process_id` int NOT NULL AUTO_INCREMENT,
+   `ogp_sub_process_id` int NOT NULL,
+   `igp_date` date NOT NULL,
+   `location_id` varchar(10) NOT NULL,
+   `created_by` int NOT NULL,
+   `create_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   PRIMARY KEY (`igp_sub_process_id`),
+   KEY `location_id` (`location_id`),
+   KEY `ogp_sub_process_id` (`ogp_sub_process_id`),
+   CONSTRAINT `igp_master_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `location_master` (`location_code`) ON UPDATE CASCADE,
+   CONSTRAINT `igp_master_ibfk_2` FOREIGN KEY (`ogp_sub_process_id`) REFERENCES `ogp_master` (`ogp_sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE
+ )
+
+ CREATE TABLE `igp_po_detail` (
+   `detail_id` int NOT NULL AUTO_INCREMENT,
+   `igp_sub_process_id` int NOT NULL,
+   `material_code` varchar(255) NOT NULL,
+   `material_desc` varchar(255) NOT NULL,
+   `uom_id` varchar(255) NOT NULL,
+   `quantity` decimal(10,2) NOT NULL,
+   PRIMARY KEY (`detail_id`),
+   KEY `igp_sub_process_id` (`igp_sub_process_id`),
+   CONSTRAINT `igp_po_detail_ibfk_1` FOREIGN KEY (`igp_sub_process_id`) REFERENCES `igp_master` (`igp_sub_process_id`)
+ )
+
+CREATE TABLE `igp_detail` (
+   `detail_id` int NOT NULL AUTO_INCREMENT,
+   `igp_process_id` varchar(50) NOT NULL,
+   `igp_sub_process_id` int NOT NULL,
+   `ogp_sub_process_id` int DEFAULT NULL,
+   `asset_id` int NOT NULL,
+   `locator_id` int NOT NULL,
+   `quantity` decimal(10,2) NOT NULL,
+   PRIMARY KEY (`detail_id`),
+   KEY `igp_sub_process_id` (`igp_sub_process_id`),
+   KEY `asset_id` (`asset_id`),
+   KEY `locator_id` (`locator_id`),
+   KEY `ogp_sub_process_id` (`ogp_sub_process_id`),
+   CONSTRAINT `igp_detail_ibfk_1` FOREIGN KEY (`igp_sub_process_id`) REFERENCES `igp_master` (`igp_sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+   CONSTRAINT `igp_detail_ibfk_2` FOREIGN KEY (`asset_id`) REFERENCES `asset_master` (`asset_id`) ON UPDATE CASCADE,
+   CONSTRAINT `igp_detail_ibfk_3` FOREIGN KEY (`locator_id`) REFERENCES `locator_master` (`locator_id`) ON UPDATE CASCADE,
+   CONSTRAINT `igp_detail_ibfk_4` FOREIGN KEY (`ogp_sub_process_id`) REFERENCES `ogp_master` (`ogp_sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE
+ )
+
+
+CREATE TABLE `igp_detail` (
+   `detail_id` int NOT NULL AUTO_INCREMENT,
+   `igp_process_id` varchar(50) NOT NULL,
+   `igp_sub_process_id` int NOT NULL,
+   `ogp_sub_process_id` int DEFAULT NULL,
+   `asset_id` int NOT NULL,
+   `locator_id` int NOT NULL,
+   `quantity` decimal(10,2) NOT NULL,
+   PRIMARY KEY (`detail_id`),
+   KEY `igp_sub_process_id` (`igp_sub_process_id`),
+   KEY `asset_id` (`asset_id`),
+   KEY `locator_id` (`locator_id`),
+   KEY `ogp_sub_process_id` (`ogp_sub_process_id`),
+   CONSTRAINT `igp_detail_ibfk_1` FOREIGN KEY (`igp_sub_process_id`) REFERENCES `igp_master` (`igp_sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+   CONSTRAINT `igp_detail_ibfk_2` FOREIGN KEY (`asset_id`) REFERENCES `asset_master` (`asset_id`) ON UPDATE CASCADE,
+   CONSTRAINT `igp_detail_ibfk_3` FOREIGN KEY (`locator_id`) REFERENCES `locator_master` (`locator_id`) ON UPDATE CASCADE,
+   CONSTRAINT `igp_detail_ibfk_4` FOREIGN KEY (`ogp_sub_process_id`) REFERENCES `ogp_master` (`ogp_sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE
+ )
+
+
+ CREATE TABLE `grn_master` (
+   `grn_process_id` varchar(50) NOT NULL,
+   `grn_sub_process_id` int NOT NULL AUTO_INCREMENT,
+   `gi_process_id` varchar(50) DEFAULT NULL,
+   `gi_sub_process_id` int DEFAULT NULL,
+   `grn_type` varchar(10) DEFAULT NULL,
+   `igp_process_id` varchar(50) DEFAULT NULL,
+   `igp_sub_process_id` int DEFAULT NULL,
+   `grn_date` date DEFAULT NULL,
+   `installation_date` date DEFAULT NULL,
+   `commissioning_date` date DEFAULT NULL,
+   `created_by` varchar(50) NOT NULL,
+   `system_created_by` int NOT NULL,
+   `create_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   `location_id` varchar(10) NOT NULL,
+   PRIMARY KEY (`grn_sub_process_id`),
+   KEY `location_id` (`location_id`),
+   KEY `gi_sub_process_id` (`gi_sub_process_id`),
+   KEY `igp_sub_process_id` (`igp_sub_process_id`),
+   CONSTRAINT `grn_master_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `location_master` (`location_code`) ON UPDATE CASCADE,
+   CONSTRAINT `grn_master_ibfk_2` FOREIGN KEY (`gi_sub_process_id`) REFERENCES `goods_inspection_master` (`inspection_sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+   CONSTRAINT `grn_master_ibfk_3` FOREIGN KEY (`igp_sub_process_id`) REFERENCES `igp_master` (`igp_sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE
+ )
+
+
+
+ CREATE TABLE `grn_consumable_detail` (
+   `detail_id` int NOT NULL AUTO_INCREMENT,
+   `grn_process_id` varchar(50) NOT NULL,
+   `grn_sub_process_id` int NOT NULL,
+   `gi_sub_process_id` int DEFAULT NULL,
+   `igp_sub_process_id` int DEFAULT NULL,
+   `quantity` decimal(10,2) NOT NULL,
+   `material_code` varchar(50) NOT NULL,
+   `locator_id` int NOT NULL,
+   `book_value` decimal(10,2) NOT NULL,
+   `depriciation_rate` decimal(10,2) NOT NULL,
+   PRIMARY KEY (`detail_id`),
+   KEY `grn_sub_process_id` (`grn_sub_process_id`),
+   KEY `gi_sub_process_id` (`gi_sub_process_id`),
+   KEY `locator_id` (`locator_id`),
+   KEY `igp_sub_process_id` (`igp_sub_process_id`),
+   CONSTRAINT `grn_consumable_detail_ibfk_1` FOREIGN KEY (`grn_sub_process_id`) REFERENCES `grn_master` (`grn_sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+   CONSTRAINT `grn_consumable_detail_ibfk_2` FOREIGN KEY (`gi_sub_process_id`) REFERENCES `goods_inspection_master` (`inspection_sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+   CONSTRAINT `grn_consumable_detail_ibfk_3` FOREIGN KEY (`locator_id`) REFERENCES `locator_master` (`locator_id`) ON UPDATE CASCADE,
+   CONSTRAINT `grn_consumable_detail_ibfk_4` FOREIGN KEY (`igp_sub_process_id`) REFERENCES `igp_master` (`igp_sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE
+ )
+
+
+ CREATE TABLE `grn_material_detail` (
+   `detail_id` int NOT NULL AUTO_INCREMENT,
+   `grn_process_id` varchar(50) NOT NULL,
+   `grn_sub_process_id` int NOT NULL,
+   `gi_sub_process_id` int DEFAULT NULL,
+   `igp_sub_process_id` int DEFAULT NULL,
+   `quantity` decimal(10,2) NOT NULL,
+   `asset_id` int NOT NULL,
+   `locator_id` int NOT NULL,
+   `book_value` decimal(10,2) NOT NULL,
+   `depriciation_rate` decimal(10,2) NOT NULL,
+   PRIMARY KEY (`detail_id`),
+   KEY `asset_id` (`asset_id`),
+   KEY `grn_sub_process_id` (`grn_sub_process_id`),
+   KEY `gi_sub_process_id` (`gi_sub_process_id`),
+   KEY `locator_id` (`locator_id`),
+   KEY `igp_sub_process_id` (`igp_sub_process_id`),
+   CONSTRAINT `grn_material_detail_ibfk_1` FOREIGN KEY (`asset_id`) REFERENCES `asset_master` (`asset_id`) ON UPDATE CASCADE,
+   CONSTRAINT `grn_material_detail_ibfk_2` FOREIGN KEY (`grn_sub_process_id`) REFERENCES `grn_master` (`grn_sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+   CONSTRAINT `grn_material_detail_ibfk_3` FOREIGN KEY (`gi_sub_process_id`) REFERENCES `goods_inspection_master` (`inspection_sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+   CONSTRAINT `grn_material_detail_ibfk_4` FOREIGN KEY (`locator_id`) REFERENCES `locator_master` (`locator_id`) ON UPDATE CASCADE,
+   CONSTRAINT `grn_material_detail_ibfk_5` FOREIGN KEY (`igp_sub_process_id`) REFERENCES `igp_master` (`igp_sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE
+ )
+ CREATE TABLE `grv_master` (
+   `gi_sub_process_id` int NOT NULL,
+   `gi_process_id` varchar(50) NOT NULL,
+   `grv_process_id` varchar(50) NOT NULL,
+   `grv_sub_process_id` int NOT NULL AUTO_INCREMENT,
+   `date` date DEFAULT NULL,
+   `created_by` varchar(50) NOT NULL,
+   `create_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   `location_id` varchar(10) NOT NULL,
+   PRIMARY KEY (`grv_sub_process_id`),
+   KEY `idx_grv_process_id` (`grv_process_id`),
+   KEY `idx_gi_sub_process` (`gi_sub_process_id`),
+   KEY `idx_date` (`date`),
+   KEY `location_id` (`location_id`),
+   CONSTRAINT `grv_master_ibfk_1` FOREIGN KEY (`gi_sub_process_id`) REFERENCES `goods_inspection_master` (`inspection_sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+   CONSTRAINT `grv_master_ibfk_2` FOREIGN KEY (`location_id`) REFERENCES `location_master` (`location_code`) ON UPDATE CASCADE
+ )
+
+
+
+ CREATE TABLE `grv_material_detail` (
+   `detail_id` int NOT NULL AUTO_INCREMENT,
+   `grv_process_id` varchar(50) NOT NULL,
+   `grv_sub_process_id` int NOT NULL,
+   `gi_sub_process_id` int NOT NULL,
+   `material_code` varchar(50) NOT NULL,
+   `material_desc` varchar(50) NOT NULL,
+   `uom_id` varchar(10) DEFAULT NULL,
+   `rejected_quantity` decimal(10,2) NOT NULL,
+   `return_quantity` decimal(10,2) NOT NULL,
+   `return_type` varchar(50) NOT NULL,
+   `reject_reason` varchar(50) NOT NULL,
+   PRIMARY KEY (`detail_id`),
+   KEY `idx_grv_sub_process` (`grv_sub_process_id`),
+   KEY `idx_grv_process_id` (`grv_process_id`),
+   KEY `idx_material` (`material_code`),
+   KEY `idx_return_type` (`return_type`),
+   KEY `uom_id` (`uom_id`),
+   CONSTRAINT `grv_material_detail_ibfk_1` FOREIGN KEY (`grv_sub_process_id`) REFERENCES `grv_master` (`grv_sub_process_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+   CONSTRAINT `grv_material_detail_ibfk_2` FOREIGN KEY (`uom_id`) REFERENCES `uom_master` (`uom_code`) ON UPDATE CASCADE,
+   CONSTRAINT `grv_material_detail_ibfk_3` FOREIGN KEY (`material_code`) REFERENCES `material_master` (`material_code`) ON UPDATE CASCADE
+ )
 
 
 
@@ -1461,32 +1387,4 @@ CREATE TABLE `vendor_names_for_job_work_material` (
    `workflowSequence` int NOT NULL,
    PRIMARY KEY (`workflowTransitionId`)
  )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
