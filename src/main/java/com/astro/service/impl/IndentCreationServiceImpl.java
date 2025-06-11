@@ -7,6 +7,7 @@ import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.entity.ProcurementModule.MaterialDetails;
 import com.astro.entity.ProjectMaster;
 import com.astro.entity.VendorNamesForJobWorkMaterial;
+import com.astro.entity.WorkflowTransition;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
@@ -15,6 +16,7 @@ import com.astro.repository.ProcurementModule.IndentCreation.IndentMaterialMappi
 import com.astro.repository.ProcurementModule.IndentCreation.MaterialDetailsRepository;
 import com.astro.repository.ProjectMasterRepository;
 import com.astro.repository.VendorNamesForJobWorkMaterialRepository;
+import com.astro.repository.WorkflowTransitionRepository;
 import com.astro.service.IndentCreationService;
 import com.astro.util.CommonUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,6 +56,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
     private ProjectMasterRepository projectMasterRepository;
     @Autowired
     private MaterialDetailsRepository materialRepo;
+    @Autowired
+    private WorkflowTransitionRepository workflowTransitionRepository;
 
     @Autowired
     private VendorNamesForJobWorkMaterialRepository vendorNameRepository;
@@ -434,7 +438,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         response.setIndentorMobileNo(indentCreation.getIndentorMobileNo());
         response.setIndentorEmailAddress(indentCreation.getIndentorEmailAddress());
         response.setConsignesLocation(indentCreation.getConsignesLocation());
-        // response.setUploadingPriorApprovalsFileName(indentCreation.getUploadingPriorApprovalsFileName());
+        response.setPriorApprovalsFileName(indentCreation.getUploadingPriorApprovalsFileName());
         response.setProjectName(indentCreation.getProjectName());
         response.setProprietaryAndLimitedDeclaration(indentCreation.getProprietaryAndLimitedDeclaration());
         response.setIsPreBidMeetingRequired(indentCreation.getIsPreBitMeetingRequired());
@@ -449,9 +453,9 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         response.setEstimatedRate(indentCreation.getEstimatedRate());
         response.setPeriodOfContract(indentCreation.getPeriodOfContract());
         response.setSingleAndMultipleJob(indentCreation.getSingleAndMultipleJob());
-        //   response.setTechnicalSpecificationsFileName(indentCreation.getTechnicalSpecificationsFileName());
-        //  response.setDraftEOIOrRFPFileName(indentCreation.getDraftEOIOrRFPFileName());
-        //   response.setUploadPACOrBrandPACFileName(indentCreation.getUploadPACOrBrandPACFileName());
+        response.setTechnicalSpecificationsFile(indentCreation.getTechnicalSpecificationsFileName());
+        response.setDraftFileName(indentCreation.getDraftEOIOrRFPFileName());
+        response.setPacAndBrandFileName(indentCreation.getUploadPACOrBrandPACFileName());
         if (indentCreation.getUploadingPriorApprovalsFileName() == null || indentCreation.getUploadingPriorApprovalsFileName().isEmpty()) {
             response.setUploadingPriorApprovalsFileName(null);
         } else {
@@ -491,7 +495,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         } else {
             response.setUploadBuyBackFileNames(convertFilesToBase64(indentCreation.getUploadBuyBackFileNames(), basePath));
         }
-        //  response.setUploadBuyBackFileNames(indentCreation.getUploadBuyBackFileNames());
+        response.setBuyBackFileName(indentCreation.getUploadBuyBackFileNames());
         response.setSerialNumber(indentCreation.getSerialNumber());
         response.setModelNumber(indentCreation.getModelNumber());
         LocalDate dateOfPurchase = indentCreation.getDateOfPurchase();
@@ -502,6 +506,15 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         }
         response.setCreatedBy(indentCreation.getCreatedBy());
         response.setUpdatedBy(indentCreation.getUpdatedBy());
+        Optional<WorkflowTransition> lastRecord = workflowTransitionRepository.findTopByRequestIdOrderByCreatedDateDesc(indentId);
+        if (lastRecord.isPresent()) {
+            WorkflowTransition transition = lastRecord.get();
+
+            response.setApprovedBy(transition.getCurrentRole());
+           String d= CommonUtils.convertDateTooString(transition.getCreatedDate());
+            response.setDate(d);
+            response.setRemarks(transition.getRemarks());
+        }
 
 
         String materialCategory = indentCreation.getMaterialDetails().stream()

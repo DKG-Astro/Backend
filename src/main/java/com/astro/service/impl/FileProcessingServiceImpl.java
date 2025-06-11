@@ -130,6 +130,40 @@ public class FileProcessingServiceImpl implements FileProcessingService {
       return file;
   }
 */
+/*@Override
+public Resource downloadFile(String fileType, String fileName) {
+    if (!FILE_TYPE_LIST.contains(fileType)) {
+        throw new FilesNotFoundException(new ErrorDetails(
+                AppConstant.INVALID_FILE_TYPE,
+                AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                AppConstant.ERROR_TYPE_VALIDATION,
+                "Invalid File type."));
+    }
+
+    // Decode filename if it's Base64-encoded
+    String actualFileName = isBase64Encoded(fileName) ? decodeBase64(fileName) : fileName;
+
+    File file = new File(basePath + fileType + "//" + actualFileName);
+
+    try {
+        if (file.exists()) {
+            return new UrlResource(file.toURI());
+        } else {
+            throw new FilesNotFoundException(new ErrorDetails(
+                    AppConstant.FILE_NOT_FOUND,
+                    AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION,
+                    "File not found."));
+        }
+    } catch (Exception e) {
+        throw new FilesNotFoundException(new ErrorDetails(
+                AppConstant.FILE_NOT_FOUND,
+                AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                AppConstant.ERROR_TYPE_VALIDATION,
+                "File not found."));
+    }
+}*/
+
 
     @Override
     public Resource viewFile(String fileType, String fileName) {

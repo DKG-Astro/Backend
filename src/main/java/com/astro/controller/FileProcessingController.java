@@ -5,6 +5,7 @@ import com.astro.service.FileProcessingService;
 import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class FileProcessingController {
         return new ResponseEntity<>(fileProcessingService.fileList(), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/download/{fileType}/{fileName}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+  /*  @GetMapping(value = "/download/{fileType}/{fileName}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<?> downloadFile(@PathVariable(value = "fileType") String fileType, @PathVariable(value = "fileName") String fileName) {
         Resource file = fileProcessingService.downloadFile(fileType, fileName);
         if (file == null) {
@@ -43,7 +44,18 @@ public class FileProcessingController {
             return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(file);
         }
 
-    }
+    }*/
+  @GetMapping(value = "/download/{fileType}/{fileName}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+  public ResponseEntity<?> downloadFile(@PathVariable(value = "fileType") String fileType, @PathVariable(value = "fileName") String fileName) {
+      Resource file = fileProcessingService.downloadFile(fileType, fileName);
+      if (file == null) {
+          return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(), HttpStatus.NOT_FOUND);
+      } else {
+          return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(file);
+      }
+
+  }
+
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(@RequestParam String fileType, @RequestParam(name = "file") MultipartFile file) {

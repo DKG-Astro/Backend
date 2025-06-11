@@ -16,6 +16,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -170,6 +171,16 @@ public class CommonUtils {
             return date.format(formatter);
         }
         return null;  // Handle null case if necessary
+    }
+
+    public static String convertDateTooString(Date date) {
+        if (date != null) {
+            LocalDate localDate = date.toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+            return convertDateToString(localDate);
+        }
+        return null;
     }
 
     public static String saveBase64Image(String base64Image, String basePath) throws IOException {

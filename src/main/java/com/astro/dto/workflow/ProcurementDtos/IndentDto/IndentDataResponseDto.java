@@ -3,6 +3,8 @@ package com.astro.dto.workflow.ProcurementDtos.IndentDto;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -45,5 +47,13 @@ public class IndentDataResponseDto {
     private List<String> uploadBuyBackFileNames;
     private Integer createdBy;
     private String updatedBy;
+    private String approvedBy;
+    private String date;
+    private String remarks;
+    private String priorApprovalsFileName;
+    private String technicalSpecificationsFile;
+    private String draftFileName;
+    private String buyBackFileName;
+    private String pacAndBrandFileName;
 
 }
