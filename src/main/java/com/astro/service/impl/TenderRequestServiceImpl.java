@@ -7,15 +7,13 @@ import com.astro.dto.workflow.ProcurementDtos.TenderRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.TenderResponseDto;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.tenderUpdateDto;
-import com.astro.entity.ProcurementModule.IndentCreation;
-import com.astro.entity.ProcurementModule.IndentId;
-import com.astro.entity.ProcurementModule.ServiceOrder;
-import com.astro.entity.ProcurementModule.TenderRequest;
+import com.astro.entity.ProcurementModule.*;
 import com.astro.entity.ProjectMaster;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
+import com.astro.repository.ProcurementModule.IndentCreation.MaterialDetailsRepository;
 import com.astro.repository.ProcurementModule.IndentIdRepository;
 import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.repository.ProjectMasterRepository;
@@ -52,6 +50,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     private IndentCreationRepository indentCreationRepository;
     @Autowired
     private ProjectMasterRepository projectMasterRepository;
+    @Autowired
+    private MaterialDetailsRepository materialDetailsRepository;
     @Value("${filePath}")
     private String bp;
     private final String basePath;
@@ -100,7 +100,15 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         //  tenderRequest.setIndentId(tenderRequestDto.getIndentId());
 
         tenderRequest.setIndentMaterials(tenderRequestDto.getIndentMaterials());
-        tenderRequest.setModeOfProcurement(tenderRequestDto.getModeOfProcurement());
+        String anyIndentId = tenderRequestDto.getIndentId().get(0);
+        List<MaterialDetails> mdList = materialDetailsRepository.findByIndentId(anyIndentId);
+        if (!mdList.isEmpty()) {
+            MaterialDetails m = mdList.get(0);
+            tenderRequest.setModeOfProcurement(m.getModeOfProcurement());
+        }else{
+            tenderRequest.setModeOfProcurement(null);
+        }
+
         tenderRequest.setBidType(tenderRequestDto.getBidType());
         String LastDateOfSubmission = tenderRequestDto.getLastDateOfSubmission();
         tenderRequest.setLastDateOfSubmission(CommonUtils.convertStringToDateObject(LastDateOfSubmission));

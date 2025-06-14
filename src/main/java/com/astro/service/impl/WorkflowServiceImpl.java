@@ -17,6 +17,7 @@ import com.astro.exception.InvalidInputException;
 import com.astro.repository.*;
 import com.astro.repository.ProcurementModule.ContigencyPurchaseRepository;
 import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
+import com.astro.repository.ProcurementModule.IndentCreation.MaterialDetailsRepository;
 import com.astro.repository.ProcurementModule.IndentIdRepository;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderRepository;
 import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrderRepository;
@@ -99,6 +100,8 @@ public class WorkflowServiceImpl implements WorkflowService {
     private UserMasterRepository userMasterRepository;
     @Autowired
     private ProjectMasterRepository projectMasterRepository;
+    @Autowired
+    private MaterialDetailsRepository materialDetailsRepo;
 
 
     @Override
@@ -1278,13 +1281,20 @@ public List<ApprovedIndentsDto> getApprovedIndents() {
             String indentId = requestId;
             //  IndentCreationResponseDTO indentCreations = indentCreationService.getIndentById(indentId);
             IndentCreation indentCreation = indentCreationRepository.getByIndentId(indentId);
+            List<MaterialDetails> mdList = materialDetailsRepo.findByIndentId(indentId);
+
             if (indentCreation != null) {
                 queueResponse.setIndentorName(indentCreation.getIndentorName());
                 queueResponse.setProjectName(indentCreation.getProjectName());
                 queueResponse.setAmount(indentCreation.getTotalIntentValue());
                 //  queueResponse.setBudgetName();
                 //   queueResponse.setIndentTitle("NUll");
-                //   queueResponse.setModeOfProcurement("NUll");
+                if (!mdList.isEmpty()) {
+                    MaterialDetails m = mdList.get(0);
+                    queueResponse.setModeOfProcurement(m.getModeOfProcurement());
+                    queueResponse.setBudgetName(m.getBudgetCode());
+                }
+
                 queueResponse.setConsignee(indentCreation.getConsignesLocation());
             }
         } else if (requestId.startsWith("T")) {
@@ -1298,12 +1308,13 @@ public List<ApprovedIndentsDto> getApprovedIndents() {
             if (tenderRequest != null) {
                 //  TenderRequest tenderRequest = tenderRequestOptional.get();
                 //  queueResponse.setIndentorName("NUll");
-                //   queueResponse.setProjectName("NUll");
+                queueResponse.setProjectName(tenderRequest.getProjectName());
                 queueResponse.setAmount(tenderRequest.getTotalTenderValue());
                 //   queueResponse.setBudgetName("NUll");
                 queueResponse.setIndentTitle(tenderRequest.getTitleOfTender());
                 queueResponse.setModeOfProcurement(tenderRequest.getModeOfProcurement());
                 queueResponse.setConsignee(tenderRequest.getConsignes());
+
               /*  List<IndentCreationResponseDTO> indentList = tenderRequest.getIndentResponseDTO();
                 if (indentList != null && !indentList.isEmpty()) {
                     IndentCreationResponseDTO firstIndent = indentList.get(0); // Assuming first indent is needed
