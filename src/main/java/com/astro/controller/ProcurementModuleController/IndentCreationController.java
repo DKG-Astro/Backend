@@ -70,27 +70,7 @@ public class IndentCreationController {
 
      //initiateing Workflow API
     WorkflowTransitionDto workflowTransitionDto = workflowService.initiateWorkflow(requestId, workflowName, userId);
-/*
-    // action approve
 
-     // Transition to the next role
-     TransitionDto nextTransition = workflowService.nextTransition(
-             workflowTransitionDto.getWorkflowId(),
-             workflowName,
-             workflowTransitionDto.getCurrentRole(),
-             requestId
-     );
-     //Automatic approved with example data. we can approve manual by using swagger link
-     TransitionActionReqDto transitionActionReqDto = new TransitionActionReqDto();
-     transitionActionReqDto.setWorkflowTransitionId(workflowTransitionDto.getWorkflowTransitionId());
-     transitionActionReqDto.setActionBy(createdBy);
-     transitionActionReqDto.setAction("APPROVE"); // or "REJECT"
-     transitionActionReqDto.setRemarks("Automatically approved by system.");
-
-     WorkflowTransitionDto workflowTransitionDto = workflowService.performTransitionAction(transitionActionReqDto);
-
-
- */
      return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
 }
 
@@ -98,29 +78,10 @@ public class IndentCreationController {
     @PutMapping(value = "/{indentId}")
     public ResponseEntity<Object> updateIndent(
             @PathVariable String indentId, @RequestBody IndentCreationRequestDTO indentRequestDTO
-         /*   @PathVariable String indentId,
-            @RequestPart("indentRequestDto") String indentRequestDto,
-            @RequestPart(value = "uploadingPriorApprovals") MultipartFile uploadingPriorApprovals,
-            @RequestPart(value = "uploadTenderDocuments") MultipartFile uploadTenderDocuments,
-            @RequestPart(value = "uploadGOIOrRFP") MultipartFile uploadGOIOrRFP,
-            @RequestPart(value = "uploadPACOrBrandPAC") MultipartFile uploadPACOrBrandPAC
 
-          */
     ) throws JsonProcessingException {
- //    IndentCreationRequestDTO indentRequestDTO = mapper.readValue(indentRequestDto,IndentCreationRequestDTO.class);
-        // Set files in DTO if present
-         //   indentRequestDTO.setUploadingPriorApprovals(uploadingPriorApprovals);
-         //   indentRequestDTO.setUploadTenderDocuments(uploadTenderDocuments);
-          //  indentRequestDTO.setUploadGOIOrRFP(uploadGOIOrRFP);
-          //  indentRequestDTO.setUploadPACOrBrandPAC(uploadPACOrBrandPAC);
-    //    String uploadingPriorApprovalsFileName = uploadingPriorApprovals.getOriginalFilename();
-    //    String uploadTenderDocumentsFileName = uploadTenderDocuments.getOriginalFilename();
-     //   String uploadGOIOrRFPFileName = uploadGOIOrRFP.getOriginalFilename();
-      //  String uploadPACOrBrandPACFileName = uploadPACOrBrandPAC.getOriginalFilename();
 
-        // Call the service to update the indent
         IndentCreationResponseDTO responseDTO = indentCreationService.updateIndent(indentId, indentRequestDTO);
-               // ,uploadingPriorApprovalsFileName,uploadTenderDocumentsFileName,uploadGOIOrRFPFileName,uploadPACOrBrandPACFileName );
 
         // Return the success response
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
@@ -167,39 +128,9 @@ public class IndentCreationController {
         indentCreationService.deleteIndent(indentId);
         return ResponseEntity.ok("indent deleted successfully. Id:"+" " +indentId);
     }
-    /*
-    @GetMapping("/download-file/{indentId}/{fileType}")
-    public ResponseEntity<byte[]> downloadFile(@PathVariable String indentId, @PathVariable String fileType) {
-        IndentCreation indent = indentCreationRepository.findById(indentId).orElseThrow();
-        byte[] fileData = null;
-        String filename = "";
 
-        switch (fileType) {
-            case "priorApproval":
-                fileData = indent.getUploadingPriorApprovals();
-                filename = indent.getUploadingPriorApprovalsFileName();
-                break;
-            case "tenderDocument":
-                fileData = indent.getUploadTenderDocuments();
-                filename = indent.getUploadTenderDocumentsFileName();
-                break;
-            case "goiOrRFP":
-                fileData = indent.getUploadGOIOrRFP();
-                filename = indent.getUploadGOIOrRFPFileName();
-                break;
-            case "pacOrBrandPAC":
-                fileData = indent.getUploadPACOrBrandPAC();
-                filename = indent.getUploadPACOrBrandPACFileName();
-                break;
-        }
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(fileData);
-    }
 
-     */
 
 
 }

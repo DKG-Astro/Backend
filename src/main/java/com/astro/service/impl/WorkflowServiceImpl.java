@@ -622,7 +622,8 @@ public class WorkflowServiceImpl implements WorkflowService {
             nextWorkflowTransition.setCreatedBy(currentWorkflowTransition.getCreatedBy());
             nextWorkflowTransition.setCreatedDate(currentWorkflowTransition.getCreatedDate());
             nextWorkflowTransition.setCurrentRole(currentWorkflowTransition.getNextRole());
-            if (transitionActionReqDto.getAssignmentRole().equalsIgnoreCase("Request Creator")) {
+           // if (transitionActionReqDto.getAssignmentRole().equalsIgnoreCase("Request Creator")) {
+            if(CREATOR_ROLES.contains(transitionActionReqDto.getAssignmentRole())){
                 nextWorkflowTransition.setNextRole(latestWorkflowTransition.getCurrentRole());
             } else {
                 nextWorkflowTransition.setNextRole(latestWorkflowTransition.getNextRole());

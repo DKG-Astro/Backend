@@ -26,4 +26,5 @@ public interface VendorNamesForJobWorkMaterialRepository extends JpaRepository<V
     @Query("SELECT v.vendorName FROM VendorNamesForJobWorkMaterial v WHERE v.indentId = :indentId")
     List<String> findVendorNamesByIndentId(@Param("indentId") String indentId);
 
+    List<VendorNamesForJobWorkMaterial> findByIndentIdAndMaterialIdAndMaterialCode(String indentId, Long id, String materialCode);
 }
