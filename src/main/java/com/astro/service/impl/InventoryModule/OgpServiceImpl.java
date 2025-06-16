@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.astro.service.InventoryModule.OgpService;
+import com.astro.repository.UserMasterRepository;
 import com.astro.repository.InventoryModule.AssetMasterRepository;
 import com.astro.repository.InventoryModule.isn.IssueNoteMasterRepository;
 import com.astro.repository.InventoryModule.ogp.OgpDetailRepository;
@@ -28,6 +29,7 @@ import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoMaterialDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpReportDto;
+import com.astro.entity.UserMaster;
 import com.astro.entity.InventoryModule.OgpDetailEntity;
 import com.astro.entity.InventoryModule.OgpMasterEntity;
 import com.astro.entity.InventoryModule.OgpMasterPoEntity;
@@ -71,6 +73,9 @@ public class OgpServiceImpl implements OgpService {
     @Autowired
     private PurchaseOrderAttributesRepository poMasterRepository;
 
+    @Autowired
+    private UserMasterRepository userMasterRepository;
+
     @Override
     @Transactional
     public String saveOgp(OgpDto req) {
@@ -113,7 +118,6 @@ public class OgpServiceImpl implements OgpService {
         ogpMaster.setLocationId(req.getLocationId());
         ogpMaster.setOgpType(req.getOgpType());
         ogpMaster.setStatus("AWAITING APPROVAL");
-        System.out.println("STATUS SET");
         if(Objects.nonNull(req.getDateOfReturn())){
             ogpMaster.setDateOfReturn(CommonUtils.convertStringToDateObject(req.getDateOfReturn()));
         }
@@ -162,6 +166,7 @@ public class OgpServiceImpl implements OgpService {
                 "OGP not found")));
 
         List<OgpDetailEntity> ogpDetails = ogpDetailRepository.findByOgpSubProcessId(ogpSubProcessId);
+
 
         OgpDto response = modelMapper.map(ogpMaster, OgpDto.class);
         response.setOgpDate(CommonUtils.convertDateToString(ogpMaster.getOgpDate()));

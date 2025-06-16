@@ -10,9 +10,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.astro.service.InventoryModule.IsnService;
+import com.astro.repository.UserMasterRepository;
 import com.astro.repository.InventoryModule.AssetMasterRepository;
 import com.astro.repository.InventoryModule.isn.*;
 import com.astro.repository.ohq.OhqMasterRepository;
+import com.astro.entity.UserMaster;
 import com.astro.entity.InventoryModule.*;
 import com.astro.dto.workflow.InventoryModule.isn.*;
 import com.astro.exception.*;
@@ -33,6 +35,9 @@ public class IsnServiceImpl implements IsnService {
 
     @Autowired
     private AssetMasterRepository amr;
+
+    @Autowired
+    private UserMasterRepository userMasterRepository;
 
     @Override
     @Transactional
@@ -123,6 +128,9 @@ public class IsnServiceImpl implements IsnService {
 
         List<IsnMaterialDtlEntity> isnMaterialList = isnmdr.findByIssueNoteId(isnMaster.getIssueNoteId());
 
+        System.out.println("ISN CREATED BY: " + isnMaster.getCreatedBy());
+        UserMaster um = userMasterRepository.findByUserId(isnMaster.getCreatedBy());
+
         List<IsnMaterialDtlDto> materialDtlListRes = isnMaterialList.stream()
                 .map(material -> {
                     IsnMaterialDtlDto dto = mapper.map(material, IsnMaterialDtlDto.class);
@@ -141,6 +149,8 @@ public class IsnServiceImpl implements IsnService {
         isnRes.setCreatedBy(isnMaster.getCreatedBy());
         isnRes.setLocationId(isnMaster.getLocationId());
         isnRes.setMaterialDtlList(materialDtlListRes);
+        isnRes.setSenderName(um.getUserName());
+
 
         return isnRes;
     }

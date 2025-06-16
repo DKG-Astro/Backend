@@ -15,6 +15,7 @@ public class IsnDto {
     private String fieldStation;
     private Integer createdBy;
     private String locationId;
+    private String senderName;
     private List<IsnMaterialDtlDto> materialDtlList;
     private IssueNoteType issueNoteType;
 }
