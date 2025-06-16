@@ -2,6 +2,7 @@ package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.*;
+import com.astro.dto.workflow.ProcurementDtos.IndentWorkflowStatusDto;
 import com.astro.dto.workflow.ProcurementDtos.TechnoMomReportDTO;
 import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.entity.ProcurementModule.MaterialDetails;
@@ -946,6 +947,30 @@ public class IndentCreationServiceImpl implements IndentCreationService {
 
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<IndentWorkflowStatusDto> getIndentWorkflowStatus(String indentId) {
+
+        List<WorkflowTransition> wts = workflowTransitionRepository.findByRequestId(indentId);
+
+        return wts.stream().map(wt->{
+
+           IndentWorkflowStatusDto indent = new IndentWorkflowStatusDto();
+            indent.setRequestId(wt.getRequestId());
+            indent.setCreatedBy(wt.getCreatedBy());
+            indent.setModifiedBy(wt.getModifiedBy());
+            indent.setStatus(wt.getStatus());
+            indent.setNextAction(wt.getNextAction());
+            indent.setAction(wt.getAction());
+            indent.setCurrentRole(wt.getCurrentRole());
+            indent.setNextRole(wt.getNextRole());
+            indent.setRemarks(wt.getRemarks());
+            indent.setCreatedDate(wt.getCreatedDate());
+            indent.setModificationDate(wt.getModificationDate());
+           return indent;
+       }).collect(Collectors.toList());
+
     }
 
 
