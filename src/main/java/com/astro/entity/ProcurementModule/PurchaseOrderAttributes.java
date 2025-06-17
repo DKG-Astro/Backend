@@ -18,8 +18,8 @@ public class PurchaseOrderAttributes {
     private Long id;
     @Column(name = "material_code")
     private String materialCode;
-    @Column(name = "po_id")
-    private String poId;
+   // @Column(name = "po_id")
+   // private String poId;
     @Column(name = "material_description")
     private String materialDescription;
     @Column(name = "quantity")
@@ -44,6 +44,6 @@ public class PurchaseOrderAttributes {
    // @JoinColumn(name = "purchase_order_id", referencedColumnName = "po_id")
    // private PurchaseOrder purchaseOrder;
    @ManyToOne
-   @JoinColumn(name = "po_id", nullable = false, referencedColumnName = "po_id", insertable = false, updatable = false)
+   @JoinColumn(name = "po_id", referencedColumnName = "po_id")
    private PurchaseOrder purchaseOrder;
 }

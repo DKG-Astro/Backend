@@ -109,7 +109,7 @@ public class GprnServiceImpl implements GprnService {
             }
     
             saveDtlEntityList.add(gmde);
-            Optional<PurchaseOrderAttributes> poMaterial = poMaterialRepo.findByPoIdAndMaterialCode(gme.getPoId(), dtl.getMaterialCode());
+            Optional<PurchaseOrderAttributes> poMaterial = poMaterialRepo.findByPurchaseOrder_PoIdAndMaterialCode(gme.getPoId(), dtl.getMaterialCode());
 
             if (poMaterial.isPresent()) {
                 PurchaseOrderAttributes pom = poMaterial.get();
@@ -377,7 +377,7 @@ public class GprnServiceImpl implements GprnService {
                 GprnMaterialDtlEntity existingGprnMaterial = existingGprnMaterials.get(0);
                 
                 // Find the corresponding PO material
-                Optional<PurchaseOrderAttributes> poMaterialOpt = poMaterialRepo.findByPoIdAndMaterialCode(
+                Optional<PurchaseOrderAttributes> poMaterialOpt = poMaterialRepo.findByPurchaseOrder_PoIdAndMaterialCode(
                     gprnMaster.getPoId(), updatedMaterial.getMaterialCode());
                 
                 if (!poMaterialOpt.isPresent()) {

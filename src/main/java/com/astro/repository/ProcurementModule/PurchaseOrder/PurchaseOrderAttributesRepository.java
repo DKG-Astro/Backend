@@ -10,8 +10,13 @@ import java.util.Optional;
 
 public interface PurchaseOrderAttributesRepository extends JpaRepository<PurchaseOrderAttributes, Long> {
 
-    @Query("SELECT poa.quantity FROM PurchaseOrderAttributes poa WHERE poa.poId = :poId AND poa.materialCode = :materialCode")
-    Optional<BigDecimal> findQuantityByPoIdAndMaterialCode(@Param("poId") String poId, @Param("materialCode") String materialCode);
+   // @Query("SELECT poa.quantity FROM PurchaseOrderAttributes poa WHERE poa.poId = :poId AND poa.materialCode = :materialCode")
+   // Optional<BigDecimal> findQuantityByPoIdAndMaterialCode(@Param("poId") String poId, @Param("materialCode") String materialCode);
+   @Query("SELECT poa.quantity FROM PurchaseOrderAttributes poa WHERE poa.purchaseOrder.poId = :poId AND poa.materialCode = :materialCode")
+   Optional<BigDecimal> findQuantityByPoIdAndMaterialCode(@Param("poId") String poId, @Param("materialCode") String materialCode);
 
-    Optional<PurchaseOrderAttributes> findByPoIdAndMaterialCode(String poId, String materialCode);
+
+   // Optional<PurchaseOrderAttributes> findByPoIdAndMaterialCode(String poId, String materialCode);
+   Optional<PurchaseOrderAttributes> findByPurchaseOrder_PoIdAndMaterialCode(String poId, String materialCode);
+
 }

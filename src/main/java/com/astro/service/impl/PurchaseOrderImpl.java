@@ -129,7 +129,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                     PurchaseOrderAttributes attribute = new PurchaseOrderAttributes();
                     attribute.setMaterialCode(dto.getMaterialCode());
                     // attribute.setPoId(purchaseOrderRequestDTO.getPoId());
-                    attribute.setPoId(poId);
+                    //  attribute.setPoId(poId);
                     attribute.setMaterialDescription(dto.getMaterialDescription());
                     attribute.setQuantity(dto.getQuantity());
                     attribute.setRate(dto.getRate());
@@ -176,6 +176,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                                 "Purchase order not found for the provided asset ID.")
                 ));
 
+        // Update basic fields
         purchaseOrder.setTenderId(purchaseOrderRequestDTO.getTenderId());
         purchaseOrder.setIndentId(purchaseOrderRequestDTO.getIndentId());
         purchaseOrder.setWarranty(purchaseOrderRequestDTO.getWarranty());
@@ -194,50 +195,49 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setVendorAccountName(purchaseOrderRequestDTO.getVendorAccountName());
         purchaseOrder.setProjectName(purchaseOrderRequestDTO.getProjectName());
         purchaseOrder.setVendorId(purchaseOrderRequestDTO.getVendorId());
-        String Date = purchaseOrderRequestDTO.getDeliveryDate();
-        if (Date != null) {
-            purchaseOrder.setDeliveryDate(CommonUtils.convertStringToDateObject(Date));
-        } else {
-            purchaseOrder.setDeliveryDate(null);
-        }
-        //   purchaseOrder.setTotalValueOfPo(purchaseOrderRequestDTO.getTotalValueOfPo());
         purchaseOrder.setUpdatedBy(purchaseOrderRequestDTO.getUpdatedBy());
         purchaseOrder.setCreatedBy(purchaseOrderRequestDTO.getCreatedBy());
-        // Update attributes
-        List<PurchaseOrderAttributes> existingAttributes = purchaseOrder.getPurchaseOrderAttributes();
 
-        // Remove orphaned attributes manually
-        existingAttributes.clear();
+        String date = purchaseOrderRequestDTO.getDeliveryDate();
+        purchaseOrder.setDeliveryDate(date != null ? CommonUtils.convertStringToDateObject(date) : null);
 
-        List<PurchaseOrderAttributes> purchaseOrderAttributes = purchaseOrderRequestDTO.getPurchaseOrderAttributes().stream()
+        // Remove old attributes
+        purchaseOrder.getPurchaseOrderAttributes().clear();
+
+        // Add new attributes
+        List<PurchaseOrderAttributes> newAttributes = purchaseOrderRequestDTO.getPurchaseOrderAttributes().stream()
                 .map(dto -> {
-
-                    PurchaseOrderAttributes attribute = new PurchaseOrderAttributes();
-                    attribute.setMaterialCode(dto.getMaterialCode());
-                    //   attribute.setPoId(purchaseOrderRequestDTO.getPoId());
-                    attribute.setMaterialDescription(dto.getMaterialDescription());
-                    attribute.setQuantity(dto.getQuantity());
-                    attribute.setRate(dto.getRate());
-                    attribute.setCurrency(dto.getCurrency());
-                    attribute.setExchangeRate(dto.getExchangeRate());
-                    attribute.setGst(dto.getGst());
-                    attribute.setDuties(dto.getDuties());
-                    attribute.setFreightCharge(dto.getFreightCharge());
-                    attribute.setBudgetCode(dto.getBudgetCode());
-                    attribute.setPurchaseOrder(purchaseOrder);  // Associate with PurchaseOrder
-                    return attribute;
+                    PurchaseOrderAttributes attr = new PurchaseOrderAttributes();
+                    attr.setMaterialCode(dto.getMaterialCode());
+                    attr.setMaterialDescription(dto.getMaterialDescription());
+                    attr.setQuantity(dto.getQuantity());
+                    attr.setRate(dto.getRate());
+                    attr.setCurrency(dto.getCurrency());
+                    attr.setExchangeRate(dto.getExchangeRate());
+                    attr.setGst(dto.getGst());
+                    attr.setDuties(dto.getDuties());
+                    attr.setFreightCharge(dto.getFreightCharge());
+                    attr.setBudgetCode(dto.getBudgetCode());
+                    attr.setPurchaseOrder(purchaseOrder);  // Associate back
+                    return attr;
                 })
                 .collect(Collectors.toList());
 
-        // purchaseOrder.setPurchaseOrderAttributes(purchaseOrderAttributes);
-        // purchaseOrderRepository.save(purchaseOrder);
+        purchaseOrder.getPurchaseOrderAttributes().addAll(newAttributes);
+        List<String> indentIds = indentIdRepository.findTenderWithIndent(purchaseOrder.getTenderId());
 
-        existingAttributes.addAll(purchaseOrderAttributes);
-        // purchaseOrder.setPurchaseOrderAttributes(purchaseOrderAttributes);
+        BigDecimal totalTenderValue = indentIds.stream()
+                .map(indentCreationService::getIndentById)
+                .map(IndentCreationResponseDTO::getTotalPriceOfAllMaterials)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        purchaseOrder.setTotalValueOfPo(totalTenderValue);
+
+        // Save
         purchaseOrderRepository.save(purchaseOrder);
 
         return mapToResponseDTO(purchaseOrder);
     }
+
 
     @Autowired
     private GprnMaterialDtlRepository gprnMaterialDtlRepository;
@@ -651,31 +651,30 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         return orders;
     }
 
-@Override
-public List<ShortClosedCancelledOrderReportDto> getShortClosedCancelledOrders(String startDate, String endDate) {
+    @Override
+    public List<ShortClosedCancelledOrderReportDto> getShortClosedCancelledOrders(String startDate, String endDate) {
 
-    List<Object[]> poOrder = purchaseOrderRepository.findShortClosedCancelledOrder(
-            CommonUtils.convertStringToDateObject(startDate),
-            CommonUtils.convertStringToDateObject(endDate)
-    );
+        List<Object[]> poOrder = purchaseOrderRepository.findShortClosedCancelledOrder(
+                CommonUtils.convertStringToDateObject(startDate),
+                CommonUtils.convertStringToDateObject(endDate)
+        );
 
-    List<Object[]> soOrder = serviceOrderRepository.findShortClosedCancelledSoOrders(
-            CommonUtils.convertStringToDateObject(startDate),
-            CommonUtils.convertStringToDateObject(endDate)
-    );
-
-
-    ObjectMapper mapper = new ObjectMapper();
-    List<ShortClosedCancelledOrderReportDto> result = new ArrayList<>();
+        List<Object[]> soOrder = serviceOrderRepository.findShortClosedCancelledSoOrders(
+                CommonUtils.convertStringToDateObject(startDate),
+                CommonUtils.convertStringToDateObject(endDate)
+        );
 
 
-    processOrders(poOrder, result, mapper);
+        ObjectMapper mapper = new ObjectMapper();
+        List<ShortClosedCancelledOrderReportDto> result = new ArrayList<>();
 
-    processOrders(soOrder, result, mapper);
 
-    return result;
-}
+        processOrders(poOrder, result, mapper);
 
+        processOrders(soOrder, result, mapper);
+
+        return result;
+    }
 
 
     private void processOrders(List<Object[]> orders, List<ShortClosedCancelledOrderReportDto> result, ObjectMapper mapper) {
@@ -713,7 +712,7 @@ public List<ShortClosedCancelledOrderReportDto> getShortClosedCancelledOrders(St
     @Override
     public List<MonthlyProcurementReportDto> getMonthlyProcurementReport(String startDate, String endDate) {
 
-        List<Object[]> rows = purchaseOrderRepository.getMonthlyProcurementReport( CommonUtils.convertStringToDateObject(startDate),
+        List<Object[]> rows = purchaseOrderRepository.getMonthlyProcurementReport(CommonUtils.convertStringToDateObject(startDate),
                 CommonUtils.convertStringToDateObject(endDate));
         System.out.println(rows);
         List<MonthlyProcurementReportDto> reports = new ArrayList<>();
@@ -728,17 +727,18 @@ public List<ShortClosedCancelledOrderReportDto> getShortClosedCancelledOrders(St
             dto.setVendorName((String) row[5]);
 
             String mode = (String) row[6];
-            String mappedMode =null;
-            if(mode!= null){
-             mappedMode = switch (mode) {
-                case "GeM" -> "GeM";
-                case "Proprietary/Single Tender" -> "Non-GeM (Proprietary/Single Tender)";
-                case "Limited Pre Approved Vendor Tender" -> "Non-GeM (Limited Pre Approved Vendor Tender)";
-                case "Brand PAC" -> "Non-GeM (Brand PAC)";
-                case "Open Tender" -> "Non-GeM (Open Tender)";
-                case "Global Tender" -> "Non-GeM (Global Tender)";
-                default -> "Other";
-            };}else{
+            String mappedMode = null;
+            if (mode != null) {
+                mappedMode = switch (mode) {
+                    case "GeM" -> "GeM";
+                    case "Proprietary/Single Tender" -> "Non-GeM (Proprietary/Single Tender)";
+                    case "Limited Pre Approved Vendor Tender" -> "Non-GeM (Limited Pre Approved Vendor Tender)";
+                    case "Brand PAC" -> "Non-GeM (Brand PAC)";
+                    case "Open Tender" -> "Non-GeM (Open Tender)";
+                    case "Global Tender" -> "Non-GeM (Global Tender)";
+                    default -> "Other";
+                };
+            } else {
                 dto.setModeOfProcurement(null);
             }
 
@@ -750,7 +750,6 @@ public List<ShortClosedCancelledOrderReportDto> getShortClosedCancelledOrders(St
         return reports;
 
     }
-
 
 
 }
