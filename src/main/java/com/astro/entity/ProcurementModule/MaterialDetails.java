@@ -21,8 +21,9 @@ public class MaterialDetails {
 
     @Column(name = "material_code", nullable = false)
     private String materialCode;
-    @Column(name = "indent_id")
-    private String indentId;
+    //@Column(name = "indent_id")
+  //  @Column(name = "indent_id")
+  //  private String indentId;
 
     @Column(name = "material_description")
     private String materialDescription;
@@ -53,11 +54,8 @@ public class MaterialDetails {
     @Column(name="currency")
     private String currency;
 
-
-
-
     @ManyToOne
-    @JoinColumn(name = "indent_id", referencedColumnName = "indent_id", insertable = false, updatable = false)
+    @JoinColumn(name = "indent_id", referencedColumnName = "indent_id")
     private IndentCreation indentCreation;
 
 }

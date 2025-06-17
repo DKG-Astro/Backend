@@ -83,7 +83,7 @@ public class IndentCreationController {
 
         IndentCreationResponseDTO responseDTO = indentCreationService.updateIndent(indentId, indentRequestDTO);
 
-        // Return the success response
+
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 

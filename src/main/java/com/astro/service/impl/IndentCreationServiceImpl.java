@@ -197,7 +197,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             MaterialDetails material = new MaterialDetails();
             material.setMaterialCode(materialRequest.getMaterialCode());
             //  material.setIndentId(indentRequestDTO.getIndentId());
-            material.setIndentId(indentId);
+          //  material.setIndentId(indentId);
             material.setMaterialDescription(materialRequest.getMaterialDescription());
             material.setQuantity(materialRequest.getQuantity());
             material.setUnitPrice(materialRequest.getUnitPrice());
@@ -228,7 +228,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
 
         indentCreationRepository.save(indentCreation);
         //  List<MaterialDetails> savedMaterials = materialDetailsRepository.saveAll(materialDetailsList);
-        List<MaterialDetails> savedMaterials = materialDetailsRepository.findByIndentId(indentId);
+        List<MaterialDetails> savedMaterials = materialDetailsRepository.findByIndentCreation_IndentId(indentId);
 
         // Save VendorNames for each Material
         List<VendorNamesForJobWorkMaterial> vendorList = new ArrayList<>();
@@ -376,22 +376,22 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             material.setMaterialCategory(materialRequest.getMaterialCategory());
             material.setMaterialSubCategory(materialRequest.getMaterialSubCategory());
             material.setIndentCreation(indentCreation);
-            if (material.getId() != null) {
 
+            MaterialDetails savedMaterial = materialDetailsRepository.save(material);
+
+            if (savedMaterial.getId() != null) {
                 List<VendorNamesForJobWorkMaterial> existingVendors = vendorNameRepository
-                        .findByIndentIdAndMaterialIdAndMaterialCode(indentCreation.getIndentId(), material.getId(), material.getMaterialCode());
+                        .findByIndentIdAndMaterialIdAndMaterialCode(indentCreation.getIndentId(), savedMaterial.getId(), savedMaterial.getMaterialCode());
 
                 List<String> updatedVendorNames = materialRequest.getVendorNames() != null
                         ? materialRequest.getVendorNames()
                         : new ArrayList<>();
-
 
                 for (VendorNamesForJobWorkMaterial existingVendor : existingVendors) {
                     if (!updatedVendorNames.contains(existingVendor.getVendorName())) {
                         vendorNameRepository.delete(existingVendor);
                     }
                 }
-
 
                 for (String newVendor : updatedVendorNames) {
                     boolean alreadyExists = existingVendors.stream()
@@ -401,18 +401,22 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                         VendorNamesForJobWorkMaterial vendor = new VendorNamesForJobWorkMaterial();
                         vendor.setVendorName(newVendor);
                         vendor.setIndentId(indentCreation.getIndentId());
-                        vendor.setMaterialId(material.getId());
-                        vendor.setMaterialCode(material.getMaterialCode());
+                        vendor.setMaterialId(savedMaterial.getId());
+                        vendor.setMaterialCode(savedMaterial.getMaterialCode());
                         vendorNameRepository.save(vendor);
                     }
                 }
-            }
-
-
-            if (!existingMaterials.contains(material)) {
-                existingMaterials.add(material);
+                if (!existingMaterials.contains(savedMaterial)) {
+                    existingMaterials.add(savedMaterial);
+                }
             }
         }
+        BigDecimal totalIndentPrice = indentCreation.getMaterialDetails().stream()
+                .map(MaterialDetails::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        indentCreation.setTotalIntentValue(totalIndentPrice);
+
 
         indentCreationRepository.save(indentCreation);
         return mapToResponseDTO(indentCreation);

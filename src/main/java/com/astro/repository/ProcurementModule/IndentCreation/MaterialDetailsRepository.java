@@ -12,10 +12,16 @@ import java.util.Optional;
 @Repository
 public interface MaterialDetailsRepository extends JpaRepository<MaterialDetails,Long> {
 
-    List<MaterialDetails> findByIndentId(String indentId);
+  //  List<MaterialDetails> findByIndentId(String indentId);
+    List<MaterialDetails> findByIndentCreation_IndentId(String indentId);
 
 
-    @Query("SELECT DISTINCT m.indentId FROM MaterialDetails m WHERE m.materialCode = :materialCode")
+
+    //  @Query("SELECT DISTINCT m.indentId FROM MaterialDetails m WHERE m.materialCode = :materialCode")
+ // List<String> findIndentIdsByMaterialCode(@Param("materialCode") String materialCode);
+
+    @Query("SELECT DISTINCT m.indentCreation.indentId FROM MaterialDetails m WHERE m.materialCode = :materialCode")
     List<String> findIndentIdsByMaterialCode(@Param("materialCode") String materialCode);
+
 
 }

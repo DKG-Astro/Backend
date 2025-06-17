@@ -101,7 +101,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
 
         tenderRequest.setIndentMaterials(tenderRequestDto.getIndentMaterials());
         String anyIndentId = tenderRequestDto.getIndentId().get(0);
-        List<MaterialDetails> mdList = materialDetailsRepository.findByIndentId(anyIndentId);
+        List<MaterialDetails> mdList = materialDetailsRepository.findByIndentCreation_IndentId(anyIndentId);
         if (!mdList.isEmpty()) {
             MaterialDetails m = mdList.get(0);
             tenderRequest.setModeOfProcurement(m.getModeOfProcurement());

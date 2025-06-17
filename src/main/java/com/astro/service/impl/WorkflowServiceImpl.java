@@ -428,7 +428,8 @@ public class WorkflowServiceImpl implements WorkflowService {
         }
         TransitionMaster currentTransition = transitionMasterRepository.findById(workflowTransition.getTransitionId()).orElse(null);
 
-        if(workflowTransition.getWorkflowId() == 7 && workflowTransition.getCurrentRole().equalsIgnoreCase("Tender Evaluator") && workflowTransition.getNextRole().equalsIgnoreCase("Tender Evaluator")){
+        if(workflowTransition.getWorkflowId() == 7 && workflowTransition.getCurrentRole().equalsIgnoreCase("Tender Evaluator") && workflowTransition.getNextRole().equalsIgnoreCase("Tender Evaluator")
+                || workflowTransition.getWorkflowId() == 1 && workflowTransition.getAction().equalsIgnoreCase("Change requested") && workflowTransition.getNextRole().equalsIgnoreCase("Indent Creator")  ){
             validateUserRole(transitionActionReqDto.getActionBy(), currentTransition.getCurrentRoleId());
         }else {
             validateUserRole(transitionActionReqDto.getActionBy(), currentTransition.getNextRoleId());
@@ -1282,7 +1283,7 @@ public List<ApprovedIndentsDto> getApprovedIndents() {
             String indentId = requestId;
             //  IndentCreationResponseDTO indentCreations = indentCreationService.getIndentById(indentId);
             IndentCreation indentCreation = indentCreationRepository.getByIndentId(indentId);
-            List<MaterialDetails> mdList = materialDetailsRepo.findByIndentId(indentId);
+            List<MaterialDetails> mdList = materialDetailsRepo.findByIndentCreation_IndentId(indentId);
 
             if (indentCreation != null) {
                 queueResponse.setIndentorName(indentCreation.getIndentorName());
