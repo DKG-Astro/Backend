@@ -128,6 +128,7 @@ com\astro\controller\Reports.class
 com\astro\exception\ErrorDetails.class
 com\astro\dto\workflow\InventoryModule\gprn\GprnPendingInspectionDto.class
 com\astro\repository\InventoryModule\grv\GrvMasterRepository.class
+com\astro\dto\workflow\ProcurementDtos\TenderResponseBase64FilesDto.class
 com\astro\dto\workflow\ProcurementDtos\purchaseOrder\ShortClosedCancelledOrderReportDto.class
 com\astro\repository\MaterialIdSequenceRepository.class
 com\astro\dto\workflow\ProcurementDtos\IndentDto\MaterialDetailsRequestDTO.class

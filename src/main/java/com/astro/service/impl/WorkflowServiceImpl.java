@@ -867,15 +867,16 @@ public class WorkflowServiceImpl implements WorkflowService {
                             } else if (conditionKey.equalsIgnoreCase("TotalPriceOfAllMaterials")) {
                                 dataValue = indentCreationResponseDTO.getTotalPriceOfAllMaterials();
                                 conditionCheckFlag = ((BigDecimal) dataValue).doubleValue() <= Double.valueOf(conditionValue);
+                            }   else if (conditionKey.equalsIgnoreCase("TotalPriceOfAllMaterialsAnd")) {
+                                dataValue = indentCreationResponseDTO.getTotalPriceOfAllMaterials();
+                                conditionCheckFlag = ((BigDecimal) dataValue).doubleValue() > Double.valueOf(conditionValue);
                             } else if (conditionKey.equalsIgnoreCase("projectLimit")) {
                                 dataValue = indentCreationResponseDTO.getTotalPriceOfAllMaterials();
                                 BigDecimal projectLimit = indentCreationResponseDTO.getProjectLimit();
                                 conditionCheckFlag = ((BigDecimal) dataValue).doubleValue() <= ((BigDecimal) projectLimit).doubleValue();
-                            }else if (conditionKey.equalsIgnoreCase("TotalPriceOfAllMaterialsAndDept")) {
+                            } else if (conditionKey.equalsIgnoreCase("TotalPriceOfAllMaterialsAndDept")) {
                                 dataValue = indentCreationResponseDTO.getTotalPriceOfAllMaterials();
                                 String department = indentCreationResponseDTO.getEmployeeDepartment();
-                                System.out.println(dataValue);
-                                System.out.println(department);
 
                                 if (conditionValue != null && conditionValue.contains("(") && conditionValue.endsWith(")")) {
                                     String[] valueParts = conditionValue.replace(")", "").split("\\(");
@@ -883,12 +884,31 @@ public class WorkflowServiceImpl implements WorkflowService {
                                         double priceLimit = Double.parseDouble(valueParts[0]);
                                         String requiredDept = valueParts[1];
 
-                                        conditionCheckFlag = dataValue != null && department != null &&
-                                                ((BigDecimal) dataValue).doubleValue() <= priceLimit &&
-                                                department.equalsIgnoreCase(requiredDept);
+                                        if (dataValue != null && department != null && department.equalsIgnoreCase(requiredDept)) {
+                                            double actualValue = ((BigDecimal) dataValue).doubleValue();
+
+                                            if (requiredDept.equalsIgnoreCase("Engineering")) {
+                                                /*if (priceLimit == 50000) {
+                                                    conditionCheckFlag = actualValue > 50000 && actualValue <= 100000;
+                                                } else if (priceLimit == 100000) {
+                                                    conditionCheckFlag = actualValue > 100000;
+                                                }*/
+                                                if (priceLimit == 100000) {
+
+                                                    conditionCheckFlag = actualValue <= 100000 || actualValue >=100000;
+                                                }
+
+                                            } else if (requiredDept.equalsIgnoreCase("OtherDept")) {
+                                                if (priceLimit == 150000) {
+                                                    conditionCheckFlag = actualValue <= 150000 || actualValue >=150000;
+                                                }
+
+                                            }
+                                        }
                                     }
                                 }
                             }
+
                             if (conditionCheckFlag) {
                                 transitionDto = dto;
                                 break;
