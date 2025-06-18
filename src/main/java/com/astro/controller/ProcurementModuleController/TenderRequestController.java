@@ -1,10 +1,7 @@
 package com.astro.controller.ProcurementModuleController;
 
-import com.astro.dto.workflow.ProcurementDtos.TenderRequestDto;
-import com.astro.dto.workflow.ProcurementDtos.TenderResponseDto;
+import com.astro.dto.workflow.ProcurementDtos.*;
 
-import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
-import com.astro.dto.workflow.ProcurementDtos.tenderUpdateDto;
 import com.astro.dto.workflow.WorkflowTransitionDto;
 import com.astro.service.TenderRequestService;
 
@@ -89,6 +86,14 @@ public class TenderRequestController {
     public ResponseEntity<Object> getTenderRequestById(@PathVariable String tenderId) {
 
         TenderWithIndentResponseDTO tenderRequest = TRService.getTenderRequestById(tenderId);
+
+
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(tenderRequest), HttpStatus.OK);
+    }
+    @GetMapping("/base64Files/{tenderId}")
+    public ResponseEntity<Object> getTenderDataAndBase64FilesById(@PathVariable String tenderId) throws IOException {
+
+        TenderResponseBase64FilesDto tenderRequest = TRService.getTenderDataWithBase64Files(tenderId);
 
 
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(tenderRequest), HttpStatus.OK);

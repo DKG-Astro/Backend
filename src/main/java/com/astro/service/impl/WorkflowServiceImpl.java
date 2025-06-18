@@ -430,7 +430,9 @@ public class WorkflowServiceImpl implements WorkflowService {
 
         if(workflowTransition.getWorkflowId() == 7 && workflowTransition.getCurrentRole().equalsIgnoreCase("Tender Evaluator") && workflowTransition.getNextRole().equalsIgnoreCase("Tender Evaluator")
                 || workflowTransition.getWorkflowId() == 1 && workflowTransition.getAction().equalsIgnoreCase("Change requested") && workflowTransition.getNextRole().equalsIgnoreCase("Indent Creator")
-                || workflowTransition.getWorkflowId() == 3 && workflowTransition.getAction().equalsIgnoreCase("Change requested") && workflowTransition.getNextRole().equalsIgnoreCase("PO Creator") ){
+                || workflowTransition.getWorkflowId() == 3 && workflowTransition.getAction().equalsIgnoreCase("Change requested") && workflowTransition.getNextRole().equalsIgnoreCase("PO Creator")
+                || workflowTransition.getWorkflowId() == 4 && workflowTransition.getAction().equalsIgnoreCase("Change requested") && workflowTransition.getNextRole().equalsIgnoreCase("Tender Creator")
+        ){
             validateUserRole(transitionActionReqDto.getActionBy(), currentTransition.getCurrentRoleId());
         }else {
             validateUserRole(transitionActionReqDto.getActionBy(), currentTransition.getNextRoleId());

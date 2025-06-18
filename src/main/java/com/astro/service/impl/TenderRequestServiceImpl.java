@@ -1,12 +1,10 @@
 package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.ApprovedIndentsDto;
+import com.astro.dto.workflow.ProcurementDtos.*;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderMaterialRequestDTO;
-import com.astro.dto.workflow.ProcurementDtos.TenderRequestDto;
-import com.astro.dto.workflow.ProcurementDtos.TenderResponseDto;
-import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
-import com.astro.dto.workflow.ProcurementDtos.tenderUpdateDto;
 import com.astro.entity.ProcurementModule.*;
 import com.astro.entity.ProjectMaster;
 import com.astro.exception.BusinessException;
@@ -442,6 +440,121 @@ public class TenderRequestServiceImpl implements TenderRequestService {
                 ));
         return mapToResponseDTO(tender);
     }
+    @Override
+    public TenderResponseBase64FilesDto getTenderDataWithBase64Files(String tenderId) throws IOException {
+        TenderRequest tenderRequest= TRrepo.findByTenderId(tenderId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Tender not found for the provided Tender ID.")
+                ));
+        TenderResponseBase64FilesDto tenderResponseDto = new TenderResponseBase64FilesDto();
+
+        tenderResponseDto.setTenderId(tenderRequest.getTenderId());
+        tenderResponseDto.setTitleOfTender(tenderRequest.getTitleOfTender());
+        LocalDate openingDate = tenderRequest.getOpeningDate();
+        tenderResponseDto.setOpeningDate(CommonUtils.convertDateToString(openingDate));
+        LocalDate closeingDate = tenderRequest.getClosingDate();
+        tenderResponseDto.setClosingDate(CommonUtils.convertDateToString(closeingDate));
+        tenderResponseDto.setIndentMaterials(tenderRequest.getIndentMaterials());
+        tenderResponseDto.setModeOfProcurement(tenderRequest.getModeOfProcurement());
+        tenderResponseDto.setBidType(tenderRequest.getBidType());
+        LocalDate LastDateOfSubmission = tenderRequest.getLastDateOfSubmission();
+        tenderResponseDto.setLastDateOfSubmission(CommonUtils.convertDateToString(LastDateOfSubmission));
+        tenderResponseDto.setApplicableTaxes(tenderRequest.getApplicableTaxes());
+        tenderResponseDto.setBillinngAddress(tenderRequest.getBillinngAddress());
+        tenderResponseDto.setConsignes(tenderRequest.getConsignes());
+        tenderResponseDto.setIncoTerms(tenderRequest.getIncoTerms());
+        tenderResponseDto.setPaymentTerms(tenderRequest.getPaymentTerms());
+        tenderResponseDto.setLdClause(tenderRequest.getLdClause());
+        tenderResponseDto.setPerformanceAndWarrantySecurity(tenderRequest.getPerformanceAndWarrantySecurity());
+        tenderResponseDto.setBidSecurityDeclaration(tenderRequest.getBidSecurityDeclaration());
+        tenderResponseDto.setMllStatusDeclaration(tenderRequest.getMllStatusDeclaration());
+       // tenderResponseDto.setUploadTenderDocuments(tenderRequest.getUploadTenderDocumentsFileName());
+        tenderResponseDto.setSingleAndMultipleVendors(tenderRequest.getSingleAndMultipleVendors());
+       // tenderResponseDto.setUploadGeneralTermsAndConditions(tenderRequest.getUploadGeneralTermsAndConditionsFileName());
+      //  tenderResponseDto.setUploadSpecificTermsAndConditions(tenderRequest.getUploadSpecificTermsAndConditionsFileName());
+       // tenderResponseDto.setMllStatusDeclarationFileName(tenderRequest.getMllStatusDeclarationFileName());
+        //tenderResponseDto.setBidSecurityDeclarationFileName(tenderRequest.getBidSecurityDeclarationFileName());
+        tenderResponseDto.setPreBidDisscussions(tenderRequest.getPreBidDisscussions());
+        tenderResponseDto.setFileType(tenderRequest.getFileType());
+        if (tenderRequest.getMllStatusDeclarationFileName() == null || tenderRequest.getMllStatusDeclarationFileName().isEmpty()) {
+            tenderResponseDto.setMllStatusDeclarationFileName(null);
+        } else {
+            tenderResponseDto.setMllStatusDeclarationFileName(
+                    convertFilesToBase64(tenderRequest.getMllStatusDeclarationFileName(), basePath));
+        }
+        if (tenderRequest.getBidSecurityDeclarationFileName() == null || tenderRequest.getBidSecurityDeclarationFileName().isEmpty()) {
+            tenderResponseDto.setBidSecurityDeclarationFileName(null);
+        } else {
+            tenderResponseDto.setBidSecurityDeclarationFileName(
+                    convertFilesToBase64(tenderRequest.getBidSecurityDeclarationFileName(), basePath));
+        }
+        if (tenderRequest.getUploadTenderDocumentsFileName() == null || tenderRequest.getUploadTenderDocumentsFileName().isEmpty()) {
+            tenderResponseDto.setUploadTenderDocuments(null);
+        } else {
+            tenderResponseDto.setUploadTenderDocuments(
+                    convertFilesToBase64(tenderRequest.getUploadTenderDocumentsFileName(), basePath));
+        }
+        if (tenderRequest.getUploadGeneralTermsAndConditionsFileName() == null || tenderRequest.getUploadGeneralTermsAndConditionsFileName().isEmpty()) {
+            tenderResponseDto.setUploadGeneralTermsAndConditions(null);
+        } else {
+            tenderResponseDto.setUploadGeneralTermsAndConditions(
+                    convertFilesToBase64(tenderRequest.getUploadGeneralTermsAndConditionsFileName(), basePath));
+        }
+        if (tenderRequest.getUploadSpecificTermsAndConditionsFileName() == null || tenderRequest.getUploadSpecificTermsAndConditionsFileName().isEmpty()) {
+            tenderResponseDto.setUploadSpecificTermsAndConditions(null);
+        } else {
+            tenderResponseDto.setUploadSpecificTermsAndConditions(
+                    convertFilesToBase64(tenderRequest.getUploadSpecificTermsAndConditionsFileName(), basePath));
+        }
+        tenderResponseDto.setUpdatedBy(tenderRequest.getUpdatedBy());
+        tenderResponseDto.setCreatedBy(tenderRequest.getCreatedBy());
+        tenderResponseDto.setCreatedDate(tenderRequest.getCreatedDate());
+        tenderResponseDto.setUpdatedDate(tenderRequest.getUpdatedDate());
+        List<String> indentIds = indentIdRepository.findTenderWithIndent(tenderRequest.getTenderId());
+
+        tenderResponseDto.setIndentIds(indentIds);
+
+        tenderResponseDto.setProjectName(tenderRequest.getProjectName());
+        System.out.println(tenderRequest.getProjectName());
+        BigDecimal totalTenderValue = indentIds.stream()
+                .map(indentCreationService::getIndentById) // Fetch Indent data
+                .map(IndentCreationResponseDTO::getTotalPriceOfAllMaterials) // Extract total price
+                .reduce(BigDecimal.ZERO, BigDecimal::add); // Sum up values
+        tenderResponseDto.setTotalTenderValue(totalTenderValue);
+        System.out.println("tottalTenderValue"+ totalTenderValue);
+        String projectName = tenderRequest.getProjectName();
+        BigDecimal allocatedAmount = projectMasterRepository
+                .findByProjectNameDescription(projectName)
+                .map(ProjectMaster::getAllocatedAmount)
+                .orElse(BigDecimal.ZERO);
+        tenderResponseDto.setProjectLimit(allocatedAmount);
+        System.out.println("allocatedAmount: " + allocatedAmount);
+
+        return tenderResponseDto;
+    }
+    public static List<String> convertFilesToBase64(String fileNames, String basePath) throws IOException {
+        List<String> base64List = new ArrayList<>();
+
+        if (fileNames != null && !fileNames.isEmpty()) {
+            String[] fileNameArray = fileNames.split(",");
+
+            for (String fileName : fileNameArray) {
+                String trimmedFileName = fileName.trim();
+                if (!trimmedFileName.isEmpty()) {
+                    String base64 = CommonUtils.convertImageToBase64(trimmedFileName, basePath);
+                    base64List.add(base64);
+                }
+            }
+        }
+
+        return base64List;
+    }
+
+
 
     @Override
     public List<TenderResponseDto> getAllTenderRequests() {

@@ -1,5 +1,6 @@
 package com.astro.repository.ProcurementModule.IndentCreation;
 
+import com.astro.dto.workflow.ApprovedIndentsDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentReportDetailsDTO;
 import com.astro.dto.workflow.ProcurementDtos.TechnoMomReportDTO;
 import com.astro.entity.ProcurementModule.IndentCreation;
@@ -205,4 +206,6 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation, 
             """,
             nativeQuery = true)
     List<Object[]> getAllIndentListReport(LocalDateTime fromDate, LocalDateTime toDate);
+
+
 }

@@ -1,5 +1,6 @@
 package com.astro.repository.ProcurementModule;
 
+import com.astro.dto.workflow.ApprovedIndentsDto;
 import com.astro.entity.ProcurementModule.IndentId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,5 +18,6 @@ public interface IndentIdRepository extends JpaRepository<IndentId,Long> {
 
     List<IndentId> findByIndentIdIn(List<String> indentIds);
 
-  //  List<String> findIndentIdsByTenderId(String tenderId);
+
+    //  List<String> findIndentIdsByTenderId(String tenderId);
 }

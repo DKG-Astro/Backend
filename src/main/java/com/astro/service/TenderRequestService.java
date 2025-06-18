@@ -1,12 +1,10 @@
 package com.astro.service;
 
 
-import com.astro.dto.workflow.ProcurementDtos.TenderRequestDto;
-import com.astro.dto.workflow.ProcurementDtos.TenderResponseDto;
-import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
-import com.astro.dto.workflow.ProcurementDtos.tenderUpdateDto;
+import com.astro.dto.workflow.ProcurementDtos.*;
 import com.astro.entity.ProcurementModule.TenderRequest;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface TenderRequestService {
@@ -23,6 +21,7 @@ public interface TenderRequestService {
     public TenderResponseDto updateTender(String tenderId, tenderUpdateDto dto);
 
     public String vendorCheck(String tenderId);
+    public TenderResponseBase64FilesDto getTenderDataWithBase64Files(String tenderId) throws IOException;
 
 
     //TenderWithIndentResponseDTO getTendersRequestById(String tenderId);
