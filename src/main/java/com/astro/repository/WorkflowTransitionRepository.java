@@ -24,7 +24,9 @@ public interface WorkflowTransitionRepository extends JpaRepository<WorkflowTran
     List<WorkflowTransition> findByWorkflowIdAndRequestIdAndCurrentRole(Integer workflowId, String requestId, String assignmentRole);
     List<WorkflowTransition> findByWorkflowIdAndRequestIdAndNextRole(Integer workflowId, String requestId, String assignmentRole);
     List<WorkflowTransition> findByModifiedBy(Integer modifiedBy);
-    Optional<WorkflowTransition> findTopByRequestIdOrderByCreatedDateDesc(String requestId);
+   // Optional<WorkflowTransition> findTopByRequestIdOrderByCreatedDateDesc(String requestId);
+   Optional<WorkflowTransition> findTopByRequestIdOrderByWorkflowTransitionIdDesc(String requestId);
+
 
 
     @Query("SELECT wt.requestId FROM WorkflowTransition wt WHERE wt.workflowName = 'Indent Workflow' AND wt.status = 'Completed' AND wt.nextAction IS NULL AND wt.requestId NOT IN (SELECT i.indentId FROM IndentId i WHERE i.tenderRequest IS NOT NULL)")

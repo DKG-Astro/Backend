@@ -520,7 +520,9 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         }
         response.setCreatedBy(indentCreation.getCreatedBy());
         response.setUpdatedBy(indentCreation.getUpdatedBy());
-        Optional<WorkflowTransition> lastRecord = workflowTransitionRepository.findTopByRequestIdOrderByCreatedDateDesc(indentId);
+       // Optional<WorkflowTransition> lastRecord = workflowTransitionRepository.findTopByRequestIdOrderByCreatedDateDesc(indentId);
+        Optional<WorkflowTransition> lastRecord = workflowTransitionRepository.findTopByRequestIdOrderByWorkflowTransitionIdDesc(indentId);
+
         if (lastRecord.isPresent()) {
             WorkflowTransition transition = lastRecord.get();
 
@@ -700,7 +702,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             materialSubCategory = "Normal";
         }
         String consignesLocation;
-        if ("Bangalore".equalsIgnoreCase(indentCreation.getConsignesLocation())) {
+        if ("BNG".equalsIgnoreCase(indentCreation.getConsignesLocation())) {
             consignesLocation = "Normal";
         } else {
             consignesLocation = "Computer";

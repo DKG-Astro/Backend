@@ -514,6 +514,12 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         tenderResponseDto.setCreatedBy(tenderRequest.getCreatedBy());
         tenderResponseDto.setCreatedDate(tenderRequest.getCreatedDate());
         tenderResponseDto.setUpdatedDate(tenderRequest.getUpdatedDate());
+        tenderResponseDto.setUploadTenderDocumentsFileName(tenderRequest.getUploadTenderDocumentsFileName());
+        tenderResponseDto.setUploadSpecificTermsAndConditionsFileName(tenderRequest.getUploadSpecificTermsAndConditionsFileName());
+        tenderResponseDto.setUploadGeneralTermsAndConditionsFileName(tenderRequest.getUploadGeneralTermsAndConditionsFileName());
+        tenderResponseDto.setMiiStatusDeclarationFileName(tenderRequest.getMllStatusDeclarationFileName());
+        tenderResponseDto.setBidSecurityDeclarationFile(tenderRequest.getBidSecurityDeclarationFileName());
+        tenderResponseDto.setVendorName(tenderRequest.getVendorId());
         List<String> indentIds = indentIdRepository.findTenderWithIndent(tenderRequest.getTenderId());
 
         tenderResponseDto.setIndentIds(indentIds);

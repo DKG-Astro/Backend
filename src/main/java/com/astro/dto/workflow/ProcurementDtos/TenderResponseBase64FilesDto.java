@@ -44,5 +44,13 @@ public class TenderResponseBase64FilesDto {
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
     private List<String> indentIds;
+    private String uploadTenderDocumentsFileName;
+    private String uploadGeneralTermsAndConditionsFileName;
+    private String uploadSpecificTermsAndConditionsFileName;
+    private String bidSecurityDeclarationFile;
+    private String miiStatusDeclarationFileName;
+    private String vendorName;
+    //private String vendorAddress;
+
 
 }
