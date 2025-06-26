@@ -118,7 +118,7 @@ public class IgpServiceImpl implements IgpService {
         // 4. Handle non-PO type IGP
         else {
             // Validate issue note type
-            IsnMasterEntity issueNote = isnMasterRepository.findById(ogpMaster.getIssueNoteId())
+           /* IsnMasterEntity issueNote = isnMasterRepository.findById(ogpMaster.getIssueNoteId())
                 .orElseThrow(() -> new BusinessException(new ErrorDetails(
                     AppConstant.ERROR_CODE_RESOURCE,
                     AppConstant.ERROR_TYPE_CODE_RESOURCE,
@@ -131,7 +131,15 @@ public class IgpServiceImpl implements IgpService {
                     AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION,
                     "Cannot create IGP for Non-Returnable Issue Note"));
+            }*/
+            if ("Non Returnable".equalsIgnoreCase(ogpMaster.getOgpType())) {
+                throw new BusinessException(new ErrorDetails(
+                        AppConstant.USER_INVALID_INPUT,
+                        AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                        AppConstant.ERROR_TYPE_VALIDATION,
+                        "Cannot create IGP for Non-Returnable OGP"));
             }
+
 
             // Check existing IGP details
             List<IgpMasterEntity> existingIgpMasters = igpMasterRepository.findByOgpSubProcessId(ogpSubProcessId);
