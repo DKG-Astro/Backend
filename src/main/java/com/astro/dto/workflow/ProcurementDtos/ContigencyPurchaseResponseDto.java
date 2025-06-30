@@ -16,12 +16,7 @@ public class ContigencyPurchaseResponseDto {
     private String vendorName;
     private String vendorInvoiceNo;
     private String Date;
-    //private String materialCode;
-    //  private String materialDescription;
-    //  private BigDecimal quantity;
-    //  private BigDecimal unitPrice;
     private String remarksForPurchase;
-    //   private BigDecimal amountToBePaid;
     private String uploadCopyOfInvoice;
     private String fileType;
     private String predifinedPurchaseStatement;
@@ -30,6 +25,10 @@ public class ContigencyPurchaseResponseDto {
     private String paymentTo;
     private String paymentToVendor;
     private String paymentToEmployee;
+    private String purpose;
+    private String countryOfOrigin;
+    private Boolean declarationOne;
+    private Boolean declarationTwo;
     private String updatedBy;
     private Integer createdBy;
     private LocalDateTime createdDate;

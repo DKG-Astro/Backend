@@ -17,7 +17,8 @@ public class EmailService {
         private static final String SENDGRID_API_KEY = ""; // API key(we can change based on email)
 
         public void sendEmail(String toEmail, String username, String password) throws IOException {
-            Email from = new Email("udaychowdhary743@gmail.com"); // must be verified in SendGrid
+            //  Email from = new Email("udaychowdhary743@gmail.com"); // must be verified in SendGrid
+            Email from = new Email("udaykirandkg@gmail.com");
             String subject = "Welcome to Our IIA";
             Email to = new Email(toEmail);
 
@@ -25,7 +26,7 @@ public class EmailService {
                     "Here are your vendor login details:\n" +
                     "Vendor Id: " + username + "\n" +
                     "Password: " + password + "\n\n" +
-                    "Thanks!"+
+                    "Thanks!" +
                     "IIA Group";
             Content content = new Content("text/plain", contentText);
 
@@ -43,7 +44,9 @@ public class EmailService {
             } catch (IOException ex) {
                 throw ex;
             }
+
         }
-
-
 }
+
+
+

@@ -6,12 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="ff5636e0-402f-4a63-8653-94f411351cbb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/TenderResponseBase64FilesDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/TenderResponseBase64FilesDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/controller/WorkflowController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/controller/WorkflowController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/ContigencyPurchaseRequestDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/ContigencyPurchaseRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/ContigencyPurchaseResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ProcurementDtos/ContigencyPurchaseResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/ContigencyPurchase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/ProcurementModule/ContigencyPurchase.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/WorkflowTransitionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/WorkflowTransitionRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/IndentCreationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/IndentCreationServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/TenderRequestServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/TenderRequestServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/WorkflowService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/WorkflowService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/ContigencyPurchaseServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/ContigencyPurchaseServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/DDL-procurement-INV.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/DDL-procurement-INV.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/util/EmailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/util/EmailService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

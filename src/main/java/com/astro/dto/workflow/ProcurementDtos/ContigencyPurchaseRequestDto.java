@@ -29,6 +29,10 @@ public class ContigencyPurchaseRequestDto {
     private String paymentTo;
     private String paymentToVendor;
     private String paymentToEmployee;
+    private String purpose;
+    private String countryOfOrigin;
+    private Boolean declarationOne;
+    private Boolean declarationTwo;
     private String updatedBy;
     private Integer createdBy;
     private List<CpMaterialRequestDto> cpMaterials;

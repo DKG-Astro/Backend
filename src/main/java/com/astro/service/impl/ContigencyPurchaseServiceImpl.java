@@ -208,6 +208,10 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
         dto.setCreatedBy(contigencyPurchase.getCreatedBy());
         dto.setUpdatedDate(contigencyPurchase.getUpdatedDate());
         dto.setCreatedDate(contigencyPurchase.getCreatedDate());
+        dto.setPurpose(contigencyPurchase.getPurpose());
+        dto.setCountryOfOrigin(contigencyPurchase.getCountryOfOrigin());
+        dto.setDeclarationOne(contigencyPurchase.getDeclarationOne());
+        dto.setDeclarationTwo(contigencyPurchase.getDeclarationTwo());
 
         dto.setPaymentTo(contigencyPurchase.getPaymentTo());
         dto.setPaymentToVendor(contigencyPurchase.getPaymentToVendor());

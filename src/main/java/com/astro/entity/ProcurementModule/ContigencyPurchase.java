@@ -58,6 +58,10 @@ public class ContigencyPurchase {
     private String updatedBy;
     @Column(name = "created_by")
     private Integer createdBy;
+    private String purpose;
+    private String countryOfOrigin;
+    private Boolean declarationOne;
+    private Boolean declarationTwo;
     @OneToMany(mappedBy = "contigencyPurchase", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CpMaterials> cpMaterials;
 

@@ -3,6 +3,7 @@ package com.astro.repository;
 import com.astro.entity.WorkflowTransition;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -45,4 +46,22 @@ public interface WorkflowTransitionRepository extends JpaRepository<WorkflowTran
     List<String> findApprovedTenderIds();
 
     List<WorkflowTransition> findByWorkflowIdAndRequestIdOrderByWorkflowTransitionIdAsc(Integer workflowId, String requestId);
+
+  //  List<WorkflowTransition> findByStatusAndWorkflowId(String completedType, int workflowId);
+  @Query("""
+SELECT wt 
+FROM WorkflowTransition wt 
+WHERE wt.status = :status 
+  AND wt.workflowId = :workflowId 
+  AND wt.requestId NOT IN (
+    SELECT i.indentId 
+    FROM IndentId i 
+    WHERE i.tenderRequest IS NOT NULL
+  )
+""")
+  List<WorkflowTransition> findValidTransitions(
+          @Param("status") String status,
+          @Param("workflowId") int workflowId
+  );
+
 }
