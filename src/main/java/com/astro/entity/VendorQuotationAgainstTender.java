@@ -19,6 +19,12 @@ public class VendorQuotationAgainstTender {
  //   private String vendorName;
     private String quotationFileName;
     private String fileType;
+
+    @Column(name = "status")
+    private String status;
+    @Column(name = "remarks")
+    private String remarks;
+
     @Column(name = "created_by")
     private Integer createdBy;
 

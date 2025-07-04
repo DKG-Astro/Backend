@@ -466,7 +466,6 @@ public class WorkflowServiceImpl implements WorkflowService {
             throw new BusinessException(new ErrorDetails(AppConstant.INVALID_ACTION, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Workflow already completed."));
         }
-
         if (AppConstant.APPROVE_TYPE.equalsIgnoreCase(transitionActionReqDto.getAction())) {
             approveTransition(workflowTransition, currentTransition, transitionActionReqDto);
         } else if (AppConstant.REJECT_TYPE.equalsIgnoreCase(transitionActionReqDto.getAction())) {
@@ -479,7 +478,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         }
 
 
-        return null;
+         return null;
     }
 
     @Override
@@ -652,11 +651,13 @@ public class WorkflowServiceImpl implements WorkflowService {
             nextWorkflowTransition.setCreatedDate(currentWorkflowTransition.getCreatedDate());
             nextWorkflowTransition.setCurrentRole(currentWorkflowTransition.getNextRole());
            // if (transitionActionReqDto.getAssignmentRole().equalsIgnoreCase("Request Creator")) {
-            if(CREATOR_ROLES.contains(transitionActionReqDto.getAssignmentRole())){
+           /* if(CREATOR_ROLES.contains(transitionActionReqDto.getAssignmentRole())){
                 nextWorkflowTransition.setNextRole(latestWorkflowTransition.getCurrentRole());
             } else {
                 nextWorkflowTransition.setNextRole(latestWorkflowTransition.getNextRole());
-            }
+            }*/
+
+            nextWorkflowTransition.setNextRole(transitionActionReqDto.getAssignmentRole());
             nextWorkflowTransition.setWorkflowSequence(currentWorkflowTransition.getWorkflowSequence() + 1);
 
             workflowTransitionRepository.save(nextWorkflowTransition);

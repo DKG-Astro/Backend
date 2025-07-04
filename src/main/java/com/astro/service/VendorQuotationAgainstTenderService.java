@@ -1,6 +1,7 @@
 package com.astro.service;
 
 import com.astro.dto.workflow.VendorQuotationAgainstTenderDto;
+import com.astro.dto.workflow.VendorQuotationUpdateRequestDto;
 import com.astro.dto.workflow.VendorStatusDto;
 import org.springframework.stereotype.Service;
 
@@ -15,5 +16,6 @@ public interface VendorQuotationAgainstTenderService {
 
     public VendorStatusDto getVendorStatus(String vendorId);
     public List<String> getVendorsWhoDidNotSubmitQuotation(String tenderId);
+    public boolean updateStatusAndRemarks(VendorQuotationUpdateRequestDto request);
 
 }

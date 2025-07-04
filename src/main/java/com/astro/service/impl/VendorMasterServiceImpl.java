@@ -66,8 +66,8 @@ public class VendorMasterServiceImpl implements VendorMasterService {
         vendorMaster.setPfmsVendorCode(vendorMasterRequestDto.getPfmsVendorCode());
         vendorMaster.setPrimaryBusiness(vendorMasterRequestDto.getPrimaryBusiness());
         vendorMaster.setAddress(vendorMasterRequestDto.getAddress());
-        vendorMaster.setLandline(vendorMasterRequestDto.getLandline());
-        vendorMaster.setMobileNo(vendorMasterRequestDto.getMobileNo());
+      //  vendorMaster.setLandline(vendorMasterRequestDto.getLandline());
+      //  vendorMaster.setMobileNo(vendorMasterRequestDto.getMobileNo());
         vendorMaster.setFax(vendorMasterRequestDto.getFax());
         vendorMaster.setPanNo(vendorMasterRequestDto.getPanNo());
         vendorMaster.setGstNo(vendorMasterRequestDto.getGstNo());
@@ -77,7 +77,16 @@ public class VendorMasterServiceImpl implements VendorMasterService {
         vendorMaster.setPurchaseHistory(vendorMasterRequestDto.getPurchaseHistory());
         vendorMaster.setStatus(AppConstant.PENDING_TYPE);
         vendorMaster.setUpdatedBy(vendorMasterRequestDto.getUpdatedBy());
-
+        vendorMaster.setSwiftCode(vendorMasterRequestDto.getSwiftCode());
+        vendorMaster.setAlternateEmailOrPhoneNumber(vendorMasterRequestDto.getAlternateEmailOrPhoneNumber());
+        vendorMaster.setBicCode(vendorMasterRequestDto.getBicCode());
+        vendorMaster.setIbanAbaNumber(vendorMasterRequestDto.getIbanAbaNumber());
+        vendorMaster.setSortCode(vendorMasterRequestDto.getSortCode());
+        vendorMaster.setBankRoutingNumber(vendorMasterRequestDto.getBankRoutingNumber());
+        vendorMaster.setBankAddress(vendorMasterRequestDto.getBankAddress());
+        vendorMaster.setCountry(vendorMasterRequestDto.getCountry());
+        vendorMaster.setState(vendorMasterRequestDto.getState());
+        vendorMaster.setPlace(vendorMaster.getPlace());
 
         vendorMasterRepository.save(vendorMaster);
 
@@ -108,8 +117,8 @@ public class VendorMasterServiceImpl implements VendorMasterService {
         vendorMaster.setPfmsVendorCode(vendorMasterRequestDto.getPfmsVendorCode());
         vendorMaster.setPrimaryBusiness(vendorMasterRequestDto.getPrimaryBusiness());
         vendorMaster.setAddress(vendorMasterRequestDto.getAddress());
-        vendorMaster.setLandline(vendorMasterRequestDto.getLandline());
-        vendorMaster.setMobileNo(vendorMasterRequestDto.getMobileNo());
+       // vendorMaster.setLandline(vendorMasterRequestDto.getLandline());
+      //  vendorMaster.setMobileNo(vendorMasterRequestDto.getMobileNo());
         vendorMaster.setFax(vendorMasterRequestDto.getFax());
         vendorMaster.setPanNo(vendorMasterRequestDto.getPanNo());
         vendorMaster.setGstNo(vendorMasterRequestDto.getGstNo());
@@ -120,7 +129,16 @@ public class VendorMasterServiceImpl implements VendorMasterService {
         vendorMaster.setStatus(vendorMasterRequestDto.getStatus());
         vendorMaster.setCreatedBy(vendorMasterRequestDto.getCreatedBy());
         vendorMaster.setUpdatedBy(vendorMasterRequestDto.getUpdatedBy());
-
+        vendorMaster.setSwiftCode(vendorMasterRequestDto.getSwiftCode());
+        vendorMaster.setAlternateEmailOrPhoneNumber(vendorMasterRequestDto.getAlternateEmailOrPhoneNumber());
+        vendorMaster.setBicCode(vendorMasterRequestDto.getBicCode());
+        vendorMaster.setIbanAbaNumber(vendorMasterRequestDto.getIbanAbaNumber());
+        vendorMaster.setSortCode(vendorMasterRequestDto.getSortCode());
+        vendorMaster.setBankRoutingNumber(vendorMasterRequestDto.getBankRoutingNumber());
+        vendorMaster.setBankAddress(vendorMasterRequestDto.getBankAddress());
+        vendorMaster.setCountry(vendorMasterRequestDto.getCountry());
+        vendorMaster.setState(vendorMasterRequestDto.getState());
+        vendorMaster.setPlace(vendorMasterRequestDto.getPlace());
         vendorMasterRepository.save(vendorMaster);
 
         return mapToResponseDTO(vendorMaster);
@@ -248,8 +266,8 @@ public class VendorMasterServiceImpl implements VendorMasterService {
         responseDto.setPfmsVendorCode(vendorMaster.getPfmsVendorCode());
         responseDto.setPrimaryBusiness(vendorMaster.getPrimaryBusiness());
         responseDto.setAddress(vendorMaster.getAddress());
-        responseDto.setLandline(vendorMaster.getLandline());
-        responseDto.setMobileNo(vendorMaster.getMobileNo());
+       // responseDto.setLandline(vendorMaster.getLandline());
+     //   responseDto.setMobileNo(vendorMaster.getMobileNo());
         responseDto.setFax(vendorMaster.getFax());
         responseDto.setPanNo(vendorMaster.getPanNo());
         responseDto.setGstNo(vendorMaster.getGstNo());
@@ -263,6 +281,17 @@ public class VendorMasterServiceImpl implements VendorMasterService {
         responseDto.setUpdatedBy(vendorMaster.getUpdatedBy());
         responseDto.setCreatedDate(vendorMaster.getCreatedDate());
         responseDto.setUpdatedDate(vendorMaster.getUpdatedDate());
+        vendorMaster.setSwiftCode(vendorMaster.getSwiftCode());
+        vendorMaster.setAlternateEmailOrPhoneNumber(vendorMaster.getAlternateEmailOrPhoneNumber());
+        vendorMaster.setBicCode(vendorMaster.getBicCode());
+        vendorMaster.setIbanAbaNumber(vendorMaster.getIbanAbaNumber());
+        vendorMaster.setSortCode(vendorMaster.getSortCode());
+        vendorMaster.setBankRoutingNumber(vendorMaster.getBankRoutingNumber());
+        vendorMaster.setBankAddress(vendorMaster.getBankAddress());
+        vendorMaster.setCountry(vendorMaster.getCountry());
+        vendorMaster.setState(vendorMaster.getState());
+        vendorMaster.setPlace(vendorMaster.getPlace());
+
 
         return responseDto;
 

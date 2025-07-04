@@ -63,8 +63,8 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
         vendor.setPfmsVendorCode(dto.getPfmsVendorCode());
         vendor.setPrimaryBusiness(dto.getPrimaryBusiness());
         vendor.setAddress(dto.getAddress());
-        vendor.setLandlineNumber(dto.getLandlineNumber());
-        vendor.setMobileNumber(dto.getMobileNumber());
+       // vendor.setLandlineNumber(dto.getLandlineNumber());
+      //  vendor.setMobileNumber(dto.getMobileNumber());
         vendor.setFaxNumber(dto.getFaxNumber());
         vendor.setPanNumber(dto.getPanNumber());
         vendor.setGstNumber(dto.getGstNumber());
@@ -75,7 +75,16 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
         vendor.setComments(null);
         vendor.setCreatedBy(dto.getCreatedBy());
         vendor.setUpdatedBy(dto.getUpdatedBy());
-
+        vendor.setSwiftCode(dto.getSwiftCode());
+        vendor.setAlternateEmailOrPhoneNumber(dto.getAlternateEmailOrPhoneNumber());
+        vendor.setBicCode(dto.getBicCode());
+        vendor.setIbanAbaNumber(dto.getIbanAbaNumber());
+        vendor.setSortCode(dto.getSortCode());
+        vendor.setBankRoutingNumber(dto.getBankRoutingNumber());
+        vendor.setBankAddress(dto.getBankAddress());
+        vendor.setCountry(dto.getCountry());
+        vendor.setState(dto.getState());
+        vendor.setPlace(dto.getPlace());
        VendorMasterUtil vm = vendorMasterUtilRepository.save(vendor);
 
         String password = PasswordGenerator.generateRandomPassword();
@@ -116,8 +125,8 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
         vendorResponse.setPfmsVendorCode(vendor.getPfmsVendorCode());
         vendorResponse.setPrimaryBusiness(vendor.getPrimaryBusiness());
         vendorResponse.setAddress(vendor.getAddress());
-        vendorResponse.setLandlineNumber(vendor.getLandlineNumber());
-        vendorResponse.setMobileNumber(vendor.getMobileNumber());
+        //vendorResponse.setLandlineNumber(vendor.getLandlineNumber());
+      //  vendorResponse.setMobileNumber(vendor.getMobileNumber());
         vendorResponse.setFaxNumber(vendor.getFaxNumber());
         vendorResponse.setPanNumber(vendor.getPanNumber());
         vendorResponse.setGstNumber(vendor.getGstNumber());
@@ -130,6 +139,16 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
         vendorResponse.setCreatedDate(vendor.getCreatedDate());
         vendorResponse.setUpdatedDate(vendor.getUpdatedDate());
         vendorResponse.setComments(vendor.getComments());
+        vendorResponse.setSwiftCode(vendor.getSwiftCode());
+        vendorResponse.setAlternateEmailOrPhoneNumber(vendor.getAlternateEmailOrPhoneNumber());
+        vendorResponse.setBicCode(vendor.getBicCode());
+        vendorResponse.setIbanAbaNumber(vendor.getIbanAbaNumber());
+        vendorResponse.setSortCode(vendor.getSortCode());
+        vendorResponse.setBankRoutingNumber(vendor.getBankRoutingNumber());
+        vendorResponse.setBankAddress(vendor.getBankAddress());
+        vendorResponse.setCountry(vendor.getCountry());
+        vendorResponse.setState(vendor.getState());
+        vendorResponse.setPlace(vendor.getPlace());
        Optional<VendorLoginDetails> vendorLogin = vendorLoginDetailsRepository.findByVendorId(vendor.getVendorId());
        VendorLoginDetails vl = vendorLogin.get();
        vendorResponse.setEmailStatus(vl.getEmailSent());
@@ -161,8 +180,8 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
         vendorResponse.setPfmsVendorCode(vendor.getPfmsVendorCode());
         vendorResponse.setPrimaryBusiness(vendor.getPrimaryBusiness());
         vendorResponse.setAddress(vendor.getAddress());
-        vendorResponse.setLandlineNumber(vendor.getLandlineNumber());
-        vendorResponse.setMobileNumber(vendor.getMobileNumber());
+      //  vendorResponse.setLandlineNumber(vendor.getLandlineNumber());
+      //  vendorResponse.setMobileNumber(vendor.getMobileNumber());
         vendorResponse.setFaxNumber(vendor.getFaxNumber());
         vendorResponse.setPanNumber(vendor.getPanNumber());
         vendorResponse.setGstNumber(vendor.getGstNumber());
@@ -175,7 +194,16 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
         vendorResponse.setCreatedDate(vendor.getCreatedDate());
         vendorResponse.setUpdatedDate(vendor.getUpdatedDate());
         vendorResponse.setComments(vendor.getComments());
-
+        vendorResponse.setSwiftCode(vendor.getSwiftCode());
+        vendorResponse.setAlternateEmailOrPhoneNumber(vendor.getAlternateEmailOrPhoneNumber());
+        vendorResponse.setBicCode(vendor.getBicCode());
+        vendorResponse.setIbanAbaNumber(vendor.getIbanAbaNumber());
+        vendorResponse.setSortCode(vendor.getSortCode());
+        vendorResponse.setBankRoutingNumber(vendor.getBankRoutingNumber());
+        vendorResponse.setBankAddress(vendor.getBankAddress());
+        vendorResponse.setCountry(vendor.getCountry());
+        vendorResponse.setState(vendor.getState());
+        vendorResponse.setPlace(vendor.getPlace());
         return vendorResponse;
 
     }
@@ -270,8 +298,8 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
         newVendor.setPfmsVendorCode(vendor.getPfmsVendorCode());
         newVendor.setPrimaryBusiness(vendor.getPrimaryBusiness());
         newVendor.setAddress(vendor.getAddress());
-        newVendor.setLandline(vendor.getLandlineNumber());
-        newVendor.setMobileNo(vendor.getMobileNumber());
+      //  newVendor.setLandline(vendor.getLandlineNumber());
+     //   newVendor.setMobileNo(vendor.getMobileNumber());
         newVendor.setFax(vendor.getFaxNumber());
         newVendor.setPanNo(vendor.getPanNumber());
         newVendor.setGstNo(vendor.getGstNumber());
@@ -279,6 +307,16 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
         newVendor.setAccountNo(vendor.getAccountNumber());
         newVendor.setIfscCode(vendor.getIfscCode());
         newVendor.setPurchaseHistory(null);
+        newVendor.setSwiftCode(vendor.getSwiftCode());
+        newVendor.setAlternateEmailOrPhoneNumber(vendor.getAlternateEmailOrPhoneNumber());
+        newVendor.setBicCode(vendor.getBicCode());
+        newVendor.setIbanAbaNumber(vendor.getIbanAbaNumber());
+        newVendor.setSortCode(vendor.getSortCode());
+        newVendor.setBankRoutingNumber(vendor.getBankRoutingNumber());
+        newVendor.setBankAddress(vendor.getBankAddress());
+        newVendor.setCountry(vendor.getCountry());
+        newVendor.setState(vendor.getState());
+        newVendor.setPlace(vendor.getPlace());
         newVendor.setStatus("APPROVED");
         newVendor.setCreatedBy(actionBy);
         newVendor.setRemarks(remarks);
@@ -298,6 +336,13 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
         return "Vendor " + vendor.getVendorId() + " has been REJECTED.";
     }
 
+    public boolean checkPanExists(String panNumber) {
+        return vendorMasterUtilRepository.existsByPanNumberIgnoreCase(panNumber);
+    }
+
+    public boolean checkEmailExistsForInternational(String email) {
+        return vendorMasterUtilRepository.existsByEmailAddressIgnoreCaseAndVendorType(email, "International");
+    }
 
 
 }

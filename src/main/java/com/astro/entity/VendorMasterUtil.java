@@ -17,14 +17,15 @@ public class VendorMasterUtil {
     private String vendorName;
     private String vendorType;
     private String contactNumber;
+    @Column(name = "email_address", unique = true)
     private String emailAddress;
     private Boolean registeredPlatform;
     private String pfmsVendorCode;
     private String primaryBusiness;
     private String address;
-    private String landlineNumber;
-    private String mobileNumber;
+  //  private String mobileNumber;
     private String faxNumber;
+    @Column(name = "pan_number", unique = true)
     private String panNumber;
     private String gstNumber;
     private String bankName;
@@ -39,6 +40,37 @@ public class VendorMasterUtil {
     private Integer createdBy;
     @Column(name = "updated_by")
     private String updatedBy;
+    @Column(name = "alternate_email_or_phone_number")
+    private String alternateEmailOrPhoneNumber;
+
+    @Column(name = "swift_code")
+    private String swiftCode;
+
+    @Column(name = "bic_code")
+    private String bicCode;
+
+    @Column(name = "iban_aba_number")
+    private String ibanAbaNumber;
+
+    @Column(name = "sort_code")
+    private String sortCode;
+
+    @Column(name = "bank_routing_number")
+    private String bankRoutingNumber;
+
+    @Column(name = "bank_address", length = 500)
+    private String bankAddress;
+
+    @Column(name = "country")
+    private String country;
+
+    @Column(name = "state")
+    private String state;
+
+    @Column(name = "place")
+    private String place;
+
+
 
     private LocalDateTime createdDate = LocalDateTime.now();
     private LocalDateTime updatedDate = LocalDateTime.now();

@@ -1,6 +1,7 @@
 package com.astro.service.impl;
 
 import com.astro.dto.workflow.VendorQuotationAgainstTenderDto;
+import com.astro.dto.workflow.VendorQuotationUpdateRequestDto;
 import com.astro.dto.workflow.VendorStatusDto;
 import com.astro.entity.VendorLoginDetails;
 import com.astro.entity.VendorMaster;
@@ -13,6 +14,7 @@ import com.astro.service.VendorQuotationAgainstTenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +53,9 @@ public class VendorQuotationAgainstTenderServiceImpl implements VendorQuotationA
 
        List<VendorQuotationAgainstTender> vqList= vendorQuotationAgainstTenderRepository.findByTenderId(tenderId);
 
-        return vqList.stream().map(vq -> {
+        return vqList.stream()
+                .filter(vq -> !"Rejected".equalsIgnoreCase(vq.getStatus()))
+                .map(vq -> {
             VendorQuotationAgainstTenderDto dto = new VendorQuotationAgainstTenderDto();
             dto.setTenderId(vq.getTenderId());
             dto.setVendorId(vq.getVendorId());
@@ -123,5 +127,22 @@ public class VendorQuotationAgainstTenderServiceImpl implements VendorQuotationA
         return quotation;
     }
 
-    
+    public boolean updateStatusAndRemarks(VendorQuotationUpdateRequestDto request) {
+        Optional<VendorQuotationAgainstTender> optional = vendorQuotationAgainstTenderRepository.findByTenderIdAndVendorId(
+                request.getTenderId(), request.getVendorId());
+
+        if (optional.isPresent()) {
+            VendorQuotationAgainstTender record = optional.get();
+            record.setStatus(request.getStatus());
+            record.setRemarks(request.getRemarks());
+            record.setUpdatedDate(LocalDateTime.now());
+            vendorQuotationAgainstTenderRepository.save(record);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+
 }

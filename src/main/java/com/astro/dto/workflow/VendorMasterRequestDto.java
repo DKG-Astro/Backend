@@ -15,7 +15,7 @@ public class VendorMasterRequestDto {
     private String primaryBusiness;
     private String address;
     private String landline;
-    private String mobileNo;
+  //  private String mobileNo;
     private String fax;
     private String panNo;
     private String gstNo;
@@ -24,7 +24,16 @@ public class VendorMasterRequestDto {
     private String ifscCode;
     private String purchaseHistory;
     private String status;
-
+    private String alternateEmailOrPhoneNumber;
+    private String swiftCode;
+    private String bicCode;
+    private String ibanAbaNumber;
+    private String sortCode;
+    private String bankRoutingNumber;
+    private String bankAddress;
+    private String country;
+    private String state;
+    private String place;
     private String updatedBy;
     private Integer createdBy;
 

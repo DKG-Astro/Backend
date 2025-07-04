@@ -75,11 +75,11 @@ public class TenderRequestController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(tenderRequest), HttpStatus.OK);
     }
 
-    @GetMapping("vendor/{tenderId}")
-    public ResponseEntity<Object> vendorCheck(@PathVariable String tenderId) {
+    @GetMapping("vendor/{tenderId}/{vendorId}")
+    public ResponseEntity<Object> vendorCheck(@PathVariable String tenderId,@PathVariable String vendorId) {
 
-        String  vendorId = TRService.vendorCheck(tenderId);
-        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(vendorId), HttpStatus.OK);
+        VendorQualificationResponseDto status = TRService.vendorCheck(tenderId, vendorId);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(status), HttpStatus.OK);
     }
 
     @GetMapping("/{tenderId}")

@@ -20,7 +20,7 @@ public interface TenderRequestService {
     public void deleteTenderRequest(String tenderId);
     public TenderResponseDto updateTender(String tenderId, tenderUpdateDto dto);
 
-    public String vendorCheck(String tenderId);
+    public VendorQualificationResponseDto  vendorCheck(String tenderId, String vendorId);
     public TenderResponseBase64FilesDto getTenderDataWithBase64Files(String tenderId) throws IOException;
 
 

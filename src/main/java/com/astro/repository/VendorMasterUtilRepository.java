@@ -17,4 +17,9 @@ public interface VendorMasterUtilRepository extends JpaRepository<VendorMasterUt
     Integer findMaxVendorNumber();
 
     Optional<VendorMasterUtil> findByVendorId(String vendorId);
+
+    boolean existsByPanNumberIgnoreCase(String panNumber);
+
+    boolean existsByEmailAddressIgnoreCaseAndVendorType(String email, String international);
+
 }

@@ -17,7 +17,7 @@ public class VendorRegiEmailResponseDTO {
     private String primaryBusiness;
     private String address;
     private String landlineNumber;
-    private String mobileNumber;
+    //private String mobileNumber;
     private String faxNumber;
     private String panNumber;
     private String gstNumber;
@@ -27,6 +27,16 @@ public class VendorRegiEmailResponseDTO {
     private String approvalStatus;
     private String comments;
     private Boolean emailStatus;
+    private String alternateEmailOrPhoneNumber;
+    private String swiftCode;
+    private String bicCode;
+    private String ibanAbaNumber;
+    private String sortCode;
+    private String bankRoutingNumber;
+    private String bankAddress;
+    private String country;
+    private String state;
+    private String place;
     private String updatedBy;
     private Integer createdBy;
     private LocalDateTime createdDate;

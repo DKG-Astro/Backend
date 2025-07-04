@@ -40,6 +40,7 @@ public class PurchaseOrderAttributes {
     private String budgetCode;
     @Column(name = "received_quantity")
     private BigDecimal receivedQuantity;
+    private BigDecimal totalPoMaterialPriceInInr;
    // @ManyToOne
    // @JoinColumn(name = "purchase_order_id", referencedColumnName = "po_id")
    // private PurchaseOrder purchaseOrder;

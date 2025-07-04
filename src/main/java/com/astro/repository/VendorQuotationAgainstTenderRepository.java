@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface VendorQuotationAgainstTenderRepository extends JpaRepository<VendorQuotationAgainstTender,Long> {
@@ -15,4 +16,5 @@ public interface VendorQuotationAgainstTenderRepository extends JpaRepository<Ve
   @Query("SELECT v.vendorId FROM VendorQuotationAgainstTender v WHERE v.tenderId = :tenderId")
   List<String> findVendorIdsByTenderId(@Param("tenderId") String tenderId);
 
+    Optional<VendorQuotationAgainstTender> findByTenderIdAndVendorId(String tenderId, String vendorId);
 }

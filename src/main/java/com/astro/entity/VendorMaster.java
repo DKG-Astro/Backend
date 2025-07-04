@@ -42,11 +42,11 @@ public class VendorMaster {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "landline")
-    private String landline;
+   // @Column(name = "landline")
+  //  private String landline;
 
-    @Column(name = "mobile_no")
-    private String mobileNo;
+   // @Column(name = "mobile_no")
+  //  private String mobileNo;
 
     @Column(name = "fax")
     private String fax;
@@ -78,6 +78,35 @@ public class VendorMaster {
     private Integer createdBy;
     @Column(name = "updated_by")
     private String updatedBy;
+    @Column(name = "alternate_email_or_phone_number")
+    private String alternateEmailOrPhoneNumber;
+
+    @Column(name = "swift_code")
+    private String swiftCode;
+
+    @Column(name = "bic_code")
+    private String bicCode;
+
+    @Column(name = "iban_aba_number")
+    private String ibanAbaNumber;
+
+    @Column(name = "sort_code")
+    private String sortCode;
+
+    @Column(name = "bank_routing_number")
+    private String bankRoutingNumber;
+
+    @Column(name = "bank_address", length = 500)
+    private String bankAddress;
+    @Column(name = "country")
+    private String country;
+
+    @Column(name = "state")
+    private String state;
+
+    @Column(name = "place")
+    private String place;
+
 
     private LocalDateTime createdDate = LocalDateTime.now();
     private LocalDateTime updatedDate = LocalDateTime.now();

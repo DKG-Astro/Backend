@@ -2,6 +2,7 @@ package com.astro.controller;
 
 import com.astro.dto.workflow.VendorMasterResponseDto;
 import com.astro.dto.workflow.VendorQuotationAgainstTenderDto;
+import com.astro.dto.workflow.VendorQuotationUpdateRequestDto;
 import com.astro.dto.workflow.VendorStatusDto;
 import com.astro.service.VendorQuotationAgainstTenderService;
 import com.astro.util.ResponseBuilder;
@@ -11,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/vendor-quotation")
@@ -40,6 +43,18 @@ public class VendorQuotationController {
     public ResponseEntity<Object> getVendorStatus(@PathVariable String vendorId) {
         VendorStatusDto responseDTO = vqService.getVendorStatus(vendorId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
+    }
+
+    @PutMapping("/updateVendorQuotation-status")
+    public ResponseEntity<Object> updateVendorQuotationStatus(@RequestBody VendorQuotationUpdateRequestDto request) {
+        Boolean message = vqService.updateStatusAndRemarks(request);
+        Map<String, Boolean> responseData = new HashMap<>();
+        responseData.put("status",  message);
+        return new ResponseEntity<>(
+                ResponseBuilder.getSuccessResponse(responseData),
+                HttpStatus.OK
+        );
+
     }
 
 

@@ -139,23 +139,39 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                     attribute.setDuties(dto.getDuties());
                     attribute.setFreightCharge(dto.getFreightCharge());
                     attribute.setBudgetCode(dto.getBudgetCode());
-                    attribute.setPurchaseOrder(purchaseOrder);  // Associate with PurchaseOrder
+                    BigDecimal total = calculateTotalPriceInInr(
+                            dto.getRate(),
+                            dto.getExchangeRate(),
+                            dto.getCurrency(),
+                            dto.getQuantity(),
+                            dto.getGst(),
+                            dto.getDuties(),
+                            dto.getFreightCharge()
+                    );
+                    attribute.setTotalPoMaterialPriceInInr(total);
+                    attribute.setPurchaseOrder(purchaseOrder);
                     return attribute;
                 })
                 .collect(Collectors.toList());
         // purchaseOrder.setPurchaseOrderAttributes(purchaseOrderAttributes);
         // purchaseOrderRepository.save(purchaseOrder);
         // Set attributes and save order
+        BigDecimal totalPoValue = purchaseOrderAttributes.stream()
+                .map(PurchaseOrderAttributes::getTotalPoMaterialPriceInInr)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        purchaseOrder.setTotalValueOfPo(totalPoValue);
+
         purchaseOrder.setPurchaseOrderAttributes(purchaseOrderAttributes);
-        List<String> indentIds = indentIdRepository.findTenderWithIndent(purchaseOrder.getTenderId());
+       // List<String> indentIds = indentIdRepository.findTenderWithIndent(purchaseOrder.getTenderId());
 
         // Calculate total tender value by summing totalPriceOfAllMaterials of all indents
-        BigDecimal totalTenderValue = indentIds.stream()
+       /* BigDecimal totalTenderValue = indentIds.stream()
                 .map(indentCreationService::getIndentById) // Fetch Indent data
                 .map(IndentCreationResponseDTO::getTotalPriceOfAllMaterials) // Extract total price
                 .reduce(BigDecimal.ZERO, BigDecimal::add); // Sum up values
         purchaseOrder.setTotalValueOfPo(totalTenderValue);
-        System.out.println("tottalTenderValue" + totalTenderValue);
+        System.out.println("tottalTenderValue" + totalTenderValue);*/
         purchaseOrderRepository.save(purchaseOrder);
         return mapToResponseDTO(purchaseOrder);
     }
@@ -219,18 +235,33 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                     attr.setFreightCharge(dto.getFreightCharge());
                     attr.setBudgetCode(dto.getBudgetCode());
                     attr.setPurchaseOrder(purchaseOrder);  // Associate back
+                    BigDecimal total = calculateTotalPriceInInr(
+                            dto.getRate(),
+                            dto.getExchangeRate(),
+                            dto.getCurrency(),
+                            dto.getQuantity(),
+                            dto.getGst(),
+                            dto.getDuties(),
+                            dto.getFreightCharge()
+                    );
+                    attr.setTotalPoMaterialPriceInInr(total);
                     return attr;
                 })
                 .collect(Collectors.toList());
 
         purchaseOrder.getPurchaseOrderAttributes().addAll(newAttributes);
-        List<String> indentIds = indentIdRepository.findTenderWithIndent(purchaseOrder.getTenderId());
-
+      //  List<String> indentIds = indentIdRepository.findTenderWithIndent(purchaseOrder.getTenderId());
+/*
         BigDecimal totalTenderValue = indentIds.stream()
                 .map(indentCreationService::getIndentById)
                 .map(IndentCreationResponseDTO::getTotalPriceOfAllMaterials)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        purchaseOrder.setTotalValueOfPo(totalTenderValue);
+        purchaseOrder.setTotalValueOfPo(totalTenderValue);*/
+        BigDecimal totalPoValue = newAttributes.stream()
+                .map(PurchaseOrderAttributes::getTotalPoMaterialPriceInInr)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        purchaseOrder.setTotalValueOfPo(totalPoValue);
 
         // Save
         purchaseOrderRepository.save(purchaseOrder);
@@ -283,7 +314,8 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         responseDTO.setVendorAccountName(purchaseOrder.getVendorAccountName());
         responseDTO.setVendorId(purchaseOrder.getVendorId());
         //  responseDTO.setProjectName(purchaseOrder.getProjectName());
-        responseDTO.setTotalValueOfPo(tenderWithIndent.getTotalTenderValue());
+       // responseDTO.setTotalValueOfPo(tenderWithIndent.getTotalTenderValue());
+        responseDTO.setTotalValueOfPo(purchaseOrder.getTotalValueOfPo());
         LocalDate date = purchaseOrder.getDeliveryDate();
         if (date != null) {
             responseDTO.setDeliveryDate(CommonUtils.convertDateToString(date));
@@ -431,7 +463,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                     return attributeDTO;
                 })
                 .collect(Collectors.toList()));
-        List<String> indentIds = indentIdRepository.findTenderWithIndent(purchaseOrder.getTenderId());
+      /*  List<String> indentIds = indentIdRepository.findTenderWithIndent(purchaseOrder.getTenderId());
 
         // Calculate total tender value by summing totalPriceOfAllMaterials of all indents
         BigDecimal totalTenderValue = indentIds.stream()
@@ -439,7 +471,8 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                 .map(IndentCreationResponseDTO::getTotalPriceOfAllMaterials) // Extract total price
                 .reduce(BigDecimal.ZERO, BigDecimal::add); // Sum up values
         responseDTO.setTotalValue(totalTenderValue);
-        System.out.println("tottalTenderValue" + totalTenderValue);
+        System.out.println("tottalTenderValue" + totalTenderValue);*/
+        responseDTO.setTotalValue(purchaseOrder.getTotalValueOfPo());
 
         Optional<TenderRequest> tenderRequest = tenderRequestRepository.findByTenderId(purchaseOrder.getTenderId());
 
@@ -750,6 +783,37 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         return reports;
 
     }
+    public BigDecimal calculateTotalPriceInInr(
+            BigDecimal rate,
+            BigDecimal exchangeRate,
+            String currency,
+            BigDecimal quantity,
+            BigDecimal gst,
+            BigDecimal duties,
+            BigDecimal freightCharge
+    ) {
+        if (rate == null || quantity == null) return BigDecimal.ZERO;
+
+        // Default values if null
+        exchangeRate = exchangeRate != null ? exchangeRate : BigDecimal.ONE;
+        gst = gst != null ? gst : BigDecimal.ZERO;
+        duties = duties != null ? duties : BigDecimal.ZERO;
+        freightCharge = freightCharge != null ? freightCharge : BigDecimal.ZERO;
+
+        // Convert rate to INR if not already INR
+        BigDecimal baseRate = "INR".equalsIgnoreCase(currency) ? rate : rate.multiply(exchangeRate);
+
+        // Base Amount
+        BigDecimal baseAmount = baseRate.multiply(quantity);
+
+        // GST & Duties Amounts
+        BigDecimal gstAmount = baseAmount.multiply(gst).divide(BigDecimal.valueOf(100));
+        BigDecimal dutiesAmount = baseAmount.multiply(duties).divide(BigDecimal.valueOf(100));
+
+        // Total = Base + GST + Duties + Freight
+        return baseAmount.add(gstAmount).add(dutiesAmount).add(freightCharge);
+    }
+
 
 
 }

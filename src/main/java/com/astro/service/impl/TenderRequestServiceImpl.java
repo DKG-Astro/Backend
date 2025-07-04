@@ -7,6 +7,7 @@ import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDT
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderMaterialRequestDTO;
 import com.astro.entity.ProcurementModule.*;
 import com.astro.entity.ProjectMaster;
+import com.astro.entity.VendorQuotationAgainstTender;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
@@ -15,6 +16,7 @@ import com.astro.repository.ProcurementModule.IndentCreation.MaterialDetailsRepo
 import com.astro.repository.ProcurementModule.IndentIdRepository;
 import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.repository.ProjectMasterRepository;
+import com.astro.repository.VendorQuotationAgainstTenderRepository;
 import com.astro.service.IndentCreationService;
 import com.astro.service.TenderRequestService;
 import com.astro.util.CommonUtils;
@@ -50,6 +52,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     private ProjectMasterRepository projectMasterRepository;
     @Autowired
     private MaterialDetailsRepository materialDetailsRepository;
+    @Autowired
+    private VendorQuotationAgainstTenderRepository vendorQuotationAgainstTenderRepository;
     @Value("${filePath}")
     private String bp;
     private final String basePath;
@@ -57,8 +61,9 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     public TenderRequestServiceImpl(@Value("${filePath}") String bp) {
         this.basePath = bp + "/Tender";
     }
+
     @Override
-    public TenderResponseDto createTenderRequest(TenderRequestDto tenderRequestDto){
+    public TenderResponseDto createTenderRequest(TenderRequestDto tenderRequestDto) {
 
         // Check if the indentorId already exists
      /*   if (TRrepo.existsById(tenderRequestDto.getTenderId())) {
@@ -68,17 +73,17 @@ public class TenderRequestServiceImpl implements TenderRequestService {
 
       */
 
-        Integer maxNumber =TRrepo.findMaxTenderNumber();
+        Integer maxNumber = TRrepo.findMaxTenderNumber();
         int nextNumber = (maxNumber == null) ? 1001 : maxNumber + 1;
 
         String tenderId = "T" + nextNumber;
 
         TenderRequest tenderRequest = new TenderRequest();
 
-      //  String tenderId = "T" + System.currentTimeMillis();
-       // tenderRequest.setTenderId(tenderRequestDto.getTenderId());
+        //  String tenderId = "T" + System.currentTimeMillis();
+        // tenderRequest.setTenderId(tenderRequestDto.getTenderId());
         tenderRequest.setTenderId(tenderId);
-        System.out.println("tenderId:" + tenderId );
+        System.out.println("tenderId:" + tenderId);
         tenderRequest.setTenderNumber(nextNumber);
         tenderRequest.setTitleOfTender(tenderRequestDto.getTitleOfTender());
         String openingDate = tenderRequestDto.getOpeningDate();
@@ -103,7 +108,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         if (!mdList.isEmpty()) {
             MaterialDetails m = mdList.get(0);
             tenderRequest.setModeOfProcurement(m.getModeOfProcurement());
-        }else{
+        } else {
             tenderRequest.setModeOfProcurement(null);
         }
 
@@ -111,13 +116,13 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         String LastDateOfSubmission = tenderRequestDto.getLastDateOfSubmission();
         tenderRequest.setLastDateOfSubmission(CommonUtils.convertStringToDateObject(LastDateOfSubmission));
         tenderRequest.setApplicableTaxes(tenderRequestDto.getApplicableTaxes());
-      //  tenderRequest.setConsignesAndBillinngAddress(tenderRequestDto.getConsignesAndBillinngAddress());
+        //  tenderRequest.setConsignesAndBillinngAddress(tenderRequestDto.getConsignesAndBillinngAddress());
         tenderRequest.setConsignes(tenderRequestDto.getConsignes());
         tenderRequest.setBillinngAddress(tenderRequestDto.getBillingAddress());
         tenderRequest.setIncoTerms(tenderRequestDto.getIncoTerms());
         tenderRequest.setPaymentTerms(tenderRequestDto.getPaymentTerms());
         tenderRequest.setLdClause(tenderRequestDto.getLdClause());
-      //  tenderRequest.setApplicablePerformance(tenderRequestDto.getApplicablePerformance());
+        //  tenderRequest.setApplicablePerformance(tenderRequestDto.getApplicablePerformance());
         tenderRequest.setPerformanceAndWarrantySecurity(tenderRequestDto.getPerformanceAndWarrantySecurity());
         tenderRequest.setBidSecurityDeclaration(tenderRequestDto.getBidSecurityDeclaration());
         tenderRequest.setMllStatusDeclaration(tenderRequestDto.getMllStatusDeclaration());
@@ -126,38 +131,38 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         tenderRequest.setUpdatedBy(tenderRequestDto.getUpdatedBy());
         tenderRequest.setCreatedBy(tenderRequestDto.getCreatedBy());
         //tenderRequest.setUploadTenderDocumentsFileName(tenderRequestDto.getUploadTenderDocuments());
-       // tenderRequest.setUploadSpecificTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
-      //  tenderRequest.setUploadGeneralTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
+        // tenderRequest.setUploadSpecificTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
+        //  tenderRequest.setUploadGeneralTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
         tenderRequest.setFileType(tenderRequestDto.getFileType());
 
-        if(tenderRequestDto.getUploadSpecificTermsAndConditions() == null || tenderRequestDto.getUploadSpecificTermsAndConditions().isEmpty()){
+        if (tenderRequestDto.getUploadSpecificTermsAndConditions() == null || tenderRequestDto.getUploadSpecificTermsAndConditions().isEmpty()) {
             tenderRequest.setUploadSpecificTermsAndConditionsFileName(null);
 
-        }else {
+        } else {
             String uploadSpecificTermsAndConditionsFileName = saveBase64Files(tenderRequestDto.getUploadSpecificTermsAndConditions(), basePath);
             tenderRequest.setUploadSpecificTermsAndConditionsFileName(uploadSpecificTermsAndConditionsFileName);
         }
-        if(tenderRequestDto.getUploadTenderDocuments() == null || tenderRequestDto.getUploadTenderDocuments().isEmpty()){
+        if (tenderRequestDto.getUploadTenderDocuments() == null || tenderRequestDto.getUploadTenderDocuments().isEmpty()) {
             tenderRequest.setUploadTenderDocumentsFileName(null);
-        }else {
+        } else {
             String tenderDoc = saveBase64Files(tenderRequestDto.getUploadTenderDocuments(), basePath);
             tenderRequest.setUploadTenderDocumentsFileName(tenderDoc);
         }
-        if(tenderRequestDto.getUploadGeneralTermsAndConditions() == null || tenderRequestDto.getUploadGeneralTermsAndConditions().isEmpty()){
+        if (tenderRequestDto.getUploadGeneralTermsAndConditions() == null || tenderRequestDto.getUploadGeneralTermsAndConditions().isEmpty()) {
             tenderRequest.setUploadGeneralTermsAndConditionsFileName(null);
-        }else {
+        } else {
             String generalDoc = saveBase64Files(tenderRequestDto.getUploadGeneralTermsAndConditions(), basePath);
             tenderRequest.setUploadGeneralTermsAndConditionsFileName(generalDoc);
         }
-        if(tenderRequestDto.getBidSecurityDeclarationFileName() == null || tenderRequestDto.getBidSecurityDeclarationFileName().isEmpty()){
+        if (tenderRequestDto.getBidSecurityDeclarationFileName() == null || tenderRequestDto.getBidSecurityDeclarationFileName().isEmpty()) {
             tenderRequest.setBidSecurityDeclarationFileName(null);
-        }else {
+        } else {
             String bidDoc = saveBase64Files(tenderRequestDto.getBidSecurityDeclarationFileName(), basePath);
             tenderRequest.setBidSecurityDeclarationFileName(bidDoc);
         }
-        if(tenderRequestDto.getMllStatusDeclarationFileName() == null || tenderRequestDto.getMllStatusDeclarationFileName().isEmpty()){
+        if (tenderRequestDto.getMllStatusDeclarationFileName() == null || tenderRequestDto.getMllStatusDeclarationFileName().isEmpty()) {
             tenderRequest.setMllStatusDeclarationFileName(null);
-        }else {
+        } else {
             String mllDoc = saveBase64Files(tenderRequestDto.getMllStatusDeclarationFileName(), basePath);
             tenderRequest.setMllStatusDeclarationFileName(mllDoc);
         }
@@ -189,7 +194,6 @@ public class TenderRequestServiceImpl implements TenderRequestService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         tenderRequest.setTotalTenderValue(totalTenderValue);
 
-        
 
         TRrepo.save(tenderRequest);
 
@@ -215,8 +219,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
 
 
     @Override
-    public TenderResponseDto updateTenderRequest(String tenderId, TenderRequestDto tenderRequestDto){
-         //   ,String uploadTenderDocumentsFileName,String uploadGeneralTermsAndConditionsFileName  , String uploadSpecificTermsAndConditionsFileName) {
+    public TenderResponseDto updateTenderRequest(String tenderId, TenderRequestDto tenderRequestDto) {
+        //   ,String uploadTenderDocumentsFileName,String uploadGeneralTermsAndConditionsFileName  , String uploadSpecificTermsAndConditionsFileName) {
         TenderRequest existingTR = TRrepo.findById(tenderId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
@@ -230,14 +234,14 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         existingTR.setOpeningDate(CommonUtils.convertStringToDateObject(openingDate));
         String closeingDate = tenderRequestDto.getClosingDate();
         existingTR.setClosingDate(CommonUtils.convertStringToDateObject(closeingDate));
-      //  existingTR.setIndentId(tenderRequestDto.getIndentId());
+        //  existingTR.setIndentId(tenderRequestDto.getIndentId());
         existingTR.setIndentMaterials(tenderRequestDto.getIndentMaterials());
         existingTR.setModeOfProcurement(tenderRequestDto.getModeOfProcurement());
         existingTR.setBidType(tenderRequestDto.getBidType());
         String LastDateOfSubmission = tenderRequestDto.getLastDateOfSubmission();
         existingTR.setLastDateOfSubmission(CommonUtils.convertStringToDateObject(LastDateOfSubmission));
         existingTR.setApplicableTaxes(tenderRequestDto.getApplicableTaxes());
-       // existingTR.setConsignesAndBillinngAddress(tenderRequestDto.getConsignesAndBillinngAddress());
+        // existingTR.setConsignesAndBillinngAddress(tenderRequestDto.getConsignesAndBillinngAddress());
         existingTR.setBillinngAddress(tenderRequestDto.getBillingAddress());
         existingTR.setConsignes(tenderRequestDto.getConsignes());
         existingTR.setIncoTerms(tenderRequestDto.getIncoTerms());
@@ -245,7 +249,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         existingTR.setLdClause(tenderRequestDto.getLdClause());
         existingTR.setVendorId(tenderRequestDto.getVendorId());
         existingTR.setQuotationFileName(tenderRequestDto.getQuotationFileName());
-       // existingTR.setApplicablePerformance(tenderRequestDto.getApplicablePerformance());
+        // existingTR.setApplicablePerformance(tenderRequestDto.getApplicablePerformance());
         existingTR.setPerformanceAndWarrantySecurity(tenderRequestDto.getPerformanceAndWarrantySecurity());
         existingTR.setBidSecurityDeclaration(tenderRequestDto.getBidSecurityDeclaration());
         existingTR.setMllStatusDeclaration(tenderRequestDto.getMllStatusDeclaration());
@@ -253,44 +257,44 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         existingTR.setPreBidDisscussions(tenderRequestDto.getPreBidDisscussions());
         existingTR.setUpdatedBy(tenderRequestDto.getUpdatedBy());
         existingTR.setCreatedBy(tenderRequestDto.getCreatedBy());
-       // existingTR.setUploadTenderDocumentsFileName(tenderRequestDto.getUploadTenderDocuments());
-      //  existingTR.setUploadSpecificTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
-       // existingTR.setUploadGeneralTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
-        if(tenderRequestDto.getUploadSpecificTermsAndConditions() == null || tenderRequestDto.getUploadSpecificTermsAndConditions().isEmpty()){
+        // existingTR.setUploadTenderDocumentsFileName(tenderRequestDto.getUploadTenderDocuments());
+        //  existingTR.setUploadSpecificTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
+        // existingTR.setUploadGeneralTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
+        if (tenderRequestDto.getUploadSpecificTermsAndConditions() == null || tenderRequestDto.getUploadSpecificTermsAndConditions().isEmpty()) {
             existingTR.setUploadSpecificTermsAndConditionsFileName(null);
 
-        }else {
+        } else {
             String uploadSpecificTermsAndConditionsFileName = saveBase64Files(tenderRequestDto.getUploadSpecificTermsAndConditions(), basePath);
             existingTR.setUploadSpecificTermsAndConditionsFileName(uploadSpecificTermsAndConditionsFileName);
         }
-        if(tenderRequestDto.getUploadTenderDocuments() == null || tenderRequestDto.getUploadTenderDocuments().isEmpty()){
+        if (tenderRequestDto.getUploadTenderDocuments() == null || tenderRequestDto.getUploadTenderDocuments().isEmpty()) {
             existingTR.setUploadTenderDocumentsFileName(null);
-        }else {
+        } else {
             String tenderDoc = saveBase64Files(tenderRequestDto.getUploadTenderDocuments(), basePath);
             existingTR.setUploadTenderDocumentsFileName(tenderDoc);
         }
-        if(tenderRequestDto.getUploadGeneralTermsAndConditions() == null || tenderRequestDto.getUploadGeneralTermsAndConditions().isEmpty()){
+        if (tenderRequestDto.getUploadGeneralTermsAndConditions() == null || tenderRequestDto.getUploadGeneralTermsAndConditions().isEmpty()) {
             existingTR.setUploadGeneralTermsAndConditionsFileName(null);
-        }else {
+        } else {
             String generalDoc = saveBase64Files(tenderRequestDto.getUploadGeneralTermsAndConditions(), basePath);
             existingTR.setUploadGeneralTermsAndConditionsFileName(generalDoc);
         }
 
-        if(tenderRequestDto.getBidSecurityDeclarationFileName() == null || tenderRequestDto.getBidSecurityDeclarationFileName().isEmpty()){
+        if (tenderRequestDto.getBidSecurityDeclarationFileName() == null || tenderRequestDto.getBidSecurityDeclarationFileName().isEmpty()) {
             existingTR.setBidSecurityDeclarationFileName(null);
-        }else {
+        } else {
             String bidDoc = saveBase64Files(tenderRequestDto.getBidSecurityDeclarationFileName(), basePath);
             existingTR.setBidSecurityDeclarationFileName(bidDoc);
         }
-        if(tenderRequestDto.getMllStatusDeclarationFileName() == null || tenderRequestDto.getMllStatusDeclarationFileName().isEmpty()){
+        if (tenderRequestDto.getMllStatusDeclarationFileName() == null || tenderRequestDto.getMllStatusDeclarationFileName().isEmpty()) {
             existingTR.setMllStatusDeclarationFileName(null);
-        }else {
+        } else {
             String mllDoc = saveBase64Files(tenderRequestDto.getMllStatusDeclarationFileName(), basePath);
             existingTR.setMllStatusDeclarationFileName(mllDoc);
         }
         existingTR.setFileType(tenderRequestDto.getFileType());
 
-    // Update Indent IDs
+        // Update Indent IDs
         List<String> newIndentIds = tenderRequestDto.getIndentId();
 
         // Remove old indent IDs that are no longer in the updated list
@@ -311,10 +315,11 @@ public class TenderRequestServiceImpl implements TenderRequestService {
                 }).collect(Collectors.toList());
 
         existingTR.getIndentIds().addAll(indentIdList);
-         TRrepo.save(existingTR);
+        TRrepo.save(existingTR);
 
         return mapToResponseDTO(existingTR);
     }
+
     @Override
     public TenderResponseDto updateTender(String tenderId, tenderUpdateDto dto) {
 
@@ -339,8 +344,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     }
 
     @Override
-    public String vendorCheck(String tenderId) {
-        TenderRequest tenderRequest =TRrepo.findById(tenderId)
+    public VendorQualificationResponseDto vendorCheck(String tenderId, String vendorId) {
+        TenderRequest tenderRequest = TRrepo.findById(tenderId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -348,13 +353,30 @@ public class TenderRequestServiceImpl implements TenderRequestService {
                                 AppConstant.ERROR_TYPE_RESOURCE,
                                 "Tender not found for the provided asset ID.")
                 ));
-        String vendorId = tenderRequest.getVendorId();
+        String vendor = tenderRequest.getVendorId();
+        VendorQualificationResponseDto resp = new VendorQualificationResponseDto();
 
-        if (vendorId != null && !vendorId.isEmpty()) {
-            return vendorId;
+        if (vendor != null && !vendor.isEmpty() && vendor.equals(vendorId)) {
+            // return vendorId;
+            resp.setVendorId(vendor);
+            resp.setQualified(true);
+            resp.setRemarks("null");
         } else {
-            return null;
+            Optional<VendorQuotationAgainstTender> quotationOpt =
+                    vendorQuotationAgainstTenderRepository.findByTenderIdAndVendorId(tenderId, vendorId);
+
+            if (quotationOpt.isPresent()) {
+                VendorQuotationAgainstTender quotation = quotationOpt.get();
+                resp.setVendorId(null);
+                resp.setQualified(false);
+                resp.setRemarks(quotation.getRemarks()); // Fetch remarks from the entity
+            } else {
+                resp.setVendorId(vendorId);
+                resp.setQualified(false);
+                resp.setRemarks(null);
+            }
         }
+        return resp;
     }
 
 
