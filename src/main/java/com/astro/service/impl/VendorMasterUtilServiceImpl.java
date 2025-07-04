@@ -336,13 +336,7 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
         return "Vendor " + vendor.getVendorId() + " has been REJECTED.";
     }
 
-    public boolean checkPanExists(String panNumber) {
-        return vendorMasterUtilRepository.existsByPanNumberIgnoreCase(panNumber);
-    }
 
-    public boolean checkEmailExistsForInternational(String email) {
-        return vendorMasterUtilRepository.existsByEmailAddressIgnoreCaseAndVendorType(email, "International");
-    }
 
 
 }

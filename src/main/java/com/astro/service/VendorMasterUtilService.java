@@ -18,7 +18,6 @@ public interface VendorMasterUtilService {
 
     public VendorRegistrationResponseDTO getVendorMasterUtilById(String vendorId);
 
-    public boolean checkPanExists(String panNumber);
-    public boolean checkEmailExistsForInternational(String email);
+
 
 }

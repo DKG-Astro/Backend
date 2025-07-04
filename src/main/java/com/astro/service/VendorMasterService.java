@@ -23,6 +23,8 @@ public interface VendorMasterService {
     public RegisteredVendorsDataDto getVendorPurchaseOrders(String tenderId);
 
     public List<String> getTenderIds(String vendorId);
+    public boolean checkPanExists(String panNumber);
+    public boolean checkEmailExistsForInternational(String email);
 
 
  //   List<VendorContractReportDTO> getVendorContracts(String startDate, String endDate);

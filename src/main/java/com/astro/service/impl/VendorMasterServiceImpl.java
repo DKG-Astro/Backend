@@ -296,4 +296,11 @@ public class VendorMasterServiceImpl implements VendorMasterService {
         return responseDto;
 
     }
+    public boolean checkPanExists(String panNumber) {
+        return vendorMasterRepository.existsByPanNoIgnoreCase(panNumber);
+    }
+
+    public boolean checkEmailExistsForInternational(String email) {
+        return vendorMasterRepository.existsByEmailAddressIgnoreCaseAndVendorType(email, "International");
+    }
 }

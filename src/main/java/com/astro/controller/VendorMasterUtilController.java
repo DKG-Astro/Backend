@@ -51,27 +51,7 @@ public class VendorMasterUtilController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 
-    @GetMapping("/check-email/{email}")
-    public ResponseEntity<Object> checkEmailExists(@PathVariable String email) {
-        boolean exists = vendorMasterUtil.checkEmailExistsForInternational(email);
-        Map<String, Boolean> responseData = new HashMap<>();
-        responseData.put("exists", exists);
-        return new ResponseEntity<>(
-                ResponseBuilder.getSuccessResponse(responseData),
-                HttpStatus.OK
-        );
-    }
 
-    @GetMapping("/check-panNumber/{panNumber}")
-    public ResponseEntity<Object> checkPanNumberExists(@PathVariable String panNumber) {
-        boolean exists = vendorMasterUtil.checkPanExists(panNumber);
-        Map<String, Boolean> responseData = new HashMap<>();
-        responseData.put("exists", exists);
-        return new ResponseEntity<>(
-                ResponseBuilder.getSuccessResponse(responseData),
-                HttpStatus.OK
-        );
-    }
 
 
 

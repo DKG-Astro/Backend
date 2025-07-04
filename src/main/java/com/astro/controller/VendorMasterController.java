@@ -12,7 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/vendor-master")
@@ -69,6 +71,28 @@ public class VendorMasterController {
     public ResponseEntity<Object> getAllTenderIdsByVendor(@PathVariable String vendorId) {
         List<String> response = vendorMasterService.getTenderIds(vendorId);
         return ResponseEntity.ok(ResponseBuilder.getSuccessResponse(response));
+    }
+
+    @GetMapping("/check-email/{email}")
+    public ResponseEntity<Object> checkEmailExists(@PathVariable String email) {
+        boolean exists = vendorMasterService.checkEmailExistsForInternational(email);
+        Map<String, Boolean> responseData = new HashMap<>();
+        responseData.put("exists", exists);
+        return new ResponseEntity<>(
+                ResponseBuilder.getSuccessResponse(responseData),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/check-panNumber/{panNumber}")
+    public ResponseEntity<Object> checkPanNumberExists(@PathVariable String panNumber) {
+        boolean exists = vendorMasterService.checkPanExists(panNumber);
+        Map<String, Boolean> responseData = new HashMap<>();
+        responseData.put("exists", exists);
+        return new ResponseEntity<>(
+                ResponseBuilder.getSuccessResponse(responseData),
+                HttpStatus.OK
+        );
     }
 
 

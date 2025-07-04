@@ -18,8 +18,5 @@ public interface VendorMasterUtilRepository extends JpaRepository<VendorMasterUt
 
     Optional<VendorMasterUtil> findByVendorId(String vendorId);
 
-    boolean existsByPanNumberIgnoreCase(String panNumber);
-
-    boolean existsByEmailAddressIgnoreCaseAndVendorType(String email, String international);
 
 }
