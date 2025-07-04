@@ -1,6 +1,7 @@
 package com.astro.controller;
 
 import com.astro.dto.workflow.*;
+import com.astro.service.VendorMasterService;
 import com.astro.service.VendorMasterUtilService;
 import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ public class VendorMasterUtilController {
 
     @Autowired
     private VendorMasterUtilService vendorMasterUtil;
+    @Autowired
+    private VendorMasterService vendorMasterService;
 
     @PostMapping("/register")
     public ResponseEntity<Object> registerVendor(@RequestBody VendorRegistrationRequestDTO dto) {
@@ -51,7 +54,27 @@ public class VendorMasterUtilController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 
+    @GetMapping("/check-email/{email}")
+    public ResponseEntity<Object> checkEmailExists(@PathVariable String email) {
+        boolean exists = vendorMasterService.checkEmailExistsForInternational(email);
+        Map<String, Boolean> responseData = new HashMap<>();
+        responseData.put("exists", exists);
+        return new ResponseEntity<>(
+                ResponseBuilder.getSuccessResponse(responseData),
+                HttpStatus.OK
+        );
+    }
 
+    @GetMapping("/check-panNumber/{panNumber}")
+    public ResponseEntity<Object> checkPanNumberExists(@PathVariable String panNumber) {
+        boolean exists = vendorMasterService.checkPanExists(panNumber);
+        Map<String, Boolean> responseData = new HashMap<>();
+        responseData.put("exists", exists);
+        return new ResponseEntity<>(
+                ResponseBuilder.getSuccessResponse(responseData),
+                HttpStatus.OK
+        );
+    }
 
 
 
