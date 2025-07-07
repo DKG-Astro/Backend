@@ -35,8 +35,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 
 import java.sql.Timestamp;
@@ -65,6 +67,16 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
     private ProjectMasterRepository projectMasterRepository;
     @Autowired
     private ServiceOrderRepository serviceOrderRepository;
+
+    @Value("${filePath}")
+    private String bp;
+    private final String basePath;
+
+    public PurchaseOrderImpl(@Value("${filePath}") String bp) {
+        this.basePath = bp + "/Tender";
+    }
+
+
 
 
     public PurchaseOrderResponseDTO createPurchaseOrder(PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
@@ -119,6 +131,12 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
             purchaseOrder.setDeliveryDate(CommonUtils.convertStringToDateObject(Date));
         } else {
             purchaseOrder.setDeliveryDate(null);
+        }
+        if (purchaseOrderRequestDTO.getComparativeStatementFileName() == null || purchaseOrderRequestDTO.getComparativeStatementFileName().isEmpty()) {
+            purchaseOrder.setComparativeStatementFileName(null);
+        } else {
+            String saved = saveBase64Files(purchaseOrderRequestDTO.getComparativeStatementFileName(), basePath);
+            purchaseOrder.setComparativeStatementFileName(saved);
         }
         purchaseOrder.setProjectName(purchaseOrderRequestDTO.getProjectName());
         purchaseOrder.setCreatedBy(purchaseOrderRequestDTO.getCreatedBy());
@@ -180,6 +198,22 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         String numericPart = tenderId.replaceAll("\\D+", "");
         return "PO" + numericPart;
     }
+    public String saveBase64Files(List<String> base64Files, String basePath) {
+        try {
+            List<String> fileNames = new ArrayList<>();
+            for (String base64File : base64Files) {
+                String fileName = CommonUtils.saveBase64Image(base64File, basePath);
+                fileNames.add(fileName);
+            }
+            return String.join(",", fileNames);
+        } catch (Exception e) {
+            throw new InvalidInputException(new ErrorDetails(
+                    AppConstant.FILE_UPLOAD_ERROR,
+                    AppConstant.USER_INVALID_INPUT,
+                    AppConstant.ERROR_TYPE_CORRUPTED,
+                    "Error while uploading files."));
+        }
+    }
 
 
     public PurchaseOrderResponseDTO updatePurchaseOrder(String poId, PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
@@ -213,6 +247,12 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setVendorId(purchaseOrderRequestDTO.getVendorId());
         purchaseOrder.setUpdatedBy(purchaseOrderRequestDTO.getUpdatedBy());
         purchaseOrder.setCreatedBy(purchaseOrderRequestDTO.getCreatedBy());
+        if (purchaseOrderRequestDTO.getComparativeStatementFileName() == null || purchaseOrderRequestDTO.getComparativeStatementFileName().isEmpty()) {
+            purchaseOrder.setComparativeStatementFileName(null);
+        } else {
+            String saved = saveBase64Files(purchaseOrderRequestDTO.getComparativeStatementFileName(), basePath);
+            purchaseOrder.setComparativeStatementFileName(saved);
+        }
 
         String date = purchaseOrderRequestDTO.getDeliveryDate();
         purchaseOrder.setDeliveryDate(date != null ? CommonUtils.convertStringToDateObject(date) : null);
@@ -273,7 +313,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
     @Autowired
     private GprnMaterialDtlRepository gprnMaterialDtlRepository;
 
-    public poWithTenderAndIndentResponseDTO getPurchaseOrderById(String poId) {
+    public poWithTenderAndIndentResponseDTO getPurchaseOrderById(String poId){
         PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(poId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
@@ -313,6 +353,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         responseDTO.setVendorsIfscCode(purchaseOrder.getVendorsZfscCode());
         responseDTO.setVendorAccountName(purchaseOrder.getVendorAccountName());
         responseDTO.setVendorId(purchaseOrder.getVendorId());
+        responseDTO.setComparativeStatementFileName(purchaseOrder.getComparativeStatementFileName());
         //  responseDTO.setProjectName(purchaseOrder.getProjectName());
        // responseDTO.setTotalValueOfPo(tenderWithIndent.getTotalTenderValue());
         responseDTO.setTotalValueOfPo(purchaseOrder.getTotalValueOfPo());
@@ -377,6 +418,133 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         return responseDTO;
 
     }
+    public PoWithTenderAndIndentBase64FilesDto getPurchaseOrderBase64FilesById(String poId) throws IOException {
+        PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(poId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Purchase order not found for the provided asset ID.")
+                ));
+
+        // Fetch related Tender & Indent
+        TenderWithIndentResponseDTO tenderWithIndent = tenderRequestService.getTenderRequestById(purchaseOrder.getTenderId());
+        Map<String, MaterialDetailsResponseDTO> indentMaterialMap = new HashMap<>();
+
+        for (IndentCreationResponseDTO indent : tenderWithIndent.getIndentResponseDTO()) {
+            for (MaterialDetailsResponseDTO material : indent.getMaterialDetails()) {
+                indentMaterialMap.put(material.getMaterialCode(), material);
+            }
+        }
+
+
+        PoWithTenderAndIndentBase64FilesDto responseDTO = new PoWithTenderAndIndentBase64FilesDto();
+        responseDTO.setPoId(purchaseOrder.getPoId());
+        responseDTO.setTenderId(purchaseOrder.getTenderId());
+        responseDTO.setIndentId(purchaseOrder.getIndentId());
+        responseDTO.setWarranty(purchaseOrder.getWarranty());
+        responseDTO.setConsignesAddress(purchaseOrder.getConsignesAddress());
+        responseDTO.setBillingAddress(purchaseOrder.getBillingAddress());
+        responseDTO.setDeliveryPeriod(purchaseOrder.getDeliveryPeriod());
+        responseDTO.setIfLdClauseApplicable(purchaseOrder.getIfLdClauseApplicable());
+        responseDTO.setIncoTerms(purchaseOrder.getIncoTerms());
+        responseDTO.setPaymentTerms(purchaseOrder.getPaymentTerms());
+        responseDTO.setVendorName(purchaseOrder.getVendorName());
+        responseDTO.setVendorAddress(purchaseOrder.getVendorAddress());
+        responseDTO.setApplicablePbgToBeSubmitted(purchaseOrder.getApplicablePbgToBeSubmitted());
+        responseDTO.setTransporterAndFreightForWarderDetails(purchaseOrder.getTransporterAndFreightForWarderDetails());
+        responseDTO.setVendorAccountNumber(purchaseOrder.getVendorAccountNumber());
+        responseDTO.setVendorsIfscCode(purchaseOrder.getVendorsZfscCode());
+        responseDTO.setVendorAccountName(purchaseOrder.getVendorAccountName());
+        responseDTO.setVendorId(purchaseOrder.getVendorId());
+        responseDTO.setComparativeStatementFileName(purchaseOrder.getComparativeStatementFileName());
+        //  responseDTO.setProjectName(purchaseOrder.getProjectName());
+        // responseDTO.setTotalValueOfPo(tenderWithIndent.getTotalTenderValue());
+        responseDTO.setTotalValueOfPo(purchaseOrder.getTotalValueOfPo());
+        LocalDate date = purchaseOrder.getDeliveryDate();
+        if (date != null) {
+            responseDTO.setDeliveryDate(CommonUtils.convertDateToString(date));
+        } else {
+            responseDTO.setDeliveryDate(null);
+        }
+        if (purchaseOrder.getComparativeStatementFileName() == null || purchaseOrder.getComparativeStatementFileName().isEmpty()) {
+            responseDTO.setComparativeStatementFileNameList(null);
+        } else {
+            responseDTO.setComparativeStatementFileNameList(
+                    convertFilesToBase64(purchaseOrder.getComparativeStatementFileName(), basePath));
+        }
+        responseDTO.setCreatedBy(purchaseOrder.getCreatedBy());
+        responseDTO.setUpdatedBy(purchaseOrder.getUpdatedBy());
+        responseDTO.setCreatedDate(purchaseOrder.getCreatedDate());
+        responseDTO.setUpdatedDate(purchaseOrder.getUpdatedDate());
+        List<String> indentIds = indentIdRepository.findTenderWithIndent(purchaseOrder.getTenderId());
+
+        responseDTO.setIndentIds(indentIds);
+
+        responseDTO.setPurchaseOrderAttributes(purchaseOrder.getPurchaseOrderAttributes().stream()
+                .map(attribute -> {
+                    PurchaseOrderAttributesResponseDTO attributeDTO = new PurchaseOrderAttributesResponseDTO();
+                    attributeDTO.setMaterialCode(attribute.getMaterialCode());
+                    attributeDTO.setMaterialDescription(attribute.getMaterialDescription());
+
+                    // Get sum of GPRN quantities for this material
+                    BigDecimal gprnQuantity = gprnMaterialDtlRepository
+                            .findByPoIdAndMaterialCode(poId, attribute.getMaterialCode())
+                            .stream()
+                            .map(gprn -> gprn.getReceivedQuantity())
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                    // Set remaining quantity
+                    attributeDTO.setQuantity(attribute.getQuantity().subtract(gprnQuantity));
+                    attributeDTO.setReceivedQuantity(attribute.getReceivedQuantity());
+                    attributeDTO.setRate(attribute.getRate());
+                    attributeDTO.setCurrency(attribute.getCurrency());
+                    attributeDTO.setExchangeRate(attribute.getExchangeRate());
+                    attributeDTO.setGst(attribute.getGst());
+                    attributeDTO.setDuties(attribute.getDuties());
+                    attributeDTO.setFreightCharge(attribute.getFreightCharge());
+                    attributeDTO.setBudgetCode(attribute.getBudgetCode());
+                    MaterialDetailsResponseDTO indentMaterial = indentMaterialMap.get(attribute.getMaterialCode());
+                    attributeDTO.setUnitPrice(indentMaterial.getUnitPrice());
+                    attributeDTO.setUom(indentMaterial.getUom());
+                    attributeDTO.setCategory(indentMaterial.getMaterialCategory());
+                    return attributeDTO;
+                })
+                .collect(Collectors.toList()));
+        String projectName = tenderWithIndent.getIndentResponseDTO()
+                .stream()
+                .findFirst()
+                .map(IndentCreationResponseDTO::getProjectName)
+                .orElse(null);
+        BigDecimal projectLimit = tenderWithIndent.getIndentResponseDTO()
+                .stream()
+                .findFirst()
+                .map(IndentCreationResponseDTO::getProjectLimit)
+                .orElse(null);
+        responseDTO.setProjectName(projectName);
+        responseDTO.setProjectLimit(projectLimit);
+        // Set Tender & Indent details
+        responseDTO.setTenderDetails(tenderWithIndent);
+        return responseDTO;
+    }
+    public static List<String> convertFilesToBase64(String fileNames, String basePath) throws IOException {
+        List<String> base64List = new ArrayList<>();
+
+        if (fileNames != null && !fileNames.isEmpty()) {
+            String[] fileNameArray = fileNames.split(",");
+
+            for (String fileName : fileNameArray) {
+                String trimmedFileName = fileName.trim();
+                if (!trimmedFileName.isEmpty()) {
+                    String base64 = CommonUtils.convertImageToBase64(trimmedFileName, basePath);
+                    base64List.add(base64);
+                }
+            }
+        }
+
+        return base64List;
+    }
 
 
     @Override
@@ -435,6 +603,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         responseDTO.setVendorAccountName(purchaseOrder.getVendorAccountName());
         responseDTO.setVendorId(purchaseOrder.getVendorId());
         responseDTO.setProjectName(purchaseOrder.getProjectName());
+        responseDTO.setComparativeStatementFileName(purchaseOrder.getComparativeStatementFileName());
         //  responseDTO.setTotalValueOfPo(purchaseOrder.getTotalValueOfPo());
         LocalDate date = purchaseOrder.getDeliveryDate();
         if (date != null) {

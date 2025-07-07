@@ -1,11 +1,8 @@
 package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
-import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseReportDto;
-import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseRequestDto;
-import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseResponseDto;
+import com.astro.dto.workflow.ProcurementDtos.*;
 
-import com.astro.dto.workflow.ProcurementDtos.CpMaterialResponseDto;
 import com.astro.entity.ProcurementModule.ContigencyPurchase;
 
 import com.astro.entity.ProcurementModule.CpMaterials;
@@ -16,6 +13,9 @@ import com.astro.repository.ProcurementModule.ContigencyPurchaseRepository;
 import com.astro.service.ContigencyPurchaseService;
 import com.astro.util.CommonUtils;
 
+import com.azure.core.util.serializer.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,8 +24,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -33,6 +36,8 @@ import java.util.stream.Collectors;
 public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService {
     @Autowired
     private ContigencyPurchaseRepository CPrepo;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Override
     public ContigencyPurchaseResponseDto createContigencyPurchase(ContigencyPurchaseRequestDto contigencyPurchaseDto){
@@ -76,6 +81,11 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
         }).collect(Collectors.toList());
 
         cp.setCpMaterials(materials);
+        BigDecimal totalMaterialPrice = materials.stream()
+                .map(CpMaterials::getTotalPrice)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        cp.setTotalCpValue(totalMaterialPrice);
         CPrepo.save(cp);
 
 
@@ -168,23 +178,49 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
 
     @Override
     public List<ContigencyPurchaseReportDto> getContigencyPurchaseReport(String startDate, String endDate) {
-        List<Object[]> results = CPrepo.findContigencyPurchaseReport(CommonUtils.convertStringToDateObject(startDate), CommonUtils.convertStringToDateObject(endDate));
+        List<Object[]> rawResults = CPrepo.getContigencyPurchaseReport(
+                CommonUtils.convertStringToDateObject(startDate),
+                CommonUtils.convertStringToDateObject(endDate)
+        );
 
-        return results.stream().map(row -> {
+        List<ContigencyPurchaseReportDto> reportList = new ArrayList<>();
+
+        for (Object[] row : rawResults) {
             ContigencyPurchaseReportDto dto = new ContigencyPurchaseReportDto();
-            dto.setId((String) row[0]);
-            dto.setMaterial((String) row[1]);
-            dto.setMaterialCategory((String) row[2]);
-            dto.setMaterialSubCategory((String) row[3]);
-            dto.setEndUser((String) row[4]);
-            dto.setValue((BigDecimal) row[5]);
-            dto.setPaidTo((String) row[6]);
-            dto.setVendorName((String) row[7]);
-            dto.setProject((String) row[8]);
-            return dto;
-        }).collect(Collectors.toList());
+            dto.setContigencyId((String) row[0]);
+            dto.setVendorName((String) row[1]);
+            dto.setProjectName((String) row[2]);
+            dto.setPaymentToVendor((String) row[3]);
+            dto.setPaymentToEmployee((String) row[4]);
+            dto.setPurpose((String) row[5]);
+            dto.setCreatedBy(row[6] != null ? ((Number) row[6]).intValue() : null);
+            dto.setPendingWith((String) row[7]);
 
+            if (row[8] != null && row[8] instanceof Timestamp) {
+                LocalDate pendingFrom = ((Timestamp) row[8]).toLocalDateTime().toLocalDate();
+                dto.setPendingFrom(CommonUtils.convertDateToString(pendingFrom));
+            }
+
+            dto.setStatus((String) row[9]);
+            dto.setAction((String) row[10]);
+
+            try {
+                String materialJson = (String) row[11];
+                List<CpMaterialRequestDto> materials = objectMapper.readValue(
+                        materialJson,
+                        objectMapper.getTypeFactory().constructCollectionType(List.class, CpMaterialRequestDto.class)
+                );
+                dto.setCpMaterials(materials);
+            } catch (Exception e) {
+                dto.setCpMaterials(new ArrayList<>());
+            }
+
+            reportList.add(dto);
+        }
+
+        return reportList;
     }
+
 
     private ContigencyPurchaseResponseDto mapToResponseDTO(ContigencyPurchase contigencyPurchase) {
         ContigencyPurchaseResponseDto dto = new ContigencyPurchaseResponseDto();
@@ -209,13 +245,14 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
         dto.setUpdatedDate(contigencyPurchase.getUpdatedDate());
         dto.setCreatedDate(contigencyPurchase.getCreatedDate());
         dto.setPurpose(contigencyPurchase.getPurpose());
-        dto.setCountryOfOrigin(contigencyPurchase.getCountryOfOrigin());
+      //  dto.setCountryOfOrigin(contigencyPurchase.getCountryOfOrigin());
         dto.setDeclarationOne(contigencyPurchase.getDeclarationOne());
         dto.setDeclarationTwo(contigencyPurchase.getDeclarationTwo());
-
+        dto.setTotalCpValue(contigencyPurchase.getTotalCpValue());
         dto.setPaymentTo(contigencyPurchase.getPaymentTo());
         dto.setPaymentToVendor(contigencyPurchase.getPaymentToVendor());
         dto.setPaymentToEmployee(contigencyPurchase.getPaymentToEmployee());
+
         // Map list of CpMaterials to CpMaterialsResponseDto
         List<CpMaterialResponseDto> materialsDtoList = contigencyPurchase.getCpMaterials().stream()
                 .map(material -> {
@@ -231,6 +268,7 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
                     mDto.setMaterialSubCategory(material.getMaterialSubCategory());
                     mDto.setCurrency(material.getCurrency());
                     mDto.setGst(material.getGst());
+                    mDto.setCountryOfOrigin(material.getCountryOfOrigin());
                     return mDto;
                 }).collect(Collectors.toList());
 

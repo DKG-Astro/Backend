@@ -2,6 +2,7 @@ package com.astro.controller.ProcurementModuleController;
 
 
 
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PoWithTenderAndIndentBase64FilesDto;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderRequestDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderResponseDTO;
 
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,8 +71,14 @@ public class PurchaseOrderController {
 
     // Get a PO by ID
     @GetMapping("/{poId}")
-    public ResponseEntity<Object> getPurchaseOrderById(@PathVariable String poId) {
+    public ResponseEntity<Object> getPurchaseOrderById(@PathVariable String poId){
         poWithTenderAndIndentResponseDTO po = poService.getPurchaseOrderById(poId);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(po), HttpStatus.OK);
+    }
+
+    @GetMapping("/base64Files/{poId}")
+    public ResponseEntity<Object> getPurchaseOrderByIdWithBase64Files(@PathVariable String poId) throws IOException {
+        PoWithTenderAndIndentBase64FilesDto po = poService.getPurchaseOrderBase64FilesById(poId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(po), HttpStatus.OK);
     }
 

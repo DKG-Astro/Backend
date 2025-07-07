@@ -1,15 +1,16 @@
 package com.astro.dto.workflow.ProcurementDtos.purchaseOrder;
 
+import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import lombok.Data;
 
-import javax.persistence.Column;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class PurchaseOrderRequestDTO{
+public class PoWithTenderAndIndentBase64FilesDto {
 
-      //  private String poId;
+        private String poId;
         private String tenderId;
         private String indentId;
         private BigDecimal warranty;
@@ -19,6 +20,7 @@ public class PurchaseOrderRequestDTO{
         private Boolean ifLdClauseApplicable;
         private String incoTerms;
         private String paymentTerms;
+        private String vendorId;
         private String vendorName;
         private String vendorAddress;
         private String applicablePbgToBeSubmitted;
@@ -26,17 +28,20 @@ public class PurchaseOrderRequestDTO{
         private String vendorAccountNumber;
         private String vendorsIfscCode;
         private String vendorAccountName;
-        private String deliveryDate;
-       // private BigDecimal totalValueOfPo;
+        private BigDecimal totalValueOfPo;
         private String projectName;
-        private String vendorId;
-        private List<String> comparativeStatementFileName;
-        private List<PurchaseOrderAttributesDTO> purchaseOrderAttributes;
-        private String updatedBy;
+        private BigDecimal projectLimit;
+        private List<String> indentIds;
+        private String deliveryDate;
+        private List<PurchaseOrderAttributesResponseDTO> purchaseOrderAttributes;
         private Integer createdBy;
+        private String updatedBy;
+        private String comparativeStatementFileName;
+        private List<String> comparativeStatementFileNameList;
+        private LocalDateTime createdDate;
+        private LocalDateTime updatedDate;
 
-
-
+        private TenderWithIndentResponseDTO tenderDetails;
 
 
 }

@@ -59,7 +59,7 @@ public class PurchaseOrder {
     private String projectName;
     @Column(name = "delivery_date")
     private LocalDate deliveryDate;
-
+    private String comparativeStatementFileName;
    // @OneToMany(cascade = CascadeType.ALL)
    // @JoinColumn(name = "purchase_order_id")
   /* @ManyToMany(cascade = CascadeType.PERSIST)

@@ -32,6 +32,7 @@ public class PurchaseOrderResponseDTO {
     private String projectName;
     private BigDecimal projectLimit;
     private String deliveryDate;
+    private String comparativeStatementFileName;
     private List<PurchaseOrderAttributesResponseDTO> purchaseOrderAttributes;
     private Integer createdBy;
     private String updatedBy;

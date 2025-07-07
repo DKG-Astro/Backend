@@ -6,6 +6,7 @@ import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.*;
 import com.astro.dto.workflow.VendorContractReportDTO;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface PurchaseOrderService {
@@ -18,6 +19,7 @@ public interface PurchaseOrderService {
    public List<PurchaseOrderResponseDTO > getAllPurchaseOrders();
 
     public poWithTenderAndIndentResponseDTO getPurchaseOrderById(String poId);
+    public PoWithTenderAndIndentBase64FilesDto getPurchaseOrderBase64FilesById(String poId) throws IOException;
     public void deletePurchaseOrder(String poId);
 
     List<VendorContractReportDTO> getVendorContractDetails(String startDate, String endDate);

@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -859,7 +860,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         }
     }
 
-    private TransitionDto nextTransitionDto(List<TransitionDto> nextTransitionDtoList, String workflowName, String requestId) {
+    private TransitionDto nextTransitionDto(List<TransitionDto> nextTransitionDtoList, String workflowName, String requestId){
         TransitionDto transitionDto = null;
         List<Integer> conditionIdList = nextTransitionDtoList.stream().filter(f -> Objects.nonNull(f.getConditionId())).map(e -> e.getConditionId()).collect(Collectors.toList());
 
@@ -1396,6 +1397,7 @@ public List<ApprovedIndentsDto> getApprovedIndents() {
                 // ContigencyPurchase cp = cpTable.get();
                 //  queueResponse.setIndentorName("Null");
                 queueResponse.setProjectName(cp.getProjectName());
+                queueResponse.setAmount(cp.getTotalCpValue());
               //  queueResponse.setAmount(cp.getAmountToBePaid());
                 //  queueResponse.setBudgetName("Null");
                 //  queueResponse.setIndentTitle("NUll");

@@ -36,6 +36,7 @@ public class poWithTenderAndIndentResponseDTO {
  private List<PurchaseOrderAttributesResponseDTO> purchaseOrderAttributes;
  private Integer createdBy;
  private String updatedBy;
+ private String comparativeStatementFileName;
  private LocalDateTime createdDate;
  private LocalDateTime updatedDate;
 

@@ -12,13 +12,13 @@ public class CpMaterialRequestDto {
     private BigDecimal quantity;
     private BigDecimal unitPrice;
     private String uom;
-    private BigDecimal totalPrice;
     private String budgetCode;
     private BigDecimal gst;
     private String materialCategory;
     private String materialSubCategory;
     private String currency;
-
+    private String countryOfOrigin;
+    private BigDecimal totalPrice;
 
 
 }

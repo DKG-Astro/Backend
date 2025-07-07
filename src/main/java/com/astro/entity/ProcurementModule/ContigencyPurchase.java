@@ -59,9 +59,9 @@ public class ContigencyPurchase {
     @Column(name = "created_by")
     private Integer createdBy;
     private String purpose;
-    private String countryOfOrigin;
     private Boolean declarationOne;
     private Boolean declarationTwo;
+    private BigDecimal totalCpValue;
     @OneToMany(mappedBy = "contigencyPurchase", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CpMaterials> cpMaterials;
 

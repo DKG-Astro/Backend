@@ -26,12 +26,12 @@ public class ContigencyPurchaseResponseDto {
     private String paymentToVendor;
     private String paymentToEmployee;
     private String purpose;
-    private String countryOfOrigin;
     private Boolean declarationOne;
     private Boolean declarationTwo;
     private String updatedBy;
     private Integer createdBy;
     private LocalDateTime createdDate;
+    private BigDecimal totalCpValue;
 
     private LocalDateTime updatedDate;
     private List<CpMaterialResponseDto> cpMaterials;

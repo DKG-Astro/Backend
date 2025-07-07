@@ -39,7 +39,7 @@ public interface ContigencyPurchaseRepository extends JpaRepository<ContigencyPu
         ORDER BY
             cp.Date
     """, nativeQuery = true)*/
-   @Query(value = """
+   /*@Query(value = """
     SELECT
       cp.contigency_id          AS Id,
       cm.material_description    AS Material,
@@ -63,7 +63,65 @@ public interface ContigencyPurchaseRepository extends JpaRepository<ContigencyPu
    List<Object[]> findContigencyPurchaseReport(
            @Param("startDate") LocalDate startDate,
            @Param("endDate")   LocalDate endDate
+   );*/
+   @Query(value = """
+    SELECT 
+      cp.contigency_id               AS contigencyId,
+      cp.vendors_name                AS vendorName,
+      cp.project_name                AS projectName,
+      cp.payment_to_vendor          AS paymentToVendor,
+      cp.payment_to_employee        AS paymentToEmployee,
+      cp.remarks_for_purchase       AS purpose,
+      cp.created_by                 AS createdBy,
+      wt.nextRole                   AS pendingWith,
+      wt.modificationDate           AS pendingFrom,
+      wt.status                     AS status,
+      wt.nextAction                 AS action,
+      JSON_ARRAYAGG(
+        JSON_OBJECT(
+          'materialCode',         m.material_code,
+          'materialDescription',  m.material_description,
+          'quantity',             m.quantity,
+          'unitPrice',            m.unit_price,
+          'uom',                  m.uom,
+          'budgetCode',           m.budget_code,
+          'gst',                  m.gst,
+          'materialCategory',     m.material_category,
+          'materialSubCategory',  m.material_sub_category,
+          'currency',             m.currency,
+          'countryOfOrigin',      m.country_of_origin,
+          'totalPrice',           m.total_price
+        )
+      ) AS cpMaterials
+    FROM contigency_purchase cp
+    JOIN cp_materials m 
+      ON cp.contigency_id = m.contigency_id
+
+           LEFT JOIN workflow_transition wt ON wt.workflowTransitionId = (
+                SELECT wt2.workflowTransitionId
+                FROM workflow_transition wt2
+                WHERE wt2.requestId = cp.contigency_id
+                  AND wt2.workflowName = 'Contingency Purchase Workflow'
+                ORDER BY wt2.workflowTransitionId DESC
+                LIMIT 1
+            )
+            
+
+    WHERE cp.date BETWEEN :fromDate AND :toDate
+
+    GROUP BY 
+      cp.contigency_id, cp.vendors_name, cp.project_name,
+      cp.payment_to_vendor, cp.payment_to_employee,
+      cp.remarks_for_purchase, cp.created_by,
+      wt.nextRole, wt.modificationDate, wt.status, wt.nextAction
+
+    ORDER BY cp.date
+    """, nativeQuery = true)
+   List<Object[]> getContigencyPurchaseReport(
+           @Param("fromDate") LocalDate fromDate,
+           @Param("toDate") LocalDate toDate
    );
+
 
     //   List<Object[]> findContigencyPurchaseReport(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 

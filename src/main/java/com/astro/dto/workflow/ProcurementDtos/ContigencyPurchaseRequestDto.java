@@ -14,10 +14,6 @@ public class ContigencyPurchaseRequestDto {
     private String vendorName;
     private String vendorInvoiceNo;
     private String Date;
-    //  private String materialCode;
-    //  private String materialDescription;
-    //   private BigDecimal quantity;
-    //   private BigDecimal unitPrice;
     private String remarksForPurchase;
     //  private BigDecimal amountToBePaid;
     //private MultipartFile uploadCopyOfInvoice;
@@ -30,7 +26,6 @@ public class ContigencyPurchaseRequestDto {
     private String paymentToVendor;
     private String paymentToEmployee;
     private String purpose;
-    private String countryOfOrigin;
     private Boolean declarationOne;
     private Boolean declarationTwo;
     private String updatedBy;
