@@ -130,10 +130,15 @@ public class WorkflowController {
       return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
   }
 
-    @GetMapping("/getApprovedTender")
+   @GetMapping("/getApprovedTender")
     public ResponseEntity<Object> getApprovedTender()  {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.getApprovedTender()), HttpStatus.OK);
     }
+ /* @GetMapping("/getApprovedTender")
+  public ResponseEntity<Object> getApprovedTender(@RequestParam String roleName)  {
+      return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.getApprovedTender(roleName)), HttpStatus.OK);
+  }*/
+
     @GetMapping("/getApprovedTenderIdForPOAndSO")
     public ResponseEntity<Object> getApprovedTenderIDForPOAndSO()  {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.getApprovedTenderIdsForPOAndSO()), HttpStatus.OK);

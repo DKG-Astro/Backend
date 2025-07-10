@@ -24,6 +24,7 @@ public interface WorkflowService {
     public List<ApprovedIndentsDto> getApprovedIndents();
    // public List<String> getApprovedTender();
    public List<ApprovedTenderDto> getApprovedTender();
+  // public List<ApprovedTenderDto> getApprovedTender(String roleName);
 
     public List<String> getApprovedTenderIdsForPOAndSO();
 

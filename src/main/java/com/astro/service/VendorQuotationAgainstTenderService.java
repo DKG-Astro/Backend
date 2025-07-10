@@ -1,5 +1,7 @@
 package com.astro.service;
 
+import com.astro.dto.workflow.ProcurementDtos.QuotationViewHistoryDto;
+import com.astro.dto.workflow.ProcurementDtos.VendorQuotationChangeRequestDto;
 import com.astro.dto.workflow.VendorQuotationAgainstTenderDto;
 import com.astro.dto.workflow.VendorQuotationUpdateRequestDto;
 import com.astro.dto.workflow.VendorStatusDto;
@@ -18,4 +20,8 @@ public interface VendorQuotationAgainstTenderService {
     public List<String> getVendorsWhoDidNotSubmitQuotation(String tenderId);
     public boolean updateStatusAndRemarks(VendorQuotationUpdateRequestDto request);
 
+    boolean markQuotationForChangeRequest(VendorQuotationChangeRequestDto request);
+
+
+    List<QuotationViewHistoryDto> getVendorHistory(String tenderId, String vendorId);
 }

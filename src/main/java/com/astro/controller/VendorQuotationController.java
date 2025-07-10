@@ -1,5 +1,7 @@
 package com.astro.controller;
 
+import com.astro.dto.workflow.ProcurementDtos.QuotationViewHistoryDto;
+import com.astro.dto.workflow.ProcurementDtos.VendorQuotationChangeRequestDto;
 import com.astro.dto.workflow.VendorMasterResponseDto;
 import com.astro.dto.workflow.VendorQuotationAgainstTenderDto;
 import com.astro.dto.workflow.VendorQuotationUpdateRequestDto;
@@ -45,6 +47,13 @@ public class VendorQuotationController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 
+    @GetMapping("vendorHistory/{tenderId}/{vendorId}")
+    public ResponseEntity<Object> getVendorHistory(@PathVariable String tenderId,@PathVariable String vendorId) {
+        List<QuotationViewHistoryDto> responseDTO = vqService.getVendorHistory(tenderId,vendorId);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
+    }
+
+
     @PutMapping("/updateVendorQuotation-status")
     public ResponseEntity<Object> updateVendorQuotationStatus(@RequestBody VendorQuotationUpdateRequestDto request) {
         Boolean message = vqService.updateStatusAndRemarks(request);
@@ -56,6 +65,18 @@ public class VendorQuotationController {
         );
 
     }
+    @PostMapping("/change-request")
+    public ResponseEntity<Object> requestQuotationChange(@RequestBody VendorQuotationChangeRequestDto request) {
+        boolean success = vqService.markQuotationForChangeRequest(request);
+        Map<String, Boolean> responseData = new HashMap<>();
+        responseData.put("status",  success);
+        return new ResponseEntity<>(
+                ResponseBuilder.getSuccessResponse(responseData),
+                HttpStatus.OK
+        );
+
+    }
+
 
 
 

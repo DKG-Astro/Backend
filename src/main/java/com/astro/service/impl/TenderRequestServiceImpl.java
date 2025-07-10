@@ -343,7 +343,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         return mapToResponseDTO(saved);
     }
 
-    @Override
+  /*  @Override
     public VendorQualificationResponseDto vendorCheck(String tenderId, String vendorId) {
         TenderRequest tenderRequest = TRrepo.findById(tenderId)
                 .orElseThrow(() -> new BusinessException(
@@ -377,7 +377,62 @@ public class TenderRequestServiceImpl implements TenderRequestService {
             }
         }
         return resp;
-    }
+    }*/
+  @Override
+  public VendorQualificationResponseDto vendorCheck(String tenderId, String vendorId) {
+      TenderRequest tenderRequest = TRrepo.findById(tenderId)
+              .orElseThrow(() -> new BusinessException(
+                      new ErrorDetails(
+                              AppConstant.ERROR_CODE_RESOURCE,
+                              AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                              AppConstant.ERROR_TYPE_RESOURCE,
+                              "Tender not found for the provided asset ID.")
+              ));
+
+      String vendor = tenderRequest.getVendorId();
+      VendorQualificationResponseDto resp = new VendorQualificationResponseDto();
+
+      if (vendor != null && !vendor.isEmpty() && vendor.equals(vendorId)) {
+          resp.setVendorId(vendor);
+          resp.setQualified(true);
+          resp.setRemarks("null");
+          resp.setChangeRequest(false);
+      } else {
+          List<VendorQuotationAgainstTender> quotations =
+                  vendorQuotationAgainstTenderRepository.findByTenderIdAndVendorId(tenderId, vendorId);
+
+          if (!quotations.isEmpty()) {
+              VendorQuotationAgainstTender latest = quotations.stream()
+                      .filter(VendorQuotationAgainstTender::getIsLatest)
+                      .findFirst()
+                      .orElse(quotations.get(0));
+
+              String status = latest.getStatus();
+
+              if ("CHANGE_REQUESTED".equalsIgnoreCase(status)) {
+                  resp.setQualified(true);
+                  resp.setChangeRequest(true);
+              } else if ("Rejected".equalsIgnoreCase(status)) {
+                  resp.setQualified(false);
+                  resp.setChangeRequest(false);
+              } else {
+                  resp.setQualified(false); // default
+                  resp.setChangeRequest(false);
+              }
+
+              resp.setVendorId(vendorId);
+              resp.setRemarks(latest.getRemarks());
+          } else {
+              resp.setVendorId(vendorId);
+              resp.setQualified(false);
+              resp.setRemarks(null);
+              resp.setChangeRequest(false);
+          }
+      }
+      return resp;
+  }
+
+
 
 
     @Override

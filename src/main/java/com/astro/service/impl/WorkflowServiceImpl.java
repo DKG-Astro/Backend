@@ -829,6 +829,11 @@ public class WorkflowServiceImpl implements WorkflowService {
                         subWorkflowTransition.setAction(AppConstant.PENDING_TYPE);
                         subWorkflowTransition.setWorkflowName(nextWorkflowTransition.getWorkflowName());
                         subWorkflowTransition.setActionOn(e);
+                       /* if (tenderWithIndentResponseDTO.getTotalTenderValue().compareTo(BigDecimal.valueOf(1000000)) < 0) {
+                            subWorkflowTransition.setActionOn(e); // Indentor
+                        } else {
+                            subWorkflowTransition.setActionOn(26); // Evaluator
+                        }*/
                         subWorkflowTransition.setCreatedBy(nextWorkflowTransition.getModifiedBy());
                         subWorkflowTransition.setWorkflowSequence(seq.get());
                         subWorkflowTransition.setRequestId(nextWorkflowTransition.getRequestId());
@@ -1223,6 +1228,29 @@ public List<ApprovedIndentsDto> getApprovedIndents() {
         return approvedTenders;
 
     }
+ /*public List<ApprovedTenderDto> getApprovedTender(String roleName) {
+     List<String> tenderIds = workflowTransitionRepository.findApprovedTenderRequestIds();
+     List<ApprovedTenderDto> approvedTenders = new ArrayList<>();
+
+     for (String tenderId : tenderIds) {
+         Optional<TenderRequest> optionalTenderRequest = tenderRequestRepository.findByTenderId(tenderId);
+
+         if (optionalTenderRequest.isPresent()) {
+             TenderRequest tenderRequest = optionalTenderRequest.get();
+             BigDecimal totalValue = tenderRequest.getTotalTenderValue();
+
+             // Role-based filtering
+             if ("Indent Creator".equalsIgnoreCase(roleName) && totalValue.compareTo(BigDecimal.valueOf(10_00_000)) <= 0) {
+                 approvedTenders.add(new ApprovedTenderDto(tenderId, tenderRequest.getBidType(), totalValue));
+             } else if ("Tender Evaluator".equalsIgnoreCase(roleName) && totalValue.compareTo(BigDecimal.valueOf(10_00_000)) > 0) {
+                 approvedTenders.add(new ApprovedTenderDto(tenderId, tenderRequest.getBidType(), totalValue));
+             }
+         }
+     }
+
+     return approvedTenders;
+ }*/
+
 
 
     @Override

@@ -228,12 +228,24 @@ public class CommonUtils {
         }
     }
 
-    private static String getFileExtension(String base64) {
+   /* private static String getFileExtension(String base64) {
         if (base64.startsWith("data:image/png")) return ".png";
         if (base64.startsWith("data:image/jpeg") || base64.startsWith("data:image/jpg")) return ".jpg";
         if (base64.startsWith("data:image/gif")) return ".gif";
         return ".jpg"; // Default to .jpg
-    }
+    }*/
+   private static String getFileExtension(String base64) {
+       if (base64.startsWith("data:image/png")) return ".png";
+       if (base64.startsWith("data:image/jpeg") || base64.startsWith("data:image/jpg")) return ".jpg";
+       if (base64.startsWith("data:image/gif")) return ".gif";
+       if (base64.startsWith("data:application/pdf")) return ".pdf";
+       if (base64.startsWith("data:application/msword")) return ".doc";
+       if (base64.startsWith("data:application/vnd.openxmlformats-officedocument.wordprocessingml.document")) return ".docx";
+       if (base64.startsWith("data:application/vnd.ms-excel")) return ".xls";
+       if (base64.startsWith("data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) return ".xlsx";
+       if (base64.startsWith("data:text/plain")) return ".txt";
+       return ".bin"; // fallback
+   }
 
     public static String convertImageToBase64(String fileName, String basePath) throws IOException {
         // Construct the full file path
@@ -260,12 +272,15 @@ public class CommonUtils {
         }
     }
 
-    private static String getMimeType(String fileName) {
+   private static String getMimeType(String fileName) {
         if (fileName.endsWith(".png")) return "image/png";
         if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) return "image/jpeg";
         if (fileName.endsWith(".gif")) return "image/gif";
+
         return "image/jpeg"; // Default type
     }
+
+
 
     public static List<LocalDateTime> getDateRenge(String startDate, String endDate) {
         try{

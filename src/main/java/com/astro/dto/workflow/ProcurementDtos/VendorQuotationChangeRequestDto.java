@@ -3,9 +3,11 @@ package com.astro.dto.workflow.ProcurementDtos;
 import lombok.Data;
 
 @Data
-public class VendorQualificationResponseDto {
+public class VendorQuotationChangeRequestDto {
+
+    private String tenderId;
     private String vendorId;
-    private Boolean qualified;
     private String remarks;
-    private Boolean changeRequest;
+
+
 }

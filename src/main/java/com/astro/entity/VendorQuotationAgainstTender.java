@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 @Entity
@@ -24,6 +25,12 @@ public class VendorQuotationAgainstTender {
     private String status;
     @Column(name = "remarks")
     private String remarks;
+    @Column(name = "version")
+    private Integer version;
+
+    @Column(name = "is_latest")
+    private Boolean isLatest;
+
 
     @Column(name = "created_by")
     private Integer createdBy;
