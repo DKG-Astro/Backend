@@ -37,4 +37,6 @@ public interface IndentCreationService {
 
     public List<IndentWorkflowStatusDto> getIndentWorkflowStatus(String indentId);
 
+   public List<SearchIndentIdDto> searchIndentIds(String type, String value);
+
 }

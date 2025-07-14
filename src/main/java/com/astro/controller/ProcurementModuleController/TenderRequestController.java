@@ -2,6 +2,7 @@ package com.astro.controller.ProcurementModuleController;
 
 import com.astro.dto.workflow.ProcurementDtos.*;
 
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.SearchPOIdDto;
 import com.astro.dto.workflow.WorkflowTransitionDto;
 import com.astro.service.TenderRequestService;
 
@@ -111,6 +112,16 @@ public class TenderRequestController {
     public ResponseEntity<String> deleteTenderRequest(@PathVariable String tenderId) {
         TRService.deleteTenderRequest(tenderId);
         return ResponseEntity.ok("Tender Request deleted successfully. Id:"+" " +tenderId);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Object> searchTenderIds(
+            @RequestParam String type,
+            @RequestParam String value
+    ) {
+        List<SearchTenderIdDto> result = TRService.searchTenderIds(type, value);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(result), HttpStatus.OK);
+
     }
 
 

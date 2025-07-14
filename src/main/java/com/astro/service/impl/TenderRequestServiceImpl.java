@@ -1,9 +1,11 @@
 package com.astro.service.impl;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.ApprovedIndentsDto;
 import com.astro.dto.workflow.ProcurementDtos.*;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.SearchIndentIdDto;
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderMaterialRequestDTO;
 import com.astro.entity.ProcurementModule.*;
 import com.astro.entity.ProjectMaster;
@@ -16,6 +18,7 @@ import com.astro.repository.ProcurementModule.IndentCreation.MaterialDetailsRepo
 import com.astro.repository.ProcurementModule.IndentIdRepository;
 import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.repository.ProjectMasterRepository;
+import com.astro.repository.VendorNamesForJobWorkMaterialRepository;
 import com.astro.repository.VendorQuotationAgainstTenderRepository;
 import com.astro.service.IndentCreationService;
 import com.astro.service.TenderRequestService;
@@ -30,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -52,6 +56,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     private ProjectMasterRepository projectMasterRepository;
     @Autowired
     private MaterialDetailsRepository materialDetailsRepository;
+    @Autowired
+    private VendorNamesForJobWorkMaterialRepository vendorNameRepository;
     @Autowired
     private VendorQuotationAgainstTenderRepository vendorQuotationAgainstTenderRepository;
     @Value("${filePath}")
@@ -746,6 +752,155 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         return tenderResponseDto;
 
     }
+/*
+public List<SearchTenderIdDto> searchTenderIds(String type, String value) {
+    List<SearchIndentIdDto> indentDtos = new ArrayList<>();
+    List<SearchTenderIdDto> result = new ArrayList<>();
+
+    switch (type.toLowerCase()) {
+
+        case "tenderid":
+            result = TRrepo.findTenderIdLike(value);
+            break;
+
+        case "submitteddate":
+            try {
+                LocalDate date = LocalDate.parse(value);
+                LocalDateTime startOfDay = date.atStartOfDay();
+                LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
+                result = TRrepo.findTenderIdsBySubmittedDate(startOfDay, endOfDay);
+            } catch (Exception e) {
+                throw new BusinessException(new ErrorDetails(
+                        AppConstant.ERROR_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_RESOURCE,
+                        "Invalid submitted date format. Expected yyyy-MM-dd"
+                ));
+            }
+            break;
+        case "materialdescription":
+            indentDtos = indentCreationRepository.findByMaterialDescription(value);
+            break;
+
+        case "vendorname":
+            indentDtos = vendorNameRepository.findIndentIdsByVendorName(value);
+            break;
+
+        case "indentorname":
+            indentDtos = indentCreationRepository.findByIndentorName(value);
+            break;
+
+        default:
+            throw new BusinessException(new ErrorDetails(
+                    AppConstant.ERROR_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_RESOURCE,
+                    "Invalid search type: " + type
+            ));
+    }
+
+    List<String> indentIds = indentDtos.stream()
+            .map(SearchIndentIdDto::getIndentId)
+            .collect(Collectors.toList());
+
+    if (indentIds.isEmpty()) {
+        throw new BusinessException(new ErrorDetails(
+                AppConstant.ERROR_CODE_RESOURCE,
+                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                AppConstant.ERROR_TYPE_RESOURCE,
+                "No indentIds found for given search criteria."
+        ));
+    }
+    System.out.println(indentIds);
+    result = indentIdRepository.findTenderIdsByIndentIds(indentIds);
+    System.out.println(result);
+    if (result == null || result.isEmpty()) {
+        throw new BusinessException(new ErrorDetails(
+                AppConstant.ERROR_CODE_RESOURCE,
+                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                AppConstant.ERROR_TYPE_RESOURCE,
+                "No matching tenders found for the given search criteria."
+        ));
+    }
+
+    return result;
+}*/
+public List<SearchTenderIdDto> searchTenderIds(String type, String value) {
+    List<SearchTenderIdDto> result = new ArrayList<>();
+
+    switch (type.toLowerCase()) {
+        case "processid":
+            return TRrepo.findTenderIdLike(value);
+
+        case "submitteddate":
+            try {
+                LocalDate date = LocalDate.parse(value);
+                LocalDateTime startOfDay = date.atStartOfDay();
+                LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
+                return TRrepo.findTenderIdsBySubmittedDate(startOfDay, endOfDay);
+            } catch (Exception e) {
+                throw new BusinessException(new ErrorDetails(
+                        AppConstant.ERROR_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_RESOURCE,
+                        "Invalid submitted date format. Expected yyyy-MM-dd"
+                ));
+            }
+
+        case "materialdescription":
+            List<String> indentIds1 = indentCreationRepository.findByMaterialDescription(value)
+                    .stream().map(SearchIndentIdDto::getIndentId).collect(Collectors.toList());
+            if (indentIds1.isEmpty()) {
+                throw new BusinessException(new ErrorDetails(
+                        AppConstant.ERROR_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_RESOURCE,
+                        "No indent IDs found for material description."
+                ));
+            }
+
+            return indentIdRepository.findTenderIdsByIndentIds(indentIds1);
+
+        case "vendorname":
+            List<String> indentIds2 = vendorNameRepository.findIndentIdsByVendorName(value)
+                    .stream().map(SearchIndentIdDto::getIndentId).collect(Collectors.toList());
+            if (indentIds2.isEmpty()) {
+                throw new BusinessException(new ErrorDetails(
+                        AppConstant.ERROR_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_RESOURCE,
+                        "No indent IDs found for material description."
+                ));
+            }
+
+            return indentIdRepository.findTenderIdsByIndentIds(indentIds2);
+
+        case "indentorname":
+            List<String> indentIds3 = indentCreationRepository.findByIndentorName(value)
+                    .stream().map(SearchIndentIdDto::getIndentId).collect(Collectors.toList());
+            if (indentIds3.isEmpty()) {
+                throw new BusinessException(new ErrorDetails(
+                        AppConstant.ERROR_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_RESOURCE,
+                        "No indent IDs found for material description."
+                ));
+            }
+
+            return indentIdRepository.findTenderIdsByIndentIds(indentIds3);
+
+        default:
+            throw new BusinessException(new ErrorDetails(
+                    AppConstant.ERROR_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_RESOURCE,
+                    "Invalid search type: " + type
+            ));
+    }
+}
+
+
+
 
 
 

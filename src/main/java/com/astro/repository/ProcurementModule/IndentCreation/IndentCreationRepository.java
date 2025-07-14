@@ -2,6 +2,7 @@ package com.astro.repository.ProcurementModule.IndentCreation;
 
 import com.astro.dto.workflow.ApprovedIndentsDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentReportDetailsDTO;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.SearchIndentIdDto;
 import com.astro.dto.workflow.ProcurementDtos.TechnoMomReportDTO;
 import com.astro.entity.ProcurementModule.IndentCreation;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -206,6 +207,27 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation, 
             """,
             nativeQuery = true)
     List<Object[]> getAllIndentListReport(LocalDateTime fromDate, LocalDateTime toDate);
+
+
+
+    // Search by indentId (Process ID)
+    List<SearchIndentIdDto> findByIndentIdContainingIgnoreCase(String indentId);
+
+    // Search by Submitted Date (createdDate)
+    @Query("SELECT new com.astro.dto.workflow.ProcurementDtos.IndentDto.SearchIndentIdDto(i.indentId) FROM IndentCreation i WHERE i.createdDate >= :start AND i.createdDate < :end")
+    List<SearchIndentIdDto> findByCreatedDateBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+
+    // Search by Indentor Name
+    @Query("SELECT new com.astro.dto.workflow.ProcurementDtos.IndentDto.SearchIndentIdDto(i.indentId) FROM IndentCreation i WHERE LOWER(i.indentorName) LIKE LOWER(CONCAT('%', :name, '%'))")
+    List<SearchIndentIdDto> findByIndentorName(@Param("name") String name);
+
+
+    // Search by Material Description (join with MaterialDetails)
+    @Query("SELECT new com.astro.dto.workflow.ProcurementDtos.IndentDto.SearchIndentIdDto(i.indentId) FROM IndentCreation i JOIN i.materialDetails m WHERE LOWER(m.materialDescription) LIKE LOWER(CONCAT('%', :desc, '%'))")
+    List<SearchIndentIdDto> findByMaterialDescription(@Param("desc") String desc);
+
+
 
 
 }

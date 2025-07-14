@@ -1,11 +1,8 @@
 package com.astro.controller.ProcurementModuleController;
 
 
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationRequestDTO;
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.*;
 
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentDataResponseDto;
-import com.astro.dto.workflow.ProcurementDtos.IndentDto.materialHistoryDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentWorkflowStatusDto;
 import com.astro.dto.workflow.WorkflowTransitionDto;
 import com.astro.entity.ProcurementModule.IndentCreation;
@@ -127,6 +124,17 @@ public class IndentCreationController {
     public ResponseEntity<String> deleteIndent(@PathVariable String indentId) {
         indentCreationService.deleteIndent(indentId);
         return ResponseEntity.ok("indent deleted successfully. Id:"+" " +indentId);
+    }
+
+
+    @GetMapping("/search")
+    public ResponseEntity<Object> searchIndents(
+            @RequestParam String type,
+            @RequestParam String value
+    ) {
+        List<SearchIndentIdDto> result = indentCreationService.searchIndentIds(type, value);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(result), HttpStatus.OK);
+
     }
 
 

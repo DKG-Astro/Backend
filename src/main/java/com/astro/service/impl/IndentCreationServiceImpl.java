@@ -36,6 +36,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -600,6 +601,9 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         response.setTotalPriceOfAllMaterials(totalPriceOfAllMaterials);
 
         response.setMaterialDetails(materialDetailsResponse);
+       WorkflowTransition wt = workflowTransitionRepository.findTopByRequestIdOrderByWorkflowSequenceDesc(indentId);
+        response.setStatus(wt.getStatus());
+        response.setProcessStage(wt.getNextRole());
 
         return response;
 
@@ -1010,9 +1014,68 @@ public class IndentCreationServiceImpl implements IndentCreationService {
 
     }
 
+    public List<SearchIndentIdDto> searchIndentIds(String type, String value) {
+        List<SearchIndentIdDto> result;
 
+        switch (type.toLowerCase()) {
+            case "processid":
+                result = indentCreationRepository.findByIndentIdContainingIgnoreCase(value);
+                break;
+            case "submitteddate":
+                try {
+                    LocalDate date = LocalDate.parse(value);
+                    LocalDateTime startOfDay = date.atStartOfDay();
+                    LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
 
+                    result = indentCreationRepository.findByCreatedDateBetween(startOfDay, endOfDay);
+                } catch (Exception e) {
+                    throw new BusinessException(
+                            new ErrorDetails(
+                                    AppConstant.ERROR_CODE_RESOURCE,
+                                    AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                    AppConstant.ERROR_TYPE_RESOURCE,
+                                    "Invalid submitted date format. Expected yyyy-MM-dd"
+                            )
+                    );
+                }
+                break;
 
+            case "indentorname":
+                result = indentCreationRepository.findByIndentorName(value);
+                break;
+
+            case "materialdescription":
+                result = indentCreationRepository.findByMaterialDescription(value);
+                break;
+
+            case "vendorname":
+                result = vendorNameRepository.findIndentIdsByVendorName(value);
+                break;
+
+            default:
+                throw new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Invalid search type: " + type
+                        )
+                );
+        }
+
+        if (result == null || result.isEmpty()) {
+            throw new BusinessException(
+                    new ErrorDetails(
+                            AppConstant.ERROR_CODE_RESOURCE,
+                            AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                            AppConstant.ERROR_TYPE_RESOURCE,
+                            "No matching indents found for the given search criteria."
+                    )
+            );
+        }
+
+        return result;
+    }
 
 
 }

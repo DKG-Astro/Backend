@@ -1,6 +1,7 @@
 package com.astro.repository.ProcurementModule.PurchaseOrder;
 
 import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.SearchPOIdDto;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -245,6 +246,17 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, St
     ORDER BY po.created_date, po.po_id
     """, nativeQuery = true)
     List<Object[]> getMonthlyProcurementReport(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    List<SearchPOIdDto> findByPoIdContainingIgnoreCase(String poId);
+    List<SearchPOIdDto> findByCreatedDateBetween(LocalDateTime start, LocalDateTime end);
+    @Query("SELECT new com.astro.dto.workflow.ProcurementDtos.purchaseOrder.SearchPOIdDto(a.purchaseOrder.poId) " +
+            "FROM PurchaseOrderAttributes a " +
+            "WHERE a.materialDescription = :materialDescription")
+    List<SearchPOIdDto> findPoIdByMaterialDescription(@Param("materialDescription") String materialDescription);
+    
+    @Query("SELECT new com.astro.dto.workflow.ProcurementDtos.purchaseOrder.SearchPOIdDto(p.poId) " +
+            "FROM PurchaseOrder p WHERE p.vendorId = :vendorName")
+    List<SearchPOIdDto> findPoIdsByVendorName(@Param("vendorName") String vendorName);
 
 
 

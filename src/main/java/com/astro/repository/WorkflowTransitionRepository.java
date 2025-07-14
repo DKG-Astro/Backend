@@ -64,4 +64,8 @@ WHERE wt.status = :status
           @Param("workflowId") int workflowId
   );
 
+    // Import proper entity and package
+
+    WorkflowTransition findTopByRequestIdOrderByWorkflowSequenceDesc(String requestId);
+
 }

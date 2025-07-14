@@ -2,11 +2,9 @@ package com.astro.controller.ProcurementModuleController;
 
 
 
-import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PoWithTenderAndIndentBase64FilesDto;
-import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderRequestDTO;
-import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.PurchaseOrderResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.SearchIndentIdDto;
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.*;
 
-import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.poWithTenderAndIndentResponseDTO;
 import com.astro.dto.workflow.WorkflowTransitionDto;
 import com.astro.entity.UserMaster;
 import com.astro.service.PurchaseOrderService;
@@ -89,6 +87,15 @@ public class PurchaseOrderController {
         return ResponseEntity.ok("Purchase Order deleted successfully."+" " +poId);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<Object> searchPoIds(
+            @RequestParam String type,
+            @RequestParam String value
+    ) {
+        List<SearchPOIdDto> result = poService.searchPOIds(type, value);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(result), HttpStatus.OK);
+
+    }
 
 
 

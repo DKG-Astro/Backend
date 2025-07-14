@@ -1,6 +1,8 @@
 package com.astro.repository.ProcurementModule;
 
 import com.astro.dto.workflow.ApprovedIndentsDto;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.SearchIndentIdDto;
+import com.astro.dto.workflow.ProcurementDtos.SearchTenderIdDto;
 import com.astro.entity.ProcurementModule.IndentId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +17,9 @@ public interface IndentIdRepository extends JpaRepository<IndentId,Long> {
  List<String> findTenderWithIndent(@Param("tenderId") String tenderId);
 
 
+    @Query("SELECT DISTINCT new com.astro.dto.workflow.ProcurementDtos.SearchTenderIdDto(i.tenderRequest.tenderId) " +
+            "FROM IndentId i WHERE i.indentId IN :indentIds AND i.tenderRequest IS NOT NULL")
+    List<SearchTenderIdDto> findTenderIdsByIndentIds(@Param("indentIds") List<String> indentIds);
 
     List<IndentId> findByIndentIdIn(List<String> indentIds);
 

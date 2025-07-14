@@ -33,4 +33,7 @@ public interface PurchaseOrderService {
     public List<ShortClosedCancelledOrderReportDto> getShortClosedCancelledOrders(String startDate, String endDate);
 
     public List<MonthlyProcurementReportDto> getMonthlyProcurementReport(String startDate, String endDate);
+
+    public List<SearchPOIdDto> searchPOIds(String type, String value);
+
 }

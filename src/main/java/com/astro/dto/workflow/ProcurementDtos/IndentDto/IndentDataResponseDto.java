@@ -55,5 +55,7 @@ public class IndentDataResponseDto {
     private String draftFileName;
     private String buyBackFileName;
     private String pacAndBrandFileName;
+    private String processStage;
+    private String status;
 
 }

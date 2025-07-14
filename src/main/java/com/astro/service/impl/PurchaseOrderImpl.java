@@ -5,6 +5,7 @@ import com.astro.constant.AppConstant;
 
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.SearchIndentIdDto;
 import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.*;
@@ -67,6 +68,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
     private ProjectMasterRepository projectMasterRepository;
     @Autowired
     private ServiceOrderRepository serviceOrderRepository;
+
 
     @Value("${filePath}")
     private String bp;
@@ -981,6 +983,66 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
 
         // Total = Base + GST + Duties + Freight
         return baseAmount.add(gstAmount).add(dutiesAmount).add(freightCharge);
+    }
+
+    public List<SearchPOIdDto> searchPOIds(String type, String value) {
+        List<SearchPOIdDto> result;
+
+        switch (type.toLowerCase()) {
+            case "processid":
+                result = purchaseOrderRepository.findByPoIdContainingIgnoreCase(value);
+                break;
+            case "submitteddate":
+                try {
+                    LocalDate date = LocalDate.parse(value);
+                    LocalDateTime startOfDay = date.atStartOfDay();
+                    LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
+
+                    result = purchaseOrderRepository.findByCreatedDateBetween(startOfDay, endOfDay);
+                } catch (Exception e) {
+                    throw new BusinessException(
+                            new ErrorDetails(
+                                    AppConstant.ERROR_CODE_RESOURCE,
+                                    AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                    AppConstant.ERROR_TYPE_RESOURCE,
+                                    "Invalid submitted date format. Expected yyyy-MM-dd"
+                            )
+                    );
+                }
+                break;
+            case "materialdescription":
+                result = purchaseOrderRepository.findPoIdByMaterialDescription(value);
+                break;
+            case "vendorname":
+                result = purchaseOrderRepository.findPoIdsByVendorName(value);
+                break;
+           /* case "indentorname":
+                result = purchaseOrderRepository.findByIndentorName(value);
+                break;*/
+
+            default:
+                throw new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Invalid search type: " + type
+                        )
+                );
+        }
+
+        if (result == null || result.isEmpty()) {
+            throw new BusinessException(
+                    new ErrorDetails(
+                            AppConstant.ERROR_CODE_RESOURCE,
+                            AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                            AppConstant.ERROR_TYPE_RESOURCE,
+                            "No matching indents found for the given search criteria."
+                    )
+            );
+        }
+
+        return result;
     }
 
 

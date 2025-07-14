@@ -22,7 +22,7 @@ public interface TenderRequestService {
 
     public VendorQualificationResponseDto  vendorCheck(String tenderId, String vendorId);
     public TenderResponseBase64FilesDto getTenderDataWithBase64Files(String tenderId) throws IOException;
-
+    public List<SearchTenderIdDto> searchTenderIds(String type, String value);
 
     //TenderWithIndentResponseDTO getTendersRequestById(String tenderId);
 }

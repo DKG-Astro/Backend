@@ -1,5 +1,6 @@
 package com.astro.repository;
 
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.SearchIndentIdDto;
 import com.astro.entity.VendorNamesForJobWorkMaterial;
 import org.springframework.beans.PropertyValues;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,4 +28,8 @@ public interface VendorNamesForJobWorkMaterialRepository extends JpaRepository<V
     List<String> findVendorNamesByIndentId(@Param("indentId") String indentId);
 
     List<VendorNamesForJobWorkMaterial> findByIndentIdAndMaterialIdAndMaterialCode(String indentId, Long id, String materialCode);
+
+    @Query("SELECT new com.astro.dto.workflow.ProcurementDtos.IndentDto.SearchIndentIdDto(v.indentId) FROM VendorNamesForJobWorkMaterial v WHERE v.vendorName = :vendorId")
+    List<SearchIndentIdDto> findIndentIdsByVendorName(@Param("vendorId") String vendorId);
+
 }
