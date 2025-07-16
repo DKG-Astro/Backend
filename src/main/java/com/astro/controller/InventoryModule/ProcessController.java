@@ -1,5 +1,7 @@
 package com.astro.controller.InventoryModule;
 
+import com.astro.dto.workflow.InventoryModule.GiDto.GiApprovalDto;
+import com.astro.dto.workflow.InventoryModule.GiDto.GiWorkflowStatusDto;
 import com.astro.dto.workflow.InventoryModule.GiDto.SaveGiDto;
 import com.astro.dto.workflow.InventoryModule.GprnDto.SaveGprnDto;
 import com.astro.dto.workflow.InventoryModule.gprn.GprnPendingInspectionDto;
@@ -14,10 +16,12 @@ import com.astro.dto.workflow.InventoryModule.ogp.GprApprovalDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
+import com.astro.entity.InventoryModule.GiMasterEntity;
 import com.astro.entity.InventoryModule.IsnAssetOhqDtlsDto;
 import com.astro.service.ProcessService;
 import com.astro.service.InventoryModule.GiService;
 import com.astro.service.InventoryModule.IgpService;
+import com.astro.service.impl.InventoryModule.GiServiceImpl;
 import com.astro.util.ResponseBuilder;
 
 import java.util.HashMap;
@@ -188,8 +192,84 @@ public class ProcessController {
     public ResponseEntity<Object> updateGprn(@RequestBody SaveGprnDto updateRequest) {
         processService.updateGprn(updateRequest);
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse("GPRN updated successfully"), HttpStatus.OK);
+    }
 
-    
-}
+/*
+    @PostMapping("/approveGi")
+    public ResponseEntity<Object> approveGiId(@RequestBody GprApprovalDto req) {
+        gis.approveGi(req.getProcessNo());
+        Map<String, String> res = new HashMap<>();
+        res.put("message", "GI approved successfully");
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @PostMapping("/changeReqGi")
+    public ResponseEntity<Object> changeReqGi(@RequestBody GprApprovalDto req) {
+        gis.changeReqGi(req.getProcessNo());
+        Map<String, String> res = new HashMap<>();
+        res.put("message", "GI change request successful.");
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @PostMapping("/rejectGi")
+    public ResponseEntity<Object> rejectGiProcessId(@RequestBody GprApprovalDto req) {
+        gis.rejectGi(req.getProcessNo());
+        Map<String, String> res = new HashMap<>();
+        res.put("message", "GI rejected successfully");
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }*/
+    @PostMapping("/approveGi")
+    public ResponseEntity<Object> approveGiId(@RequestBody GiApprovalDto req) {
+        gis.approveGi(req);
+        Map<String, String> res = new HashMap<>();
+        res.put("message", "GI approved successfully");
+        return ResponseEntity.ok(ResponseBuilder.getSuccessResponse(res));
+    }
+
+    @PostMapping("/changeReqGi")
+    public ResponseEntity<Object> changeReqGi(@RequestBody GiApprovalDto req) {
+        gis.changeReqGi(req);
+        Map<String, String> res = new HashMap<>();
+        res.put("message", "GI change request successful.");
+        return ResponseEntity.ok(ResponseBuilder.getSuccessResponse(res));
+    }
+
+    @PostMapping("/rejectGi")
+    public ResponseEntity<Object> rejectGiProcessId(@RequestBody GiApprovalDto req) {
+        gis.rejectGi(req);
+        Map<String, String> res = new HashMap<>();
+        res.put("message", "GI rejected successfully");
+        return ResponseEntity.ok(ResponseBuilder.getSuccessResponse(res));
+    }
+
+    @GetMapping("/getGiByStatuses")
+    public ResponseEntity<Object> getGiByStatuses() {
+        List<GiMasterEntity> res = gis.getGiByStatuses();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @GetMapping("/getGiByIndentorStatuses")
+    public ResponseEntity<Object> getGiByIndentorStatuses() {
+        List<GiMasterEntity> res = gis.getGiByIndentorStatuses();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @PostMapping("/updateGi")
+    public ResponseEntity<Object> updateGi(@RequestBody SaveGiDto updateRequest) {
+        gis.updateGi(updateRequest);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse("GI updated successfully"), HttpStatus.OK);
+    }
+
+    @GetMapping("/giHistory")
+    public ResponseEntity<Object> getGiHistory(
+            @RequestParam String processId,
+            @RequestParam Integer subProcessId
+    ) {
+      List<GiWorkflowStatusDto> gi = gis.getGiHistoryByProcessId(processId, subProcessId);
+      return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(gi), HttpStatus.OK);
+    }
+
+
+
 
 }

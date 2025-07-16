@@ -118,4 +118,10 @@ public interface GiMasterRepository extends JpaRepository<GiMasterEntity, Intege
             gm.date DESC
         """, nativeQuery = true)
     List<Object[]> getGiStatusWiseAndCreatedBy(@Param("status") String status, @Param("createdBy") String createdBy);
+
+    List<GiMasterEntity> findByStatusIn(List<String> statuses);
+
+    Optional<GiMasterEntity> findByGprnSubProcessId(Integer subProcessId);
+
+    Optional<GiMasterEntity> findByGprnProcessIdAndInspectionSubProcessId(String processId, Integer subProcessId);
 }

@@ -31,7 +31,8 @@ public class GrvServiceImpl implements GrvService {
     @Override
     @Transactional
     public String saveGrv(GrvDto req) {
-        giService.validateGiSubProcessId(req.getGiNo());
+      //  giService.validateGiSubProcessId(req.getGiNo());
+        giService.validateGiIsApproved(req.getGiNo());
 
         ModelMapper mapper = new ModelMapper();
 

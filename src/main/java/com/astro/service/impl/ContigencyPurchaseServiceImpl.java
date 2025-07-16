@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -291,4 +292,62 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
             fileSetter.accept(null);  // Handle gracefully if no file is uploaded
         }
     }
+
+    public List<SearchCpIdDto> searchContigencyIds(String type, String value) {
+        List<String> result;
+
+        switch (type.toLowerCase()) {
+            case "processid":
+                result = CPrepo.findCpIdByContigencyIdContainingIgnoreCase(value);
+                break;
+
+            case "materialdescription":
+                result = CPrepo.findCpIdByMaterialDescriptionContainingIgnoreCase(value);
+                break;
+
+            case "submitteddate":
+                try {
+                    LocalDate date = LocalDate.parse(value);
+                    LocalDateTime start = date.atStartOfDay();
+                    LocalDateTime end = date.plusDays(1).atStartOfDay();
+                    result = CPrepo.findCpIdByCreatedDateBetween(start, end);
+                } catch (Exception e) {
+                    throw new BusinessException(new ErrorDetails(
+                            AppConstant.ERROR_CODE_RESOURCE,
+                            AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                            AppConstant.ERROR_TYPE_RESOURCE,
+                            "Invalid submitted date format. Expected yyyy-MM-dd"
+                    ));
+                }
+                break;
+
+            case "vendorname":
+                result = CPrepo.findCpIdByPaymentToVendorContainingIgnoreCase(value);
+                break;
+
+
+            default:
+                throw new BusinessException(new ErrorDetails(
+                        AppConstant.ERROR_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_RESOURCE,
+                        "Invalid search type: " + type
+                ));
+        }
+
+        if (result == null || result.isEmpty()) {
+            throw new BusinessException(new ErrorDetails(
+                    AppConstant.ERROR_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_RESOURCE,
+                    "No matching CP IDs found for the given search criteria."
+            ));
+        }
+
+        return result.stream()
+                .map(SearchCpIdDto::new)
+                .collect(Collectors.toList());
+
+    }
+
 }

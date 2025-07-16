@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hibernate.hql.internal.antlr.HqlTokenTypes.AS;
@@ -131,4 +132,17 @@ public interface ContigencyPurchaseRepository extends JpaRepository<ContigencyPu
     // ContigencyPurchase findByContigencyId(String contigencyId);
 
    // ContigencyPurchase getByCpId(String contigencyId);
+
+    @Query("SELECT c.contigencyId FROM ContigencyPurchase c WHERE LOWER(c.contigencyId) LIKE LOWER(CONCAT('%', :cpId, '%'))")
+    List<String> findCpIdByContigencyIdContainingIgnoreCase(@Param("cpId") String cpId);
+
+    @Query("SELECT DISTINCT c.contigencyId FROM ContigencyPurchase c JOIN c.cpMaterials m WHERE LOWER(m.materialDescription) LIKE LOWER(CONCAT('%', :desc, '%'))")
+    List<String> findCpIdByMaterialDescriptionContainingIgnoreCase(@Param("desc") String materialDescription);
+
+    @Query("SELECT c.contigencyId FROM ContigencyPurchase c WHERE c.createdDate BETWEEN :start AND :end")
+    List<String> findCpIdByCreatedDateBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT c.contigencyId FROM ContigencyPurchase c WHERE LOWER(c.paymentToVendor) LIKE LOWER(CONCAT('%', :vendorName, '%'))")
+    List<String> findCpIdByPaymentToVendorContainingIgnoreCase(@Param("vendorName") String vendorName);
+
 }

@@ -1,5 +1,6 @@
 package com.astro.service.impl.InventoryModule;
 
+import com.astro.repository.InventoryModule.GiRepository.GiMasterRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import javax.transaction.Transactional;
@@ -55,12 +56,18 @@ public class GrnServiceImpl implements GrnService {
 
     @Autowired
     private OhqMasterConsumableRepository omcr;
+    @Autowired
+    private GiMasterRepository gimr;
+
+
 
     @Override
     @Transactional
     public String saveGrn(GrnDto req) {
         if ("GI".equalsIgnoreCase(req.getGrnType())) {
-            giService.validateGiSubProcessId(req.getGiNo());
+          //  giService.validateGiSubProcessId(req.getGiNo());
+            giService.validateGiIsApproved(req.getGiNo());
+
         } else {
             validateIgp(req.getGiNo());
         }
@@ -257,6 +264,7 @@ public class GrnServiceImpl implements GrnService {
         System.out.println("AFTER GCDR SAVING");
         return "INV" + grnMaster.getGrnProcessId() + "/" + grnMaster.getGrnSubProcessId();
     }
+
 
     private void updateAssetAndOhq(GrnMaterialDtlDto materialDtl) {
         System.out.println("UPDATE CALLED");

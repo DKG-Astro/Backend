@@ -58,6 +58,9 @@ public class GiServiceImpl implements GiService {
 
     @Autowired
     private GoodsInspectionConsumableDetailRepository gicdr;
+    @Autowired
+    private GiWorkflowStatusRepository gistausRepo;
+
 
     private final String basePath;
 
@@ -177,6 +180,16 @@ public class GiServiceImpl implements GiService {
 
         gimdr.saveAll(gimdeList);
         gicdr.saveAll(gicdeList);
+        GiWorkflowStatus workflowStatus = new GiWorkflowStatus();
+        workflowStatus.setProcessId("INV" + gime.getGprnProcessId());
+        workflowStatus.setSubProcessId(gime.getInspectionSubProcessId());
+        workflowStatus.setAction("Created");
+        workflowStatus.setRemarks("GI Created");
+        workflowStatus.setCreatedBy(req.getCreatedBy());
+        workflowStatus.setCreateDate(LocalDateTime.now());
+
+        gistausRepo.save(workflowStatus);
+
         return "INV" + gime.getGprnProcessId() + "/" + gime.getInspectionSubProcessId();
     }
 
@@ -284,6 +297,40 @@ public class GiServiceImpl implements GiService {
 
         return ameOpt.get().getAssetId();
     }
+    @Override
+    public void validateGiIsApproved(String processNo) {
+        String[] processNoSplit = processNo.split("/");
+        if (processNoSplit.length != 2) {
+            throw new InvalidInputException(new ErrorDetails(
+                    AppConstant.USER_INVALID_INPUT,
+                    AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION,
+                    "Invalid GI No."));
+        }
+
+        //  Integer processId = Integer.parseInt(processNoSplit[0].substring(3));
+        String processId = processNoSplit[0].substring(3);
+        Integer subProcessId = Integer.parseInt(processNoSplit[1]);
+
+        //GiMasterEntity giMaster = gimr.findByGprnProcessIdAndInspectionSubProcessId(processId, subProcessId)
+        GiMasterEntity giMaster = gimr.findByGprnProcessIdAndInspectionSubProcessId(processId, subProcessId)
+
+                .orElseThrow(() -> new BusinessException(new ErrorDetails(
+                        AppConstant.ERROR_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_RESOURCE,
+                        "Provided GI No. is not valid."
+                )));
+
+        if (!"APPROVED".equalsIgnoreCase(giMaster.getStatus())) {
+            throw new InvalidInputException(new ErrorDetails(
+                    AppConstant.USER_INVALID_INPUT,
+                    AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION,
+                    "GI is not approved. Cannot create GRN."
+            ));
+        }
+    }
 
     @Override
     public void validateGiSubProcessId(String processNo) {
@@ -304,6 +351,7 @@ public class GiServiceImpl implements GiService {
                     AppConstant.ERROR_TYPE_RESOURCE,
                     "Provided GI No. is not valid."));
         }
+
     }
 
     public List<GprnPendingInspectionDto> getGiStatusWise(String status, Optional<String> createdBy) {
@@ -360,4 +408,199 @@ public class GiServiceImpl implements GiService {
             return dto;
         }).collect(Collectors.toList());
     }
+
+
+   @Override
+   @Transactional
+   public void approveGi(GiApprovalDto req) {
+       //   updateGiStatusAndRemarks(req, "APPROVED");
+       updateGiStatusAndRemarks(req);
+   }
+
+    @Override
+    @Transactional
+    public void rejectGi(GiApprovalDto req) {
+       // updateGiStatusAndRemarks(req, "REJECTED");
+        updateGiStatusAndRemarks(req);
+    }
+
+    @Override
+    @Transactional
+    public void changeReqGi(GiApprovalDto req) {
+        //updateGiStatusAndRemarks(req, "CHANGE REQUEST");
+        updateGiStatusAndRemarks(req);
+    }
+
+    private void updateGiStatusAndRemarks(GiApprovalDto req) {
+        String[] processNoSplit = req.getProcessNo().split("/");
+        if (processNoSplit.length != 2) {
+            throw new InvalidInputException(new ErrorDetails(
+                    AppConstant.USER_INVALID_INPUT,
+                    AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION,
+                    "Invalid process number format"));
+        }
+
+        Integer inspectionId = Integer.parseInt(processNoSplit[1]);
+        GiMasterEntity giMaster = gimr.findById(inspectionId)
+                .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                        AppConstant.ERROR_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_RESOURCE,
+                        "Goods Inspection not found")));
+
+        giMaster.setStatus(req.getStatus());
+        gimr.save(giMaster);
+
+        GiWorkflowStatus history = new GiWorkflowStatus();
+        history.setProcessId(processNoSplit[0]);
+        history.setSubProcessId(inspectionId);
+        history.setAction(req.getStatus());
+        history.setRemarks(req.getRemarks());
+        history.setCreatedBy(req.getCreatedBy());
+        history.setCreateDate(LocalDateTime.now());
+
+        gistausRepo.save(history);
+    }
+
+    public List<GiMasterEntity> getGiByStatuses() {
+        List<String> statuses = Arrays.asList("AWAITING APPROVAL");
+        return gimr.findByStatusIn(statuses);
+    }
+    public List<GiMasterEntity> getGiByIndentorStatuses() {
+        List<String> statuses = Arrays.asList("REJECTED", "CHANGE REQUEST");
+        return gimr.findByStatusIn(statuses);
+    }
+
+    @Override
+    @Transactional
+    public String updateGi(SaveGiDto req) {
+        String[] processNoSplit = req.getGprnNo().split("/");
+        if (processNoSplit.length != 2) {
+            throw new InvalidInputException(new ErrorDetails(
+                    AppConstant.USER_INVALID_INPUT,
+                    AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION,
+                    "Invalid process number format"));
+        }
+
+        Integer subProcessId = Integer.parseInt(processNoSplit[1]);
+        GiMasterEntity gime = gimr.findByGprnSubProcessId(subProcessId)
+                .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                        AppConstant.ERROR_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_RESOURCE,
+                        "GI Master not found for given GPRN No.")));
+
+        gime.setCommissioningDate(CommonUtils.convertStringToDateObject(req.getCommissioningDate()));
+        gime.setInstallationDate(CommonUtils.convertStringToDateObject(req.getInstallationDate()));
+        gime.setLocationId(req.getLocationId());
+        gime.setStatus("AWAITING APPROVAL");
+        gimr.save(gime);
+
+        ModelMapper mapper = new ModelMapper();
+        StringBuilder errorMessage = new StringBuilder();
+        boolean errorFound = false;
+
+        for (GiMaterialDtlDto gmdd : req.getMaterialDtlList()) {
+
+            Optional<GoodsInspectionConsumableDetailEntity> gicdeOpt =
+                    gicdr.findByGprnSubProcessIdAndMaterialCode(subProcessId, gmdd.getMaterialCode());
+
+            if (gicdeOpt.isPresent()) {
+                // Consumable
+                GoodsInspectionConsumableDetailEntity gicde = gicdeOpt.get();
+                mapper.map(gmdd, gicde);
+
+                if (!gmdd.getReceivedQuantity().equals(gmdd.getAcceptedQuantity().add(gmdd.getRejectedQuantity()))) {
+                    errorMessage.append("Received quantity mismatch for " + gmdd.getMaterialCode() + ". ");
+                    errorFound = true;
+                    continue;
+                }
+
+                try {
+                    String fileName = CommonUtils.saveBase64Image(gmdd.getInstallationReportBase64(), basePath);
+                    gicde.setInstallationReportFilename(fileName);
+                } catch (Exception e) {
+                    // log error
+                }
+                gicdr.save(gicde);
+                continue;
+            }
+
+            Optional<GiMaterialDtlEntity> gimdeOpt =
+                    gimdr.findByGprnSubProcessIdAndMaterialCode(subProcessId, gmdd.getMaterialCode());
+
+            if (gimdeOpt.isPresent()) {
+                // Non-Consumable
+                GiMaterialDtlEntity gimde = gimdeOpt.get();
+                mapper.map(gmdd, gimde);
+
+                if (!gmdd.getReceivedQuantity().equals(gmdd.getAcceptedQuantity().add(gmdd.getRejectedQuantity()))) {
+                    errorMessage.append("Received quantity mismatch for " + gmdd.getMaterialCode() + ". ");
+                    errorFound = true;
+                    continue;
+                }
+
+                if (gmdd.getAcceptedQuantity().compareTo(BigDecimal.ZERO) > 0 && gimde.getAssetId() == null) {
+                    SaveGprnDto gprnDto = gprnService.getGprnDtls(req.getGprnNo());
+                    gimde.setAssetId(createNewAsset(gmdd, req.getCreatedBy(), gprnDto.getPoId()));
+                }
+
+                try {
+                    String fileName = CommonUtils.saveBase64Image(gmdd.getInstallationReportBase64(), basePath);
+                    gimde.setInstallationReportFileName(fileName);
+                } catch (Exception e) {
+                    // log error
+                }
+                gimdr.save(gimde);
+                continue;
+            }
+
+            // If neither found
+            errorMessage.append("Material Code " + gmdd.getMaterialCode() + " not found in GI tables. ");
+            errorFound = true;
+        }
+
+        if (errorFound) {
+            throw new InvalidInputException(new ErrorDetails(
+                    AppConstant.USER_INVALID_INPUT,
+                    AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION,
+                    errorMessage.toString()));
+        }
+        GiWorkflowStatus workflowStatus = new GiWorkflowStatus();
+        workflowStatus.setProcessId("INV" + gime.getGprnProcessId());
+        workflowStatus.setSubProcessId(gime.getInspectionSubProcessId());
+        workflowStatus.setAction("UPDATED");
+        workflowStatus.setRemarks("GI updated");
+        workflowStatus.setCreatedBy(req.getCreatedBy());
+        workflowStatus.setCreateDate(LocalDateTime.now());
+
+        gistausRepo.save(workflowStatus);
+
+        return "INV" + gime.getGprnProcessId() + "/" + gime.getInspectionSubProcessId();
+    }
+
+    public List<GiWorkflowStatusDto> getGiHistoryByProcessId(String processId, Integer subProcessId) {
+        List<GiWorkflowStatus> historyList = gistausRepo.findByProcessIdAndSubProcessIdOrderByIdAsc(processId, subProcessId);
+        return historyList.stream().map(status -> {
+            GiWorkflowStatusDto dto = new GiWorkflowStatusDto();
+            dto.setProcessId(status.getProcessId());
+            dto.setSubProcessId(status.getSubProcessId());
+            dto.setAction(status.getAction());
+            dto.setRemarks(status.getRemarks());
+            dto.setCreatedBy(status.getCreatedBy());
+            dto.setCreateDate(status.getCreateDate());
+            return dto;
+        }).toList();
+    }
+
+
+
+
+
+
+
+
 }

@@ -3,6 +3,8 @@ package com.astro.controller.ProcurementModuleController;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseReportDto;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseResponseDto;
+import com.astro.dto.workflow.ProcurementDtos.SearchCpIdDto;
+import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.SearchPOIdDto;
 import com.astro.dto.workflow.WorkflowTransitionDto;
 import com.astro.entity.ProcurementModule.ContigencyPurchase;
 import com.astro.entity.UserMaster;
@@ -114,6 +116,15 @@ public class ContigencyPurchaseController {
         return ResponseEntity.ok("Contigency Purchase deleted successfully. Id:"+" " +contigencyId);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<Object> searchCPIds(
+            @RequestParam String type,
+            @RequestParam String value
+    ) {
+        List<SearchCpIdDto> result = CPservice.searchContigencyIds(type, value);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(result), HttpStatus.OK);
+
+    }
 
 
 

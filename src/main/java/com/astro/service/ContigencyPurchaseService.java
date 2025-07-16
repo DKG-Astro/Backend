@@ -3,6 +3,7 @@ package com.astro.service;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseReportDto;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseResponseDto;
+import com.astro.dto.workflow.ProcurementDtos.SearchCpIdDto;
 import com.astro.entity.ProcurementModule.ContigencyPurchase;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,5 +21,8 @@ public interface ContigencyPurchaseService {
     public void deleteContigencyPurchase(String contigencyId);
 
     public List<ContigencyPurchaseReportDto> getContigencyPurchaseReport(String startDate, String endDate);
+
+
+    public List<SearchCpIdDto> searchContigencyIds(String type, String value);
 
 }
