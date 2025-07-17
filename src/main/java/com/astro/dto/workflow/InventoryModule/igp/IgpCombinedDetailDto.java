@@ -14,5 +14,8 @@ public class IgpCombinedDetailDto {
     private Integer igpSubProcessId;
     private String poId;
     private String status;
+    private String senderName;
+    private String receiverName;
+    private String ogpType;
     private List<IgpItemDetailDto> details;
 }

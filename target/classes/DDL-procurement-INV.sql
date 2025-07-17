@@ -1356,4 +1356,12 @@ CREATE TABLE `vendor_names_for_job_work_material` (
    `workflowSequence` int NOT NULL,
    PRIMARY KEY (`workflowTransitionId`)
  );
-
+CREATE TABLE gi_workflow_status (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    process_id VARCHAR(50),
+    sub_process_id INT,
+    action VARCHAR(50),
+    remarks VARCHAR(500),
+    created_by INT,
+    create_date DATETIME DEFAULT CURRENT_TIMESTAMP
+);

@@ -6,6 +6,7 @@ import com.astro.dto.workflow.InventoryModule.GiDto.SaveGiDto;
 import com.astro.dto.workflow.InventoryModule.GprnDto.SaveGprnDto;
 import com.astro.dto.workflow.InventoryModule.gprn.GprnPendingInspectionDto;
 import com.astro.dto.workflow.InventoryModule.grn.GrnDto;
+import com.astro.dto.workflow.InventoryModule.grn.UpdateGrnDto;
 import com.astro.dto.workflow.InventoryModule.grv.GrvDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpCombinedDetailDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpDetailReportDto;
@@ -17,7 +18,9 @@ import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
 import com.astro.entity.InventoryModule.GiMasterEntity;
+import com.astro.entity.InventoryModule.GrnMasterEntity;
 import com.astro.entity.InventoryModule.IsnAssetOhqDtlsDto;
+import com.astro.service.InventoryModule.GrnService;
 import com.astro.service.ProcessService;
 import com.astro.service.InventoryModule.GiService;
 import com.astro.service.InventoryModule.IgpService;
@@ -49,6 +52,8 @@ public class ProcessController {
 
     @Autowired
     private IgpService igpService;
+    @Autowired
+    private GrnService grns;
 
     @PostMapping("/saveGprn")
     public ResponseEntity<Object> saveGprn(@RequestBody SaveGprnDto req) {
@@ -269,6 +274,57 @@ public class ProcessController {
       return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(gi), HttpStatus.OK);
     }
 
+
+    @PostMapping("/approveGrn")
+    public ResponseEntity<Object> approveGrnId(@RequestBody GiApprovalDto req) {
+        grns.approveGrn(req);
+        Map<String, String> res = new HashMap<>();
+        res.put("message", "GRN approved successfully");
+        return ResponseEntity.ok(ResponseBuilder.getSuccessResponse(res));
+    }
+
+    @PostMapping("/changeReqGrn")
+    public ResponseEntity<Object> changeReqGrn(@RequestBody GiApprovalDto req) {
+        grns.changeReqGrn(req);
+        Map<String, String> res = new HashMap<>();
+        res.put("message", "GRN change request successful.");
+        return ResponseEntity.ok(ResponseBuilder.getSuccessResponse(res));
+    }
+
+    @PostMapping("/rejectGrn")
+    public ResponseEntity<Object> rejectGrnProcessId(@RequestBody GiApprovalDto req) {
+        grns.rejectGrn(req);
+        Map<String, String> res = new HashMap<>();
+        res.put("message", "GRN rejected successfully");
+        return ResponseEntity.ok(ResponseBuilder.getSuccessResponse(res));
+    }
+
+    @GetMapping("/getGrnByStatuses")
+    public ResponseEntity<Object> getGrnByStatuses() {
+        List<GrnMasterEntity> res = grns.getGrnByStatuses();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @GetMapping("/getGrnByStorePersonStatuses")
+    public ResponseEntity<Object> getGrnByStorepersonStatuses() {
+        List<GrnMasterEntity> res = grns.getGrnByStorePresonStatuses();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @PostMapping("/updateGrn")
+    public ResponseEntity<Object> updateGrn(@RequestBody GrnDto updateRequest) {
+        grns.updateGrn(updateRequest);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse("Grn updated successfully"), HttpStatus.OK);
+    }
+
+    @GetMapping("/grnHistory")
+    public ResponseEntity<Object> getGrnHistory(
+            @RequestParam String processId,
+            @RequestParam Integer subProcessId
+    ) {
+        List<GiWorkflowStatusDto> gi = grns.getGrnHistoryByProcessId(processId, subProcessId);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(gi), HttpStatus.OK);
+    }
 
 
 

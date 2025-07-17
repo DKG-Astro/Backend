@@ -53,4 +53,7 @@ public class GrnMasterEntity {
     
     @Column(name = "location_id", nullable = false)
     private String locationId;
+    @Column(name = "status")
+    private String status;
+
 }

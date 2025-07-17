@@ -37,6 +37,8 @@ public class OgpMasterEntity {
 
     @Column(name = "ogp_type")
     private String ogpType;
+    @Column(name="sender_name")
+    private String senderName;
 
     @Column(name="receiver_name")
     private String receiverName;

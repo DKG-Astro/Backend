@@ -1,5 +1,7 @@
 package com.astro.service.impl.InventoryModule;
 
+import com.astro.dto.workflow.InventoryModule.GiDto.GiApprovalDto;
+import com.astro.dto.workflow.InventoryModule.GiDto.GiWorkflowStatusDto;
 import com.astro.repository.InventoryModule.GiRepository.GiMasterRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,7 @@ import com.astro.exception.*;
 import com.astro.constant.AppConstant;
 import com.astro.util.CommonUtils;
 import org.modelmapper.ModelMapper;
+import org.springframework.util.StringUtils;
 
 @Service
 public class GrnServiceImpl implements GrnService {
@@ -51,13 +54,15 @@ public class GrnServiceImpl implements GrnService {
     @Autowired
     private GoodsInspectionConsumableDetailRepository gicdr;
 
-    @Autowired 
+    @Autowired
     private GrnConsumableDtlRepository gcdr;
 
     @Autowired
     private OhqMasterConsumableRepository omcr;
     @Autowired
     private GiMasterRepository gimr;
+    @Autowired
+    private GrnWorkflowStatusRepository grnWorkRepo;
 
 
 
@@ -85,6 +90,7 @@ public class GrnServiceImpl implements GrnService {
         grnMaster.setCreateDate(LocalDateTime.now());
         grnMaster.setLocationId(req.getLocationId());
         grnMaster.setGrnType(req.getGrnType());
+        grnMaster.setStatus("AWAITING APPROVAL");
         grnMaster.setGrnProcessId(req.getGiNo().split("/")[0].substring(3));
 
         if ("GI".equalsIgnoreCase(req.getGrnType())) {
@@ -117,7 +123,7 @@ public class GrnServiceImpl implements GrnService {
             for (GrnMaterialDtlDto materialDtl : req.getMaterialDtlList()) {
                 if(Objects.nonNull(materialDtl.getAssetId())){
 
-                
+
                 Optional<GiMaterialDtlEntity> giMaterial = giMaterialList.stream()
                         .filter(gi -> gi.getAssetId().equals(materialDtl.getAssetId()))
                         .findFirst();
@@ -172,7 +178,7 @@ public class GrnServiceImpl implements GrnService {
                     .stream()
                     .map(GrnConsumableDtlEntity::getQuantity)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
-                
+
                 BigDecimal totRecQuant = prevRecQuant.add(materialDtl.getAcceptedQuantity());
 
                 if(totRecQuant.compareTo(giConsumable.get().getAcceptedQuantity()) > 0){
@@ -229,7 +235,7 @@ public class GrnServiceImpl implements GrnService {
                 grnMaterialDtl.setGrnProcessId(grnMaster.getGrnProcessId());
                 grnMaterialDtl.setGrnSubProcessId(grnMaster.getGrnSubProcessId());
                 grnMaterialDtl.setIgpSubProcessId(Integer.parseInt(req.getGiNo().split("/")[1]));
-                
+
                 // Copy financial values from existing OHQ if available
                 Optional<OhqMasterEntity> existingOhq = ohqmr.findByAssetIdAndLocatorId(
                     materialDtl.getAssetId(),
@@ -244,7 +250,7 @@ public class GrnServiceImpl implements GrnService {
                     grnMaterialDtl.setBookValue(materialDtl.getBookValue());
                     grnMaterialDtl.setDepriciationRate(materialDtl.getDepriciationRate());
                 }
-                
+
                 grnMaterialDtlList.add(grnMaterialDtl);
                 updateAssetAndOhq(materialDtl);
             }
@@ -262,6 +268,17 @@ public class GrnServiceImpl implements GrnService {
         System.out.println("BEFORE GCDR SAVING");
         gcdr.saveAll(gcdeList);
         System.out.println("AFTER GCDR SAVING");
+
+        GrnWorkflowStatus workflowStatus = new GrnWorkflowStatus();
+        workflowStatus.setProcessId("INV" + grnMaster.getGrnProcessId());
+        workflowStatus.setSubProcessId(grnMaster.getGrnSubProcessId());
+        workflowStatus.setAction("CREATED");
+        workflowStatus.setRemarks("GRN Created");
+        workflowStatus.setCreatedBy(Integer.parseInt(req.getCreatedBy()));
+        workflowStatus.setCreateDate(LocalDateTime.now());
+
+        grnWorkRepo.save(workflowStatus);
+
         return "INV" + grnMaster.getGrnProcessId() + "/" + grnMaster.getGrnSubProcessId();
     }
 
@@ -281,7 +298,7 @@ public class GrnServiceImpl implements GrnService {
         }
 
         List<OhqMasterEntity> ohqList = ohqmr.findByAssetId(asset.getAssetId());
-        
+
         Optional<OhqMasterEntity> existingOhq = ohqmr.findByAssetIdAndLocatorId(
                 materialDtl.getAssetId(),
                 materialDtl.getLocatorId());
@@ -300,7 +317,7 @@ public class GrnServiceImpl implements GrnService {
             ohq.setAssetId(materialDtl.getAssetId());
             ohq.setLocatorId(materialDtl.getLocatorId());
             ohq.setQuantity(materialDtl.getAcceptedQuantity());
-            
+
             if (!ohqList.isEmpty()) {
                 System.out.println("NOT EMPTY");
                 OhqMasterEntity existingOhqRecord = ohqList.get(0);
@@ -394,4 +411,323 @@ public class GrnServiceImpl implements GrnService {
                     "Invalid IGP number format"));
         }
     }
+
+    @Override
+    @Transactional
+    public void approveGrn(GiApprovalDto req) {
+        updateGrnStatusAndRemarks(req);
+    }
+
+    @Override
+    @Transactional
+    public void rejectGrn(GiApprovalDto req) {
+        updateGrnStatusAndRemarks(req);
+    }
+
+    @Override
+    @Transactional
+    public void changeReqGrn(GiApprovalDto req) {
+        updateGrnStatusAndRemarks(req);
+    }
+
+    private void updateGrnStatusAndRemarks(GiApprovalDto req) {
+        String[] processNoSplit = req.getProcessNo().split("/");
+        if (processNoSplit.length != 2) {
+            throw new InvalidInputException(new ErrorDetails(
+                    AppConstant.USER_INVALID_INPUT,
+                    AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION,
+                    "Invalid process number format"));
+        }
+
+        Integer grnSubProcessId = Integer.parseInt(processNoSplit[1]);
+        GrnMasterEntity grnMaster = grnmr.findById(grnSubProcessId)
+                .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                        AppConstant.ERROR_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_RESOURCE,
+                        "GRN not found")));
+
+        grnMaster.setStatus(req.getStatus());
+        grnmr.save(grnMaster);
+
+        GrnWorkflowStatus history = new GrnWorkflowStatus();
+        history.setProcessId(processNoSplit[0]);
+        history.setSubProcessId(grnSubProcessId);
+        history.setAction(req.getStatus());
+        history.setRemarks(req.getRemarks());
+        history.setCreatedBy(req.getCreatedBy());
+        history.setCreateDate(LocalDateTime.now());
+
+        grnWorkRepo.save(history);
+    }
+
+
+    public List<GrnMasterEntity> getGrnByStatuses() {
+        List<String> statuses = Arrays.asList("AWAITING APPROVAL");
+        return grnmr.findByStatusIn(statuses);
+    }
+    public List<GrnMasterEntity> getGrnByStorePresonStatuses() {
+        List<String> statuses = Arrays.asList("REJECTED", "CHANGE REQUEST");
+        return grnmr.findByStatusIn(statuses);
+    }
+/*
+    @Override
+    @Transactional
+    public String updateGrn(GrnDto req) {
+        String[] processNoSplit = req.getGrnNo().split("/");
+        if (processNoSplit.length != 2) {
+            throw new InvalidInputException(new ErrorDetails(
+                    AppConstant.USER_INVALID_INPUT,
+                    AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION,
+                    "Invalid GRN No format"));
+        }
+
+        Integer subProcessId = Integer.parseInt(processNoSplit[1]);
+        GrnMasterEntity grnMaster = grnmr.findByGrnSubProcessId(subProcessId)
+                .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                        AppConstant.ERROR_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_RESOURCE,
+                        "GRN not found for given GRN No.")));
+
+        ModelMapper mapper = new ModelMapper();
+        mapper.map(req, grnMaster);
+        grnMaster.setStatus("AWAITING APPROVAL");
+        grnMaster.setCreatedBy(req.getCreatedBy());
+        grnMaster.setSystemCreatedBy(Integer.parseInt(req.getCreatedBy()));
+
+        if (StringUtils.hasText(req.getGrnDate())) {
+            grnMaster.setGrnDate(CommonUtils.convertStringToDateObject(req.getGrnDate()));
+        }
+        if (StringUtils.hasText(req.getInstallationDate())) {
+            grnMaster.setInstallationDate(CommonUtils.convertStringToDateObject(req.getInstallationDate()));
+        }
+        if (StringUtils.hasText(req.getCommissioningDate())) {
+            grnMaster.setCommissioningDate(CommonUtils.convertStringToDateObject(req.getCommissioningDate()));
+        }
+        grnMaster.setCreateDate(LocalDateTime.now());
+        grnmr.save(grnMaster);
+
+        List<GrnMaterialDtlEntity> existingMaterialList = grnmdr.findByGrnSubProcessId(subProcessId);
+        List<GrnConsumableDtlEntity> existingConsumableList = gcdr.findByGrnSubProcessId(subProcessId);
+
+        for (GrnMaterialDtlDto materialDtl : req.getMaterialDtlList()) {
+            if (Objects.nonNull(materialDtl.getAssetId())) {
+                existingMaterialList.stream()
+                        .filter(existing -> existing.getAssetId().equals(materialDtl.getAssetId()))
+                        .findFirst()
+                        .ifPresent(existing -> {
+                            BigDecimal oldQty = existing.getQuantity();
+                            existing.setQuantity(materialDtl.getAcceptedQuantity());
+                            existing.setBookValue(materialDtl.getBookValue());
+                            existing.setDepriciationRate(materialDtl.getDepriciationRate());
+
+                            ohqmr.findByAssetIdAndLocatorId(existing.getAssetId(), existing.getLocatorId())
+                                    .ifPresent(ohq -> {
+                                        BigDecimal diff = materialDtl.getAcceptedQuantity().subtract(oldQty);
+                                        ohq.setQuantity(ohq.getQuantity().add(diff));
+                                        ohqmr.save(ohq);
+                                    });
+                        });
+            } else {
+                existingConsumableList.stream()
+                        .filter(existing -> existing.getMaterialCode().equals(materialDtl.getMaterialCode()))
+                        .findFirst()
+                        .ifPresent(existing -> {
+                            BigDecimal oldQty = existing.getQuantity();
+                            existing.setQuantity(materialDtl.getAcceptedQuantity());
+                            existing.setBookValue(materialDtl.getBookValue());
+                            existing.setDepriciationRate(materialDtl.getDepriciationRate());
+
+                            omcr.findByMaterialCodeAndLocatorId(existing.getMaterialCode(), existing.getLocatorId())
+                                    .ifPresent(ohq -> {
+                                        BigDecimal diff = materialDtl.getAcceptedQuantity().subtract(oldQty);
+                                        ohq.setQuantity(ohq.getQuantity().add(diff));
+                                        ohq.setBookValue(materialDtl.getBookValue());
+                                        ohq.setDepriciationRate(materialDtl.getDepriciationRate());
+                                        ohq.setUnitPrice(materialDtl.getBookValue());
+                                        omcr.save(ohq);
+                                    });
+                        });
+            }
+        }
+
+        grnmdr.saveAll(existingMaterialList);
+        gcdr.saveAll(existingConsumableList);
+
+        GrnWorkflowStatus workflowStatus = new GrnWorkflowStatus();
+        workflowStatus.setProcessId("INV" + grnMaster.getGrnProcessId());
+        workflowStatus.setSubProcessId(grnMaster.getGrnSubProcessId());
+        workflowStatus.setAction("Updated");
+        workflowStatus.setRemarks("GRN updated");
+        workflowStatus.setCreatedBy(Integer.parseInt(req.getCreatedBy()));
+        workflowStatus.setCreateDate(LocalDateTime.now());
+
+        grnWorkRepo.save(workflowStatus);
+
+        return "INV" + grnMaster.getGrnProcessId() + "/" + grnMaster.getGrnSubProcessId();
+    }*/
+
+    @Override
+    @Transactional
+    public String updateGrn(GrnDto req) {
+        String[] processNoSplit = req.getGrnNo().split("/");
+        if (processNoSplit.length != 2) {
+            throw new InvalidInputException(new ErrorDetails(
+                    AppConstant.USER_INVALID_INPUT,
+                    AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION,
+                    "Invalid GRN No format"));
+        }
+
+        Integer subProcessId = Integer.parseInt(processNoSplit[1]);
+        GrnMasterEntity grnMaster = grnmr.findByGrnSubProcessId(subProcessId)
+                .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                        AppConstant.ERROR_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_RESOURCE,
+                        "GRN not found for given GRN No.")));
+
+        ModelMapper mapper = new ModelMapper();
+        mapper.map(req, grnMaster);
+        grnMaster.setStatus("AWAITING APPROVAL");
+        grnMaster.setCreatedBy(req.getCreatedBy());
+        grnMaster.setSystemCreatedBy(Integer.parseInt(req.getCreatedBy()));
+        if (StringUtils.hasText(req.getGrnDate())) {
+            grnMaster.setGrnDate(CommonUtils.convertStringToDateObject(req.getGrnDate()));
+        }
+        if (StringUtils.hasText(req.getInstallationDate())) {
+            grnMaster.setInstallationDate(CommonUtils.convertStringToDateObject(req.getInstallationDate()));
+        }
+        if (StringUtils.hasText(req.getCommissioningDate())) {
+            grnMaster.setCommissioningDate(CommonUtils.convertStringToDateObject(req.getCommissioningDate()));
+        }
+        grnMaster.setCreateDate(LocalDateTime.now());
+        grnmr.save(grnMaster);
+
+        List<GrnMaterialDtlEntity> existingMaterialList = grnmdr.findByGrnSubProcessId(subProcessId);
+        List<GrnConsumableDtlEntity> existingConsumableList = gcdr.findByGrnSubProcessId(subProcessId);
+
+        for (GrnMaterialDtlDto materialDtl : req.getMaterialDtlList()) {
+            if (Objects.nonNull(materialDtl.getAssetId())) {
+                existingMaterialList.stream()
+                        .filter(existing -> existing.getAssetId().equals(materialDtl.getAssetId()))
+                        .findFirst()
+                        .ifPresent(existing -> {
+
+                            // Store old values first
+                            BigDecimal oldQty = existing.getQuantity();
+                            Integer oldLocatorId = existing.getLocatorId();
+
+                            // Reduce from old OHQ (old locator)
+                            ohqmr.findByAssetIdAndLocatorId(existing.getAssetId(), oldLocatorId)
+                                    .ifPresent(ohq -> {
+                                        ohq.setQuantity(ohq.getQuantity().subtract(oldQty));
+                                        ohqmr.save(ohq);
+                                    });
+
+                            // Update material details AFTER reducing OHQ
+                            existing.setLocatorId(materialDtl.getLocatorId());
+                            existing.setQuantity(materialDtl.getAcceptedQuantity());
+                            existing.setBookValue(materialDtl.getBookValue());
+                            existing.setDepriciationRate(materialDtl.getDepriciationRate());
+
+                            // Update OHQ for new locator
+                            ohqmr.findByAssetIdAndLocatorId(existing.getAssetId(), materialDtl.getLocatorId())
+                                    .ifPresentOrElse(ohq -> {
+                                        ohq.setQuantity(ohq.getQuantity().add(materialDtl.getAcceptedQuantity()));
+                                        ohq.setBookValue(materialDtl.getBookValue());
+                                        ohq.setDepriciationRate(materialDtl.getDepriciationRate());
+                                        ohq.setUnitPrice(materialDtl.getBookValue());
+                                        ohqmr.save(ohq);
+                                    }, () -> {
+                                        OhqMasterEntity ohq = new OhqMasterEntity();
+                                        ohq.setAssetId(existing.getAssetId());
+                                        ohq.setLocatorId(materialDtl.getLocatorId());
+                                        ohq.setQuantity(materialDtl.getAcceptedQuantity());
+                                        ohq.setBookValue(materialDtl.getBookValue());
+                                        ohq.setDepriciationRate(materialDtl.getDepriciationRate());
+                                        ohq.setUnitPrice(materialDtl.getBookValue());
+                                        ohqmr.save(ohq);
+                                    });
+                        });
+            } else {
+                existingConsumableList.stream()
+                        .filter(existing -> existing.getMaterialCode().equals(materialDtl.getMaterialCode()))
+                        .findFirst()
+                        .ifPresent(existing -> {
+
+                            // Store old values first
+                            BigDecimal oldQty = existing.getQuantity();
+                            Integer oldLocatorId = existing.getLocatorId();
+
+                            // Reduce from old OHQ (old locator)
+                            omcr.findByMaterialCodeAndLocatorId(existing.getMaterialCode(), oldLocatorId)
+                                    .ifPresent(ohq -> {
+                                        ohq.setQuantity(ohq.getQuantity().subtract(oldQty));
+                                        omcr.save(ohq);
+                                    });
+
+                            // Update consumable details AFTER reducing OHQ
+                            existing.setLocatorId(materialDtl.getLocatorId());
+                            existing.setQuantity(materialDtl.getAcceptedQuantity());
+                            existing.setBookValue(materialDtl.getBookValue());
+                            existing.setDepriciationRate(materialDtl.getDepriciationRate());
+
+                            // Update OHQ for new locator
+                            omcr.findByMaterialCodeAndLocatorId(existing.getMaterialCode(), materialDtl.getLocatorId())
+                                    .ifPresentOrElse(ohq -> {
+                                        ohq.setQuantity(ohq.getQuantity().add(materialDtl.getAcceptedQuantity()));
+                                        ohq.setBookValue(materialDtl.getBookValue());
+                                        ohq.setDepriciationRate(materialDtl.getDepriciationRate());
+                                        ohq.setUnitPrice(materialDtl.getBookValue());
+                                        omcr.save(ohq);
+                                    }, () -> {
+                                        OhqMasterConsumableEntity ohq = new OhqMasterConsumableEntity();
+                                        ohq.setMaterialCode(existing.getMaterialCode());
+                                        ohq.setLocatorId(materialDtl.getLocatorId());
+                                        ohq.setQuantity(materialDtl.getAcceptedQuantity());
+                                        ohq.setBookValue(materialDtl.getBookValue());
+                                        ohq.setDepriciationRate(materialDtl.getDepriciationRate());
+                                        ohq.setUnitPrice(materialDtl.getBookValue());
+                                        omcr.save(ohq);
+                                    });
+                        });
+            }
+        }
+
+        grnmdr.saveAll(existingMaterialList);
+        gcdr.saveAll(existingConsumableList);
+
+        GrnWorkflowStatus workflowStatus = new GrnWorkflowStatus();
+        workflowStatus.setProcessId("INV" + grnMaster.getGrnProcessId());
+        workflowStatus.setSubProcessId(grnMaster.getGrnSubProcessId());
+        workflowStatus.setAction("Updated");
+        workflowStatus.setRemarks("GRN updated");
+        workflowStatus.setCreatedBy(Integer.parseInt(req.getCreatedBy()));
+        workflowStatus.setCreateDate(LocalDateTime.now());
+        grnWorkRepo.save(workflowStatus);
+
+        return "INV" + grnMaster.getGrnProcessId() + "/" + grnMaster.getGrnSubProcessId();
+    }
+
+    @Override
+    public List<GiWorkflowStatusDto> getGrnHistoryByProcessId(String processId, Integer subProcessId) {
+        List<GrnWorkflowStatus> historyList = grnWorkRepo.findByProcessIdAndSubProcessIdOrderByIdAsc(processId, subProcessId);
+        return historyList.stream().map(status -> {
+            GiWorkflowStatusDto dto = new GiWorkflowStatusDto();
+            dto.setProcessId(status.getProcessId());
+            dto.setSubProcessId(status.getSubProcessId());
+            dto.setAction(status.getAction());
+            dto.setRemarks(status.getRemarks());
+            dto.setCreatedBy(status.getCreatedBy());
+            dto.setCreateDate(status.getCreateDate());
+            return dto;
+        }).toList();
+    }
+
+
+
 }

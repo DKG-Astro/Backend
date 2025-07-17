@@ -359,6 +359,9 @@ public class IgpServiceImpl implements IgpService {
             dto.setIgpSubProcessId(row[2] != null ? Integer.valueOf(row[2].toString()) : null);
             dto.setPoId((String) row[3]);
             dto.setStatus((String) row[5]);
+            dto.setSenderName((String) row[6]);
+            dto.setReceiverName((String) row[7]);
+            dto.setOgpType((String) row[8]);
             
             try {
                 String detailsJson = (String) row[4];

@@ -117,6 +117,7 @@ public class OgpServiceImpl implements OgpService {
         ogpMaster.setCreatedBy(req.getCreatedBy());
         ogpMaster.setLocationId(req.getLocationId());
         ogpMaster.setOgpType(req.getOgpType());
+        ogpMaster.setSenderName(req.getSenderName());
         ogpMaster.setStatus("AWAITING APPROVAL");
         if(Objects.nonNull(req.getDateOfReturn())){
             ogpMaster.setDateOfReturn(CommonUtils.convertStringToDateObject(req.getDateOfReturn()));
@@ -313,6 +314,7 @@ public class OgpServiceImpl implements OgpService {
         if(Objects.nonNull(request.getDateOfReturn())){
             ogpMasterPo.setDateOfReturn(CommonUtils.convertStringToDateObject(request.getDateOfReturn()));
         }
+        ogpMasterPo.setSenderName(request.getSenderName());
         ogpMasterPo.setReceiverLocation(request.getReceiverLocation());
         ogpMasterPo.setReceiverName(request.getReceiverName());
 

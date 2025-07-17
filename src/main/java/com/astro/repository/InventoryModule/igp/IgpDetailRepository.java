@@ -75,7 +75,10 @@ public interface IgpDetailRepository extends JpaRepository<IgpDetailEntity, Inte
                     'type', 'ASSET'
                 )
             ) as details,
-            om.status
+            om.status,
+            om.sender_name,      
+            om.receiver_name,   
+            om.ogp_type
         FROM ogp_master om
         JOIN issue_note_master inm ON om.issue_note_id = inm.issue_note_id
         JOIN issue_note_detail ind ON inm.issue_note_id = ind.issue_note_id
@@ -110,7 +113,10 @@ public interface IgpDetailRepository extends JpaRepository<IgpDetailEntity, Inte
                     'type', 'MATERIAL'
                 )
             ) as details,
-            omp.status
+            omp.status,
+             omp.sender_name,    
+             omp.receiver_name,  
+             omp.ogp_type
         FROM ogp_master_po omp
         LEFT JOIN igp_master im ON omp.ogp_sub_process_id = im.ogp_sub_process_id
         LEFT JOIN igp_po_detail ipd ON im.igp_sub_process_id = ipd.igp_sub_process_id

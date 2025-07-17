@@ -12,6 +12,7 @@ public class OgpPoDto {
     private Integer createdBy;
     private String ogpType;
     private String receiverName;
+    private String senderName;
     private String receiverLocation;
     private String dateOfReturn;
     private List<OgpPoDtlDto> materialDtlList;

@@ -10,4 +10,6 @@ import com.astro.entity.InventoryModule.GrnConsumableDtlEntity;
 @Repository
 public interface GrnConsumableDtlRepository extends JpaRepository<GrnConsumableDtlEntity, Integer> {
     List<GrnConsumableDtlEntity> findByGiSubProcessIdAndMaterialCode(Integer giSubProcessId, String materialCode);
+
+    List<GrnConsumableDtlEntity> findByGrnSubProcessId(Integer grnSubProcessId);
 }
