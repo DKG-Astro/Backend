@@ -1,5 +1,6 @@
 package com.astro.controller;
 
+import com.astro.dto.workflow.InventoryModule.asset.AssetMasterReportDto;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseReportDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentListReportDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentReportDetailsDTO;
@@ -207,7 +208,7 @@ public class Reports {
     @GetMapping("/asset")
     public ResponseEntity<Object> getAssetReport() {
 
-        List<AssetMasterDto> response = assetMasterService.getAssetReport();
+        List<AssetMasterReportDto> response = assetMasterService.getAssetReport();
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
     

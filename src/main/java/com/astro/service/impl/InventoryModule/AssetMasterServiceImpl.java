@@ -1,5 +1,6 @@
 package com.astro.service.impl.InventoryModule;
 
+import com.astro.dto.workflow.InventoryModule.asset.AssetMasterReportDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -258,11 +259,11 @@ public class AssetMasterServiceImpl implements AssetMasterService {
     }
 
     @Override
-public List<AssetMasterDto> getAssetReport() {
+public List<AssetMasterReportDto> getAssetReport() {
     List<Object[]> results = assetMasterRepository.getAssetReport();
     
     return results.stream().map(row -> {
-        AssetMasterDto dto = new AssetMasterDto();
+        AssetMasterReportDto dto = new AssetMasterReportDto();
         dto.setAssetId((Integer) row[0]);
         dto.setMaterialCode((String) row[1]);
         dto.setMaterialDesc((String) row[2]);
@@ -285,6 +286,9 @@ public List<AssetMasterDto> getAssetReport() {
         dto.setCreatedBy((Integer) row[18]);
         // dto.setUpdatedDate(((Timestamp) row[19]).toLocalDateTime());
         dto.setUpdatedBy((Integer) row[20]);
+        dto.setPoId((String) row[21]); // po_id
+        dto.setPoValue((BigDecimal) row[22]); // total_value_of_po
+        dto.setVendorId((String) row[23]);
         return dto;
     }).collect(Collectors.toList());
 }

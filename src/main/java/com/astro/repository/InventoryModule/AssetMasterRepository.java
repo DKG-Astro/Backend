@@ -33,7 +33,7 @@ public interface AssetMasterRepository extends JpaRepository<AssetMasterEntity, 
             @Param("serialNo") String serialNo,
             @Param("uomId") String uomId
     );
-    
+   /*
     @Query(value = """
         SELECT 
             asset_id, material_code, material_desc, asset_desc, make_no, 
@@ -43,7 +43,21 @@ public interface AssetMasterRepository extends JpaRepository<AssetMasterEntity, 
             updated_date, updated_by
         FROM asset_master
         """, nativeQuery = true)
-    List<Object[]> getAssetReport();
+    List<Object[]> getAssetReport();*/
+   @Query(value = """
+        SELECT 
+            am.asset_id, am.material_code, am.material_desc, am.asset_desc, am.make_no, 
+            am.serial_no, am.model_no, am.init_quantity, am.unit_price, am.uom_id,
+            am.depriciation_rate, am.end_of_life, am.stock_levels, am.condition_of_goods,
+            am.shelf_life, am.component_name, am.component_id, am.create_date, am.created_by,
+            am.updated_date, am.updated_by, am.po_id,
+            po.total_value_of_po,
+            po.vendor_id  
+        FROM asset_master am
+        LEFT JOIN purchase_order po ON am.po_id = po.po_id
+        """, nativeQuery = true)
+   List<Object[]> getAssetReport();
+
 
     @Query("SELECT a.assetId FROM AssetMasterEntity a")
     List<Integer> findAllAssetIds();
