@@ -40,6 +40,8 @@ public class PoWithTenderAndIndentBase64FilesDto {
         private List<String> comparativeStatementFileNameList;
         private LocalDateTime createdDate;
         private LocalDateTime updatedDate;
+        private String status;
+        private String processStage;
 
         private TenderWithIndentResponseDTO tenderDetails;
 

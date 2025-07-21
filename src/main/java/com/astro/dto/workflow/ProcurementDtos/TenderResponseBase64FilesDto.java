@@ -51,6 +51,8 @@ public class TenderResponseBase64FilesDto {
     private String miiStatusDeclarationFileName;
     private String vendorName;
     //private String vendorAddress;
+    private String status;
+    private String processStage;
 
 
 }

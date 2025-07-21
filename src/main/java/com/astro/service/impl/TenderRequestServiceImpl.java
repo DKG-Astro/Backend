@@ -10,6 +10,7 @@ import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderMateri
 import com.astro.entity.ProcurementModule.*;
 import com.astro.entity.ProjectMaster;
 import com.astro.entity.VendorQuotationAgainstTender;
+import com.astro.entity.WorkflowTransition;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
@@ -20,6 +21,7 @@ import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.repository.ProjectMasterRepository;
 import com.astro.repository.VendorNamesForJobWorkMaterialRepository;
 import com.astro.repository.VendorQuotationAgainstTenderRepository;
+import com.astro.repository.WorkflowTransitionRepository;
 import com.astro.service.IndentCreationService;
 import com.astro.service.TenderRequestService;
 import com.astro.util.CommonUtils;
@@ -60,6 +62,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     private VendorNamesForJobWorkMaterialRepository vendorNameRepository;
     @Autowired
     private VendorQuotationAgainstTenderRepository vendorQuotationAgainstTenderRepository;
+    @Autowired
+    private WorkflowTransitionRepository workflowTransitionRepository;
     @Value("${filePath}")
     private String bp;
     private final String basePath;
@@ -606,6 +610,9 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         List<String> indentIds = indentIdRepository.findTenderWithIndent(tenderRequest.getTenderId());
 
         tenderResponseDto.setIndentIds(indentIds);
+        WorkflowTransition wt = workflowTransitionRepository.findTopByRequestIdOrderByWorkflowSequenceDesc(tenderId);
+        tenderResponseDto.setStatus(wt.getStatus());
+        tenderResponseDto.setProcessStage(wt.getNextRole());
 
         tenderResponseDto.setProjectName(tenderRequest.getProjectName());
         System.out.println(tenderRequest.getProjectName());

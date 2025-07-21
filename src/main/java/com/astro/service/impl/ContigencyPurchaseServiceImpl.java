@@ -6,10 +6,12 @@ import com.astro.dto.workflow.ProcurementDtos.*;
 import com.astro.entity.ProcurementModule.ContigencyPurchase;
 
 import com.astro.entity.ProcurementModule.CpMaterials;
+import com.astro.entity.WorkflowTransition;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.ProcurementModule.ContigencyPurchaseRepository;
+import com.astro.repository.WorkflowTransitionRepository;
 import com.astro.service.ContigencyPurchaseService;
 import com.astro.util.CommonUtils;
 
@@ -37,6 +39,8 @@ import java.util.stream.Collectors;
 public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService {
     @Autowired
     private ContigencyPurchaseRepository CPrepo;
+    @Autowired
+    private WorkflowTransitionRepository workflowTransitionRepository;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -253,6 +257,9 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
         dto.setPaymentTo(contigencyPurchase.getPaymentTo());
         dto.setPaymentToVendor(contigencyPurchase.getPaymentToVendor());
         dto.setPaymentToEmployee(contigencyPurchase.getPaymentToEmployee());
+        WorkflowTransition wt = workflowTransitionRepository.findTopByRequestIdOrderByWorkflowSequenceDesc(contigencyPurchase.getContigencyId());
+        dto.setStatus(wt.getStatus());
+        dto.setProcessStage(wt.getNextRole());
 
         // Map list of CpMaterials to CpMaterialsResponseDto
         List<CpMaterialResponseDto> materialsDtoList = contigencyPurchase.getCpMaterials().stream()

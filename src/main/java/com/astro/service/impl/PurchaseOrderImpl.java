@@ -15,6 +15,7 @@ import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
 import com.astro.entity.ProcurementModule.TenderRequest;
 import com.astro.entity.ProjectMaster;
+import com.astro.entity.WorkflowTransition;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
@@ -28,6 +29,7 @@ import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrde
 import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.repository.ProjectMasterRepository;
 import com.astro.repository.InventoryModule.GprnRepository.GprnMaterialDtlRepository;
+import com.astro.repository.WorkflowTransitionRepository;
 import com.astro.service.IndentCreationService;
 import com.astro.service.PurchaseOrderService;
 import com.astro.service.TenderRequestService;
@@ -68,6 +70,8 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
     private ProjectMasterRepository projectMasterRepository;
     @Autowired
     private ServiceOrderRepository serviceOrderRepository;
+    @Autowired
+    private WorkflowTransitionRepository workflowTransitionRepository;
 
 
     @Value("${filePath}")
@@ -526,6 +530,10 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                 .orElse(null);
         responseDTO.setProjectName(projectName);
         responseDTO.setProjectLimit(projectLimit);
+        WorkflowTransition wt = workflowTransitionRepository.findTopByRequestIdOrderByWorkflowSequenceDesc(poId);
+        responseDTO.setStatus(wt.getStatus());
+        responseDTO.setProcessStage(wt.getNextRole());
+
         // Set Tender & Indent details
         responseDTO.setTenderDetails(tenderWithIndent);
         return responseDTO;
@@ -1037,7 +1045,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                             AppConstant.ERROR_CODE_RESOURCE,
                             AppConstant.ERROR_TYPE_CODE_RESOURCE,
                             AppConstant.ERROR_TYPE_RESOURCE,
-                            "No matching indents found for the given search criteria."
+                            "No matching POs found for the given search criteria."
                     )
             );
         }

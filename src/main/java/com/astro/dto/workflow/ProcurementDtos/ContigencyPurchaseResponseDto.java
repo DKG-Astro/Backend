@@ -30,6 +30,8 @@ public class ContigencyPurchaseResponseDto {
     private Boolean declarationTwo;
     private String updatedBy;
     private Integer createdBy;
+    private String status;
+    private String processStage;
     private LocalDateTime createdDate;
     private BigDecimal totalCpValue;
 
