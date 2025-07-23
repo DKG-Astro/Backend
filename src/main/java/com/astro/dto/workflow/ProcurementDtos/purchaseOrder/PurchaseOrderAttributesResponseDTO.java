@@ -21,4 +21,5 @@ public class PurchaseOrderAttributesResponseDTO {
     private BigDecimal unitPrice;
     private String category;
     private BigDecimal receivedQuantity;
+    private BigDecimal totalQuantity;
 }
