@@ -1,18 +1,52 @@
 package com.astro.util;
-
+import com.astro.dto.workflow.SubWorkflowTransitionDto;
+import com.astro.dto.workflow.WorkflowTransitionDto;
+import com.astro.entity.UserMaster;
+import com.astro.entity.VendorMaster;
+import com.astro.repository.UserMasterRepository;
+import com.astro.repository.VendorMasterRepository;
+import com.astro.service.TenderRequestService;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
+import com.sendgrid.helpers.mail.objects.Attachments;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
+import com.sendgrid.helpers.mail.objects.Personalization;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
+import org.thymeleaf.context.Context;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.util.*;
 
 @Service
 public class EmailService {
+    @Autowired
+    private UserMasterRepository userMasterRepository;
+    @Autowired
+    private SpringTemplateEngine templateEngine;
+    @Autowired
+    private TenderRequestService TRService;
+    @Autowired
+    private VendorMasterRepository vendorMasterRepository;
+    @Autowired
+    private PdfGeneratorService pdfGeneratorService;
+    @Autowired
+    private JavaMailSender mailSender;
+
 
         private static final String SENDGRID_API_KEY = ""; // API key(we can change based on email)
 
@@ -46,6 +80,198 @@ public class EmailService {
             }
 
         }
+  /*  @Async
+    public void sendWorkflowEmail(WorkflowTransitionDto wt) throws IOException {
+        Email from = new Email("udaykirandkg@gmail.com");
+        String subject = "Workflow Update - Request ID: " + wt.getRequestId();
+        String toEmail= "kudaykiran.9949@gmail.com";
+        Email to = new Email(toEmail);
+
+        String contentText = "Dear User,\n\n" +
+                "Your workflow request has been processed.\n\n" +
+                "Request ID: " + wt.getRequestId() + "\n" +
+                "Action: " + wt.getAction() + "\n" +
+                "Status:" + wt.getStatus() + "\n" +
+                "currentRole:" + wt.getCurrentRole() + "\n" +
+                "nextRole:" + wt.getNextRole() + "\n" +
+                "Remarks: " + wt.getRemarks() + "\n" +
+                "Thanks,\nIIA Group";
+        Content content = new Content("text/plain", contentText);
+
+        sendMail(from, to, subject, content);
+        if ("COMPLETED".equalsIgnoreCase(wt.getStatus())) {
+            UserMaster user = userMasterRepository.findByUserId(wt.getCreatedBy());
+                String userEmail = user.getEmail();
+                sendMail(from, new Email(userEmail), subject, content);
+        }
+
+    }
+
+    private void sendMail(Email from, Email to, String subject, Content content) throws IOException {
+        Mail mail = new Mail(from, subject, to, content);
+        SendGrid sg = new SendGrid(SENDGRID_API_KEY);
+        Request request = new Request();
+        System.out.println("mail sended"+ from +" " +to);
+
+        try {
+            request.setMethod(Method.POST);
+            request.setEndpoint("mail/send");
+            request.setBody(mail.build());
+            Response response = sg.api(request);
+            System.out.println("Status Code: " + response.getStatusCode());
+            System.out.println("Response Body: " + response.getBody());
+        } catch (IOException ex) {
+            throw ex;
+        }
+    }*/
+
+    @Async
+    public void sendWorkflowEmail(WorkflowTransitionDto wt) throws IOException, MessagingException {
+        Email from = new Email("udaykirandkg@gmail.com");
+        String subject = "Workflow Update - Request ID: " + wt.getRequestId();
+        String workFlowName = null;
+        if (wt.getWorkflowId() == 1) {
+            workFlowName = "Indent Workflow";
+        } else if (wt.getWorkflowId() == 4) {
+            workFlowName = "Tender Approver Workflow";
+        } else if (wt.getWorkflowId() == 7) {
+            workFlowName = "Tender Evaluator Workflow";
+        } else if (wt.getWorkflowId() == 3) {
+            workFlowName = "Purchase Order Workflow";
+        } else if (wt.getWorkflowId() == 5) {
+            workFlowName = "Service Order Workflow";
+        } else if (wt.getWorkflowId() == 2) {
+            workFlowName = "Contingency Purchase Workflow";
+        }
+
+        // Prepare data for template
+        Context context = new Context();
+        context.setVariable("requestId", wt.getRequestId());
+        context.setVariable("action", wt.getAction());
+        context.setVariable("status", wt.getStatus());
+        context.setVariable("currentRole", wt.getCurrentRole());
+        context.setVariable("nextRole", wt.getNextRole());
+        context.setVariable("remarks", wt.getRemarks());
+        context.setVariable("createdBy", wt.getCreatedBy());
+        context.setVariable("workflowName", workFlowName);
+
+
+        // If status is COMPLETED, send to creator
+        String nextRole = wt.getNextRole();
+        if (nextRole == null || nextRole.equalsIgnoreCase("NULL") || nextRole.isEmpty()) {
+            UserMaster user = userMasterRepository.findByUserId(wt.getCreatedBy());
+            context.setVariable("userName", user.getUserName());
+            String userEmail = user.getEmail();
+            String userBody = templateEngine.process("user-email-template", context);
+         //   sendMail(from, new Email(userEmail), subject, new Content("text/html", userBody));
+            String body = templateEngine.process("user-email-template", context);
+            sendMail(userEmail, subject, body);
+
+
+
+        }
+
+        String body = templateEngine.process("role-email-template", context);
+        sendMail("kudaykiran.9949@gmail.com", subject, body);
+
+
+        if ("Tender Approver".equals(wt.getCurrentRole())){
+
+          //  String tenderId = wt.getRequestId();
+         //   TenderWithIndentResponseDTO tenderData = TRService.getTenderRequestById(tenderId);
+
+            // Call the transactional method in another service
+          //  tenderEmailService.sendTenderDocumentsToVendors(tenderId, tenderData);
+        }
+    }
+ /*   private void sendMail(Email from, Email to, String subject, Content content) throws IOException {
+        Mail mail = new Mail(from, subject, to, content);
+        SendGrid sg = new SendGrid(SENDGRID_API_KEY);
+        Request request = new Request();
+        System.out.println("mail sended" + from + " " + to);
+
+        try {
+            request.setMethod(Method.POST);
+            request.setEndpoint("mail/send");
+            request.setBody(mail.build());
+            Response response = sg.api(request);
+            System.out.println("Status Code: " + response.getStatusCode());
+            System.out.println("Response Body: " + response.getBody());
+        } catch (IOException ex) {
+            throw ex;
+        }
+    }*/
+ private void sendMail(String toEmail, String subject, String htmlContent) throws MessagingException {
+     MimeMessage message = mailSender.createMimeMessage();
+     MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+     helper.setTo(toEmail);
+     helper.setSubject(subject);
+     helper.setText(htmlContent, true); // true for HTML content
+     helper.setFrom("your_email@gmail.com"); // replace with your Gmail
+
+     mailSender.send(message);
+ }
+
+
+    @Async
+    public void sendSubWorkflowEmail(SubWorkflowTransitionDto wt) throws IOException, MessagingException {
+        Email from = new Email("udaykirandkg@gmail.com");
+        String subject = "Workflow Update - Request ID: " + wt.getRequestId();
+
+        String templateName = "";
+        if (wt.getWorkflowId() == 7) {
+            templateName = "tender-evaluator-template";
+        }
+
+        // Prepare data for template
+        Context context = new Context();
+        context.setVariable("workflowName", "Tender Evaluator Workflow");
+        context.setVariable("requestId", wt.getRequestId());
+        context.setVariable("createdBy", wt.getCreatedBy());
+        context.setVariable("status", wt.getStatus());
+       // context.setVariable("transitionType", wt.getT);
+        context.setVariable("actionOn", wt.getActionOn()); // Role performing next action
+
+        // Render email body using Thymeleaf
+        String body = templateEngine.process("tender-evaluator-email-template", context);
+        Content content = new Content("text/html", body);
+
+        // we have to toEmail base on the clent employee
+        String toEmail = "kudaykiran.9949@gmail.com";
+       // sendMail(from, new Email(toEmail), subject, content);
+        sendMail("kudaykiran.9949@gmail.com", subject, body);
+
+    }
+
+    public void sendHtmlEmail(String to, String subject, String htmlContent) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(htmlContent, true); // true = HTML
+        helper.setFrom("your_email@gmail.com");
+
+        mailSender.send(message);
+    }
+
+    public void sendEmailWithAttachments(String to, String subject, String htmlContent, List<File> attachments) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(htmlContent, true);
+        helper.setFrom("your_email@gmail.com");
+
+        for (File file : attachments) {
+            helper.addAttachment(file.getName(), file);
+        }
+
+        mailSender.send(message);
+    }
+
 }
 
 

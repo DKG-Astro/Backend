@@ -384,14 +384,15 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                     attributeDTO.setMaterialDescription(attribute.getMaterialDescription());
 
                     // Get sum of GPRN quantities for this material
-                    BigDecimal gprnQuantity = gprnMaterialDtlRepository
+                  /*  BigDecimal gprnQuantity = gprnMaterialDtlRepository
                             .findByPoIdAndMaterialCode(poId, attribute.getMaterialCode())
                             .stream()
                             .map(gprn -> gprn.getReceivedQuantity())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
-
+*/
                     // Set remaining quantity
-                    attributeDTO.setQuantity(attribute.getQuantity().subtract(gprnQuantity));
+                  //  attributeDTO.setQuantity(attribute.getQuantity().subtract(gprnQuantity));
+
                     attributeDTO.setTotalQuantity(attribute.getQuantity());
                     attributeDTO.setReceivedQuantity(attribute.getReceivedQuantity());
                     attributeDTO.setRate(attribute.getRate());

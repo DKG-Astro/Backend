@@ -49,6 +49,6 @@ public class TenderWithIndentResponseDTO {
     private String vendorId;
     private String quotationFileName;
     //   private List<IndentIdDto> indentIds;
-
+    private String validityPeriod;
 
 }

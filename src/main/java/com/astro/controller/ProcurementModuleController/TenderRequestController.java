@@ -2,6 +2,8 @@ package com.astro.controller.ProcurementModuleController;
 
 import com.astro.dto.workflow.ProcurementDtos.*;
 
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.SearchPOIdDto;
 import com.astro.dto.workflow.WorkflowTransitionDto;
 import com.astro.service.TenderRequestService;
@@ -16,11 +18,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import org.springframework.ui.ModelMap;
 
 @RestController
 @RequestMapping("/api/tender-requests")
@@ -100,6 +105,7 @@ public class TenderRequestController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(tenderRequest), HttpStatus.OK);
     }
 
+
     @GetMapping("/data/{tenderId}")
     public ResponseEntity<Object> getTenderDataById(@PathVariable String tenderId) {
 
@@ -123,6 +129,7 @@ public class TenderRequestController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(result), HttpStatus.OK);
 
     }
+
 
 
 

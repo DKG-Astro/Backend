@@ -5,6 +5,7 @@ import com.astro.constant.WorkflowName;
 import com.astro.dto.workflow.*;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseResponseDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.soWithTenderAndIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.woWithTenderAndIndentResponseDTO;
@@ -23,12 +24,17 @@ import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderReposit
 import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrderRepository;
 import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.service.*;
+import com.astro.util.EmailService;
+import com.astro.util.TenderEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -104,6 +110,15 @@ public class WorkflowServiceImpl implements WorkflowService {
     @Autowired
     private MaterialDetailsRepository materialDetailsRepo;
 
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private TenderEmailService tenderEmailService;
+
+    @Autowired
+    private TenderRequestService TRService;
+    @Autowired
+    private VendorMasterRepository vendorMasterRepository;
 
     @Override
     public WorkflowDto workflowByWorkflowName(String workflowName) {
@@ -256,13 +271,32 @@ public class WorkflowServiceImpl implements WorkflowService {
             workflowTransitionDto = mapWorkflowTransitionDto(workflowTransition);
             if (WorkflowName.TENDER_EVALUATOR.getValue().equalsIgnoreCase(workflowName)) {
                 workflowTransition.setModifiedBy(createdBy);
-                validateTenderWorkFlow(null, workflowTransition, null);
+                List<SubWorkflowTransitionDto> list=validateTenderWorkFlow(null, workflowTransition, null);
+                list.forEach(dto -> {
+                    // Send email for each dto
+                    if (dto != null) {
+                        try {
+                            emailService.sendSubWorkflowEmail(dto); // @Async method
+                        } catch (Exception e) {
+                            // log.error("Failed to send transition email", e);
+                        }
+                    }
+
+                });
             }
+
 
         } else {
             throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid input."));
 
+        }
+        if (workflowTransitionDto != null) {
+            try {
+                emailService.sendWorkflowEmail(workflowTransitionDto); // @Async method
+            } catch (Exception e) {
+                // log.error("Failed to send transition email", e);
+            }
         }
         return workflowTransitionDto;
     }
@@ -468,11 +502,80 @@ public class WorkflowServiceImpl implements WorkflowService {
                     AppConstant.ERROR_TYPE_VALIDATION, "Workflow already completed."));
         }
         if (AppConstant.APPROVE_TYPE.equalsIgnoreCase(transitionActionReqDto.getAction())) {
-            approveTransition(workflowTransition, currentTransition, transitionActionReqDto);
+            WorkflowTransitionDto wt = approveTransition(workflowTransition, currentTransition, transitionActionReqDto);
+            if (wt != null) {
+                try {
+                    emailService.sendWorkflowEmail(wt); // @Async method
+                  /*  if ("Tender Approver".equals(wt.getCurrentRole())) {
+                        tenderEmailService.handleTenderApproverEmail(wt);
+                    }*/
+                    if ("Tender Approver".equals(wt.getCurrentRole())) {
+                        TenderWithIndentResponseDTO tenderData = TRService.getTenderRequestById(wt.getRequestId());
+
+                        Set<String> vendorIds = new HashSet<>();
+                        for (IndentCreationResponseDTO indent : tenderData.getIndentResponseDTO()) {
+                            for (MaterialDetailsResponseDTO material : indent.getMaterialDetails()) {
+                                if (material.getVendorNames() != null) {
+                                    vendorIds.addAll(material.getVendorNames());
+                                }
+                            }
+                        }
+/*
+                        Map<String, String> vendorEmailMap = new HashMap<>();
+                        for (String vendorId : vendorIds) {
+                            vendorMasterRepository.findById(vendorId).ifPresent(vendor -> {
+                                vendorEmailMap.put(vendorId, vendor.getEmailAddress());
+                            });
+                        }
+
+                        tenderEmailService.handleTenderApproverEmail(wt.getRequestId(), tenderData, vendorEmailMap);*/
+                        Map<String, VendorDto> vendorMap = new HashMap<>();
+                        for (String vendorId : vendorIds) {
+                            vendorMasterRepository.findById(vendorId).ifPresent(vendor -> {
+                                VendorDto dto = new VendorDto();
+                                dto.setVendorId(vendor.getVendorId());
+                                dto.setVendorName(vendor.getVendorName());
+                                dto.setEmailAddress(vendor.getEmailAddress());
+                                dto.setAddress(vendor.getAddress());
+                                vendorMap.put(vendorId, dto);
+                            });
+                        }
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                        try {
+                            LocalDate opening = LocalDate.parse(tenderData.getOpeningDate(), formatter);
+                            LocalDate closing = LocalDate.parse(tenderData.getClosingDate(), formatter);
+                            long days = Duration.between(opening.atStartOfDay(), closing.atStartOfDay()).toDays();
+                            tenderData.setValidityPeriod(days + " Days");
+                        } catch (Exception e) {
+                            tenderData.setValidityPeriod("____ Days");
+                        }
+
+                        tenderEmailService.handleTenderApproverEmail(wt.getRequestId(), tenderData, vendorMap);
+
+                    }
+
+                } catch (Exception e) {
+                   // log.error("Failed to send transition email", e);
+                }
+            }
         } else if (AppConstant.REJECT_TYPE.equalsIgnoreCase(transitionActionReqDto.getAction())) {
-            rejectTransition(workflowTransition, currentTransition, transitionActionReqDto);
+          WorkflowTransitionDto wt=  rejectTransition(workflowTransition, currentTransition, transitionActionReqDto);
+            if (wt != null) {
+                try {
+                    emailService.sendWorkflowEmail(wt); // @Async method
+                } catch (Exception e) {
+                    // log.error("Failed to send transition email", e);
+                }
+            }
         } else if (AppConstant.CHANGE_REQUEST_TYPE.equalsIgnoreCase(transitionActionReqDto.getAction())) {
-            requestChangeTransition(workflowTransition, currentTransition, transitionActionReqDto);
+           WorkflowTransitionDto wt = requestChangeTransition(workflowTransition, currentTransition, transitionActionReqDto);
+            if (wt != null) {
+                try {
+                    emailService.sendWorkflowEmail(wt); // @Async method
+                } catch (Exception e) {
+                    // log.error("Failed to send transition email", e);
+                }
+            }
         } else {
             throw new InvalidInputException(new ErrorDetails(AppConstant.INVALID_TRANSITION_ACTION, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid transition action."));
@@ -569,6 +672,7 @@ public class WorkflowServiceImpl implements WorkflowService {
     @Override
     @Transactional
     public void approveSubWorkflow(Integer subWorkflowTransitionId) {
+        SubWorkflowTransitionDto subDto = new SubWorkflowTransitionDto();
         if (Objects.nonNull(subWorkflowTransitionId)) {
             Optional<SubWorkflowTransition> subWorkflowTransitionOptional = subWorkflowTransitionRepository.findById(subWorkflowTransitionId);
             if (subWorkflowTransitionOptional.isPresent()) {
@@ -578,7 +682,16 @@ public class WorkflowServiceImpl implements WorkflowService {
                 subWorkflowTransition.setModificationDate(new Date());
 
                 subWorkflowTransitionRepository.save(subWorkflowTransition);
-                validateSubWorkflow(subWorkflowTransition);
+               WorkflowTransitionDto wt = validateSubWorkflow(subWorkflowTransition);
+                if (wt != null) {
+                    try {
+                        emailService.sendWorkflowEmail(wt); // @Async method
+                    } catch (Exception e) {
+                        // log.error("Failed to send transition email", e);
+                      //  e.printStackTrace();
+                    }
+                }
+
             } else {
                 throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                         AppConstant.ERROR_TYPE_VALIDATION, "Invalid sub workflow transition id."));
@@ -587,13 +700,14 @@ public class WorkflowServiceImpl implements WorkflowService {
             throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid sub workflow transition id."));
         }
+
     }
 
 
-    private void validateSubWorkflow(SubWorkflowTransition subWorkflowTransition) {
+    private WorkflowTransitionDto validateSubWorkflow(SubWorkflowTransition subWorkflowTransition) {
         String requestId = subWorkflowTransition.getRequestId();
         Integer workflowTransitionId = subWorkflowTransition.getWorkflowTransitionId();
-
+        WorkflowTransition nextWorkflowTransition = new WorkflowTransition();
         List<SubWorkflowTransition> subWorkflowTransitionList = subWorkflowTransitionRepository.findByWorkflowTransitionIdAndRequestIdAndTransitionTypeAndTransitionName(workflowTransitionId, requestId, "Double", "Phase_1");
         if(Objects.nonNull(subWorkflowTransitionList) && !subWorkflowTransitionList.isEmpty()){
             List<SubWorkflowTransition> subWorkflowTransitionFilteredList  = subWorkflowTransitionList.stream().filter(e -> !e.getStatus().equalsIgnoreCase(AppConstant.APPROVE_TYPE)).collect(Collectors.toList());
@@ -602,7 +716,6 @@ public class WorkflowServiceImpl implements WorkflowService {
                 currentWorkflowTransition.setNextAction(AppConstant.COMPLETED_TYPE);
                 workflowTransitionRepository.save(currentWorkflowTransition);
 
-                WorkflowTransition nextWorkflowTransition = new WorkflowTransition();
                 nextWorkflowTransition.setWorkflowId(currentWorkflowTransition.getWorkflowId());
                 nextWorkflowTransition.setTransitionId(currentWorkflowTransition.getTransitionId());
                 nextWorkflowTransition.setTransitionOrder(currentWorkflowTransition.getTransitionOrder());
@@ -622,11 +735,14 @@ public class WorkflowServiceImpl implements WorkflowService {
                 nextWorkflowTransition.setRequestId(currentWorkflowTransition.getRequestId());
 
                 workflowTransitionRepository.save(nextWorkflowTransition);
+
+
             }
         }
+        return mapToWorkflowTransitionDto(nextWorkflowTransition);
     }
 
-    private void requestChangeTransition(WorkflowTransition currentWorkflowTransition, TransitionMaster currentTransition, TransitionActionReqDto transitionActionReqDto) {
+    private WorkflowTransitionDto requestChangeTransition(WorkflowTransition currentWorkflowTransition, TransitionMaster currentTransition, TransitionActionReqDto transitionActionReqDto) {
         if (Objects.nonNull(transitionActionReqDto.getAssignmentRole())) {
             validateAssignmentRole(transitionActionReqDto.getAssignmentRole(), currentWorkflowTransition);
 
@@ -662,10 +778,12 @@ public class WorkflowServiceImpl implements WorkflowService {
             nextWorkflowTransition.setWorkflowSequence(currentWorkflowTransition.getWorkflowSequence() + 1);
 
             workflowTransitionRepository.save(nextWorkflowTransition);
+            return mapToWorkflowTransitionDto(nextWorkflowTransition);
         } else {
             throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid assignment role."));
         }
+
     }
 
     private static final Set<String> CREATOR_ROLES = Set.of(
@@ -674,7 +792,8 @@ public class WorkflowServiceImpl implements WorkflowService {
             "Tender Creator",
             "PO Creator",
             "SO Creator",
-            "CP Creator"
+            "CP Creator",
+            "Purchase Personnel"
     );
     private WorkflowTransition getLatestWorkflowTransiton(WorkflowTransition currentWorkflowTransition, TransitionActionReqDto transitionActionReqDto) {
         WorkflowTransition workflowTransition = null;
@@ -699,7 +818,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         }
     }
 
-    private void rejectTransition(WorkflowTransition currentWorkflowTransition, TransitionMaster currentTransition, TransitionActionReqDto transitionActionReqDto) {
+    private WorkflowTransitionDto rejectTransition(WorkflowTransition currentWorkflowTransition, TransitionMaster currentTransition, TransitionActionReqDto transitionActionReqDto) {
         //update currentWorkflowTransition and save
         currentWorkflowTransition.setNextAction(AppConstant.COMPLETED_TYPE);
         workflowTransitionRepository.save(currentWorkflowTransition);
@@ -723,6 +842,9 @@ public class WorkflowServiceImpl implements WorkflowService {
         nextWorkflowTransition.setWorkflowSequence(currentWorkflowTransition.getWorkflowSequence() + 1);
 
         workflowTransitionRepository.save(nextWorkflowTransition);
+
+        return mapToWorkflowTransitionDto(nextWorkflowTransition);
+
     }
 
     private WorkflowTransition getPrevWorkflowTransition(WorkflowTransition workflowTransition) {
@@ -734,7 +856,8 @@ public class WorkflowServiceImpl implements WorkflowService {
         }
     }
 
-    private void approveTransition(WorkflowTransition currentWorkflowTransition, TransitionMaster currentTransition, TransitionActionReqDto transitionActionReqDto) {
+   // private void approveTransition(WorkflowTransition currentWorkflowTransition, TransitionMaster currentTransition, TransitionActionReqDto transitionActionReqDto) {
+    private WorkflowTransitionDto approveTransition(WorkflowTransition currentWorkflowTransition, TransitionMaster currentTransition, TransitionActionReqDto transitionActionReqDto) {
         TransitionDto nextTransition = null;
         WorkflowTransition nextWorkflowTransition = null;
 
@@ -804,9 +927,35 @@ public class WorkflowServiceImpl implements WorkflowService {
             validateTenderWorkFlow(currentWorkflowTransition, nextWorkflowTransition, AppConstant.APPROVE_TYPE);
         }
 
+        return mapToWorkflowTransitionDto(nextWorkflowTransition);
     }
 
-    private void validateTenderWorkFlow(WorkflowTransition currentWorkflowTransition, WorkflowTransition nextWorkflowTransition, String actionType) {
+    private WorkflowTransitionDto mapToWorkflowTransitionDto(WorkflowTransition nextWorkflowTransition) {
+        WorkflowTransitionDto dto = new WorkflowTransitionDto();
+        dto.setWorkflowTransitionId(nextWorkflowTransition.getWorkflowTransitionId());
+        dto.setWorkflowId(nextWorkflowTransition.getWorkflowId());
+        dto.setTransitionId(nextWorkflowTransition.getTransitionId());
+        dto.setTransitionOrder(nextWorkflowTransition.getTransitionOrder());
+        dto.setTransitionSubOrder(nextWorkflowTransition.getTransitionSubOrder());
+        dto.setWorkflowName(nextWorkflowTransition.getWorkflowName());
+        dto.setStatus(nextWorkflowTransition.getStatus());
+        dto.setNextAction(nextWorkflowTransition.getNextAction());
+        dto.setAction(nextWorkflowTransition.getAction());
+        dto.setRemarks(nextWorkflowTransition.getRemarks());
+        dto.setModifiedBy(nextWorkflowTransition.getModifiedBy());
+        dto.setModificationDate(nextWorkflowTransition.getModificationDate());
+        dto.setRequestId(nextWorkflowTransition.getRequestId());
+        dto.setCreatedBy(nextWorkflowTransition.getCreatedBy());
+        dto.setCreatedDate(nextWorkflowTransition.getCreatedDate());
+        dto.setCurrentRole(nextWorkflowTransition.getCurrentRole());
+        dto.setNextRole(nextWorkflowTransition.getNextRole());
+        dto.setWorkflowSequence(nextWorkflowTransition.getWorkflowSequence());
+
+        return dto;
+    }
+
+    private List<SubWorkflowTransitionDto> validateTenderWorkFlow(WorkflowTransition currentWorkflowTransition, WorkflowTransition nextWorkflowTransition, String actionType) {
+        List<SubWorkflowTransitionDto> subWorkflowDtoList = new ArrayList<>();
         if ((nextWorkflowTransition.getCurrentRole().equalsIgnoreCase("Purchase Dept") && Objects.isNull(nextWorkflowTransition.getNextRole())) || (nextWorkflowTransition.getCurrentRole().equalsIgnoreCase("Purchase Dept") && Objects.nonNull(nextWorkflowTransition.getNextRole()) && nextWorkflowTransition.getNextRole().equalsIgnoreCase("Purchase Dept"))) {
             List<SubWorkflowTransition> subWorkflowTransitionList = subWorkflowTransitionRepository.findByWorkflowTransitionIdAndStatus(currentWorkflowTransition.getWorkflowTransitionId(), AppConstant.PENDING_TYPE);
             if (Objects.nonNull(subWorkflowTransitionList) && !subWorkflowTransitionList.isEmpty()) {
@@ -848,10 +997,29 @@ public class WorkflowServiceImpl implements WorkflowService {
                         seq.getAndIncrement();
 
                         subWorkflowTransitionRepository.save(subWorkflowTransition);
+                        SubWorkflowTransitionDto subDto = new SubWorkflowTransitionDto();
+                        subDto.setSubWorkflowTransitionId(subWorkflowTransition.getSubWorkflowTransitionId());
+                        subDto.setWorkflowId(subWorkflowTransition.getWorkflowId());
+                        subDto.setWorkflowName(subWorkflowTransition.getWorkflowName());
+                        subDto.setRequestId(subWorkflowTransition.getRequestId());
+                        subDto.setCreatedBy(subWorkflowTransition.getCreatedBy());
+                        subDto.setModifiedBy(subWorkflowTransition.getModifiedBy());
+                        subDto.setStatus(subWorkflowTransition.getStatus());
+                        subDto.setAction(subWorkflowTransition.getAction());
+                        subDto.setRemarks(subWorkflowTransition.getRemarks());
+                        subDto.setActionOn(subWorkflowTransition.getActionOn());
+                        subDto.setWorkflowSequence(subWorkflowTransition.getWorkflowSequence());
+                        subDto.setModificationDate(subWorkflowTransition.getModificationDate());
+                        subDto.setCreatedDate(subWorkflowTransition.getCreatedDate());
+
+                        subWorkflowDtoList.add(subDto);
+
                     });
                 }
             }
         }
+
+    return subWorkflowDtoList;
 
     }
 

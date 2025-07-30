@@ -257,9 +257,9 @@ public class ContigencyPurchaseServiceImpl implements ContigencyPurchaseService 
         dto.setPaymentTo(contigencyPurchase.getPaymentTo());
         dto.setPaymentToVendor(contigencyPurchase.getPaymentToVendor());
         dto.setPaymentToEmployee(contigencyPurchase.getPaymentToEmployee());
-        WorkflowTransition wt = workflowTransitionRepository.findTopByRequestIdOrderByWorkflowSequenceDesc(contigencyPurchase.getContigencyId());
-        dto.setStatus(wt.getStatus());
-        dto.setProcessStage(wt.getNextRole());
+       // WorkflowTransition wt = workflowTransitionRepository.findTopByRequestIdOrderByWorkflowSequenceDesc(contigencyPurchase.getContigencyId());
+      //  dto.setStatus(wt.getStatus());
+    //    dto.setProcessStage(wt.getNextRole());
 
         // Map list of CpMaterials to CpMaterialsResponseDto
         List<CpMaterialResponseDto> materialsDtoList = contigencyPurchase.getCpMaterials().stream()
