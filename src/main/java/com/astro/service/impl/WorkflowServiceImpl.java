@@ -1382,13 +1382,14 @@ public List<ApprovedIndentsDto> getApprovedIndents() {
         for (String tenderId : tenderIds) {
             // Fetch bidType and totalValue from TenderRequest table
             Optional<TenderRequest> optionalTenderRequest = tenderRequestRepository.findByTenderId(tenderId);
-
+                int indentNumber =1;
             if (optionalTenderRequest.isPresent()) {
                 TenderRequest tenderRequest = optionalTenderRequest.get();
                 ApprovedTenderDto dto = new ApprovedTenderDto(
                         tenderId,
                         tenderRequest.getBidType(),
-                        tenderRequest.getTotalTenderValue()
+                        tenderRequest.getTotalTenderValue(),
+                        indentNumber
                 );
                 approvedTenders.add(dto);
             }
@@ -1396,6 +1397,34 @@ public List<ApprovedIndentsDto> getApprovedIndents() {
         return approvedTenders;
 
     }
+    public ApprovedTenderDto getApprovedTenderId(String tenderId) {
+        boolean tender = workflowTransitionRepository.isApprovedTenderAndNotUsed(tenderId);
+        if (!tender) {
+            throw new BusinessException(new ErrorDetails(
+                    AppConstant.ERROR_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_VALIDATION,
+                    "Tender is not approved, already used."
+            ));
+        }
+
+        TenderRequest tenderRequest = tenderRequestRepository.findByTenderId(tenderId)
+                .orElseThrow(() -> new BusinessException(new ErrorDetails(
+                        AppConstant.ERROR_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_VALIDATION,
+                        "Tender request not found for the provided tender ID: " + tenderId
+                )));
+          int indentNumber=1;
+        return new ApprovedTenderDto(
+                tenderId,
+                tenderRequest.getBidType(),
+                tenderRequest.getTotalTenderValue(),
+                indentNumber
+
+        );
+    }
+
  /*public List<ApprovedTenderDto> getApprovedTender(String roleName) {
      List<String> tenderIds = workflowTransitionRepository.findApprovedTenderRequestIds();
      List<ApprovedTenderDto> approvedTenders = new ArrayList<>();

@@ -14,14 +14,11 @@ import com.astro.entity.WorkflowTransition;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
+import com.astro.repository.*;
 import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
 import com.astro.repository.ProcurementModule.IndentCreation.MaterialDetailsRepository;
 import com.astro.repository.ProcurementModule.IndentIdRepository;
 import com.astro.repository.ProcurementModule.TenderRequestRepository;
-import com.astro.repository.ProjectMasterRepository;
-import com.astro.repository.VendorNamesForJobWorkMaterialRepository;
-import com.astro.repository.VendorQuotationAgainstTenderRepository;
-import com.astro.repository.WorkflowTransitionRepository;
 import com.astro.service.IndentCreationService;
 import com.astro.service.TenderRequestService;
 import com.astro.util.CommonUtils;
@@ -64,6 +61,9 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     private VendorQuotationAgainstTenderRepository vendorQuotationAgainstTenderRepository;
     @Autowired
     private WorkflowTransitionRepository workflowTransitionRepository;
+    @Autowired
+    private UserMasterRepository userRepository;
+
     @Value("${filePath}")
     private String bp;
     private final String basePath;
@@ -388,7 +388,15 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         }
         return resp;
     }*/
-  @Override
+
+  private String resolveRoleName(Integer userId) {
+      if (userId == null) return null;
+      return userRepository.findById(userId)
+              .map(u -> u.getRoleName())
+              .orElse("User " + userId);
+  }
+
+    @Override
   public VendorQualificationResponseDto vendorCheck(String tenderId, String vendorId) {
       TenderRequest tenderRequest = TRrepo.findById(tenderId)
               .orElseThrow(() -> new BusinessException(
@@ -399,48 +407,113 @@ public class TenderRequestServiceImpl implements TenderRequestService {
                               "Tender not found for the provided asset ID.")
               ));
 
-      String vendor = tenderRequest.getVendorId();
       VendorQualificationResponseDto resp = new VendorQualificationResponseDto();
+      resp.setVendorId(vendorId);
+      resp.setQualified(false);
+      resp.setChangeRequest(false);
+      resp.setRemarks(null);
+      resp.setActionTakenBy(null);
+      resp.setActionStatus(null);  //  "ACCEPTED", "REJECTED", "CHANGE_REQUESTED"
 
-      if (vendor != null && !vendor.isEmpty() && vendor.equals(vendorId)) {
-          resp.setVendorId(vendor);
+      // Direct match with tender's vendor => qualified (initial qualification)
+      if (tenderRequest.getVendorId() != null && tenderRequest.getVendorId().equalsIgnoreCase(vendorId)) {
           resp.setQualified(true);
-          resp.setRemarks("null");
-          resp.setChangeRequest(false);
-      } else {
-          List<VendorQuotationAgainstTender> quotations =
-                  vendorQuotationAgainstTenderRepository.findByTenderIdAndVendorId(tenderId, vendorId);
+          resp.setActionStatus("VENDOR QULIFIED");
+          resp.setActionTakenBy("Store Purchase Officer");
+          return resp;
+      }
 
-          if (!quotations.isEmpty()) {
-              VendorQuotationAgainstTender latest = quotations.stream()
-                      .filter(VendorQuotationAgainstTender::getIsLatest)
-                      .findFirst()
-                      .orElse(quotations.get(0));
+      // Fetch latest quotation version
+      Optional<VendorQuotationAgainstTender> latestOpt =
+              vendorQuotationAgainstTenderRepository
+                      .findTopByTenderIdAndVendorIdAndIsLatestTrueOrderByVersionDesc(tenderId, vendorId);
 
-              String status = latest.getStatus();
+      if (latestOpt.isPresent()) {
+          VendorQuotationAgainstTender latest = latestOpt.get();
 
-              if ("CHANGE_REQUESTED".equalsIgnoreCase(status)) {
-                  resp.setQualified(true);
-                  resp.setChangeRequest(true);
-              } else if ("Rejected".equalsIgnoreCase(status)) {
-                  resp.setQualified(false);
-                  resp.setChangeRequest(false);
-              } else {
-                  resp.setQualified(false); // default
-                  resp.setChangeRequest(false);
+          String spoStatus = latest.getSpoStatus() != null ? latest.getSpoStatus().trim().toUpperCase() : null;
+          String indentorStatus = latest.getIndentorStatus() != null ? latest.getIndentorStatus().trim().toUpperCase() : null;
+
+          final Integer modifiedBy = latest.getModifiedBy();
+          final String roleName;
+          if(modifiedBy==1){
+              roleName="Vendor";
+          }else{
+              roleName = resolveRoleName(modifiedBy);
+          }
+
+          //  Indentor → Vendor change request first
+          if ("CHANGE_REQUESTED".equalsIgnoreCase(indentorStatus)
+                  && latest.getCurrentRole() == VendorQuotationAgainstTender.WorkflowActorRole.INDENTOR
+                  && latest.getNextRole() == VendorQuotationAgainstTender.WorkflowActorRole.VENDOR) {
+
+             // resp.setActionTakenBy(latest.getModifiedBy());
+              resp.setActionTakenBy(roleName);
+              resp.setActionStatus("CHANGE_REQUESTED");
+              resp.setRemarks(latest.getIndentorRemarks());
+              resp.setQualified(true);
+              resp.setChangeRequest(true);
+
+          }
+          // Then check SPO's decision
+          else if (spoStatus != null && !spoStatus.isBlank()) {
+              //resp.setActionTakenBy(latest.getModifiedBy());
+              resp.setActionTakenBy(roleName);
+              resp.setActionStatus(spoStatus);
+              resp.setRemarks(latest.getSpoRemarks());
+
+              switch (spoStatus) {
+                  case "ACCEPTED":
+                      resp.setQualified(true);
+                      break;
+                  case "REJECTED":
+                      resp.setQualified(false);
+                      break;
+                  case "CHANGE_REQUESTED_TO_INTENTOR":
+                      resp.setQualified(false);
+                      resp.setChangeRequest(true);
+                      break;
+                  default:
+                      resp.setQualified(false);
               }
+          }
+          // Fallback to Indentor decision
+          else if (indentorStatus != null && !indentorStatus.isBlank()) {
+             // resp.setActionTakenBy(latest.getModifiedBy());
+              resp.setActionTakenBy(roleName);
+              resp.setActionStatus(indentorStatus);
+              resp.setRemarks(latest.getIndentorRemarks());
 
-              resp.setVendorId(vendorId);
+              switch (indentorStatus) {
+                  case "ACCEPTED":
+                      resp.setQualified(false);
+                      break;
+                  case "REJECTED":
+                      resp.setQualified(false);
+                      break;
+                  case "CHANGE_REQUESTED":
+                      resp.setQualified(true);
+                      resp.setChangeRequest(true);
+                      break;
+                  default:
+                      resp.setQualified(false);
+              }
+          }
+          // No explicit statuses, fallback to generic
+          else {
+              String status = latest.getStatus() != null ? latest.getStatus().trim().toUpperCase() : null;
+            //  resp.setActionTakenBy(latest.getModifiedBy());
+              resp.setActionTakenBy(roleName);
+              resp.setActionStatus(status);
               resp.setRemarks(latest.getRemarks());
-          } else {
-              resp.setVendorId(vendorId);
               resp.setQualified(false);
-              resp.setRemarks(null);
-              resp.setChangeRequest(false);
           }
       }
+
       return resp;
   }
+
+
 
 
 

@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface TenderEvaluationRepository extends JpaRepository<TenderEvaluation,String> {
 
 
+    TenderEvaluation findByTenderId(String tenderId);
 }

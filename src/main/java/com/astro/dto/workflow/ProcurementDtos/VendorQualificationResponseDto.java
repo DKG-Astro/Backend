@@ -8,4 +8,9 @@ public class VendorQualificationResponseDto {
     private Boolean qualified;
     private String remarks;
     private Boolean changeRequest;
+
+   // private Integer actionTakenBy;
+    private String actionTakenBy;
+    private String actionStatus;
+
 }

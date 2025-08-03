@@ -22,10 +22,46 @@ public interface VendorQuotationAgainstTenderRepository extends JpaRepository<Ve
    // List<VendorQuotationAgainstTender> findLatestNonRejectedQuotations(String tenderId);
    @Query("SELECT v FROM VendorQuotationAgainstTender v WHERE v.tenderId = :tenderId AND v.isLatest = true AND v.status <> 'Rejected'")
    List<VendorQuotationAgainstTender> findLatestNonRejectedQuotations(@Param("tenderId") String tenderId);
+
+   // @Query("SELECT v FROM VendorQuotationAgainstTender v WHERE v.tenderId = :tenderId AND (v.status = 'Rejected' OR v.acceptanceStatus = 'Accepted')")
+   @Query("SELECT v FROM VendorQuotationAgainstTender v " +
+           "WHERE v.tenderId = :tenderId " +
+           "AND v.isLatest = true " +
+           "AND (v.status = 'ACCEPTED' OR v.status = 'REJECTED')")
+    List<VendorQuotationAgainstTender> findRejectedOrAcceptedQuotations(@Param("tenderId") String tenderId);
+
     List<VendorQuotationAgainstTender> findByTenderIdAndVendorId(String tenderId, String vendorId);
 
 
   Optional<VendorQuotationAgainstTender> findTopByTenderIdAndVendorIdAndIsLatestTrueOrderByVersionDesc(String tenderId, String vendorId);
 
     List<VendorQuotationAgainstTender> findAllByTenderIdAndVendorIdOrderByCreatedDateDesc(String tenderId, String vendorId);
+
+    @Query("SELECT v FROM VendorQuotationAgainstTender v " +
+            "WHERE v.tenderId = :tenderId " +
+            "AND v.isLatest = 1 " +
+            "AND v.spoStatus = 'CHANGE_REQUESTED_TO_INTENTOR'")
+    List<VendorQuotationAgainstTender> findSpoChangeRequestedQuotations(@Param("tenderId") String tenderId);
+
+    @Query("""
+  SELECT v FROM VendorQuotationAgainstTender v
+  WHERE v.tenderId = :tenderId
+    AND v.version = (
+        SELECT MAX(v2.version)
+        FROM VendorQuotationAgainstTender v2
+        WHERE v2.tenderId = v.tenderId
+          AND v2.vendorId = v.vendorId
+    )
+""")
+    List<VendorQuotationAgainstTender> findLatestVersionsForTender(@Param("tenderId") String tenderId);
+
+    @Query("""
+        SELECT DISTINCT v.vendorId 
+        FROM VendorQuotationAgainstTender v 
+        WHERE v.tenderId = :tenderId 
+          AND v.isLatest = true 
+          AND UPPER(v.status) = 'COMPLETED'
+    """)
+    List<String> findVendorIdsWithCompletedStatus(@Param("tenderId") String tenderId);
+
 }

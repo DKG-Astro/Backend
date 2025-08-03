@@ -36,8 +36,24 @@ public interface WorkflowTransitionRepository extends JpaRepository<WorkflowTran
     //@Query("SELECT wt.requestId FROM WorkflowTransition wt WHERE wt.workflowName = 'Tender Approver Workflow' AND wt.status = 'Completed' AND wt.nextAction IS NULL")
     @Query("SELECT wt.requestId FROM WorkflowTransition wt WHERE wt.workflowName = 'Tender Approver Workflow' AND wt.status = 'Completed' AND wt.nextAction IS NULL AND wt.requestId NOT IN (SELECT swt.requestId FROM SubWorkflowTransition swt) AND wt.requestId NOT IN (SELECT po.tenderId FROM PurchaseOrder po) AND wt.requestId NOT IN (SELECT so.tenderId FROM ServiceOrder so)")
     List<String> findApprovedTenderRequestIds();
+    @Query("""
+  SELECT CASE WHEN COUNT(wt) > 0 THEN true ELSE false END
+  FROM WorkflowTransition wt
+  WHERE wt.workflowName = 'Tender Approver Workflow'
+    AND wt.status = 'Completed'
+    AND wt.nextAction IS NULL
+    AND wt.requestId = :requestId
+    AND wt.requestId NOT IN (SELECT swt.requestId FROM SubWorkflowTransition swt)
+    AND wt.requestId NOT IN (SELECT po.tenderId FROM PurchaseOrder po)
+    AND wt.requestId NOT IN (SELECT so.tenderId FROM ServiceOrder so)
+""")
+    boolean isApprovedTenderAndNotUsed(@Param("requestId") String requestId);
 
-    @Query("Select wt.requestId from WorkflowTransition wt WHERE wt.workflowName = 'Tender Evaluator Workflow' AND wt.status = 'Completed' AND wt.nextAction IS NULL AND wt.requestId NOT IN (SELECT po.tenderId FROM PurchaseOrder po) AND wt.requestId NOT IN (SELECT so.tenderId FROM ServiceOrder so)")
+
+
+ //   @Query("Select wt.requestId from WorkflowTransition wt WHERE wt.workflowName = 'Tender Evaluator Workflow' AND wt.status = 'Completed' AND wt.nextAction IS NULL AND wt.requestId NOT IN (SELECT po.tenderId FROM PurchaseOrder po) AND wt.requestId NOT IN (SELECT so.tenderId FROM ServiceOrder so)")
+ //   List<String> findApprovedTenderIdsForPOANDSO();
+    @Query("Select wt.requestId from WorkflowTransition wt WHERE wt.workflowName = 'Tender Approver Workflow' AND wt.status = 'Completed' AND wt.nextAction IS NULL AND wt.requestId NOT IN (SELECT po.tenderId FROM PurchaseOrder po) AND wt.requestId NOT IN (SELECT so.tenderId FROM ServiceOrder so)")
     List<String> findApprovedTenderIdsForPOANDSO();
 
    @Query("SELECT wt.requestId FROM WorkflowTransition wt WHERE wt.workflowName = 'PO Workflow' AND wt.status = 'Completed' AND wt.nextAction IS NULL")

@@ -1,11 +1,8 @@
 package com.astro.controller;
 
+import com.astro.dto.workflow.*;
 import com.astro.dto.workflow.ProcurementDtos.QuotationViewHistoryDto;
 import com.astro.dto.workflow.ProcurementDtos.VendorQuotationChangeRequestDto;
-import com.astro.dto.workflow.VendorMasterResponseDto;
-import com.astro.dto.workflow.VendorQuotationAgainstTenderDto;
-import com.astro.dto.workflow.VendorQuotationUpdateRequestDto;
-import com.astro.dto.workflow.VendorStatusDto;
 import com.astro.service.VendorQuotationAgainstTenderService;
 import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +28,13 @@ public class VendorQuotationController {
     }
 
     @GetMapping("/{tenderId}")
-    public ResponseEntity<Object> getVendorQuotationByTenderId(@PathVariable String tenderId) {
-        List<VendorQuotationAgainstTenderDto> responseDTO = vqService.getQuotationsByTenderId(tenderId);
+    public ResponseEntity<Object> getVendorQuotationByTenderId(@PathVariable String tenderId,@RequestParam String userRole) {
+        List<VendorQuotationAgainstTenderDto> responseDTO = vqService.getQuotationsByTenderId(tenderId, userRole);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
+    }
+    @GetMapping("/getAllVendorQuotations/{tenderId}")
+    public ResponseEntity<Object> getVendorAllQuotationsByTenderId(@PathVariable String tenderId) {
+        VendorQuotationAcceptedAndRejectedDataDto responseDTO = vqService.getAllVendorQuotationsByTenderId(tenderId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
     @GetMapping("NotSubmitVendors/{tenderId}")
@@ -50,6 +52,11 @@ public class VendorQuotationController {
     @GetMapping("vendorHistory/{tenderId}/{vendorId}")
     public ResponseEntity<Object> getVendorHistory(@PathVariable String tenderId,@PathVariable String vendorId) {
         List<QuotationViewHistoryDto> responseDTO = vqService.getVendorHistory(tenderId,vendorId);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
+    }
+    @GetMapping("tenderEvaluationHistory/{tenderId}/{vendorId}")
+    public ResponseEntity<Object> getTenderEvaluationHistory(@PathVariable String tenderId,@PathVariable String vendorId) {
+        List<TenderEvaluationHistory> responseDTO = vqService.getFullQuotationHistory(tenderId,vendorId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 
@@ -75,9 +82,56 @@ public class VendorQuotationController {
                 HttpStatus.OK
         );
 
+
+
+
+    }
+
+    @PutMapping("/quotations/accept")
+    public ResponseEntity<Object> acceptVendorQuotation(@RequestParam String tenderId,
+                                                        @RequestParam String vendorId, @RequestParam Integer userId) {
+        boolean result = vqService.acceptVendorQuotation(tenderId, vendorId, userId);
+        Map<String, Boolean> responseData = new HashMap<>();
+        responseData.put("accepted vendor",  result);
+        return new ResponseEntity<>(
+                ResponseBuilder.getSuccessResponse(responseData),
+                HttpStatus.OK
+        );
+    }
+
+    @PostMapping("/spo-review")
+    public ResponseEntity<Object> storeOfficerReviewQuotation(@RequestBody spoDto spo) {
+
+            boolean result = vqService.storeOfficerReviewQuotation(spo.getTenderId(), spo.getVendorId(), spo.getAction(), spo.getRemarks(), spo.getUserId());
+        Map<String, Boolean> responseData = new HashMap<>();
+        responseData.put("accepted vendor",  result);
+        return new ResponseEntity<>(
+                ResponseBuilder.getSuccessResponse(responseData),
+                HttpStatus.OK
+        );
+    }
+
+    @PutMapping("/reject")
+    public ResponseEntity<Object> rejectVendorQuotation(@RequestBody
+            VendorQuotationUpdateRequestDto  vm) {
+        boolean result = vqService.rejectVendorQuotation(vm.getTenderId(),vm.getVendorId(), vm.getRemarks(), vm.getUserId());
+        Map<String, Boolean> responseData = new HashMap<>();
+        responseData.put("accepted vendor",  result);
+        return new ResponseEntity<>(
+                ResponseBuilder.getSuccessResponse(responseData),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/completed-vendors/{tenderId}")
+    public ResponseEntity<Object> getVendorsWithCompletedStatus(@PathVariable String tenderId) {
+        List<String> vendorIds = vqService.getVendorsWithCompletedQuotation(tenderId);
+        return new ResponseEntity<>(
+                ResponseBuilder.getSuccessResponse(vendorIds),
+                HttpStatus.OK
+        );
     }
 
 
 
-
-}
+    }

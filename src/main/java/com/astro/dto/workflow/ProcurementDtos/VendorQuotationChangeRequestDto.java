@@ -8,6 +8,7 @@ public class VendorQuotationChangeRequestDto {
     private String tenderId;
     private String vendorId;
     private String remarks;
+    private Integer userId;
 
 
 }

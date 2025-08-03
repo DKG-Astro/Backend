@@ -26,4 +26,5 @@ public class TenderEvaluationResponseDto {
     private Integer createdBy;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
+
 }

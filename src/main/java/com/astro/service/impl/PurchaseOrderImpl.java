@@ -72,6 +72,8 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
     private ServiceOrderRepository serviceOrderRepository;
     @Autowired
     private WorkflowTransitionRepository workflowTransitionRepository;
+    @Autowired
+    private TenderRequestRepository trRepo;
 
 
     @Value("${filePath}")
@@ -197,6 +199,20 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setTotalValueOfPo(totalTenderValue);
         System.out.println("tottalTenderValue" + totalTenderValue);*/
         purchaseOrderRepository.save(purchaseOrder);
+        TenderRequest existing = trRepo.findById(tenderId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "Tender request not found for the provided ID."
+                        )
+                ));
+
+        existing.setVendorId(purchaseOrderRequestDTO.getVendorId());
+      //  existing.setQuotationFileName(dto.getQuotationFileName());
+
+        TenderRequest saved = trRepo.save(existing);
         return mapToResponseDTO(purchaseOrder);
     }
 
