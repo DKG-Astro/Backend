@@ -25,6 +25,7 @@ public class LocatorServiceImpl implements LocatorService{
             LocatorMasterResDto lmrDto = new LocatorMasterResDto();
             lmrDto.setValue(lme.getLocatorId());
             lmrDto.setLabel(lme.getLocatorDesc());
+            lmrDto.setLocationId(lme.getLocationId());
             return lmrDto;
         }).collect(Collectors.toList());
     }

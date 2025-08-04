@@ -29,5 +29,6 @@ public class SaveGprnDto {
     private String receivedBy;
     private String createdBy;
     private String locationId;
+    private String indentId;
     private List<MaterialDtlDto> materialDtlList;
 }

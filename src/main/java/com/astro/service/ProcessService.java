@@ -7,6 +7,7 @@ import com.astro.dto.workflow.InventoryModule.igp.IgpDto;
 import com.astro.dto.workflow.InventoryModule.isn.IsnDto;
 import com.astro.dto.workflow.InventoryModule.ogp.GprApprovalDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpMasterRejectedGiDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
 import com.astro.dto.workflow.InventoryModule.ohq.OhqReportDto;
@@ -48,4 +49,8 @@ public interface ProcessService {
     public void approveGprn(String processNo);
     public void changeReqGprn(String processNo);
     public void updateGprn(SaveGprnDto req);
+    public String saveOgpRejectedGi(OgpMasterRejectedGiDto req);
+    public List<OgpMasterRejectedGiDto> getAwaitingRejectedGi();
+public void approveGiOgp(String ogpId);
+public void rejectGiOgp(String ogpId);
 }

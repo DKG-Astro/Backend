@@ -43,4 +43,7 @@ public class GoodsInspectionConsumableDetailEntity {
 
     @Column(name = "rejected_quantity")
     private BigDecimal rejectedQuantity;
+
+    @Column(name = "rejection_type")
+    private String rejectionType;
 }

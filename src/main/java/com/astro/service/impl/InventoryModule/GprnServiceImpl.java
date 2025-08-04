@@ -63,7 +63,8 @@ public class GprnServiceImpl implements GprnService {
         gme.setProcessId(req.getPoId().substring(2));
         gme.setLocationId(req.getLocationId());
         gme.setCreatedBy(req.getCreatedBy());
-        gme.setStatus("AWAITING APPROVAL");
+        gme.setIndentId(req.getIndentId());
+        gme.setStatus("APPROVED");
 
         gme = gmr.save(gme);
 

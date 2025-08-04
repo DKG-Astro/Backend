@@ -67,6 +67,9 @@ public class GprnMasterEntity {
     @Column(name = "project")
     private String project;
 
+    @Column(name = "indent_id")
+    private String indentId;
+
     @Column(name = "received_by")
     private String receivedBy;
 

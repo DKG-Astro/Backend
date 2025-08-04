@@ -15,4 +15,5 @@ public interface OhqMasterConsumableRepository extends JpaRepository<OhqMasterCo
     List<OhqMasterConsumableEntity> findByLocatorId(Integer locatorId);
     
     Optional<OhqMasterConsumableEntity> findByMaterialCodeAndLocatorId(String materialCode, Integer locatorId);
+    Optional<OhqMasterConsumableEntity> findByMaterialCodeAndLocatorIdAndCustodianId(String materialCode, Integer locatorId, String custodianId);
 }

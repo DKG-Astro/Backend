@@ -253,7 +253,7 @@ CREATE TABLE ohq_master (
     unit_price DECIMAL(10,2) NOT NULL,
     quantity DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (asset_id) REFERENCES asset_master(asset_id) ON UPDATE CASCADE,
-    FOREIGN KEY (locator_id) REFERENCES locator_master(locator_id) ON UPDATE CASCADE
+    -- FOREIGN KEY (locator_id) REFERENCES locator_master(locator_id) ON UPDATE CASCADE
 );
 
 CREATE TABLE issue_note_master (
@@ -404,4 +404,62 @@ CREATE TABLE igp_po_detail (
     uom_id VARCHAR(255) NOT NULL,
     quantity DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (igp_sub_process_id) REFERENCES igp_master(igp_sub_process_id)
+);
+
+----------------------------------------------
+
+ALTER TABLE goods_inspection_detail
+ADD COLUMN rejection_type VARCHAR(50);
+
+ALTER TABLE goods_inspection_consumable_detail
+ADD COLUMN rejection_type VARCHAR(50);
+
+ALTER TABLE gprn_master
+ADD COLUMN indent_id VARCHAR(100);
+
+ALTER TABLE ohq_master
+ADD COLUMN custodian_id VARCHAR(100);
+
+ALTER TABLE ohq_master_consumable
+ADD COLUMN custodian_id VARCHAR(100);
+
+CREATE TABLE field_station_master(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    field_station_name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE ogp_master_rejected_gi(
+    ogp_sub_process_id INT AUTO_INCREMENT PRIMARY KEY,
+    ogp_type VARCHAR(20),
+    status VARCHAR(20),
+    gi_id VARCHAR(255),
+    ogp_date DATE,
+    return_date DATE
+);
+
+ALTER TABLE ogp_master_rejected_gi
+ADD COLUMN location_id VARCHAR(50);
+
+ALTER TABLE ogp_master_rejected_gi
+ADD COLUMN created_by VARCHAR(50);
+
+ALTER TABLE ogp_master_rejected_gi
+ADD COLUMN sender_name VARCHAR(50);
+
+ALTER TABLE ogp_master_rejected_gi
+ADD COLUMN receiver_name VARCHAR(50);
+
+ALTER TABLE ogp_master_rejected_gi
+ADD COLUMN receiver_location VARCHAR(50);
+
+CREATE TABLE ogp_detail_rejected_gi(
+    detail_id INT AUTO_INCREMENT PRIMARY KEY,
+    ogp_sub_process_id INT NOT NULL,
+    material_code VARCHAR(255),
+    material_desc VARCHAR(255),
+    asset_id INT,
+    asset_desc VARCHAR(255),
+    rejection_type VARCHAR(50),
+    rejected_quantity DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (ogp_sub_process_id) REFERENCES ogp_master_rejected_gi(ogp_sub_process_id)
 );

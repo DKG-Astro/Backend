@@ -6,4 +6,5 @@ import lombok.Data;
 public class LocatorMasterResDto {
     private Integer value;
     private String label;
+    private String locationId;
 }

@@ -15,5 +15,6 @@ public class GrnDto {
     private String createdBy;
     private Integer systemCreatedBy;
     private String locationId;
+    private String custodianId;
     private List<GrnMaterialDtlDto> materialDtlList;
 }

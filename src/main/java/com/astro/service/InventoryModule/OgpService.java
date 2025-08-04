@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.astro.dto.workflow.InventoryModule.ogp.GprApprovalDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpMasterRejectedGiDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpReportDto;
@@ -22,4 +23,9 @@ public interface OgpService {
     void approveOgp(GprApprovalDto req);
 
     void rejectOgp(GprApprovalDto req);
+
+    public String saveOgpRejectedGi(OgpMasterRejectedGiDto req);
+    public List<OgpMasterRejectedGiDto> getAwaitingRejectedGi();
+    public void approveGiOgp(String ogpId);
+public void rejectGiOgp(String ogpId);
 }

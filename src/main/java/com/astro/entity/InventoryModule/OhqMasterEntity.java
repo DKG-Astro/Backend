@@ -31,4 +31,8 @@ public class OhqMasterEntity {
     
     @Column(name = "quantity", nullable = false, precision = 10, scale = 2)
     private BigDecimal quantity;
+
+    @Column(name="custodian_id")
+    private String custodianId;
+
 }

@@ -158,7 +158,7 @@ public class GrnServiceImpl implements GrnService {
                 grnMaterialDtl.setGrnSubProcessId(grnMaster.getGrnSubProcessId());
                 grnMaterialDtlList.add(grnMaterialDtl);
 
-                updateAssetAndOhq(materialDtl);
+                updateAssetAndOhq(materialDtl, req.getCustodianId());
             }
 
             else{
@@ -201,9 +201,10 @@ public class GrnServiceImpl implements GrnService {
                 System.out.println("ADDED TO LIST");
 
                 // UPDATE FUNC FOR CONSUMABLE OHQ
-                Optional<OhqMasterConsumableEntity> existingOhq = omcr.findByMaterialCodeAndLocatorId(
+                Optional<OhqMasterConsumableEntity> existingOhq = omcr.findByMaterialCodeAndLocatorIdAndCustodianId(
                     materialDtl.getMaterialCode(),
-                    materialDtl.getLocatorId());
+                    materialDtl.getLocatorId(),
+                    req.getCustodianId());
 
                 OhqMasterConsumableEntity ohq;
                 if (existingOhq.isPresent()) {
@@ -212,6 +213,7 @@ public class GrnServiceImpl implements GrnService {
                     ohq.setQuantity(currentQty.add(materialDtl.getAcceptedQuantity()));
                 } else {
                     ohq = new OhqMasterConsumableEntity();
+                    ohq.setCustodianId(req.getCustodianId());
                     ohq.setMaterialCode(materialDtl.getMaterialCode());
                     ohq.setLocatorId(materialDtl.getLocatorId());
                     ohq.setQuantity(materialDtl.getAcceptedQuantity());
@@ -237,9 +239,10 @@ public class GrnServiceImpl implements GrnService {
                 grnMaterialDtl.setIgpSubProcessId(Integer.parseInt(req.getGiNo().split("/")[1]));
 
                 // Copy financial values from existing OHQ if available
-                Optional<OhqMasterEntity> existingOhq = ohqmr.findByAssetIdAndLocatorId(
+                Optional<OhqMasterEntity> existingOhq = ohqmr.findByAssetIdAndLocatorIdAndCustodianId(
                     materialDtl.getAssetId(),
-                    materialDtl.getLocatorId());
+                    materialDtl.getLocatorId(),
+                    req.getCustodianId());
 
                 if (existingOhq.isPresent()) {
                     OhqMasterEntity ohq = existingOhq.get();
@@ -252,7 +255,7 @@ public class GrnServiceImpl implements GrnService {
                 }
 
                 grnMaterialDtlList.add(grnMaterialDtl);
-                updateAssetAndOhq(materialDtl);
+                updateAssetAndOhq(materialDtl, req.getCustodianId());
             }
         }
 
@@ -283,7 +286,7 @@ public class GrnServiceImpl implements GrnService {
     }
 
 
-    private void updateAssetAndOhq(GrnMaterialDtlDto materialDtl) {
+    private void updateAssetAndOhq(GrnMaterialDtlDto materialDtl, String custodianId) {
         System.out.println("UPDATE CALLED");
         AssetMasterEntity asset = amr.findById(materialDtl.getAssetId())
                 .orElseThrow(() -> new BusinessException(new ErrorDetails(
@@ -299,9 +302,10 @@ public class GrnServiceImpl implements GrnService {
 
         List<OhqMasterEntity> ohqList = ohqmr.findByAssetId(asset.getAssetId());
 
-        Optional<OhqMasterEntity> existingOhq = ohqmr.findByAssetIdAndLocatorId(
+        Optional<OhqMasterEntity> existingOhq = ohqmr.findByAssetIdAndLocatorIdAndCustodianId(
                 materialDtl.getAssetId(),
-                materialDtl.getLocatorId());
+                materialDtl.getLocatorId(),
+                custodianId);
 
         System.out.println("EXISTUNGOHQ CALLED");
 
@@ -314,6 +318,7 @@ public class GrnServiceImpl implements GrnService {
         } else {
             System.out.println("EXISTING OHQ NOT PRESENT");
             ohq = new OhqMasterEntity();
+            ohq.setCustodianId(custodianId);
             ohq.setAssetId(materialDtl.getAssetId());
             ohq.setLocatorId(materialDtl.getLocatorId());
             ohq.setQuantity(materialDtl.getAcceptedQuantity());
@@ -622,7 +627,7 @@ public class GrnServiceImpl implements GrnService {
                             Integer oldLocatorId = existing.getLocatorId();
 
                             // Reduce from old OHQ (old locator)
-                            ohqmr.findByAssetIdAndLocatorId(existing.getAssetId(), oldLocatorId)
+                            ohqmr.findByAssetIdAndLocatorIdAndCustodianId(existing.getAssetId(), oldLocatorId, req.getCustodianId())
                                     .ifPresent(ohq -> {
                                         ohq.setQuantity(ohq.getQuantity().subtract(oldQty));
                                         ohqmr.save(ohq);
@@ -635,7 +640,7 @@ public class GrnServiceImpl implements GrnService {
                             existing.setDepriciationRate(materialDtl.getDepriciationRate());
 
                             // Update OHQ for new locator
-                            ohqmr.findByAssetIdAndLocatorId(existing.getAssetId(), materialDtl.getLocatorId())
+                            ohqmr.findByAssetIdAndLocatorIdAndCustodianId(existing.getAssetId(), materialDtl.getLocatorId(), req.getCustodianId())
                                     .ifPresentOrElse(ohq -> {
                                         ohq.setQuantity(ohq.getQuantity().add(materialDtl.getAcceptedQuantity()));
                                         ohq.setBookValue(materialDtl.getBookValue());
@@ -664,7 +669,7 @@ public class GrnServiceImpl implements GrnService {
                             Integer oldLocatorId = existing.getLocatorId();
 
                             // Reduce from old OHQ (old locator)
-                            omcr.findByMaterialCodeAndLocatorId(existing.getMaterialCode(), oldLocatorId)
+                            omcr.findByMaterialCodeAndLocatorIdAndCustodianId(existing.getMaterialCode(), oldLocatorId, req.getCustodianId())
                                     .ifPresent(ohq -> {
                                         ohq.setQuantity(ohq.getQuantity().subtract(oldQty));
                                         omcr.save(ohq);
@@ -677,7 +682,7 @@ public class GrnServiceImpl implements GrnService {
                             existing.setDepriciationRate(materialDtl.getDepriciationRate());
 
                             // Update OHQ for new locator
-                            omcr.findByMaterialCodeAndLocatorId(existing.getMaterialCode(), materialDtl.getLocatorId())
+                            omcr.findByMaterialCodeAndLocatorIdAndCustodianId(existing.getMaterialCode(), materialDtl.getLocatorId(), req.getCustodianId()) 
                                     .ifPresentOrElse(ohq -> {
                                         ohq.setQuantity(ohq.getQuantity().add(materialDtl.getAcceptedQuantity()));
                                         ohq.setBookValue(materialDtl.getBookValue());

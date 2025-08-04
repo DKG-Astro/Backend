@@ -51,5 +51,8 @@ public class GiMaterialDtlEntity {
 
     @Column(name = "reject_reason")
     private String rejectReason;
+    
+    @Column(name = "rejection_type")
+    private String rejectionType;
 
 }

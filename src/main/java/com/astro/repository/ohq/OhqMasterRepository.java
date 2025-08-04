@@ -13,6 +13,7 @@ public interface OhqMasterRepository extends JpaRepository<OhqMasterEntity, Inte
     List<OhqMasterEntity> findByAssetId(Integer assetId);
     List<OhqMasterEntity> findByLocatorId(Integer locatorId);
     Optional<OhqMasterEntity> findByAssetIdAndLocatorId(Integer assetId, Integer locatorId);
+    Optional<OhqMasterEntity> findByAssetIdAndLocatorIdAndCustodianId(Integer assetId, Integer locatorId, String custodianId);
 
     @Query(value = """
         SELECT 

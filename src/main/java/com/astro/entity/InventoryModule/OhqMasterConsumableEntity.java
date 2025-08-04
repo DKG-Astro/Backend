@@ -29,6 +29,9 @@ public class OhqMasterConsumableEntity {
     @Column(name = "unit_price")
     private BigDecimal unitPrice;
 
+    @Column(name="custodian_id")
+    private String custodianId;
+
     @Column(name = "quantity")
     private BigDecimal quantity;
 }

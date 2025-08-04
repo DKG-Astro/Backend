@@ -15,6 +15,8 @@ import com.astro.dto.workflow.InventoryModule.igp.IgpReportDto;
 import com.astro.dto.workflow.InventoryModule.isn.IsnDto;
 import com.astro.dto.workflow.InventoryModule.ogp.GprApprovalDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpIdDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpMasterRejectedGiDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
 import com.astro.entity.InventoryModule.GiMasterEntity;
@@ -38,6 +40,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 @RestController
@@ -326,6 +331,34 @@ public class ProcessController {
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(gi), HttpStatus.OK);
     }
 
+    @PostMapping("/saveOgpRejectedGi")
+    public ResponseEntity<Object> saveOgpRejectedGi(@RequestBody OgpMasterRejectedGiDto req) {
+        //TODO: process POST request
+        
+        String id = processService.saveOgpRejectedGi(req);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/getAwaitingRejectedGi")
+    public ResponseEntity<Object> getAwaitingRejectedGi() {
+        List<OgpMasterRejectedGiDto> res = processService.getAwaitingRejectedGi();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @PostMapping("/approveGiOgp")
+    public ResponseEntity<Object> approveGiOgp(@RequestBody OgpIdDto req) {
+        processService.approveGiOgp(req.getOgpId());
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(), HttpStatus.OK);
+    }
+    
+    @PostMapping("/rejectGiOgp")
+    public ResponseEntity<Object> rejectGiOgp(@RequestBody OgpIdDto req) {
+        processService.rejectGiOgp(req.getOgpId());
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(), HttpStatus.OK);
+    }
+    
+
+    
 
 
 }

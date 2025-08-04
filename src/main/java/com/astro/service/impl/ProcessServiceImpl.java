@@ -8,6 +8,7 @@ import com.astro.dto.workflow.InventoryModule.igp.IgpDto;
 import com.astro.dto.workflow.InventoryModule.isn.IsnDto;
 import com.astro.dto.workflow.InventoryModule.ogp.GprApprovalDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpMasterRejectedGiDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
 import com.astro.entity.InventoryModule.IsnAssetOhqDtlsDto;
@@ -212,5 +213,26 @@ public class ProcessServiceImpl implements ProcessService {
     @Override
     public void changeReqGprn(String processNo) {
         gprnService.changeReqGprn(processNo);
+    }
+
+    @Override
+    public String saveOgpRejectedGi(OgpMasterRejectedGiDto req){
+        String id = ogpService.saveOgpRejectedGi(req);
+        return id;
+    }
+
+    @Override
+    public List<OgpMasterRejectedGiDto> getAwaitingRejectedGi(){
+        return ogpService.getAwaitingRejectedGi();
+    }
+
+    @Override
+    public void approveGiOgp(String ogpId){
+        ogpService.approveGiOgp(ogpId);
+    }
+
+    @Override
+    public void rejectGiOgp(String ogpId){
+        ogpService.rejectGiOgp(ogpId);
     }
 }

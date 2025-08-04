@@ -24,4 +24,5 @@ public class GiMaterialDtlDto {
     private BigDecimal receivedQuantity;
     private BigDecimal acceptedQuantity;
     private BigDecimal rejectedQuantity;
+    private String rejectionType;
 }

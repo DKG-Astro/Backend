@@ -14,8 +14,10 @@ import com.astro.service.InventoryModule.OgpService;
 import com.astro.repository.UserMasterRepository;
 import com.astro.repository.InventoryModule.AssetMasterRepository;
 import com.astro.repository.InventoryModule.isn.IssueNoteMasterRepository;
+import com.astro.repository.InventoryModule.ogp.OgpDetailRejectedGiRepository;
 import com.astro.repository.InventoryModule.ogp.OgpDetailRepository;
 import com.astro.repository.InventoryModule.ogp.OgpMasterPoRepository;
+import com.astro.repository.InventoryModule.ogp.OgpMasterRejectedGiRepository;
 import com.astro.repository.InventoryModule.ogp.OgpPoDetailRepository;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;
 import com.astro.repository.InventoryModule.ogp.OgpMasterRepository;
@@ -23,16 +25,20 @@ import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.InventoryModule.ogp.GprApprovalDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDetailReportDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpMasterRejectedGiDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpMaterialDtlDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDtlDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoMaterialDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpRejectedGiDtlDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpReportDto;
 import com.astro.entity.UserMaster;
 import com.astro.entity.InventoryModule.OgpDetailEntity;
+import com.astro.entity.InventoryModule.OgpDetailRejectedGiEntity;
 import com.astro.entity.InventoryModule.OgpMasterEntity;
 import com.astro.entity.InventoryModule.OgpMasterPoEntity;
+import com.astro.entity.InventoryModule.OgpMasterRejectedGiEntity;
 import com.astro.entity.InventoryModule.OgpPoDetailEntity;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.exception.BusinessException;
@@ -75,6 +81,12 @@ public class OgpServiceImpl implements OgpService {
 
     @Autowired
     private UserMasterRepository userMasterRepository;
+
+    @Autowired
+    private OgpMasterRejectedGiRepository omrgr;
+
+    @Autowired
+    private OgpDetailRejectedGiRepository odrgr;
 
     @Override
     @Transactional
@@ -468,6 +480,122 @@ public class OgpServiceImpl implements OgpService {
             ogpMasterPoRepository.save(poOgp);
         }
     }
+
+    @Override
+    @Transactional
+    public String saveOgpRejectedGi(OgpMasterRejectedGiDto req){
+        OgpMasterRejectedGiEntity omrge = new OgpMasterRejectedGiEntity();
+        omrge.setGiId(req.getGiId());
+        omrge.setLocationId(req.getLocationId());
+        omrge.setOgpDate(CommonUtils.convertStringToDateObject(req.getOgpDate()));
+        omrge.setOgpType(req.getOgpType());
+        omrge.setCreatedBy(req.getCreatedBy());
+        omrge.setReceiverLocation(req.getReceiverLocation());
+        omrge.setSenderName(req.getSenderName());
+        omrge.setReceiverName(req.getReceiverName());
+        omrge.setStatus("AWAITING APPROVAL");
+        if(Objects.nonNull(req.getDateOfReturn())){
+            omrge.setReturnDate(CommonUtils.convertStringToDateObject(req.getDateOfReturn()));
+        }
+
+        omrge = omrgr.save(omrge);
+
+        List<OgpDetailRejectedGiEntity> odrgeList = new ArrayList<>();
+
+        for(OgpRejectedGiDtlDto dto : req.getMaterialDtlList()){
+            OgpDetailRejectedGiEntity odrge = new OgpDetailRejectedGiEntity();
+            odrge.setAssetDesc(dto.getAssetDesc());
+            odrge.setAssetId(dto.getAssetId());
+            odrge.setMaterialCode(dto.getMaterialCode());
+            odrge.setMaterialDesc(dto.getMaterialDesc());
+            odrge.setRejectedQuantity(dto.getRejectedQuantity());
+            odrge.setRejectionType(dto.getRejectionType());
+            odrge.setOgpSubprocessId(omrge.getOgpSubProcessId());
+            odrgeList.add(odrge);
+        }
+
+        odrgr.saveAll(odrgeList);
+
+        return "INV/" + omrge.getOgpSubProcessId();
+    }
+
+    // public List<OgpMasterRejectedGiEntity> getAwaitingRejectedGi(){
+
+    //     List<OgpMasterRejectedGiEntity> omrgeList = omrgr.findByStatus("AWAITING APPROVAL");
+
+    //     for(OgpMasterRejectedGiEntity omrge : omrgeList){
+    //         List<OgpDetailRejectedGiEntity> odrgeList = odrgr.findByOgpSubprocessId(omrge.getOgpSubProcessId());
+
+    //     }
+
+    // }
+
+@Override
+    public List<OgpMasterRejectedGiDto> getAwaitingRejectedGi() {
+    List<OgpMasterRejectedGiEntity> omrgeList = omrgr.findByStatus("AWAITING APPROVAL");
+    List<OgpMasterRejectedGiDto> dtoList = new ArrayList<>();
+
+    for (OgpMasterRejectedGiEntity omrge : omrgeList) {
+        OgpMasterRejectedGiDto dto = new OgpMasterRejectedGiDto();
+
+        dto.setOgpDate(CommonUtils.convertDateToString(omrge.getOgpDate()));
+        dto.setGiId(omrge.getGiId());
+        dto.setLocationId(omrge.getLocationId());
+        dto.setCreatedBy(omrge.getCreatedBy() != null ? omrge.getCreatedBy().toString() : null);
+        dto.setSenderName(omrge.getSenderName());
+        dto.setReceiverName(omrge.getReceiverName());
+        dto.setReceiverLocation(omrge.getReceiverLocation());
+        dto.setDateOfReturn(CommonUtils.convertDateToString(omrge.getReturnDate()));
+        dto.setOgpId("INV/" + omrge.getOgpSubProcessId());
+        dto.setOgpType(omrge.getOgpType());
+
+        List<OgpDetailRejectedGiEntity> odrgeList = odrgr.findByOgpSubprocessId(omrge.getOgpSubProcessId());
+        List<OgpRejectedGiDtlDto> materialDtlList = odrgeList.stream().map(detail -> {
+            OgpRejectedGiDtlDto mdto = new OgpRejectedGiDtlDto();
+            mdto.setMaterialCode(detail.getMaterialCode());
+            mdto.setMaterialDesc(detail.getMaterialDesc());
+            mdto.setAssetId(detail.getAssetId());
+            mdto.setAssetDesc(detail.getAssetDesc());
+            mdto.setRejectedQuantity(detail.getRejectedQuantity());
+            mdto.setRejectionType(detail.getRejectionType());
+            return mdto;
+        }).collect(Collectors.toList());
+
+        dto.setMaterialDtlList(materialDtlList);
+        dtoList.add(dto);
+    }
+
+    return dtoList;
+}
+
+    @Override
+    public void approveGiOgp(String ogpId){
+        Integer ogpSubprocessId = Integer.parseInt(ogpId.split("/")[1]);
+        OgpMasterRejectedGiEntity omrge = omrgr.findById(ogpSubprocessId)
+                                    .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                                        AppConstant.ERROR_CODE_RESOURCE,
+                                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                        AppConstant.ERROR_TYPE_RESOURCE,
+                                        "OGP not found")));
+        omrge.setStatus("APPROVED");
+        omrgr.save(omrge);
+    }
+    @Override
+    public void rejectGiOgp(String ogpId){
+        Integer ogpSubprocessId = Integer.parseInt(ogpId.split("/")[1]);
+        OgpMasterRejectedGiEntity omrge = omrgr.findById(ogpSubprocessId)
+                                    .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                                        AppConstant.ERROR_CODE_RESOURCE,
+                                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                        AppConstant.ERROR_TYPE_RESOURCE,
+                                        "OGP not found")));
+        omrge.setStatus("REJECTED");
+        omrgr.save(omrge);
+    }
+
+
+
+
     
     // @Override
     // @Transactional
@@ -582,4 +710,6 @@ public class OgpServiceImpl implements OgpService {
 //             }
 //         }
 //     }
+
+
 }
