@@ -12,9 +12,12 @@ import com.astro.exception.InvalidInputException;
 import com.astro.repository.ProcurementModule.TenderEvaluationRepository;
 import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.service.TenderEvaluationService;
+import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,6 +29,14 @@ public class TenderEvaluationServiceImpl implements TenderEvaluationService {
     private TenderEvaluationRepository tenderEvaluationRepository;
     @Autowired
     private TenderRequestRepository tenderRequestRepository;
+    @Value("${filePath}")
+    private String bp;
+    private final String basePath;
+
+    public TenderEvaluationServiceImpl(@Value("${filePath}") String bp) {
+        this.basePath = bp + "/Tender";
+    }
+
 
     @Override
     public TenderEvaluationResponseDto createTenderEvaluation(TenderEvaluationRequestDto tenderEvaluationRequestDto) {
@@ -36,7 +47,15 @@ public class TenderEvaluationServiceImpl implements TenderEvaluationService {
         }
         TenderEvaluation tenderEvaluation = new TenderEvaluation();
         tenderEvaluation.setTenderId(tenderEvaluationRequestDto.getTenderId());
-        tenderEvaluation.setUploadQualifiedVendorsFileName(tenderEvaluationRequestDto.getUploadQualifiedVendorsFileName());
+        if (tenderEvaluationRequestDto.getUploadQualifiedVendorsFileName() == null || tenderEvaluationRequestDto.getUploadQualifiedVendorsFileName().isEmpty()) {
+            tenderEvaluation.setUploadQualifiedVendorsFileName(null);
+
+        } else {
+            String UploadQualifiedVendorsFileName = saveBase64Files(tenderEvaluationRequestDto.getUploadQualifiedVendorsFileName(), basePath);
+            tenderEvaluation.setUploadQualifiedVendorsFileName(UploadQualifiedVendorsFileName);
+
+        }
+     //   tenderEvaluation.setUploadQualifiedVendorsFileName(tenderEvaluationRequestDto.getUploadQualifiedVendorsFileName());
         tenderEvaluation.setUploadTechnicallyQualifiedVendorsFileName(tenderEvaluationRequestDto.getUploadTechnicallyQualifiedVendorsFileName());
         tenderEvaluation.setUploadCommeriallyQualifiedVendorsFileName(tenderEvaluationRequestDto.getUploadCommeriallyQualifiedVendorsFileName());
         tenderEvaluation.setFormationOfTechnoCommerialComitee(tenderEvaluationRequestDto.getFormationOfTechnoCommerialComitee());
@@ -59,6 +78,23 @@ public class TenderEvaluationServiceImpl implements TenderEvaluationService {
         tenderEvaluationRepository.save(tenderEvaluation);
 
         return mapToResponseDTO(tenderEvaluation);
+    }
+
+    public String saveBase64Files(String base64File, String basePath) {
+        try {
+            List<String> fileNames = new ArrayList<>();
+
+                String fileName = CommonUtils.saveBase64Image(base64File, basePath);
+                fileNames.add(fileName);
+
+            return fileName;
+        } catch (Exception e) {
+            throw new InvalidInputException(new ErrorDetails(
+                    AppConstant.FILE_UPLOAD_ERROR,
+                    AppConstant.USER_INVALID_INPUT,
+                    AppConstant.ERROR_TYPE_CORRUPTED,
+                    "Error while uploading files."));
+        }
     }
 
     private TenderEvaluationResponseDto mapToResponseDTO(TenderEvaluation tenderEvaluation) {

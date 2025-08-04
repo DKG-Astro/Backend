@@ -1382,7 +1382,10 @@ public List<ApprovedIndentsDto> getApprovedIndents() {
         for (String tenderId : tenderIds) {
             // Fetch bidType and totalValue from TenderRequest table
             Optional<TenderRequest> optionalTenderRequest = tenderRequestRepository.findByTenderId(tenderId);
-                int indentNumber =1;
+            List<String> indentIds = indentIdRepository.findTenderWithIndent(tenderId);
+           // int indentNumber = indentIds != null ? indentIds.size() : 0;
+          //  System.out.println("indent number"+ indentIds +""+ indentNumber);
+            int indentNumber =1;
             if (optionalTenderRequest.isPresent()) {
                 TenderRequest tenderRequest = optionalTenderRequest.get();
                 ApprovedTenderDto dto = new ApprovedTenderDto(
@@ -1415,7 +1418,9 @@ public List<ApprovedIndentsDto> getApprovedIndents() {
                         AppConstant.ERROR_TYPE_VALIDATION,
                         "Tender request not found for the provided tender ID: " + tenderId
                 )));
-          int indentNumber=1;
+          //int indentNumber=1;
+        List<String> indentIds = indentIdRepository.findTenderWithIndent(tenderId);
+        int indentNumber = indentIds != null ? indentIds.size() : 0;
         return new ApprovedTenderDto(
                 tenderId,
                 tenderRequest.getBidType(),

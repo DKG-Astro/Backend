@@ -119,6 +119,7 @@ public class VendorQuotationAgainstTenderServiceImpl implements VendorQuotationA
                    dto.setStatus(vq.getStatus()); //  SUBMITTED, CHANGE_REQUESTED, Rejected
                    dto.setIndentorStatus(vq.getIndentorStatus());
                    dto.setSopStatus(vq.getSpoStatus());
+                   dto.setPriceBidFileName(vq.getPriceBidFileName());
                  //  dto.setAcceptanceStatus(vq.getAcceptanceStatus()); // ACCEPTED etc.
 
                    dto.setCanIndentorAct(canIndentorAct(vq, loggedInRole));
@@ -313,6 +314,7 @@ public boolean markQuotationForChangeRequest(VendorQuotationChangeRequestDto req
     newQuotation.setTenderId(oldQuotation.getTenderId());
     newQuotation.setVendorId(oldQuotation.getVendorId());
     newQuotation.setQuotationFileName(oldQuotation.getQuotationFileName());
+    newQuotation.setPriceBidFileName(oldQuotation.getPriceBidFileName());
     newQuotation.setFileType(oldQuotation.getFileType());
     newQuotation.setCreatedBy(oldQuotation.getCreatedBy());
     newQuotation.setVersion(oldQuotation.getVersion() + 1);
@@ -379,6 +381,7 @@ public boolean acceptVendorQuotation(String tenderId, String vendorId,Integer us
     newQuotation.setTenderId(tenderId);
     newQuotation.setVendorId(vendorId);
     newQuotation.setQuotationFileName(oldQuotation.getQuotationFileName());
+    newQuotation.setPriceBidFileName(oldQuotation.getPriceBidFileName());
     newQuotation.setFileType(oldQuotation.getFileType());
     newQuotation.setCreatedBy(oldQuotation.getCreatedBy());
     newQuotation.setVersion(oldQuotation.getVersion() + 1);
@@ -422,6 +425,7 @@ public boolean acceptVendorQuotation(String tenderId, String vendorId,Integer us
         newQuotation.setTenderId(oldQuotation.getTenderId());
         newQuotation.setVendorId(oldQuotation.getVendorId());
         newQuotation.setQuotationFileName(oldQuotation.getQuotationFileName());
+        newQuotation.setPriceBidFileName(oldQuotation.getPriceBidFileName());
         newQuotation.setFileType(oldQuotation.getFileType());
         newQuotation.setCreatedBy(oldQuotation.getCreatedBy());
         newQuotation.setVersion(oldQuotation.getVersion() + 1);
@@ -494,6 +498,7 @@ public boolean acceptVendorQuotation(String tenderId, String vendorId,Integer us
         newQuotation.setTenderId(tenderId);
         newQuotation.setVendorId(vendorId);
         newQuotation.setQuotationFileName(oldQuotation.getQuotationFileName());
+        newQuotation.setPriceBidFileName(oldQuotation.getPriceBidFileName());
         newQuotation.setFileType(oldQuotation.getFileType());
         newQuotation.setCreatedBy(oldQuotation.getCreatedBy());
         newQuotation.setVersion((oldQuotation.getVersion() != null ? oldQuotation.getVersion() : 0) + 1);
