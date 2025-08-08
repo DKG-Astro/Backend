@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.util.stream.Collectors;
 
 import com.astro.service.InventoryModule.GrnService;
+import com.astro.service.InventoryModule.IgpService;
 import com.astro.service.InventoryModule.GiService;
 import com.astro.repository.InventoryModule.grn.*;
 import com.astro.repository.InventoryModule.igp.IgpMasterRepository;
@@ -32,6 +33,9 @@ import org.springframework.util.StringUtils;
 public class GrnServiceImpl implements GrnService {
     @Autowired
     private GrnMasterRepository grnmr;
+
+    @Autowired
+    private IgpService igpService;
 
     @Autowired
     private GrnMaterialDtlRepository grnmdr;
@@ -69,12 +73,13 @@ public class GrnServiceImpl implements GrnService {
     @Override
     @Transactional
     public String saveGrn(GrnDto req) {
+        if("MATERIAL_IN".equalsIgnoreCase(req.getGrnType())){
+            igpService.validateMaterialIgp(req.getIgpId());
+        }
         if ("GI".equalsIgnoreCase(req.getGrnType())) {
           //  giService.validateGiSubProcessId(req.getGiNo());
             giService.validateGiIsApproved(req.getGiNo());
 
-        } else {
-            validateIgp(req.getGiNo());
         }
 
         ModelMapper mapper = new ModelMapper();
@@ -90,8 +95,10 @@ public class GrnServiceImpl implements GrnService {
         grnMaster.setCreateDate(LocalDateTime.now());
         grnMaster.setLocationId(req.getLocationId());
         grnMaster.setGrnType(req.getGrnType());
-        grnMaster.setStatus("AWAITING APPROVAL");
-        grnMaster.setGrnProcessId(req.getGiNo().split("/")[0].substring(3));
+        grnMaster.setStatus("APPROVED");
+        if(!req.getGrnType().equalsIgnoreCase("MATERIAL_IN")){
+            grnMaster.setGrnProcessId(req.getGiNo().split("/")[0].substring(3));
+        }
 
         if ("GI".equalsIgnoreCase(req.getGrnType())) {
             if (req.getInstallationDate() != null && !req.getInstallationDate().trim().isEmpty()) {
@@ -103,8 +110,9 @@ public class GrnServiceImpl implements GrnService {
             grnMaster.setGiProcessId(req.getGiNo().split("/")[0].substring(3));
             grnMaster.setGiSubProcessId(Integer.parseInt(req.getGiNo().split("/")[1]));
         } else {
-            grnMaster.setIgpProcessId(req.getGiNo().split("/")[0].substring(3));
-            grnMaster.setIgpSubProcessId(Integer.parseInt(req.getGiNo().split("/")[1]));
+            // grnMaster.setIgpProcessId(req.getGiNo().split("/")[0].substring(3));
+            grnMaster.setIgpProcessId(req.getIgpId());
+
         }
 
         grnMaster = grnmr.save(grnMaster);
@@ -231,12 +239,18 @@ public class GrnServiceImpl implements GrnService {
         } else {
             // IGP validation logic - skip GI-specific validations
             for (GrnMaterialDtlDto materialDtl : req.getMaterialDtlList()) {
+                if(Objects.isNull(materialDtl.getAssetId())){
+                    GrnConsumableDtlEntity grnConsumableDtl = new GrnConsumableDtlEntity();
+                    
+                }
                 GrnMaterialDtlEntity grnMaterialDtl = new GrnMaterialDtlEntity();
                 mapper.map(materialDtl, grnMaterialDtl);
                 grnMaterialDtl.setQuantity(materialDtl.getAcceptedQuantity());
                 grnMaterialDtl.setGrnProcessId(grnMaster.getGrnProcessId());
                 grnMaterialDtl.setGrnSubProcessId(grnMaster.getGrnSubProcessId());
-                grnMaterialDtl.setIgpSubProcessId(Integer.parseInt(req.getGiNo().split("/")[1]));
+                grnMaterialDtl.setIgpSubProcessId(Integer.parseInt(req.getIgpId().split("/")[1]));
+
+
 
                 // Copy financial values from existing OHQ if available
                 Optional<OhqMasterEntity> existingOhq = ohqmr.findByAssetIdAndLocatorIdAndCustodianId(
@@ -389,33 +403,33 @@ public class GrnServiceImpl implements GrnService {
         return combinedRes;
     }
 
-    private void validateIgp(String processNo) {
-        String[] processNoSplit = processNo.split("/");
-        if (processNoSplit.length != 2 || !processNoSplit[0].startsWith("INV")) {
-            throw new InvalidInputException(new ErrorDetails(
-                    AppConstant.USER_INVALID_INPUT,
-                    AppConstant.ERROR_TYPE_CODE_VALIDATION,
-                    AppConstant.ERROR_TYPE_VALIDATION,
-                    "Invalid IGP No. Format should be IGP{number}/{number}"));
-        }
+    // private void validateIgp(String processNo) {
+    //     String[] processNoSplit = processNo.split("/");
+    //     if (processNoSplit.length != 2 || !processNoSplit[0].startsWith("INV")) {
+    //         throw new InvalidInputException(new ErrorDetails(
+    //                 AppConstant.USER_INVALID_INPUT,
+    //                 AppConstant.ERROR_TYPE_CODE_VALIDATION,
+    //                 AppConstant.ERROR_TYPE_VALIDATION,
+    //                 "Invalid IGP No. Format should be IGP{number}/{number}"));
+    //     }
 
-        try {
-            Integer subProcessId = Integer.parseInt(processNoSplit[1]);
-            if (!igpMasterRepository.existsById(subProcessId)) {
-                throw new BusinessException(new ErrorDetails(
-                        AppConstant.ERROR_CODE_RESOURCE,
-                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
-                        AppConstant.ERROR_TYPE_RESOURCE,
-                        "IGP not found with the provided ID"));
-            }
-        } catch (NumberFormatException e) {
-            throw new InvalidInputException(new ErrorDetails(
-                    AppConstant.USER_INVALID_INPUT,
-                    AppConstant.ERROR_TYPE_CODE_VALIDATION,
-                    AppConstant.ERROR_TYPE_VALIDATION,
-                    "Invalid IGP number format"));
-        }
-    }
+    //     try {
+    //         Integer subProcessId = Integer.parseInt(processNoSplit[1]);
+    //         if (!igpMasterRepository.existsById(subProcessId)) {
+    //             throw new BusinessException(new ErrorDetails(
+    //                     AppConstant.ERROR_CODE_RESOURCE,
+    //                     AppConstant.ERROR_TYPE_CODE_RESOURCE,
+    //                     AppConstant.ERROR_TYPE_RESOURCE,
+    //                     "IGP not found with the provided ID"));
+    //         }
+    //     } catch (NumberFormatException e) {
+    //         throw new InvalidInputException(new ErrorDetails(
+    //                 AppConstant.USER_INVALID_INPUT,
+    //                 AppConstant.ERROR_TYPE_CODE_VALIDATION,
+    //                 AppConstant.ERROR_TYPE_VALIDATION,
+    //                 "Invalid IGP number format"));
+    //     }
+    // }
 
     @Override
     @Transactional
@@ -733,6 +747,154 @@ public class GrnServiceImpl implements GrnService {
         }).toList();
     }
 
+    @Override
+    @Transactional
+    public String saveMaterialGrn(GrnMaterialMasterDto req){
+        igpService.validateMaterialIgp(req.getIgpId());
 
+        GrnMasterEntity grnMaster = new GrnMasterEntity();
+        grnMaster.setIgpProcessId(req.getIgpId().split("/")[1]);
+        grnMaster.setGrnDate(CommonUtils.convertStringToDateObject(req.getGrnDate()));
+        grnMaster.setGrnType(req.getGrnType());
+        grnMaster.setStatus("APPROVED");
+        grnMaster.setSystemCreatedBy(req.getCreatedBy());
+        grnMaster.setLocationId(req.getLocationId());
+        grnMaster.setCreatedBy(req.getCreatedBy().toString());
+        grnMaster.setCreateDate(LocalDateTime.now());
+        grnMaster.setGrnProcessId("N/A");
 
+        grnMaster = grnmr.save(grnMaster);
+        
+        ModelMapper mapper = new ModelMapper();
+        List<GrnMaterialDtlEntity> grnMaterialDtlList = new ArrayList<>();
+        List<GrnConsumableDtlEntity> gcdeList = new ArrayList<>();
+
+        for(GrnMaterialInDtlDto materialDtl : req.getMaterialDtlList()){
+            if(materialDtl.getAssetId() == null){
+                GrnConsumableDtlEntity gcde = new GrnConsumableDtlEntity();
+                mapper.map(materialDtl, gcde);
+                gcde.setQuantity(materialDtl.getQuantity());
+                gcde.setGrnProcessId(grnMaster.getGrnProcessId());
+                gcde.setGrnSubProcessId(grnMaster.getGrnSubProcessId());
+                gcde.setIgpSubProcessId(Integer.parseInt(req.getIgpId().split("/")[1]));
+                gcdeList.add(gcde);
+
+                Integer locatorId = materialDtl.getLocatorId();
+                String custodianId = req.getIndentId().toString();
+                Optional<OhqMasterConsumableEntity> existingOhq = omcr.findByMaterialCodeAndLocatorIdAndCustodianId(
+                    materialDtl.getMaterialCode(), locatorId, custodianId);
+
+                OhqMasterConsumableEntity ohq;
+                if (existingOhq.isPresent()) {
+                    ohq = existingOhq.get();
+                    BigDecimal currentQty = ohq.getQuantity() != null ? ohq.getQuantity() : BigDecimal.ZERO;
+                    ohq.setQuantity(currentQty.add(materialDtl.getQuantity()));
+                } else {
+                    ohq = new OhqMasterConsumableEntity();
+                    ohq.setCustodianId(custodianId);
+                    ohq.setMaterialCode(materialDtl.getMaterialCode());
+                    ohq.setLocatorId(locatorId);
+                    ohq.setQuantity(materialDtl.getQuantity());
+                    ohq.setBookValue(materialDtl.getBookValue());
+                    ohq.setDepriciationRate(materialDtl.getDepriciationRate());
+                    ohq.setUnitPrice(materialDtl.getUnitPrice());
+                }
+                omcr.save(ohq);
+            } else {
+                GrnMaterialDtlEntity grnMaterialDtl = new GrnMaterialDtlEntity();
+                mapper.map(materialDtl, grnMaterialDtl);
+                grnMaterialDtl.setQuantity(materialDtl.getQuantity());
+                grnMaterialDtl.setGrnProcessId(grnMaster.getGrnProcessId());
+                grnMaterialDtl.setGrnSubProcessId(grnMaster.getGrnSubProcessId());
+                grnMaterialDtl.setIgpSubProcessId(Integer.parseInt(req.getIgpId().split("/")[1]));
+
+                Integer locatorId = materialDtl.getLocatorId();
+                String custodianId = req.getIndentId().toString();
+                Optional<OhqMasterEntity> existingOhq = ohqmr.findByAssetIdAndLocatorIdAndCustodianId(
+                    materialDtl.getAssetId(), locatorId, custodianId);
+
+                if (existingOhq.isPresent()) {
+                    OhqMasterEntity ohq = existingOhq.get();
+                    grnMaterialDtl.setBookValue(ohq.getBookValue());
+                    grnMaterialDtl.setDepriciationRate(ohq.getDepriciationRate());
+                } else {
+                    grnMaterialDtl.setBookValue(null);
+                    grnMaterialDtl.setDepriciationRate(null);
+                }
+
+                grnMaterialDtlList.add(grnMaterialDtl);
+                updateAssetAndOhq1(materialDtl, custodianId);
+            }
+        }
+
+        grnmdr.saveAll(grnMaterialDtlList);
+        gcdr.saveAll(gcdeList);
+
+        return "INV/" + grnMaster.getGrnSubProcessId();
+
+        // GrnWorkflowStatus workflowStatus = new GrnWorkflowStatus();
+        // workflowStatus.setProcessId("INV" + grnMaster.getGrnProcessId());
+        // workflowStatus.setSubProcessId(grnMaster.getGrnSubProcessId());
+        // workflowStatus.setAction("CREATED");
+        // workflowStatus.setRemarks("GRN Created");
+        // workflowStatus.setCreatedBy(req.getCreatedBy());
+        // workflowStatus.setCreateDate(LocalDateTime.now());
+
+        // grnWorkRepo.save(workflowStatus);
+    }
+
+    private void updateAssetAndOhq1(GrnMaterialInDtlDto materialDtl, String custodianId) {
+        System.out.println("UPDATE CALLED");
+        AssetMasterEntity asset = amr.findById(materialDtl.getAssetId())
+                .orElseThrow(() -> new BusinessException(new ErrorDetails(
+                        AppConstant.ERROR_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_RESOURCE,
+                        "Asset not found with ID: " + materialDtl.getAssetId())));
+
+        if (asset.getInitQuantity() == null || asset.getInitQuantity().compareTo(BigDecimal.ZERO) == 0) {
+            asset.setInitQuantity(materialDtl.getQuantity());
+            amr.save(asset);
+        }
+
+        List<OhqMasterEntity> ohqList = ohqmr.findByAssetId(asset.getAssetId());
+
+        Optional<OhqMasterEntity> existingOhq = ohqmr.findByAssetIdAndLocatorIdAndCustodianId(
+                materialDtl.getAssetId(),
+                materialDtl.getLocatorId(),
+                custodianId);
+
+        System.out.println("EXISTUNGOHQ CALLED");
+
+        OhqMasterEntity ohq;
+        if (existingOhq.isPresent()) {
+            System.out.println("EXISTING OHQ PRESENT");
+            ohq = existingOhq.get();
+            BigDecimal currentQty = ohq.getQuantity() != null ? ohq.getQuantity() : BigDecimal.ZERO;
+            ohq.setQuantity(currentQty.add(materialDtl.getQuantity()));
+        } else {
+            System.out.println("EXISTING OHQ NOT PRESENT");
+            ohq = new OhqMasterEntity();
+            ohq.setCustodianId(custodianId);
+            ohq.setAssetId(materialDtl.getAssetId());
+            ohq.setLocatorId(materialDtl.getLocatorId());
+            ohq.setQuantity(materialDtl.getQuantity());
+
+            if (!ohqList.isEmpty()) {
+                System.out.println("NOT EMPTY");
+                OhqMasterEntity existingOhqRecord = ohqList.get(0);
+                ohq.setBookValue(existingOhqRecord.getBookValue());
+                ohq.setDepriciationRate(existingOhqRecord.getDepriciationRate());
+                ohq.setUnitPrice(existingOhqRecord.getUnitPrice());
+            } else {
+                System.out.println("EMTOTY");
+                String priceStr = materialDtl.getEstimatedPriceWithCcy().replaceAll("[^\\d.]", "");
+                BigDecimal bookValue = new BigDecimal(priceStr);
+                ohq.setBookValue(bookValue);
+                ohq.setDepriciationRate(BigDecimal.ZERO);
+                ohq.setUnitPrice(bookValue);
+            }
+        }
+        ohqmr.save(ohq);
+    }
 }

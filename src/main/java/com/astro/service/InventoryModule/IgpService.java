@@ -6,10 +6,17 @@ import com.astro.dto.workflow.InventoryModule.igp.IgpCombinedDetailDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpDetailReportDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpReportDto;
+import com.astro.dto.workflow.InventoryModule.ogp.MaterialIgpDto;
 
 public interface IgpService {
     String saveIgp(IgpDto req);
     IgpDto getIgpDtls(String processNo);
     List<IgpReportDto> getIgpReport(String startDate, String endDate);
     public List<IgpCombinedDetailDto> getIgpDetails();
+    public String saveMaterialIgp(MaterialIgpDto req);
+    public void approveMaterialIgp(String igpId);
+    public void rejectMaterialIgp(String igpId);
+    public MaterialIgpDto getIgpMaterialDtls(String igpId);
+    public void validateMaterialIgp(String igpId);
+    public List<MaterialIgpDto> getAwaitingApprovalIgp();
 }

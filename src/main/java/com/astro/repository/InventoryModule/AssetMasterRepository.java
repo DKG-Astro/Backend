@@ -61,4 +61,6 @@ public interface AssetMasterRepository extends JpaRepository<AssetMasterEntity, 
 
     @Query("SELECT a.assetId FROM AssetMasterEntity a")
     List<Integer> findAllAssetIds();
+
+    Optional<AssetMasterEntity> findByMaterialCodeAndMaterialDescAndUomIdAndIgpId(String materialCode, String materialDesc, String uomId, Long igpId);
 }

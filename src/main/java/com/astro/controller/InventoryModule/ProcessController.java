@@ -6,14 +6,17 @@ import com.astro.dto.workflow.InventoryModule.GiDto.SaveGiDto;
 import com.astro.dto.workflow.InventoryModule.GprnDto.SaveGprnDto;
 import com.astro.dto.workflow.InventoryModule.gprn.GprnPendingInspectionDto;
 import com.astro.dto.workflow.InventoryModule.grn.GrnDto;
+import com.astro.dto.workflow.InventoryModule.grn.GrnMaterialMasterDto;
 import com.astro.dto.workflow.InventoryModule.grn.UpdateGrnDto;
 import com.astro.dto.workflow.InventoryModule.grv.GrvDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpCombinedDetailDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpDetailReportDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpDto;
+import com.astro.dto.workflow.InventoryModule.igp.IgpIdDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpReportDto;
 import com.astro.dto.workflow.InventoryModule.isn.IsnDto;
 import com.astro.dto.workflow.InventoryModule.ogp.GprApprovalDto;
+import com.astro.dto.workflow.InventoryModule.ogp.MaterialIgpDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpIdDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpMasterRejectedGiDto;
@@ -358,6 +361,47 @@ public class ProcessController {
     }
     
 
+    @PostMapping("/saveMaterialIgp")
+    public ResponseEntity<Object> saveMaterialIgp(@RequestBody MaterialIgpDto req) {
+        //TODO: process POST request
+        String id = igpService.saveMaterialIgp(req);
+        Map<String, String> res = new HashMap<>();
+        res.put("processNo", id);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @PostMapping("/approveMaterialIgp")
+    public ResponseEntity<Object> approveMaterialIgp(@RequestBody IgpIdDto req) {
+        igpService.approveMaterialIgp(req.getIgpId());
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(), HttpStatus.OK);
+    }
+    
+
+    @PostMapping("/rejectMaterialIgp")
+    public ResponseEntity<Object> rejectMaterialIgp(@RequestBody IgpIdDto req) {
+        igpService.rejectMaterialIgp(req.getIgpId());
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(), HttpStatus.OK);
+    }
+
+    @GetMapping("/getIgpMaterialDtls")
+    public ResponseEntity<Object> getIgpMaterialDtls(@RequestParam String igpId) {
+        MaterialIgpDto res = igpService.getIgpMaterialDtls(igpId);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @PostMapping("/saveMaterialGrn")
+    public ResponseEntity<Object> saveMaterialGrn(@RequestBody GrnMaterialMasterDto req) {
+        String processNo = grns.saveMaterialGrn(req);
+        Map<String, String> res = new HashMap<>();
+        res.put("processNo", processNo);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @GetMapping("/getPendingIgp")
+    public ResponseEntity<Object> getAwaitingApprovalIgp() {
+        List<MaterialIgpDto> res = igpService.getAwaitingApprovalIgp();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
     
 
 

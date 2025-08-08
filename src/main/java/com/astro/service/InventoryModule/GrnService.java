@@ -3,6 +3,7 @@ package com.astro.service.InventoryModule;
 import com.astro.dto.workflow.InventoryModule.GiDto.GiApprovalDto;
 import com.astro.dto.workflow.InventoryModule.GiDto.GiWorkflowStatusDto;
 import com.astro.dto.workflow.InventoryModule.grn.GrnDto;
+import com.astro.dto.workflow.InventoryModule.grn.GrnMaterialMasterDto;
 import com.astro.dto.workflow.InventoryModule.grn.UpdateGrnDto;
 import com.astro.entity.InventoryModule.GiMasterEntity;
 import com.astro.entity.InventoryModule.GrnMasterEntity;
@@ -21,4 +22,5 @@ public interface GrnService {
     public List<GrnMasterEntity> getGrnByStorePresonStatuses();
     public String updateGrn(GrnDto req);
     public List<GiWorkflowStatusDto> getGrnHistoryByProcessId(String processId, Integer subProcessId);
+    public String saveMaterialGrn(GrnMaterialMasterDto req);
 }

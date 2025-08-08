@@ -62,6 +62,9 @@ public class AssetMasterEntity {
     
     @Column(name = "updated_date")
     private LocalDateTime updatedDate;
+
+    @Column(name="igp_id")
+    private Long igpId;
     
     private Integer updatedBy;
 }

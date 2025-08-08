@@ -11,14 +11,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.astro.service.InventoryModule.IgpService;
+import com.astro.repository.MaterialMasterRepository;
 import com.astro.repository.InventoryModule.AssetMasterRepository;
 import com.astro.repository.InventoryModule.igp.*;
 import com.astro.repository.InventoryModule.isn.IssueNoteMasterRepository;
 import com.astro.repository.InventoryModule.ogp.IgpPoDtlRepository;
 import com.astro.repository.InventoryModule.ogp.OgpDetailRepository;
 import com.astro.repository.InventoryModule.ogp.OgpMasterRepository;
+import com.astro.entity.MaterialMaster;
 import com.astro.entity.InventoryModule.*;
+import com.astro.dto.workflow.InventoryModule.GprnDto.MaterialDtlDto;
 import com.astro.dto.workflow.InventoryModule.igp.*;
+import com.astro.dto.workflow.InventoryModule.ogp.IgpMaterialDetailDto;
+import com.astro.dto.workflow.InventoryModule.ogp.MaterialIgpDto;
 import com.astro.exception.*;
 import com.astro.constant.AppConstant;
 import com.astro.util.CommonUtils;
@@ -55,6 +60,16 @@ public class IgpServiceImpl implements IgpService {
 
     @Autowired
     private IgpPoDtlRepository igpPoDtlRepository;
+
+    @Autowired
+    private IgpMaterialMasterRepository immr;
+
+    @Autowired
+    private IgpMaterialDtlRepository imdr;
+
+    @Autowired
+    private MaterialMasterRepository mmr;
+
 
     @Override
     @Transactional
@@ -379,6 +394,84 @@ public class IgpServiceImpl implements IgpService {
             return dto;
         }).collect(Collectors.toList());
     }
+
+    @Override
+    @Transactional
+    public String saveMaterialIgp(MaterialIgpDto req) {
+        IgpMaterialMasterEntity igpMaterialMasterEntity = new IgpMaterialMasterEntity();
+        igpMaterialMasterEntity.setStatus("AWAITING APPROVAL");
+        igpMaterialMasterEntity.setOgpId(req.getOgpId());
+        igpMaterialMasterEntity.setIgpDate(req.getIgpDate());
+        igpMaterialMasterEntity.setCreatedBy(req.getCreatedBy());
+        igpMaterialMasterEntity.setIgpType(req.getIgpType());
+        igpMaterialMasterEntity.setIndentId(req.getIndentId());
+        igpMaterialMasterEntity.setLocationId(req.getLocationId());
+        igpMaterialMasterEntity = immr.save(igpMaterialMasterEntity);
+
+        for (IgpMaterialDetailDto materialIgpDetailDto : req.getMaterialDtlList()) {
+            IgpMaterialDtlEntity igpMaterialDtlEntity = new IgpMaterialDtlEntity();
+            igpMaterialDtlEntity.setIgpId(igpMaterialMasterEntity.getId());
+            igpMaterialDtlEntity.setMaterialCode(materialIgpDetailDto.getMaterialCode());
+            igpMaterialDtlEntity.setQuantity(materialIgpDetailDto.getQuantity());
+            igpMaterialDtlEntity.setCategory(materialIgpDetailDto.getCategory());
+            igpMaterialDtlEntity.setSubCategory(materialIgpDetailDto.getSubCategory());
+            igpMaterialDtlEntity.setDescription(materialIgpDetailDto.getDescription());
+            igpMaterialDtlEntity.setUom(materialIgpDetailDto.getUom());
+            igpMaterialDtlEntity.setEstimatedPriceWithCcy(materialIgpDetailDto.getEstimatedPriceWithCcy());
+            igpMaterialDtlEntity.setIndigenousOrImported(materialIgpDetailDto.getIndigenousOrImported());
+            imdr.save(igpMaterialDtlEntity);
+        }
+
+        return "INV/" + igpMaterialMasterEntity.getId();
+    }
+
+    @Override
+    @Transactional
+    public void approveMaterialIgp(String igpId) {
+        System.out.println("APprove material igp called");
+        Long id = Long.parseLong(igpId.split("/")[1]);
+        IgpMaterialMasterEntity igpMaterialMasterEntity = immr.findById(id).orElseThrow(() -> new RuntimeException("IGP not found"));
+        igpMaterialMasterEntity.setStatus("APPROVED");
+        immr.save(igpMaterialMasterEntity);
+        
+        createNewAsset(igpId, igpMaterialMasterEntity.getCreatedBy());
+    }
+
+    @Override
+    @Transactional
+    public void rejectMaterialIgp(String igpId) {
+        Long id = Long.parseLong(igpId.split("/")[1]);
+        IgpMaterialMasterEntity igpMaterialMasterEntity = immr.findById(id).orElseThrow(() -> new RuntimeException("IGP not found"));
+        igpMaterialMasterEntity.setStatus("REJECTED");
+        immr.save(igpMaterialMasterEntity);
+    }
+
+    public String updateMaterialIgp(MaterialIgpDto req) {
+        Long id = Long.parseLong(req.getIgpId().split("/")[1]);
+        IgpMaterialMasterEntity igpMaterialMasterEntity = immr.findById(id).orElseThrow(() -> new RuntimeException("IGP not found"));
+        igpMaterialMasterEntity.setStatus("AWAITING APPROVAL");
+        igpMaterialMasterEntity.setOgpId(req.getOgpId());
+        igpMaterialMasterEntity.setIgpDate(req.getIgpDate());
+        igpMaterialMasterEntity.setIgpType(req.getIgpType());
+        igpMaterialMasterEntity.setIndentId(req.getIndentId());
+        immr.save(igpMaterialMasterEntity);
+
+        for (IgpMaterialDetailDto materialIgpDetailDto : req.getMaterialDtlList()) {
+            IgpMaterialDtlEntity igpMaterialDtlEntity = new IgpMaterialDtlEntity();
+            igpMaterialDtlEntity.setIgpId(igpMaterialMasterEntity.getId());
+            igpMaterialDtlEntity.setMaterialCode(materialIgpDetailDto.getMaterialCode());
+            igpMaterialDtlEntity.setQuantity(materialIgpDetailDto.getQuantity());
+            igpMaterialDtlEntity.setCategory(materialIgpDetailDto.getCategory());
+            igpMaterialDtlEntity.setSubCategory(materialIgpDetailDto.getSubCategory());
+            igpMaterialDtlEntity.setDescription(materialIgpDetailDto.getDescription());
+            igpMaterialDtlEntity.setUom(materialIgpDetailDto.getUom());
+            igpMaterialDtlEntity.setEstimatedPriceWithCcy(materialIgpDetailDto.getEstimatedPriceWithCcy());
+            igpMaterialDtlEntity.setIndigenousOrImported(materialIgpDetailDto.getIndigenousOrImported());
+            imdr.save(igpMaterialDtlEntity);
+        }
+
+        return "INV/" + igpMaterialMasterEntity.getId();
+    }
     
     // @Override
     // public List<IgpDetailReportDto> getIgpDetails() {
@@ -400,4 +493,111 @@ public class IgpServiceImpl implements IgpService {
     //         })
     //         .collect(Collectors.toList());
     // }
+
+    @Override
+    public MaterialIgpDto getIgpMaterialDtls(String igpId){
+        Long id = Long.parseLong(igpId.split("/")[1]);
+        IgpMaterialMasterEntity igpMaterialMasterEntity = immr.findById(id).orElseThrow(() -> new RuntimeException("IGP not found"));
+        MaterialIgpDto materialIgpDto = new MaterialIgpDto();
+        materialIgpDto.setIgpId(igpId);
+        materialIgpDto.setOgpId(igpMaterialMasterEntity.getOgpId());
+        materialIgpDto.setIgpDate(igpMaterialMasterEntity.getIgpDate());
+        materialIgpDto.setIgpType(igpMaterialMasterEntity.getIgpType());
+        materialIgpDto.setIndentId(igpMaterialMasterEntity.getIndentId());
+        materialIgpDto.setStatus(igpMaterialMasterEntity.getStatus());
+        materialIgpDto.setLocationId(igpMaterialMasterEntity.getLocationId());
+
+
+        List<IgpMaterialDtlEntity> igpMaterialDtlEntityList = imdr.findByIgpId(id);
+        List<IgpMaterialDetailDto> igpMaterialDetailDtoList = new ArrayList<>();
+        for (IgpMaterialDtlEntity igpMaterialDtlEntity : igpMaterialDtlEntityList) {
+            IgpMaterialDetailDto igpMaterialDetailDto = new IgpMaterialDetailDto();
+            igpMaterialDetailDto.setId(igpMaterialDtlEntity.getId());
+            igpMaterialDetailDto.setAssetId(igpMaterialDtlEntity.getAssetId());
+            igpMaterialDetailDto.setMaterialCode(igpMaterialDtlEntity.getMaterialCode());
+            igpMaterialDetailDto.setQuantity(igpMaterialDtlEntity.getQuantity());
+            igpMaterialDetailDto.setCategory(igpMaterialDtlEntity.getCategory());
+            igpMaterialDetailDto.setSubCategory(igpMaterialDtlEntity.getSubCategory());
+            igpMaterialDetailDto.setDescription(igpMaterialDtlEntity.getDescription());
+            igpMaterialDetailDto.setUom(igpMaterialDtlEntity.getUom());
+            igpMaterialDetailDto.setEstimatedPriceWithCcy(igpMaterialDtlEntity.getEstimatedPriceWithCcy());
+            igpMaterialDetailDto.setIndigenousOrImported(igpMaterialDtlEntity.getIndigenousOrImported());
+            igpMaterialDetailDtoList.add(igpMaterialDetailDto);
+        }
+        materialIgpDto.setMaterialDtlList(igpMaterialDetailDtoList);
+
+        return materialIgpDto;
+    }
+
+    private void createNewAsset(String igpId, Integer createdBy){
+        System.out.println("CREATE NEW ASSET");
+        Long id = Long.parseLong(igpId.split("/")[1]);
+        IgpMaterialMasterEntity igpMaterialMasterEntity = immr.findById(id).orElseThrow(() -> new RuntimeException("IGP not found"));
+        List<IgpMaterialDtlEntity> igpMaterialDtlEntityList = imdr.findByIgpId(id);
+        for (IgpMaterialDtlEntity igpMaterialDtlEntity : igpMaterialDtlEntityList) {
+            // AssetEntity assetEntity = new AssetEntity();
+                if(!igpMaterialDtlEntity.getCategory().equalsIgnoreCase("consumable")){
+                    System.out.println("NOT CONSUMABLE");
+                    continue;
+                }
+                MaterialMaster mme = mmr.findById(igpMaterialDtlEntity.getMaterialCode())
+                .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                        AppConstant.ERROR_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_RESOURCE,
+                        "Material not found for the provided material code.")));
+
+        Optional<AssetMasterEntity> ameOpt = amr.findByMaterialCodeAndMaterialDescAndUomIdAndIgpId(
+            mme.getMaterialCode(),
+            mme.getDescription(),
+            mme.getUom(),
+            id
+        );
+
+        if(ameOpt.isEmpty()){
+            System.out.println("INSIDEEE");
+            AssetMasterEntity assetMasterEntity = new AssetMasterEntity();
+            assetMasterEntity.setAssetDesc(mme.getDescription());
+            assetMasterEntity.setMaterialCode(mme.getMaterialCode());
+            assetMasterEntity.setMaterialDesc(mme.getDescription());
+            assetMasterEntity.setUomId(mme.getUom());
+            assetMasterEntity.setIgpId(id);
+            assetMasterEntity.setCreateDate(LocalDateTime.now());
+            System.out.println("ABOVEEE");
+            assetMasterEntity.setCreatedBy(createdBy);
+            assetMasterEntity.setUpdatedDate(LocalDateTime.now());
+            System.out.println("CREATED BY: " + createdBy);
+            assetMasterEntity = amr.save(assetMasterEntity);
+            igpMaterialDtlEntity.setAssetId(assetMasterEntity.getAssetId());
+        }
+
+            
+    }
+}
+
+@Override
+public void validateMaterialIgp(String igpId){
+    Long id = Long.parseLong(igpId.split("/")[1]);
+    IgpMaterialMasterEntity igpMaterialMasterEntity = immr.findById(id).orElseThrow(() -> new RuntimeException("IGP not found"));
+    if(!igpMaterialMasterEntity.getStatus().equalsIgnoreCase("APPROVED")){
+        throw new InvalidInputException(new ErrorDetails(
+            AppConstant.ERROR_CODE_RESOURCE,
+            AppConstant.ERROR_TYPE_CODE_RESOURCE,
+            AppConstant.ERROR_TYPE_RESOURCE,
+            "IGP is not approved."));
+    }
+}
+
+@Override
+public List<MaterialIgpDto> getAwaitingApprovalIgp(){
+    List<IgpMaterialMasterEntity> igpMaterialMasterEntityList = immr.findByStatus("AWAITING APPROVAL");
+    List<MaterialIgpDto> materialIgpDtoList = new ArrayList<>();
+
+    for (IgpMaterialMasterEntity igpMaterialMasterEntity : igpMaterialMasterEntityList) {
+        MaterialIgpDto materialIgpDto = getIgpMaterialDtls("INV/" + igpMaterialMasterEntity.getId());
+        materialIgpDtoList.add(materialIgpDto);
+    }
+    return materialIgpDtoList;
+}
+
 }

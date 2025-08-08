@@ -463,3 +463,45 @@ CREATE TABLE ogp_detail_rejected_gi(
     rejected_quantity DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (ogp_sub_process_id) REFERENCES ogp_master_rejected_gi(ogp_sub_process_id)
 );
+
+----------------------newest------------
+
+CREATE TABLE igp_material_master (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    ogp_id VARCHAR(255),
+    igp_date VARCHAR(20),
+    status VARCHAR(50),
+    igp_type VARCHAR(50),
+    indent_id INT
+);
+
+ALTER TABLE igp_material_master
+ADD COLUMN created_by INT;
+
+ALTER TABLE igp_material_master
+ADD COLUMN create_date DATETIME;
+
+CREATE TABLE igp_material_detail (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    material_code VARCHAR(100),
+    category VARCHAR(100),
+    sub_category VARCHAR(100),
+    material_description VARCHAR(255),
+    uom VARCHAR(20),
+    estimated_price_with_ccy DECIMAL(10,2),
+    indigenous_or_imported BOOLEAN,
+    quantity DECIMAL(10,2),
+    igp_id BIGINT,
+    FOREIGN KEY (igp_id)
+        REFERENCES igp_material_master(id)
+        ON DELETE CASCADE
+);
+
+alter table asset_master
+add column igp_id bigint;
+
+alter table igp_material_detail
+add column asset_id INT;
+
+alter table igp_material_master
+add column location_id VARCHAR(50);

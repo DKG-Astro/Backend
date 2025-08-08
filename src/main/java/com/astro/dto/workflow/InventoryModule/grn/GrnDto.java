@@ -7,6 +7,7 @@ import java.util.List;
 @Data
 public class GrnDto {
     private String grnType;
+    private String igpId;
     private String giNo;
     private String grnNo;
     private String installationDate;
