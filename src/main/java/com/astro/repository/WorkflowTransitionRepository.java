@@ -84,4 +84,25 @@ WHERE wt.status = :status
 
     WorkflowTransition findTopByRequestIdOrderByWorkflowSequenceDesc(String requestId);
 
+    @Query(value = """
+    SELECT COALESCE((
+        SELECT CASE 
+            WHEN status = 'Completed' 
+             AND (nextAction IS NULL OR TRIM(nextAction) = '') 
+            THEN true 
+            ELSE false 
+        END
+        FROM workflow_transition
+        WHERE workflowName = 'PO Workflow' AND requestId = :requestId
+        ORDER BY workflowTransitionId DESC
+        LIMIT 1
+    ), false)
+    """, nativeQuery = true)
+    Boolean isPoCompleted(@Param("requestId") String requestId);
+
+
+
+
+
+
 }

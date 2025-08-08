@@ -68,6 +68,12 @@ public class VendorQuotationAgainstTender {
    @Column(name = "next_role")
    private WorkflowActorRole nextRole;
 
+    @Column(name = "clarification_file_name")
+    private String clarificationFileName;
+
+    @Column(name = "vendor_response", columnDefinition = "TEXT")
+    private String vendorResponse;
+
    public enum WorkflowActorRole {
       VENDOR,
       INDENTOR,

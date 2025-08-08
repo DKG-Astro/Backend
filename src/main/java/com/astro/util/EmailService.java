@@ -80,50 +80,7 @@ public class EmailService {
             }
 
         }
-  /*  @Async
-    public void sendWorkflowEmail(WorkflowTransitionDto wt) throws IOException {
-        Email from = new Email("udaykirandkg@gmail.com");
-        String subject = "Workflow Update - Request ID: " + wt.getRequestId();
-        String toEmail= "kudaykiran.9949@gmail.com";
-        Email to = new Email(toEmail);
 
-        String contentText = "Dear User,\n\n" +
-                "Your workflow request has been processed.\n\n" +
-                "Request ID: " + wt.getRequestId() + "\n" +
-                "Action: " + wt.getAction() + "\n" +
-                "Status:" + wt.getStatus() + "\n" +
-                "currentRole:" + wt.getCurrentRole() + "\n" +
-                "nextRole:" + wt.getNextRole() + "\n" +
-                "Remarks: " + wt.getRemarks() + "\n" +
-                "Thanks,\nIIA Group";
-        Content content = new Content("text/plain", contentText);
-
-        sendMail(from, to, subject, content);
-        if ("COMPLETED".equalsIgnoreCase(wt.getStatus())) {
-            UserMaster user = userMasterRepository.findByUserId(wt.getCreatedBy());
-                String userEmail = user.getEmail();
-                sendMail(from, new Email(userEmail), subject, content);
-        }
-
-    }
-
-    private void sendMail(Email from, Email to, String subject, Content content) throws IOException {
-        Mail mail = new Mail(from, subject, to, content);
-        SendGrid sg = new SendGrid(SENDGRID_API_KEY);
-        Request request = new Request();
-        System.out.println("mail sended"+ from +" " +to);
-
-        try {
-            request.setMethod(Method.POST);
-            request.setEndpoint("mail/send");
-            request.setBody(mail.build());
-            Response response = sg.api(request);
-            System.out.println("Status Code: " + response.getStatusCode());
-            System.out.println("Response Body: " + response.getBody());
-        } catch (IOException ex) {
-            throw ex;
-        }
-    }*/
 
     @Async
     public void sendWorkflowEmail(WorkflowTransitionDto wt) throws IOException, MessagingException {
@@ -165,43 +122,33 @@ public class EmailService {
             String userBody = templateEngine.process("user-email-template", context);
          //   sendMail(from, new Email(userEmail), subject, new Content("text/html", userBody));
             String body = templateEngine.process("user-email-template", context);
-            sendMail(userEmail, subject, body);
-
+            sendMailToUser(userEmail, subject, body);
 
 
         }
 
         String body = templateEngine.process("role-email-template", context);
-        sendMail("kudaykiran.9949@gmail.com", subject, body);
+        List<String> recipients = Arrays.asList(
+                "udaychowdhary743@gmail.com"
+              //  "satish.k@iiap.res.in",
+              //  "neeraj.jha@iiap.res.in",
+             //   "sayee.kishan@iiap.res.in",
+              //  "shruthi.mathew@iiap.res.in",
+              //  "vishnu.vardhan@iiap.res.in"
+        );
+
+        sendMail(recipients, subject, body);
+        //  sendMail("kudaykiran.9949@gmail.com", subject, body);
 
 
         if ("Tender Approver".equals(wt.getCurrentRole())){
 
-          //  String tenderId = wt.getRequestId();
-         //   TenderWithIndentResponseDTO tenderData = TRService.getTenderRequestById(tenderId);
 
-            // Call the transactional method in another service
-          //  tenderEmailService.sendTenderDocumentsToVendors(tenderId, tenderData);
         }
     }
- /*   private void sendMail(Email from, Email to, String subject, Content content) throws IOException {
-        Mail mail = new Mail(from, subject, to, content);
-        SendGrid sg = new SendGrid(SENDGRID_API_KEY);
-        Request request = new Request();
-        System.out.println("mail sended" + from + " " + to);
 
-        try {
-            request.setMethod(Method.POST);
-            request.setEndpoint("mail/send");
-            request.setBody(mail.build());
-            Response response = sg.api(request);
-            System.out.println("Status Code: " + response.getStatusCode());
-            System.out.println("Response Body: " + response.getBody());
-        } catch (IOException ex) {
-            throw ex;
-        }
-    }*/
- private void sendMail(String toEmail, String subject, String htmlContent) throws MessagingException {
+
+ private void sendMailToUser(String toEmail, String subject, String htmlContent) throws MessagingException {
      MimeMessage message = mailSender.createMimeMessage();
      MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
@@ -212,6 +159,20 @@ public class EmailService {
 
      mailSender.send(message);
  }
+
+
+private void sendMail(List<String> toEmails, String subject, String htmlContent) throws MessagingException {
+    MimeMessage message = mailSender.createMimeMessage();
+    MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+
+    helper.setTo(toEmails.toArray(new String[0]));
+    helper.setSubject(subject);
+    helper.setText(htmlContent, true);
+    helper.setFrom("iiapdkg@gmail.com");
+
+    mailSender.send(message);
+}
 
 
     @Async
@@ -238,9 +199,20 @@ public class EmailService {
         Content content = new Content("text/html", body);
 
         // we have to toEmail base on the clent employee
-        String toEmail = "kudaykiran.9949@gmail.com";
+      //  String toEmail = "kudaykiran.9949@gmail.com";
        // sendMail(from, new Email(toEmail), subject, content);
-        sendMail("kudaykiran.9949@gmail.com", subject, body);
+     //   sendMail("kudaykiran.9949@gmail.com", subject, body);
+        List<String> recipients = Arrays.asList(
+                "udaychowdhary743@gmail.com"
+               // "satish.k@iiap.res.in",
+              //  "neeraj.jha@iiap.res.in",
+              //  "sayee.kishan@iiap.res.in",
+             //   "shruthi.mathew@iiap.res.in",
+             //   "vishnu.vardhan@iiap.res.in"
+        );
+
+        sendMail(recipients, subject, body);
+
 
     }
 

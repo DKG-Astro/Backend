@@ -100,37 +100,7 @@ public class TenderEmailService {
 
         }
     }
-   /* public void sendMailWithAttachments(Email from, String toEmail, String subject, String bodyText, List<File> attachments) throws IOException {
-        Mail mail = new Mail();
-        mail.setFrom(from);
-        mail.setSubject(subject);
-        mail.addPersonalization(new Personalization() {{
-            addTo(new Email(toEmail));
-        }});
-        mail.addContent(new Content("text/plain", bodyText));
-
-        for (File file : attachments) {
-            Attachments attachment = new Attachments();
-            attachment.setFilename(file.getName());
-            attachment.setType(Files.probeContentType(file.toPath()));
-            attachment.setDisposition("attachment");
-            attachment.setContent(Base64.getEncoder().encodeToString(Files.readAllBytes(file.toPath())));
-            mail.addAttachments(attachment);
-        }
-
-        SendGrid sg = new SendGrid(SENDGRID_API_KEY);
-        Request request = new Request();
-        try {
-            request.setMethod(Method.POST);
-            request.setEndpoint("mail/send");
-            request.setBody(mail.build());
-            Response response = sg.api(request);
-            System.out.println("Vendor Email Sent. Status Code: " + response.getStatusCode());
-        } catch (IOException ex) {
-            throw ex;
-        }
-    }*/
-   public void sendMailWithAttachments(String toEmail, String subject, String htmlBody, List<File> attachments) throws IOException {
+    public void sendMailWithAttachments(String toEmail, String subject, String htmlBody, List<File> attachments) throws IOException {
        try {
            MimeMessage message = mailSender.createMimeMessage();
            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -139,7 +109,7 @@ public class TenderEmailService {
            helper.setSubject(subject);
           // helper.setText(bodyText, true);
            helper.setText(htmlBody, true);
-           helper.setFrom("udaykirandkg@gmail.com");
+           helper.setFrom("iiapdkg@gmail.com");
 
            for (File file : attachments) {
                helper.addAttachment(file.getName(), file);

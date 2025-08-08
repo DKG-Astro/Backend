@@ -18,8 +18,24 @@ public interface VendorQuotationAgainstTenderRepository extends JpaRepository<Ve
 
    // Optional<VendorQuotationAgainstTender> findByTenderIdAndVendorId(String tenderId, String vendorId);
     List<VendorQuotationAgainstTender> findAllByTenderIdAndVendorId(String tenderId, String vendorId);
+    @Query("""
+  SELECT v FROM VendorQuotationAgainstTender v
+  WHERE v.tenderId = :tenderId
+    AND v.vendorId = :vendorId
+    AND v.version = (
+        SELECT MAX(v2.version)
+        FROM VendorQuotationAgainstTender v2
+        WHERE v2.tenderId = :tenderId
+          AND v2.vendorId = :vendorId
+    )
+""")
+    Optional<VendorQuotationAgainstTender> findLatestByTenderIdAndVendorId(
+            @Param("tenderId") String tenderId,
+            @Param("vendorId") String vendorId
+    );
 
-   // List<VendorQuotationAgainstTender> findLatestNonRejectedQuotations(String tenderId);
+
+    // List<VendorQuotationAgainstTender> findLatestNonRejectedQuotations(String tenderId);
    @Query("SELECT v FROM VendorQuotationAgainstTender v WHERE v.tenderId = :tenderId AND v.isLatest = true AND v.status <> 'Rejected'")
    List<VendorQuotationAgainstTender> findLatestNonRejectedQuotations(@Param("tenderId") String tenderId);
 

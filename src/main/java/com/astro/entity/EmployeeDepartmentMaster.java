@@ -31,6 +31,8 @@ public class EmployeeDepartmentMaster {
     @Column(name = "updated_by")
     private String updatedBy;
 
+   // private Integer userId;
+
     private LocalDateTime createdDate = LocalDateTime.now();
     private LocalDateTime updatedDate = LocalDateTime.now();
 

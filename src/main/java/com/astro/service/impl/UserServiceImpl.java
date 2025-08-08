@@ -22,6 +22,7 @@ import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
@@ -114,6 +115,14 @@ public class UserServiceImpl implements UserService {
         }
 
       */
+     /*   EmployeeDepartmentMaster employee = employeeRepo.findById(userDto.getEmployeeId())
+                .orElseThrow(() -> new BusinessException( new ErrorDetails(
+                        AppConstant.ERROR_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_VALIDATION,
+                        "User with username '" + userDto.getUserName() + "' already exists.")
+                ));*/
+
         userMaster.setUserName(userDto.getUserName());
         userMaster.setRoleName(userDto.getRoleName());
         userMaster.setMobileNumber(userDto.getMobileNumber());
@@ -141,6 +150,10 @@ public class UserServiceImpl implements UserService {
         userRole.setCreatedDate(new Date());
 
         userRoleMasterRepository.save(userRole);
+       // employee.setUserId(userMaster.getUserId());
+       // employee.setUpdatedBy(userDto.getCreatedBy());
+      //  employee.setUpdatedDate(LocalDateTime.now());
+      //  employeeRepo.save(employee);
         return mapToResponseDTO(userMaster);
     }
 

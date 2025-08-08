@@ -396,7 +396,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
               .orElse("User " + userId);
   }
 
-    @Override
+  @Override
   public VendorQualificationResponseDto vendorCheck(String tenderId, String vendorId) {
       TenderRequest tenderRequest = TRrepo.findById(tenderId)
               .orElseThrow(() -> new BusinessException(
@@ -416,12 +416,31 @@ public class TenderRequestServiceImpl implements TenderRequestService {
       resp.setActionStatus(null);  //  "ACCEPTED", "REJECTED", "CHANGE_REQUESTED"
 
       // Direct match with tender's vendor => qualified (initial qualification)
-      if (tenderRequest.getVendorId() != null && tenderRequest.getVendorId().equalsIgnoreCase(vendorId)) {
+   /*   if (tenderRequest.getVendorId() != null && tenderRequest.getVendorId().equalsIgnoreCase(vendorId)) {
           resp.setQualified(true);
           resp.setActionStatus("VENDOR QULIFIED");
           resp.setActionTakenBy("Store Purchase Officer");
           return resp;
+      }*/
+      if (tenderRequest.getVendorId() != null && tenderRequest.getVendorId().equalsIgnoreCase(vendorId)) {
+          resp.setQualified(true);
+          resp.setActionTakenBy("Store Purchase Officer");
+
+         // Boolean po = workflowTransitionRepository.isPoCompleted(tenderId);
+         WorkflowTransition wt = workflowTransitionRepository.findTopByRequestIdOrderByWorkflowSequenceDesc(tenderId);
+
+
+
+          if (wt.getStatus().equalsIgnoreCase("Completed")) {
+              resp.setActionStatus("PO Completed");
+          } else {
+              resp.setActionStatus("PO Raised");
+          }
+
+          return resp;
       }
+
+
 
       // Fetch latest quotation version
       Optional<VendorQuotationAgainstTender> latestOpt =
