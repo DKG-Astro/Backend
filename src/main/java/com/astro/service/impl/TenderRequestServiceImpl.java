@@ -427,7 +427,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
           resp.setActionTakenBy("Store Purchase Officer");
 
          // Boolean po = workflowTransitionRepository.isPoCompleted(tenderId);
-         WorkflowTransition wt = workflowTransitionRepository.findTopByRequestIdOrderByWorkflowSequenceDesc(tenderId);
+          String poRequestId = tenderId.replace("T", "PO");
+         WorkflowTransition wt = workflowTransitionRepository.findTopByRequestIdOrderByWorkflowSequenceDesc(poRequestId);
 
 
 
