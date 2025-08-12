@@ -24,10 +24,12 @@ import com.astro.util.CommonUtils;
 import com.astro.repository.InventoryModule.AssetDisposalDetailRepository;
 import com.astro.repository.InventoryModule.AssetDisposalMasterRepository;
 import com.astro.repository.InventoryModule.AssetMasterRepository;
+import com.astro.repository.InventoryModule.OhqMasterConsumableRepository;
 import com.astro.repository.ohq.OhqMasterRepository;
 import com.astro.entity.InventoryModule.AssetDisposalDetailEntity;
 import com.astro.entity.InventoryModule.AssetDisposalMasterEntity;
 import com.astro.entity.InventoryModule.AssetMasterEntity;
+import com.astro.entity.InventoryModule.OhqMasterConsumableEntity;
 import com.astro.entity.InventoryModule.OhqMasterEntity;
 import com.astro.dto.workflow.InventoryModule.AssetDisposalDetailDto;
 import com.astro.dto.workflow.InventoryModule.AssetDisposalDto;
@@ -56,6 +58,9 @@ public class AssetMasterServiceImpl implements AssetMasterService {
     private OhqMasterRepository ohqMasterRepository;
 
     private final String basePath;
+
+    @Autowired
+    private OhqMasterConsumableRepository ohqMasterConsumableRepository;
 
     public AssetMasterServiceImpl(@Value("${filePath}") String bp) {
         this.basePath = bp + "/INV";
@@ -296,5 +301,15 @@ public List<AssetMasterReportDto> getAssetReport() {
 @Override
 public List<Integer> getAllAssetIds() {
     return assetMasterRepository.findAllAssetIds();
+}
+
+@Override
+public List<OhqMasterEntity> getAssetOhqList() {
+    return ohqMasterRepository.findAll();
+}
+
+@Override
+public List<OhqMasterConsumableEntity> getAssetOhqConsumableList() {
+    return ohqMasterConsumableRepository.findAll();
 }
 }

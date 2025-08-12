@@ -505,3 +505,33 @@ add column asset_id INT;
 
 alter table igp_material_master
 add column location_id VARCHAR(50);
+
+
+-----------------goods transfer newest-----------------
+CREATE TABLE gt_master (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  sender_location_id VARCHAR(255) NOT NULL,
+  status VARCHAR(255),
+  sender_custodian_id INT NOT NULL,
+  receiver_location_id VARCHAR(255) NOT NULL,
+  receiver_custodian_id INT NOT NULL,
+  create_date DATETIME NOT NULL,
+  gt_date DATE NOT NULL,
+  created_by INT NOT NULL
+);
+
+CREATE TABLE gt_dtl (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  gt_id BIGINT,
+  asset_id INT,
+  asset_desc VARCHAR(500),
+  material_code VARCHAR(100),
+  material_desc VARCHAR(500),
+  quantity DECIMAL(18,2) NOT NULL,
+  receiver_locator_id INT,
+  sender_locator_id INT,
+  unit_price DECIMAL(18,2),
+  depriciation_rate DECIMAL(5,2),
+  book_value DECIMAL(18,2),
+  FOREIGN KEY (gt_id) REFERENCES gt_master(id)
+);

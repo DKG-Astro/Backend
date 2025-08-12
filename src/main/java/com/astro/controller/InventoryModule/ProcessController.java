@@ -3,6 +3,8 @@ package com.astro.controller.InventoryModule;
 import com.astro.dto.workflow.InventoryModule.GiDto.GiApprovalDto;
 import com.astro.dto.workflow.InventoryModule.GiDto.GiWorkflowStatusDto;
 import com.astro.dto.workflow.InventoryModule.GiDto.SaveGiDto;
+import com.astro.dto.workflow.InventoryModule.GoodsTransfer.GtIdDto;
+import com.astro.dto.workflow.InventoryModule.GoodsTransfer.GtMasterDto;
 import com.astro.dto.workflow.InventoryModule.GprnDto.SaveGprnDto;
 import com.astro.dto.workflow.InventoryModule.gprn.GprnPendingInspectionDto;
 import com.astro.dto.workflow.InventoryModule.grn.GrnDto;
@@ -25,8 +27,12 @@ import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
 import com.astro.entity.InventoryModule.GiMasterEntity;
 import com.astro.entity.InventoryModule.GrnMasterEntity;
 import com.astro.entity.InventoryModule.IsnAssetOhqDtlsDto;
+import com.astro.entity.InventoryModule.OhqMasterConsumableEntity;
+import com.astro.entity.InventoryModule.OhqMasterEntity;
 import com.astro.service.InventoryModule.GrnService;
+import com.astro.service.InventoryModule.GtService;
 import com.astro.service.ProcessService;
+import com.astro.service.InventoryModule.AssetMasterService;
 import com.astro.service.InventoryModule.GiService;
 import com.astro.service.InventoryModule.IgpService;
 import com.astro.service.impl.InventoryModule.GiServiceImpl;
@@ -62,6 +68,12 @@ public class ProcessController {
     private IgpService igpService;
     @Autowired
     private GrnService grns;
+
+    @Autowired
+    private AssetMasterService assetMasterService;
+
+    @Autowired
+    private GtService gtService;
 
     @PostMapping("/saveGprn")
     public ResponseEntity<Object> saveGprn(@RequestBody SaveGprnDto req) {
@@ -336,10 +348,11 @@ public class ProcessController {
 
     @PostMapping("/saveOgpRejectedGi")
     public ResponseEntity<Object> saveOgpRejectedGi(@RequestBody OgpMasterRejectedGiDto req) {
-        //TODO: process POST request
         
         String id = processService.saveOgpRejectedGi(req);
-        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(id), HttpStatus.OK);
+        Map<String, String> res = new HashMap<>();
+        res.put("processNo", id);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
 
     @GetMapping("/getAwaitingRejectedGi")
@@ -402,7 +415,50 @@ public class ProcessController {
         List<MaterialIgpDto> res = igpService.getAwaitingApprovalIgp();
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
+
+    // @GetMapping("/getMaterialOhq")
+    // public ResponseEntity<Object> getAwaitingApprovalGrn() {
+    //     List<GrnMaterialMasterDto> res = .getMaterialOhq();
+    //     return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    // }
+
+    @GetMapping("/getAssetOhq")
+    public ResponseEntity<Object> getAssetOhq() {
+        List<OhqMasterEntity> res = assetMasterService.getAssetOhqList();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @GetMapping("/getAssetOhqConsumable")
+    public ResponseEntity<Object> getAssetOhqConsumable() {
+        List<OhqMasterConsumableEntity> res = assetMasterService.getAssetOhqConsumableList();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @PostMapping("/createGt")
+    public ResponseEntity<Object> createGt(@RequestBody GtMasterDto req) {
+        //TODO: process POST request
+        String id = gtService.createGt(req);
+        Map<String, String> res = new HashMap<>();
+        res.put("processNo", id);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @GetMapping("/getPendingGt")
+    public ResponseEntity<Object> getPendingGt() {
+        List<GtMasterDto> res = gtService.getPendingGt();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @PostMapping("/approveGt")
+    public ResponseEntity<Object> approveGt(@RequestBody GtIdDto req) {
+        gtService.approveGt(req.getGtId());
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(), HttpStatus.OK);
+    }
+    @PostMapping("/rejectGt")
+    public ResponseEntity<Object> rejectGt(@RequestBody GtIdDto req) {
+        gtService.rejectGt(req.getGtId());
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(), HttpStatus.OK);
+    }
     
-
-
+    
 }
