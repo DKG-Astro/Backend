@@ -21,6 +21,7 @@ import com.astro.repository.ProcurementModule.IndentIdRepository;
 import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.service.IndentCreationService;
 import com.astro.service.TenderRequestService;
+import com.astro.service.VendorQuotationAgainstTenderService;
 import com.astro.util.CommonUtils;
 import com.ctc.wstx.shaded.msv_core.verifier.jarv.TheFactoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     private WorkflowTransitionRepository workflowTransitionRepository;
     @Autowired
     private UserMasterRepository userRepository;
+    @Autowired
+    private VendorQuotationAgainstTenderService vqService;
 
     @Value("${filePath}")
     private String bp;
@@ -422,6 +425,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
           resp.setActionTakenBy("Store Purchase Officer");
           return resp;
       }*/
+      /*
       if (tenderRequest.getVendorId() != null && tenderRequest.getVendorId().equalsIgnoreCase(vendorId)) {
           resp.setQualified(true);
           resp.setActionTakenBy("Store Purchase Officer");
@@ -439,7 +443,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
           }
 
           return resp;
-      }
+      }*/
 
 
 
@@ -447,6 +451,73 @@ public class TenderRequestServiceImpl implements TenderRequestService {
       Optional<VendorQuotationAgainstTender> latestOpt =
               vendorQuotationAgainstTenderRepository
                       .findTopByTenderIdAndVendorIdAndIsLatestTrueOrderByVersionDesc(tenderId, vendorId);
+
+      VendorQuotationAgainstTender va = latestOpt.orElse(null);
+
+      if (tenderRequest.getVendorId() != null && va != null) {
+          System.out.println("Vendor Status:"+va.getStatus());
+
+          if ("Completed".equalsIgnoreCase(va.getStatus().trim())) {
+
+              if (tenderRequest.getVendorId().equalsIgnoreCase(vendorId)) {
+                  resp.setQualified(true);
+                  resp.setActionTakenBy("Store Purchase Officer");
+
+                  String poRequestId = tenderId.replace("T", "PO");
+                  WorkflowTransition wt = workflowTransitionRepository
+                          .findTopByRequestIdOrderByWorkflowSequenceDesc(poRequestId);
+
+                  if (wt != null && "Completed".equalsIgnoreCase(wt.getStatus())) {
+                      resp.setActionStatus("PO Completed");
+                  } else {
+                      resp.setActionStatus("PO Raised");
+                  }
+                  resp.setPOVendorId(tenderRequest.getVendorId());
+
+              } else {
+                  resp.setQualified(false);
+                  resp.setActionTakenBy("Store Purchase Officer");
+
+                  String poRequestId = tenderId.replace("T", "PO");
+                  WorkflowTransition wt = workflowTransitionRepository
+                          .findTopByRequestIdOrderByWorkflowSequenceDesc(poRequestId);
+
+                  if (wt != null && "Completed".equalsIgnoreCase(wt.getStatus())) {
+                     // resp.setActionStatus("PO Completed");
+                      resp.setActionStatus("PO Raised");
+                      resp.setApprovedVendorPoData("PO Completed");
+                  } else {
+                      resp.setActionStatus("PO Raised");
+                  }
+                  resp.setPOVendorId(tenderRequest.getVendorId());
+
+              }
+
+              return resp;
+
+          } else if ("REJECTED".equalsIgnoreCase(va.getStatus().trim())) {
+              resp.setQualified(false);
+              resp.setActionTakenBy("Store Purchase Officer");
+
+              String poRequestId = tenderId.replace("T", "PO");
+              WorkflowTransition wt = workflowTransitionRepository
+                      .findTopByRequestIdOrderByWorkflowSequenceDesc(poRequestId);
+
+              if (wt != null && "Completed".equalsIgnoreCase(wt.getStatus())) {
+                 // resp.setActionStatus("PO Completed");
+                  resp.setActionStatus("PO Raised");
+                  resp.setApprovedVendorPoData("PO Completed");
+              } else {
+                  resp.setActionStatus("PO Raised");
+              }
+
+              resp.setPOVendorId(tenderRequest.getVendorId());
+              resp.setActionStatusAfterPoGenerated("Rejected");
+              resp.setRemarks(va.getRemarks());
+              return resp;
+          }
+      }
+
 
       if (latestOpt.isPresent()) {
           VendorQuotationAgainstTender latest = latestOpt.get();
@@ -488,6 +559,8 @@ public class TenderRequestServiceImpl implements TenderRequestService {
                       break;
                   case "REJECTED":
                       resp.setQualified(false);
+                      List<String> vendorIds = vqService.getVendorsWithCompletedQuotation(tenderId);
+                      resp.setVendorIds(vendorIds);
                       break;
                   case "CHANGE_REQUESTED_TO_INTENTOR":
                       resp.setQualified(false);
