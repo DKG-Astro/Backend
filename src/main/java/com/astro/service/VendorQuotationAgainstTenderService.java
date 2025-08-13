@@ -29,5 +29,6 @@ public interface VendorQuotationAgainstTenderService {
     public boolean rejectVendorQuotation(String tenderId, String vendorId, String remarks, Integer userId);
     public List<TenderEvaluationHistory> getFullQuotationHistory(String tenderId, String vendorId);
     List<String> getVendorsWithCompletedQuotation(String tenderId);
+    public List<CompletedVendorsDto> getVendorsNamesWithCompletedQuotation(String tenderId);
 
     }

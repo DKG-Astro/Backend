@@ -403,6 +403,7 @@ public boolean markQuotationForChangeRequest(VendorQuotationChangeRequestDto req
     // Set Indentor change request values
     newQuotation.setStatus("CHANGE_REQUESTED");
     newQuotation.setIndentorStatus("CHANGE_REQUESTED");
+    newQuotation.setRemarks(request.getRemarks());
     newQuotation.setIndentorRemarks(request.getRemarks());
     newQuotation.setStatus("CHANGE_REQUESTED");
    // newQuotation.setRemarks(request.getRemarks());
@@ -468,7 +469,7 @@ public boolean acceptVendorQuotation(String tenderId, String vendorId,Integer us
     newQuotation.setStatus("PENDING_SPO"); // intermediate
   //  newQuotation.setRemarks("Accepted by indentor");
     newQuotation.setIndentorStatus("ACCEPTED");
-    newQuotation.setIndentorRemarks("Accepted by indentor");
+   // newQuotation.setIndentorRemarks("Accepted by indentor");
     newQuotation.setModifiedBy(userId);
     newQuotation.setCurrentRole(VendorQuotationAgainstTender.WorkflowActorRole.INDENTOR);
     newQuotation.setNextRole(VendorQuotationAgainstTender.WorkflowActorRole.STORE_PURCHASE_OFFICER);
@@ -512,6 +513,7 @@ public boolean acceptVendorQuotation(String tenderId, String vendorId,Integer us
 
         newQuotation.setIndentorStatus(oldQuotation.getIndentorStatus());
         newQuotation.setIndentorRemarks(oldQuotation.getIndentorRemarks());
+        newQuotation.setRemarks(oldQuotation.getIndentorRemarks());
         newQuotation.setModifiedBy(userId);
         newQuotation.setCurrentRole(VendorQuotationAgainstTender.WorkflowActorRole.STORE_PURCHASE_OFFICER);
 
@@ -653,6 +655,11 @@ public boolean acceptVendorQuotation(String tenderId, String vendorId,Integer us
     public List<String> getVendorsWithCompletedQuotation(String tenderId) {
         return vendorQuotationAgainstTenderRepository.findVendorIdsWithCompletedStatus(tenderId);
     }
+  @Override
+  public List<CompletedVendorsDto> getVendorsNamesWithCompletedQuotation(String tenderId) {
+      return vendorQuotationAgainstTenderRepository.findVendorsNameWithCompletedStatus(tenderId);
+  }
+
 
 
 

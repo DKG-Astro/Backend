@@ -132,6 +132,15 @@ public class VendorQuotationController {
         );
     }
 
+    @GetMapping("/completed-vendorNames/{tenderId}")
+    public ResponseEntity<Object> getVendorsNamesWithCompletedStatus(@PathVariable String tenderId) {
+        List<CompletedVendorsDto> vendorIds = vqService.getVendorsNamesWithCompletedQuotation(tenderId);
+        return new ResponseEntity<>(
+                ResponseBuilder.getSuccessResponse(vendorIds),
+                HttpStatus.OK
+        );
+    }
+
 
 
     }

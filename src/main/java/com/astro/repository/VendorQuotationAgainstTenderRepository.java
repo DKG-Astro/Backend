@@ -1,5 +1,6 @@
 package com.astro.repository;
 
+import com.astro.dto.workflow.CompletedVendorsDto;
 import com.astro.entity.VendorQuotationAgainstTender;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -79,5 +80,15 @@ public interface VendorQuotationAgainstTenderRepository extends JpaRepository<Ve
           AND UPPER(v.status) = 'COMPLETED'
     """)
     List<String> findVendorIdsWithCompletedStatus(@Param("tenderId") String tenderId);
+  @Query("""
+    SELECT DISTINCT new com.astro.dto.workflow.CompletedVendorsDto(vq.vendorId, vm.vendorName)
+    FROM VendorQuotationAgainstTender vq
+    JOIN VendorMaster vm ON vq.vendorId = vm.vendorId
+    WHERE vq.tenderId = :tenderId
+      AND vq.isLatest = true
+      AND UPPER(vq.status) = 'COMPLETED'
+""")
+  List<CompletedVendorsDto> findVendorsNameWithCompletedStatus(@Param("tenderId") String tenderId);
+
 
 }
