@@ -130,6 +130,15 @@ public class TenderRequestController {
 
     }
 
+    @GetMapping("/approvedTender/TenderEvaluation")
+    public ResponseEntity<Object> getAllApprovedTenderIdsWithTitle(
+    ) {
+        List<ApprovedTenderIdDtos> result = TRService.getApprovedTenderIdsForTenderEvaluation();
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(result), HttpStatus.OK);
+
+    }
+
+
 
 
 

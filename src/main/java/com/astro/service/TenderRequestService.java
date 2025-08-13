@@ -24,5 +24,7 @@ public interface TenderRequestService {
     public TenderResponseBase64FilesDto getTenderDataWithBase64Files(String tenderId) throws IOException;
     public List<SearchTenderIdDto> searchTenderIds(String type, String value);
 
+    public List<ApprovedTenderIdDtos> getApprovedTenderIdsForTenderEvaluation();
+
     //TenderWithIndentResponseDTO getTendersRequestById(String tenderId);
 }

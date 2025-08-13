@@ -1,5 +1,6 @@
 package com.astro.repository.ProcurementModule;
 
+import com.astro.dto.workflow.ProcurementDtos.ApprovedTenderIdDtos;
 import com.astro.dto.workflow.ProcurementDtos.SearchTenderIdDto;
 import com.astro.entity.ProcurementModule.TenderRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,6 +28,17 @@ public interface TenderRequestRepository extends JpaRepository<TenderRequest, St
             "FROM TenderRequest t WHERE t.createdDate BETWEEN :startDate AND :endDate")
     List<SearchTenderIdDto> findTenderIdsBySubmittedDate(@Param("startDate") LocalDateTime startDate,
                                                          @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT new com.astro.dto.workflow.ProcurementDtos.ApprovedTenderIdDtos(wt.requestId, tr.titleOfTender) " +
+            "FROM WorkflowTransition wt " +
+            "JOIN TenderRequest tr ON tr.tenderId = wt.requestId " +
+            "WHERE wt.workflowName = 'Tender Approver Workflow' " +
+            "AND wt.status = 'Completed' " +
+            "AND wt.nextAction IS NULL " +
+            "AND wt.requestId NOT IN (SELECT po.tenderId FROM PurchaseOrder po) " +
+            "AND wt.requestId NOT IN (SELECT so.tenderId FROM ServiceOrder so)")
+    List<ApprovedTenderIdDtos> findApprovedTenderIdsAndTitlesForPOANDSO();
+
 
     //  TenderRequest getByTenderId(String tenderId);
 }

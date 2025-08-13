@@ -3,6 +3,7 @@ package com.astro.service.impl;
 import ch.qos.logback.core.net.SyslogOutputStream;
 import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.ApprovedIndentsDto;
+import com.astro.dto.workflow.ApprovedTenderDto;
 import com.astro.dto.workflow.ProcurementDtos.*;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.SearchIndentIdDto;
@@ -1071,6 +1072,34 @@ public List<SearchTenderIdDto> searchTenderIds(String type, String value) {
             ));
     }
 }
+
+  /*  @Override
+    public List<ApprovedTenderIdDtos> getApprovedTenderIdsForTenderEvaluation() {
+       List<String> tenderIds = workflowTransitionRepository.findApprovedTenderIdsForPOANDSO();
+        List<ApprovedTenderIdDtos> dtoList = new ArrayList<>();
+       for(String tenderId : tenderIds){
+           TenderRequest tenderRequest = TRrepo.findById(tenderId)
+                   .orElseThrow(() -> new BusinessException(
+                           new ErrorDetails(
+                                   AppConstant.ERROR_CODE_RESOURCE,
+                                   AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                   AppConstant.ERROR_TYPE_RESOURCE,
+                                   "Tender not found for the provided asset ID.")
+                   ));
+           ApprovedTenderIdDtos dto = new ApprovedTenderIdDtos();
+           dto.setTenderId(tenderId);
+           dto.setTitle(tenderRequest.getTitleOfTender());
+
+           dtoList.add(dto);
+
+       }
+       return dtoList;
+    }*/
+  @Override
+  public List<ApprovedTenderIdDtos> getApprovedTenderIdsForTenderEvaluation() {
+      return TRrepo.findApprovedTenderIdsAndTitlesForPOANDSO();
+  }
+
 
 
 
