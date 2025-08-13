@@ -123,7 +123,7 @@ public class GtServiceImpl implements GtService {
 
     private void reduceFromConsumable(GtDtlEntity gtDtlEntity, GtMasterEntity gtMasterEntity){
         Optional<OhqMasterConsumableEntity> existingOhq = omcr.findByMaterialCodeAndLocatorIdAndCustodianId(
-                gtDtlEntity.getMaterialCode(), gtDtlEntity.getReceiverLocatorId(), gtMasterEntity.getReceiverCustodianId().toString());
+                gtDtlEntity.getMaterialCode(), gtDtlEntity.getSenderLocatorId(), gtMasterEntity.getSenderCustodianId().toString());
         if(existingOhq.isPresent()){
             OhqMasterConsumableEntity ohq = existingOhq.get();
             BigDecimal currentQty = ohq.getQuantity() != null ? ohq.getQuantity() : BigDecimal.ZERO;
@@ -135,8 +135,8 @@ public class GtServiceImpl implements GtService {
     private void reduceFromCapital(GtDtlEntity gtDtlEntity, GtMasterEntity gtMasterEntity){
         Optional<OhqMasterEntity> existingOhq = ohqmr.findByAssetIdAndLocatorIdAndCustodianId(
                 gtDtlEntity.getAssetId(),
-                gtDtlEntity.getReceiverLocatorId(),
-                gtMasterEntity.getReceiverCustodianId().toString());
+                gtDtlEntity.getSenderLocatorId(),
+                gtMasterEntity.getSenderCustodianId().toString());
         if(existingOhq.isPresent()){
             OhqMasterEntity ohq = existingOhq.get();
             BigDecimal currentQty = ohq.getQuantity() != null ? ohq.getQuantity() : BigDecimal.ZERO;
@@ -151,10 +151,12 @@ public class GtServiceImpl implements GtService {
         OhqMasterConsumableEntity ohq;
         if (existingOhq.isPresent()) {
             ohq = existingOhq.get();
+            System.out.println("PRESENT BC: " + ohq.getQuantity() + gtDtlEntity.getQuantity() );
             BigDecimal currentQty = ohq.getQuantity() != null ? ohq.getQuantity() : BigDecimal.ZERO;
             ohq.setQuantity(currentQty.add(gtDtlEntity.getQuantity()));
         }
         else {  
+                System.out.println("NOT PRESENT BC: " + gtDtlEntity.getQuantity() );
                     ohq = new OhqMasterConsumableEntity();
                     ohq.setCustodianId(custodianId.toString());
                     ohq.setMaterialCode(gtDtlEntity.getMaterialCode());

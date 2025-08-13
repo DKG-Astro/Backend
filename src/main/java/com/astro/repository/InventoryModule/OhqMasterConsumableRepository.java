@@ -21,8 +21,8 @@ public interface OhqMasterConsumableRepository extends JpaRepository<OhqMasterCo
     @Query(value = """
         SELECT 
             ohq.material_code,
-            am.material_desc,
-            am.uom_id,
+            am.description,
+            am.uom,
             SUM(ohq.quantity) AS total_quantity,
             ohq.book_value,
             ohq.depriciation_rate,
@@ -36,10 +36,10 @@ public interface OhqMasterConsumableRepository extends JpaRepository<OhqMasterCo
             ), '[]') AS locator_details,
             ohq.custodian_id
         FROM ohq_master_consumable ohq
-        JOIN asset_master am ON ohq.material_code = am.material_code
+        JOIN material_master am ON ohq.material_code = am.material_code
         JOIN locator_master lm ON ohq.locator_id = lm.locator_id
         WHERE ohq.quantity > 0
-        GROUP BY ohq.material_code, am.material_desc, am.uom_id, 
+        GROUP BY ohq.material_code, am.description, am.uom, 
                  ohq.book_value, ohq.depriciation_rate, ohq.unit_price, ohq.custodian_id
     """, nativeQuery = true)
 List<Object[]> getOhqConsumableReport();

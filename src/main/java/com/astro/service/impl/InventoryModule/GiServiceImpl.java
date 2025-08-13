@@ -437,7 +437,7 @@ public class GiServiceImpl implements GiService {
                                                 AppConstant.ERROR_TYPE_CODE_RESOURCE,
                                                 AppConstant.ERROR_TYPE_RESOURCE,
                                                 "Purchase Order not found")));
-            poa.setReceivedQuantity(poa.getReceivedQuantity().subtract(gimde.getReceivedQuantity()));
+            poa.setReceivedQuantity(poa.getReceivedQuantity().subtract(gimde.getRejectedQuantity()));
             poar.save(poa);
            }
         }
