@@ -31,13 +31,14 @@ public interface OhqMasterRepository extends JpaRepository<OhqMasterEntity, Inte
                     'locatorDesc', lm.locator_desc,
                     'quantity', ohq.quantity
                 )
-            ), '[]') as locator_details
+            ), '[]') as locator_details,
+            ohq.custodian_id
         FROM ohq_master ohq
         JOIN asset_master am ON ohq.asset_id = am.asset_id
         JOIN locator_master lm ON ohq.locator_id = lm.locator_id
         WHERE ohq.quantity > 0
         GROUP BY ohq.asset_id, am.asset_desc, am.material_desc, am.uom_id, 
-                ohq.book_value, ohq.depriciation_rate, ohq.unit_price
+                ohq.book_value, ohq.depriciation_rate, ohq.unit_price, ohq.custodian_id
     """, nativeQuery = true)
     List<Object[]> getOhqReport();
 }

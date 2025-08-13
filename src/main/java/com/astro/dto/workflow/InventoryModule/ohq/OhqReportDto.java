@@ -6,6 +6,7 @@ import java.util.List;
 
 @Data
 public class OhqReportDto {
+    private String materialCode;
     private Integer assetId;
     private String assetDesc;
     private String materialDesc;
@@ -15,4 +16,5 @@ public class OhqReportDto {
     private BigDecimal depriciationRate;
     private BigDecimal unitPrice;
     private List<OhqLocatorDetailDto> locatorDetails;
+    private String custodianId;
 }

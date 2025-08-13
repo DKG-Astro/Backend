@@ -110,13 +110,39 @@ public class GtServiceImpl implements GtService {
         for (GtDtlEntity gtDtlEntity : gtDtlEntityList) {
             if (Objects.isNull(gtDtlEntity.getAssetId())) {
                 addToConsumableOhq(gtDtlEntity, gtMasterEntity.getReceiverCustodianId());
+                reduceFromConsumable(gtDtlEntity, gtMasterEntity);
             } else {
                 addToCapitalOhq(gtDtlEntity, gtMasterEntity.getReceiverCustodianId());
+                reduceFromCapital(gtDtlEntity, gtMasterEntity);
             }
 
         }
 
         gtmr.save(gtMasterEntity);
+    }
+
+    private void reduceFromConsumable(GtDtlEntity gtDtlEntity, GtMasterEntity gtMasterEntity){
+        Optional<OhqMasterConsumableEntity> existingOhq = omcr.findByMaterialCodeAndLocatorIdAndCustodianId(
+                gtDtlEntity.getMaterialCode(), gtDtlEntity.getReceiverLocatorId(), gtMasterEntity.getReceiverCustodianId().toString());
+        if(existingOhq.isPresent()){
+            OhqMasterConsumableEntity ohq = existingOhq.get();
+            BigDecimal currentQty = ohq.getQuantity() != null ? ohq.getQuantity() : BigDecimal.ZERO;
+            ohq.setQuantity(currentQty.subtract(gtDtlEntity.getQuantity()));
+            omcr.save(ohq);
+        }
+    }
+
+    private void reduceFromCapital(GtDtlEntity gtDtlEntity, GtMasterEntity gtMasterEntity){
+        Optional<OhqMasterEntity> existingOhq = ohqmr.findByAssetIdAndLocatorIdAndCustodianId(
+                gtDtlEntity.getAssetId(),
+                gtDtlEntity.getReceiverLocatorId(),
+                gtMasterEntity.getReceiverCustodianId().toString());
+        if(existingOhq.isPresent()){
+            OhqMasterEntity ohq = existingOhq.get();
+            BigDecimal currentQty = ohq.getQuantity() != null ? ohq.getQuantity() : BigDecimal.ZERO;
+            ohq.setQuantity(currentQty.subtract(gtDtlEntity.getQuantity()));
+            ohqmr.save(ohq);
+        }
     }
 
     private void addToConsumableOhq(GtDtlEntity gtDtlEntity, Integer custodianId) {

@@ -24,6 +24,7 @@ import com.astro.service.InventoryModule.IgpService;
 import com.astro.service.InventoryModule.IsnService;
 import com.astro.service.InventoryModule.OgpService;
 import com.astro.exception.InvalidInputException;
+import com.astro.repository.InventoryModule.OhqMasterConsumableRepository;
 import com.astro.repository.ohq.OhqMasterRepository;
 import com.astro.dto.workflow.InventoryModule.ohq.OhqReportDto;
 import com.astro.dto.workflow.InventoryModule.ohq.OhqLocatorDetailDto;
@@ -67,6 +68,9 @@ public class ProcessServiceImpl implements ProcessService {
 
     @Autowired
     private OhqMasterRepository ohqMasterRepository;
+
+    @Autowired
+    private OhqMasterConsumableRepository omcr;
 
     @Override
     public String saveGprn(SaveGprnDto req) {
@@ -147,36 +151,106 @@ public class ProcessServiceImpl implements ProcessService {
         return gprnService.getPendingGprn();
     }
 
-    @Override
-    public List<OhqReportDto> getOhqReport() {
-        List<Object[]> results = ohqMasterRepository.getOhqReport();
-        ObjectMapper mapper = new ObjectMapper();
+    // @Override
+    // public List<OhqReportDto> getOhqReport() {
+    //     List<Object[]> results = ohqMasterRepository.getOhqReport();
+    //     List<Object[]> resultConsumable = omcr.getOhqConsumableReport();
+    //     ObjectMapper mapper = new ObjectMapper();
         
-        return results.stream().map(row -> {
-            OhqReportDto dto = new OhqReportDto();
-            dto.setAssetId((Integer) row[0]);
-            dto.setAssetDesc((String) row[1]);
-            dto.setMaterialDesc((String) row[2]);
-            dto.setUomId((String) row[3]);
-            dto.setTotalQuantity((BigDecimal) row[4]);
-            dto.setBookValue((BigDecimal) row[5]);
-            dto.setDepriciationRate((BigDecimal) row[6]);
-            dto.setUnitPrice((BigDecimal) row[7]);
+    //     return results.stream().map(row -> {
+    //         OhqReportDto dto = new OhqReportDto();
+    //         dto.setAssetId((Integer) row[0]);
+    //         dto.setAssetDesc((String) row[1]);
+    //         dto.setMaterialDesc((String) row[2]);
+    //         dto.setUomId((String) row[3]);
+    //         dto.setTotalQuantity((BigDecimal) row[4]);
+    //         dto.setBookValue((BigDecimal) row[5]);
+    //         dto.setDepriciationRate((BigDecimal) row[6]);
+    //         dto.setUnitPrice((BigDecimal) row[7]);
             
-            try {
-                String locatorDetailsJson = (String) row[8];
-                List<OhqLocatorDetailDto> locatorDetails = mapper.readValue(
-                    locatorDetailsJson, 
-                    new TypeReference<List<OhqLocatorDetailDto>>() {}
-                );
-                dto.setLocatorDetails(locatorDetails);
-            } catch (Exception e) {
-                dto.setLocatorDetails(new ArrayList<>());
-            }
-            
-            return dto;
-        }).collect(Collectors.toList());
+    //         try {
+    //             String locatorDetailsJson = (String) row[8];
+    //             List<OhqLocatorDetailDto> locatorDetails = mapper.readValue(
+    //                 locatorDetailsJson, 
+    //                 new TypeReference<List<OhqLocatorDetailDto>>() {}
+    //             );
+    //             dto.setLocatorDetails(locatorDetails);
+    //         } catch (Exception e) {
+    //             dto.setLocatorDetails(new ArrayList<>());
+    //         }
+    //         dto.setCustodianId((Integer) row[9]);
+    //         return dto;
+    //     }).collect(Collectors.toList());
+    // }
+
+
+    @Override
+public List<OhqReportDto> getOhqReport() {
+    List<Object[]> results = ohqMasterRepository.getOhqReport();
+    List<Object[]> resultConsumable = omcr.getOhqConsumableReport();
+    ObjectMapper mapper = new ObjectMapper();
+
+    List<OhqReportDto> combined = new ArrayList<>();
+
+    // Map asset-based OHQ
+    for (Object[] row : results) {
+        OhqReportDto dto = new OhqReportDto();
+        dto.setAssetId((Integer) row[0]);
+        dto.setAssetDesc((String) row[1]);
+        dto.setMaterialDesc((String) row[2]);
+        dto.setUomId((String) row[3]);
+        dto.setTotalQuantity((BigDecimal) row[4]);
+        dto.setBookValue((BigDecimal) row[5]);
+        dto.setDepriciationRate((BigDecimal) row[6]);
+        dto.setUnitPrice((BigDecimal) row[7]);
+
+        try {
+            String locatorDetailsJson = (String) row[8];
+            List<OhqLocatorDetailDto> locatorDetails = mapper.readValue(
+                locatorDetailsJson,
+                new TypeReference<List<OhqLocatorDetailDto>>() {}
+            );
+            dto.setLocatorDetails(locatorDetails);
+        } catch (Exception e) {
+            dto.setLocatorDetails(new ArrayList<>());
+        }
+
+        dto.setCustodianId(row[9] != null ? (String) row[9] : null);
+        combined.add(dto);
     }
+
+    // Map consumable-based OHQ
+    for (Object[] row : resultConsumable) {
+        OhqReportDto dto = new OhqReportDto();
+        // Consumables don't have assetId, so we can set it null and use materialCode instead
+        dto.setMaterialCode((String) row[0]); // assuming OhqReportDto has materialCode
+        dto.setMaterialDesc((String) row[1]);
+        dto.setUomId((String) row[2]);
+        dto.setTotalQuantity((BigDecimal) row[3]);
+        dto.setBookValue((BigDecimal) row[4]);
+        dto.setDepriciationRate((BigDecimal) row[5]);
+        dto.setUnitPrice((BigDecimal) row[6]);
+
+        try {
+            String locatorDetailsJson = (String) row[7];
+            List<OhqLocatorDetailDto> locatorDetails = mapper.readValue(
+                locatorDetailsJson,
+                new TypeReference<List<OhqLocatorDetailDto>>() {}
+            );
+            dto.setLocatorDetails(locatorDetails);
+        } catch (Exception e) {
+            dto.setLocatorDetails(new ArrayList<>());
+        }
+
+        dto.setCustodianId(row[8] != null ? (String) row[8] : null);
+        combined.add(dto);
+    }
+
+    return combined;
+}
+
+
+
 
     @Override
     public String savePoOgp(OgpPoDto request) {

@@ -864,16 +864,12 @@ public class GrnServiceImpl implements GrnService {
                 materialDtl.getLocatorId(),
                 custodianId);
 
-        System.out.println("EXISTUNGOHQ CALLED");
-
         OhqMasterEntity ohq;
         if (existingOhq.isPresent()) {
-            System.out.println("EXISTING OHQ PRESENT");
             ohq = existingOhq.get();
             BigDecimal currentQty = ohq.getQuantity() != null ? ohq.getQuantity() : BigDecimal.ZERO;
             ohq.setQuantity(currentQty.add(materialDtl.getQuantity()));
         } else {
-            System.out.println("EXISTING OHQ NOT PRESENT");
             ohq = new OhqMasterEntity();
             ohq.setCustodianId(custodianId);
             ohq.setAssetId(materialDtl.getAssetId());
@@ -881,13 +877,11 @@ public class GrnServiceImpl implements GrnService {
             ohq.setQuantity(materialDtl.getQuantity());
 
             if (!ohqList.isEmpty()) {
-                System.out.println("NOT EMPTY");
                 OhqMasterEntity existingOhqRecord = ohqList.get(0);
                 ohq.setBookValue(existingOhqRecord.getBookValue());
                 ohq.setDepriciationRate(existingOhqRecord.getDepriciationRate());
                 ohq.setUnitPrice(existingOhqRecord.getUnitPrice());
             } else {
-                System.out.println("EMTOTY");
                 String priceStr = materialDtl.getEstimatedPriceWithCcy().replaceAll("[^\\d.]", "");
                 BigDecimal bookValue = new BigDecimal(priceStr);
                 ohq.setBookValue(bookValue);

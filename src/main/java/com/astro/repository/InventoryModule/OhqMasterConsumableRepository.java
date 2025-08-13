@@ -2,6 +2,7 @@ package com.astro.repository.InventoryModule;
 
 import com.astro.entity.InventoryModule.OhqMasterConsumableEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,4 +17,30 @@ public interface OhqMasterConsumableRepository extends JpaRepository<OhqMasterCo
     
     Optional<OhqMasterConsumableEntity> findByMaterialCodeAndLocatorId(String materialCode, Integer locatorId);
     Optional<OhqMasterConsumableEntity> findByMaterialCodeAndLocatorIdAndCustodianId(String materialCode, Integer locatorId, String custodianId);
+
+    @Query(value = """
+        SELECT 
+            ohq.material_code,
+            am.material_desc,
+            am.uom_id,
+            SUM(ohq.quantity) AS total_quantity,
+            ohq.book_value,
+            ohq.depriciation_rate,
+            ohq.unit_price,
+            COALESCE(JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    'locatorId', ohq.locator_id,
+                    'locatorDesc', lm.locator_desc,
+                    'quantity', ohq.quantity
+                )
+            ), '[]') AS locator_details,
+            ohq.custodian_id
+        FROM ohq_master_consumable ohq
+        JOIN asset_master am ON ohq.material_code = am.material_code
+        JOIN locator_master lm ON ohq.locator_id = lm.locator_id
+        WHERE ohq.quantity > 0
+        GROUP BY ohq.material_code, am.material_desc, am.uom_id, 
+                 ohq.book_value, ohq.depriciation_rate, ohq.unit_price, ohq.custodian_id
+    """, nativeQuery = true)
+List<Object[]> getOhqConsumableReport();
 }
