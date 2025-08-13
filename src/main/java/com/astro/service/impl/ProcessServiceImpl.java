@@ -193,31 +193,31 @@ public List<OhqReportDto> getOhqReport() {
     List<OhqReportDto> combined = new ArrayList<>();
 
     // // Map asset-based OHQ
-    // for (Object[] row : results) {
-    //     OhqReportDto dto = new OhqReportDto();
-    //     dto.setAssetId((Integer) row[0]);
-    //     dto.setAssetDesc((String) row[1]);
-    //     dto.setMaterialDesc((String) row[2]);
-    //     dto.setUomId((String) row[3]);
-    //     dto.setTotalQuantity((BigDecimal) row[4]);
-    //     dto.setBookValue((BigDecimal) row[5]);
-    //     dto.setDepriciationRate((BigDecimal) row[6]);
-    //     dto.setUnitPrice((BigDecimal) row[7]);
+    for (Object[] row : results) {
+        OhqReportDto dto = new OhqReportDto();
+        dto.setAssetId((Integer) row[0]);
+        dto.setAssetDesc((String) row[1]);
+        dto.setMaterialDesc((String) row[2]);
+        dto.setUomId((String) row[3]);
+        dto.setTotalQuantity((BigDecimal) row[4]);
+        dto.setBookValue((BigDecimal) row[5]);
+        dto.setDepriciationRate((BigDecimal) row[6]);
+        dto.setUnitPrice((BigDecimal) row[7]);
 
-    //     try {
-    //         String locatorDetailsJson = (String) row[8];
-    //         List<OhqLocatorDetailDto> locatorDetails = mapper.readValue(
-    //             locatorDetailsJson,
-    //             new TypeReference<List<OhqLocatorDetailDto>>() {}
-    //         );
-    //         dto.setLocatorDetails(locatorDetails);
-    //     } catch (Exception e) {
-    //         dto.setLocatorDetails(new ArrayList<>());
-    //     }
+        try {
+            String locatorDetailsJson = (String) row[8];
+            List<OhqLocatorDetailDto> locatorDetails = mapper.readValue(
+                locatorDetailsJson,
+                new TypeReference<List<OhqLocatorDetailDto>>() {}
+            );
+            dto.setLocatorDetails(locatorDetails);
+        } catch (Exception e) {
+            dto.setLocatorDetails(new ArrayList<>());
+        }
 
-    //     dto.setCustodianId(row[9] != null ? (String) row[9] : null);
-    //     combined.add(dto);
-    // }
+        dto.setCustodianId(row[9] != null ? (String) row[9] : null);
+        combined.add(dto);
+    }
 
     // Map consumable-based OHQ
     for (Object[] row : resultConsumable) {

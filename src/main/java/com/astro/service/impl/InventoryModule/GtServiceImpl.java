@@ -151,12 +151,10 @@ public class GtServiceImpl implements GtService {
         OhqMasterConsumableEntity ohq;
         if (existingOhq.isPresent()) {
             ohq = existingOhq.get();
-            System.out.println("PRESENT BC: " + ohq.getQuantity() + gtDtlEntity.getQuantity() );
             BigDecimal currentQty = ohq.getQuantity() != null ? ohq.getQuantity() : BigDecimal.ZERO;
             ohq.setQuantity(currentQty.add(gtDtlEntity.getQuantity()));
         }
         else {  
-                System.out.println("NOT PRESENT BC: " + gtDtlEntity.getQuantity() );
                     ohq = new OhqMasterConsumableEntity();
                     ohq.setCustodianId(custodianId.toString());
                     ohq.setMaterialCode(gtDtlEntity.getMaterialCode());
