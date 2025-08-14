@@ -264,7 +264,7 @@ public List<OhqReportDto> getOhqReport() {
 
     @Override
     public void approveOgp(GprApprovalDto req) {
-        ogpService.approveOgp(req);
+    ogpService.approveOgp(req);
     }
     @Override
     public void rejectOgp(GprApprovalDto req) {
