@@ -1,14 +1,18 @@
 package com.astro.service.impl.InventoryModule;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import com.astro.dto.workflow.InventoryModule.GtDtlDto;
+import com.astro.dto.workflow.InventoryModule.GtMasterResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -227,4 +231,61 @@ public class GtServiceImpl implements GtService {
         }
         return gtMasterDtoList;
     }
+    @Override
+    public GtMasterResponseDto getGtById(String gtId) {
+        Long id = Long.valueOf(gtId.split("/")[1]);
+        GtMasterEntity master= gtmr.findById(id)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "Goods Transfer not found for the provided process number.")));
+
+        List<GtDtlEntity> dtls = gtdr.findByGtId(id);
+
+        GtMasterResponseDto dto = new GtMasterResponseDto();
+        dto.setGtId("INV/" + master.getId());
+        dto.setSenderLocationId(master.getSenderLocationId());
+        dto.setReceiverLocationId(master.getReceiverLocationId());
+        dto.setSenderCustodianId(master.getSenderCustodianId());
+        dto.setReceiverCustodianId(master.getReceiverCustodianId());
+        LocalDate da = master.getGtDate();
+        if(da !=null){
+            dto.setGtDate(CommonUtils.convertDateToString(da));
+        }else{
+            dto.setGtDate(null);
+        }
+        dto.setStatus(master.getStatus());
+       // String d = CommonUtils.convertDateToString(master.getCreatedBy());
+        dto.setCreatedBy(master.getCreatedBy());
+        LocalDateTime date = master.getCreateDate();
+        if (date != null) {
+            dto.setCreateDate(CommonUtils.convertDateToString(date.toLocalDate()));
+        }else{
+            dto.setCreateDate(null);
+        }
+
+
+        List<GtDtlDto> dtlDtos = dtls.stream().map(d -> {
+            GtDtlDto dd = new GtDtlDto();
+            dd.setId(d.getId());
+            dd.setAssetId(d.getAssetId());
+            dd.setAssetDesc(d.getAssetDesc());
+            dd.setMaterialCode(d.getMaterialCode());
+            dd.setMaterialDesc(d.getMaterialDesc());
+            dd.setUnitPrice(d.getUnitPrice());
+            dd.setDepriciationRate(d.getDepriciationRate());
+            dd.setBookValue(d.getBookValue());
+            dd.setQuantity(d.getQuantity());
+            dd.setReceiverLocatorId(String.valueOf(d.getReceiverLocatorId()));
+            dd.setSenderLocatorId(String.valueOf(d.getSenderLocatorId()));
+            return dd;
+        }).collect(Collectors.toList());
+
+        dto.setMaterialDtlList(dtlDtos);
+
+        return dto;
+    }
+
 }

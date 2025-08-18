@@ -6,6 +6,7 @@ import com.astro.dto.workflow.InventoryModule.GiDto.SaveGiDto;
 import com.astro.dto.workflow.InventoryModule.GoodsTransfer.GtIdDto;
 import com.astro.dto.workflow.InventoryModule.GoodsTransfer.GtMasterDto;
 import com.astro.dto.workflow.InventoryModule.GprnDto.SaveGprnDto;
+import com.astro.dto.workflow.InventoryModule.GtMasterResponseDto;
 import com.astro.dto.workflow.InventoryModule.gprn.GprnPendingInspectionDto;
 import com.astro.dto.workflow.InventoryModule.grn.GrnDto;
 import com.astro.dto.workflow.InventoryModule.grn.GrnMaterialMasterDto;
@@ -446,6 +447,11 @@ public class ProcessController {
     @GetMapping("/getPendingGt")
     public ResponseEntity<Object> getPendingGt() {
         List<GtMasterDto> res = gtService.getPendingGt();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+    @GetMapping("/SearchById")
+    public ResponseEntity<Object> getGtById(@RequestParam String gtId) {
+        GtMasterResponseDto res = gtService.getGtById(gtId);
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
 

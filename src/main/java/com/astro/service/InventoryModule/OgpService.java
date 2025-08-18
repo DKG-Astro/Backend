@@ -1,13 +1,10 @@
 package com.astro.service.InventoryModule;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-import com.astro.dto.workflow.InventoryModule.ogp.GprApprovalDto;
-import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
-import com.astro.dto.workflow.InventoryModule.ogp.OgpMasterRejectedGiDto;
-import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
-import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
-import com.astro.dto.workflow.InventoryModule.ogp.OgpReportDto;
+import com.astro.dto.workflow.InventoryModule.ogp.*;
+import com.astro.util.CommonUtils;
 
 public interface OgpService {
     public String saveOgp(OgpDto req);
@@ -28,4 +25,6 @@ public interface OgpService {
     public List<OgpMasterRejectedGiDto> getAwaitingRejectedGi();
     public void approveGiOgp(String ogpId);
 public void rejectGiOgp(String ogpId);
-}
+    public List<OgpRejectedGiReportDto> getOgpRejectedGiReport(String startDate, String endDate);
+
+    }

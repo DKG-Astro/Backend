@@ -6,10 +6,17 @@
   <component name="ChangeListManager">
     <list default="true" id="ff5636e0-402f-4a63-8653-94f411351cbb" name="Default Changelist" comment="workflow related chnage">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/controller/VendorQuotationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/controller/VendorQuotationController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/VendorQuotationAgainstTenderRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/VendorQuotationAgainstTenderRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/VendorQuotationAgainstTenderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/VendorQuotationAgainstTenderService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/VendorQuotationAgainstTenderServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/VendorQuotationAgainstTenderServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/controller/InventoryModule/ProcessController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/controller/InventoryModule/ProcessController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/controller/Reports.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/controller/Reports.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/InventoryModule/igp/IgpMasterRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/InventoryModule/igp/IgpMasterRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/InventoryModule/ogp/OgpMasterRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/InventoryModule/ogp/OgpMasterRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/InventoryModule/GtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/InventoryModule/GtService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/InventoryModule/IgpService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/InventoryModule/IgpService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/InventoryModule/OgpService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/InventoryModule/OgpService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/InventoryModule/GtServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/InventoryModule/GtServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/InventoryModule/IgpServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/InventoryModule/IgpServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/InventoryModule/OgpServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/InventoryModule/OgpServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/util/CommonUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/util/CommonUtils.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

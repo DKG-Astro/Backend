@@ -6,6 +6,7 @@ import javax.transaction.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -360,7 +361,91 @@ public class IgpServiceImpl implements IgpService {
             return dto;
         }).collect(Collectors.toList());
     }
-    
+/*
+    @Override
+    public List<IgpMaterialInReportDto> getIgpMaterialInReport(String startDate, String endDate) {
+     //  List<LocalDateTime> dateRange = CommonUtils.getDateRenge(startDate, endDate);
+        List<LocalDate> dateRange = CommonUtils.getDateRengeAsLocalDate(startDate, endDate);
+
+        List<Object[]> results = igpMasterRepository.getIgpMaterailInReport(dateRange.get(0), dateRange.get(1));
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        return results.stream().map(row -> {
+            IgpMaterialInReportDto dto = new IgpMaterialInReportDto();
+            dto.setId(((Number) row[0]).longValue());
+            dto.setStatus((String) row[1]);
+            dto.setOgpId((String) row[2]);
+           // dto.setIgpDate((String) row[3]);
+            dto.setIgpDate((String) row[3]);
+            dto.setIgpType((String) row[4]);
+            dto.setIndentId(row[5] != null ? ((Number) row[5]).intValue() : null);
+            dto.setCreatedBy(row[6] != null ? ((Number) row[6]).intValue() : null);
+            dto.setCreateDate(row[7] != null ? ((java.sql.Timestamp) row[7]).toLocalDateTime() : null);
+            dto.setLocationId((String) row[8]);
+
+            try {
+                String detailsJson = (String) row[9];
+                if (detailsJson != null && !detailsJson.isEmpty()) {
+                    List<IgpMaterialInDetailReportDto> details = mapper.readValue(
+                            detailsJson,
+                            mapper.getTypeFactory().constructCollectionType(List.class, IgpDetailReportDto.class)
+                    );
+                    dto.setIgpDetails(details);
+                } else {
+                    dto.setIgpDetails(new ArrayList<>());
+                }
+            } catch (Exception e) {
+                dto.setIgpDetails(new ArrayList<>());
+            }
+
+            return dto;
+        }).collect(Collectors.toList());
+    }*/
+@Override
+public List<IgpMaterialInReportDto> getIgpMaterialInReport(String startDate, String endDate) {
+    List<LocalDate> dateRange = CommonUtils.getDateRengeAsLocalDate(startDate, endDate);
+
+    List<Object[]> results = igpMasterRepository.getIgpMaterailInReport(dateRange.get(0), dateRange.get(1));
+
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.registerModule(new JavaTimeModule());
+    mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+    return results.stream().map(row -> {
+        IgpMaterialInReportDto dto = new IgpMaterialInReportDto();
+        dto.setId(((Number) row[0]).longValue());
+        dto.setStatus((String) row[1]);
+        dto.setOgpId((String) row[2]);
+        dto.setIgpDate((String) row[3]);
+        dto.setIgpType((String) row[4]);
+        dto.setIndentId(row[5] != null ? ((Number) row[5]).intValue() : null);
+        dto.setCreatedBy(row[6] != null ? ((Number) row[6]).intValue() : null);
+        dto.setCreateDate(row[7] != null ? ((java.sql.Timestamp) row[7]).toLocalDateTime() : null);
+        dto.setLocationId((String) row[8]);
+
+        try {
+            String detailsJson = (String) row[9];
+            if (detailsJson != null && !detailsJson.isEmpty()) {
+                List<IgpMaterialInDetailReportDto> details = mapper.readValue(
+                        detailsJson,
+                        mapper.getTypeFactory().constructCollectionType(List.class, IgpMaterialInDetailReportDto.class)
+                );
+                dto.setIgpDetails(details);
+            } else {
+                dto.setIgpDetails(new ArrayList<>());
+            }
+        } catch (Exception e) {
+            dto.setIgpDetails(new ArrayList<>());
+        }
+
+        return dto;
+    }).collect(Collectors.toList());
+}
+
+
     @Override
     public List<IgpCombinedDetailDto> getIgpDetails() {
         List<Object[]> results = igpDetailRepository.findAllIgpDetails();

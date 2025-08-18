@@ -1,5 +1,6 @@
 package com.astro.service.impl.InventoryModule;
 
+import com.astro.dto.workflow.InventoryModule.ogp.*;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import javax.transaction.Transactional;
@@ -22,17 +23,6 @@ import com.astro.repository.InventoryModule.ogp.OgpPoDetailRepository;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;
 import com.astro.repository.InventoryModule.ogp.OgpMasterRepository;
 import com.astro.constant.AppConstant;
-import com.astro.dto.workflow.InventoryModule.ogp.GprApprovalDto;
-import com.astro.dto.workflow.InventoryModule.ogp.OgpDetailReportDto;
-import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
-import com.astro.dto.workflow.InventoryModule.ogp.OgpMasterRejectedGiDto;
-import com.astro.dto.workflow.InventoryModule.ogp.OgpMaterialDtlDto;
-import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDtlDto;
-import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
-import com.astro.dto.workflow.InventoryModule.ogp.OgpPoMaterialDto;
-import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
-import com.astro.dto.workflow.InventoryModule.ogp.OgpRejectedGiDtlDto;
-import com.astro.dto.workflow.InventoryModule.ogp.OgpReportDto;
 import com.astro.entity.UserMaster;
 import com.astro.entity.InventoryModule.OgpDetailEntity;
 import com.astro.entity.InventoryModule.OgpDetailRejectedGiEntity;
@@ -264,6 +254,47 @@ public class OgpServiceImpl implements OgpService {
             return dto;
         }).collect(Collectors.toList());
     }
+
+    @Override
+    public List<OgpRejectedGiReportDto> getOgpRejectedGiReport(String startDate, String endDate) {
+        List<LocalDateTime> dateRange = CommonUtils.getDateRenge(startDate, endDate);
+        List<OgpRejectedGiReportDto> reports = new ArrayList<>();
+
+        List<Object[]> results =  ogpMasterRepository.getOgpRejectedGiReport(dateRange.get(0), dateRange.get(1));
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        for (Object[] row : results) {
+            OgpRejectedGiReportDto dto = new OgpRejectedGiReportDto();
+            dto.setOgpSubProcessId((Integer) row[0]);
+            dto.setOgpType((String) row[1]);
+            dto.setStatus((String) row[2]);
+            dto.setGiId((String) row[3]);
+            dto.setLocationId((String) row[4]);
+            dto.setCreatedBy((String) row[5]);
+            dto.setSenderName((String) row[6]);
+            dto.setReceiverName((String) row[7]);
+            dto.setReceiverLocation((String) row[8]);
+            dto.setOgpDate(row[9] != null ? row[9].toString() : null);
+            dto.setReturnDate(row[10] != null ? row[10].toString() : null);
+
+            try {
+                String detailsJson = (String) row[11];
+                List<OgpDetailRejectedGiReportDto> details = mapper.readValue(
+                        detailsJson,
+                        new TypeReference<List<OgpDetailRejectedGiReportDto>>() {}
+                );
+                dto.setRejectedDetails(details);
+            } catch (Exception e) {
+                dto.setRejectedDetails(new ArrayList<>());
+            }
+
+            reports.add(dto);
+        }
+
+        return reports;
+    }
+
 
     @Override
     @Transactional

@@ -2,6 +2,7 @@ package com.astro.repository.InventoryModule.igp;
 
 import com.astro.entity.InventoryModule.IgpMasterEntity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -43,4 +44,73 @@ public interface IgpMasterRepository extends JpaRepository<IgpMasterEntity, Inte
             ORDER BY im.igp_date DESC
             """, nativeQuery = true)
         List<Object[]> getIgpReport(LocalDateTime startDate, LocalDateTime endDate);
+
+  /*  @Query(value = """
+    SELECT 
+        im.id,
+        im.status,
+        im.ogp_id,
+        im.igp_date,
+        im.igp_type,
+        im.indent_id,
+        im.created_by,
+        im.create_date,
+        im.location_id,
+        JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'id', id.id,
+                'assetId', id.asset_id,
+                'materialCode', id.material_code,
+                'category', id.category,
+                'subCategory', id.sub_category,
+                'description', id.material_description,
+                'uom', id.uom,
+                'quantity', id.quantity,
+                'estimatedPriceWithCcy', id.estimated_price_with_ccy,
+                'indigenousOrImported', id.indigenous_or_imported
+            )
+        ) as igp_details
+    FROM igp_material_master im
+    JOIN igp_material_detail id ON im.id = id.igp_id
+    WHERE im.igp_date BETWEEN :startDate AND :endDate
+    GROUP BY im.id
+    ORDER BY im.igp_date DESC
+""", nativeQuery = true)
+    List<Object[]> getIgpMaterailInReport(LocalDateTime startDate, LocalDateTime endDate);
+*/
+  @Query(value = """
+SELECT 
+    im.id,
+    im.status,
+    im.ogp_id,
+    im.igp_date,
+    im.igp_type,
+    im.indent_id,
+    im.created_by,
+    im.create_date,
+    im.location_id,
+    IFNULL(JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'id', id.id,
+            'assetId', id.asset_id,
+            'materialCode', id.material_code,
+            'category', id.category,
+            'subCategory', id.sub_category,
+            'description', id.material_description,
+            'uom', id.uom,
+            'quantity', id.quantity,
+            'estimatedPriceWithCcy', id.estimated_price_with_ccy,
+            'indigenousOrImported', id.indigenous_or_imported
+        )
+    ), JSON_ARRAY()) as igp_details
+FROM igp_material_master im
+LEFT JOIN igp_material_detail id ON im.id = id.igp_id
+WHERE STR_TO_DATE(im.igp_date, '%d/%m/%Y') BETWEEN :startDate AND :endDate
+GROUP BY im.id
+ORDER BY STR_TO_DATE(im.igp_date, '%d/%m/%Y') DESC
+""", nativeQuery = true)
+  List<Object[]> getIgpMaterailInReport(LocalDate startDate, LocalDate endDate);
+
+
+
 }

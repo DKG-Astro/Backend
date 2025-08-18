@@ -324,5 +324,18 @@ public class CommonUtils {
 
         return new LocalDate[]{start, end};
     }
+    public static List<LocalDate> getDateRengeAsLocalDate(String startDate, String endDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        List<LocalDate> dateRange = new ArrayList<>();
+        try {
+            LocalDate start = LocalDate.parse(startDate, formatter);
+            LocalDate end = LocalDate.parse(endDate, formatter);
+            dateRange.add(start);
+            dateRange.add(end);
+        } catch (Exception e) {
+            e.printStackTrace(); // Handle parse exceptions
+        }
+        return dateRange;
+    }
 
 }

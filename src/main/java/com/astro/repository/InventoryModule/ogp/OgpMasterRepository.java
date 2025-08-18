@@ -49,4 +49,37 @@ public interface OgpMasterRepository extends JpaRepository<OgpMasterEntity, Inte
             ORDER BY om.ogp_date DESC
         """, nativeQuery = true)
         List<Object[]> getOgpReport(LocalDateTime startDate, LocalDateTime endDate);
+
+    @Query(value = """
+    SELECT 
+        om.ogp_sub_process_id,
+        om.ogp_type,
+        om.status,
+        om.gi_id,
+        om.location_id,
+        om.created_by,
+        om.sender_name,
+        om.receiver_name,
+        om.receiver_location,
+        om.ogp_date,
+        om.return_date,
+        JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'detailId', od.detail_id,
+                'materialCode', od.material_code,
+                'materialDesc', od.material_desc,
+                'assetId', od.asset_id,
+                'assetDesc', od.asset_desc,
+                'rejectionType', od.rejection_type,
+                'rejectedQuantity', od.rejected_quantity
+            )
+        ) as rejected_details
+    FROM ogp_master_rejected_gi om
+    JOIN ogp_detail_rejected_gi od ON om.ogp_sub_process_id = od.ogp_sub_process_id
+    WHERE om.ogp_date BETWEEN :startDate AND :endDate
+    GROUP BY om.ogp_sub_process_id
+    ORDER BY om.ogp_date DESC
+""", nativeQuery = true)
+    List<Object[]> getOgpRejectedGiReport(LocalDateTime startDate, LocalDateTime endDate);
+
 }

@@ -1,6 +1,8 @@
 package com.astro.controller;
 
 import com.astro.dto.workflow.InventoryModule.asset.AssetMasterReportDto;
+import com.astro.dto.workflow.InventoryModule.igp.IgpMaterialInReportDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpRejectedGiReportDto;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseReportDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentListReportDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentReportDetailsDTO;
@@ -191,12 +193,28 @@ public class Reports {
         List<OgpReportDto> response = ogpService.getOgpReport(startDate, endDate);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
+    @GetMapping("/rejected-gi")
+    public ResponseEntity<Object> getOgpRejectedGiReport(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+
+        List<OgpRejectedGiReportDto> response = ogpService.getOgpRejectedGiReport(startDate, endDate);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+    }
     @GetMapping("/igp")
     public ResponseEntity<Object> getIgpReport(
             @RequestParam String startDate,
             @RequestParam String endDate) {
 
         List<IgpReportDto> response = igpService.getIgpReport(startDate, endDate);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+    }
+    @GetMapping("/igp-materail-in")
+    public ResponseEntity<Object> getIgpMaterialInReport(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+
+        List<IgpMaterialInReportDto> response = igpService.getIgpMaterialInReport(startDate, endDate);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
     @GetMapping("/stock")
