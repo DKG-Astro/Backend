@@ -20,6 +20,7 @@ import com.astro.service.InventoryModule.GiService;
 import com.astro.service.InventoryModule.GprnService;
 import com.astro.service.InventoryModule.GrnService;
 import com.astro.service.InventoryModule.GrvService;
+import com.astro.service.InventoryModule.GtService;
 import com.astro.service.InventoryModule.IgpService;
 import com.astro.service.InventoryModule.IsnService;
 import com.astro.service.InventoryModule.OgpService;
@@ -71,6 +72,9 @@ public class ProcessServiceImpl implements ProcessService {
 
     @Autowired
     private OhqMasterConsumableRepository omcr;
+
+    @Autowired
+    private GtService gtService;
 
     @Override
     public String saveGprn(SaveGprnDto req) {
@@ -138,6 +142,8 @@ public class ProcessServiceImpl implements ProcessService {
                 return igpService.getIgpDtls(processNo);
             case "OGP":
                 return ogpService.getOgpDtls(processNo);
+            case "GT":
+                return gtService.getGtDtls(processNo);
             default:
                 throw new BusinessException(
                     new ErrorDetails(AppConstant.ERROR_TYPE_CODE_DB,

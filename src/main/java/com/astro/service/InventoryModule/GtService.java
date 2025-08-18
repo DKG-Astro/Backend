@@ -11,4 +11,6 @@ public interface GtService {
     public void approveGt(String gtId);
     public void rejectGt(String gtId);
     public GtMasterResponseDto getGtById(String gtId);
+    public GtMasterDto getGtDtls(String gtId);
+    public void approveGtFromOgp(String gtId);
 }

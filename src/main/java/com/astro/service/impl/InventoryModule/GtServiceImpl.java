@@ -111,17 +111,49 @@ public class GtServiceImpl implements GtService {
         gtMasterEntity.setStatus("APPROVED");
 
         List<GtDtlEntity> gtDtlEntityList = gtdr.findByGtId(id);
-        for (GtDtlEntity gtDtlEntity : gtDtlEntityList) {
-            if (Objects.isNull(gtDtlEntity.getAssetId())) {
-                addToConsumableOhq(gtDtlEntity, gtMasterEntity.getReceiverCustodianId());
-                reduceFromConsumable(gtDtlEntity, gtMasterEntity);
-            } else {
-                addToCapitalOhq(gtDtlEntity, gtMasterEntity.getReceiverCustodianId());
-                reduceFromCapital(gtDtlEntity, gtMasterEntity);
+
+        if(gtMasterEntity.getSenderLocationId().equalsIgnoreCase(gtMasterEntity.getReceiverLocationId())){
+            System.out.println("CAME INNNN");
+            for (GtDtlEntity gtDtlEntity : gtDtlEntityList) {
+                if (Objects.isNull(gtDtlEntity.getAssetId())) {
+                    addToConsumableOhq(gtDtlEntity, gtMasterEntity.getReceiverCustodianId());
+                    reduceFromConsumable(gtDtlEntity, gtMasterEntity);
+                } else {
+                    addToCapitalOhq(gtDtlEntity, gtMasterEntity.getReceiverCustodianId());
+                    reduceFromCapital(gtDtlEntity, gtMasterEntity);
+                }
+                
             }
-
+            
         }
+        gtmr.save(gtMasterEntity);
+    }
+    @Override
+    @Transactional
+    public void approveGtFromOgp(String gtId) {
+        System.out.println("CALLED GT FROM OGP");
+        Long id = Long.valueOf(gtId.split("/")[1]);
+        GtMasterEntity gtMasterEntity = gtmr.findById(id)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "Goods Transfer not found for the provided process number.")));
+        gtMasterEntity.setStatus("APPROVED");
 
+        List<GtDtlEntity> gtDtlEntityList = gtdr.findByGtId(id);
+
+            for (GtDtlEntity gtDtlEntity : gtDtlEntityList) {
+                if (Objects.isNull(gtDtlEntity.getAssetId())) {
+                    addToConsumableOhq(gtDtlEntity, gtMasterEntity.getReceiverCustodianId());
+                    reduceFromConsumable(gtDtlEntity, gtMasterEntity);
+                } else {
+                    addToCapitalOhq(gtDtlEntity, gtMasterEntity.getReceiverCustodianId());
+                    reduceFromCapital(gtDtlEntity, gtMasterEntity);
+                }
+                
+            }
         gtmr.save(gtMasterEntity);
     }
 
@@ -288,4 +320,44 @@ public class GtServiceImpl implements GtService {
         return dto;
     }
 
+
+    public GtMasterDto getGtDtls(String processNo){
+        Long id = Long.parseLong(processNo.split("/")[1]);
+        GtMasterEntity gtme = gtmr.findById(id)
+                        .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Goods Transfer not found for the provided process number.")
+                ));
+        
+        List<GtDtl> gtDtlList = new ArrayList<>();
+
+        List<GtDtlEntity> gtdel = gtdr.findByGtId(gtme.getId());
+        for (GtDtlEntity gtde : gtdel) {
+            GtDtl gtDtl = new GtDtl();
+            gtDtl.setAssetId(gtde.getAssetId());
+            gtDtl.setAssetDesc(gtde.getAssetDesc());
+            gtDtl.setMaterialCode(gtde.getMaterialCode());
+            gtDtl.setMaterialDesc(gtde.getMaterialDesc());
+            gtDtl.setQuantity(gtde.getQuantity());
+            gtDtl.setReceiverLocatorId(gtde.getReceiverLocatorId());
+            gtDtl.setSenderLocatorId(gtde.getSenderLocatorId());
+            gtDtl.setUnitPrice(gtde.getUnitPrice());
+            gtDtl.setDepriciationRate(gtde.getDepriciationRate());
+            gtDtl.setBookValue(gtde.getBookValue());
+            gtDtlList.add(gtDtl);
+        }
+        GtMasterDto gtMasterDto = new GtMasterDto();
+        gtMasterDto.setId("INV/" + gtme.getId());
+        gtMasterDto.setGtDate(CommonUtils.convertDateToString(gtme.getGtDate()));
+        gtMasterDto.setSenderLocationId(gtme.getSenderLocationId());
+        gtMasterDto.setReceiverLocationId(gtme.getReceiverLocationId());
+        gtMasterDto.setSenderCustodianId(gtme.getSenderCustodianId());
+        gtMasterDto.setReceiverCustodianId(gtme.getReceiverCustodianId());
+        gtMasterDto.setMaterialDtlList(gtDtlList);
+        gtMasterDto.setStatus(gtme.getStatus());
+        return gtMasterDto;
+    }
 }

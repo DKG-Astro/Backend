@@ -11,21 +11,39 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.astro.service.InventoryModule.GtService;
 import com.astro.service.InventoryModule.OgpService;
 import com.astro.repository.UserMasterRepository;
 import com.astro.repository.InventoryModule.AssetMasterRepository;
 import com.astro.repository.InventoryModule.isn.IssueNoteMasterRepository;
 import com.astro.repository.InventoryModule.ogp.OgpDetailRejectedGiRepository;
 import com.astro.repository.InventoryModule.ogp.OgpDetailRepository;
+import com.astro.repository.InventoryModule.ogp.OgpGtDtlRepository;
+import com.astro.repository.InventoryModule.ogp.OgpGtMasterRepository;
 import com.astro.repository.InventoryModule.ogp.OgpMasterPoRepository;
 import com.astro.repository.InventoryModule.ogp.OgpMasterRejectedGiRepository;
 import com.astro.repository.InventoryModule.ogp.OgpPoDetailRepository;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;
 import com.astro.repository.InventoryModule.ogp.OgpMasterRepository;
 import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.InventoryModule.GoodsTransfer.GtDtl;
+import com.astro.dto.workflow.InventoryModule.GoodsTransfer.GtMasterDto;
+import com.astro.dto.workflow.InventoryModule.ogp.GprApprovalDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpDetailReportDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpMasterRejectedGiDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpMaterialDtlDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDtlDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpPoMaterialDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpRejectedGiDtlDto;
+import com.astro.dto.workflow.InventoryModule.ogp.OgpReportDto;
 import com.astro.entity.UserMaster;
 import com.astro.entity.InventoryModule.OgpDetailEntity;
 import com.astro.entity.InventoryModule.OgpDetailRejectedGiEntity;
+import com.astro.entity.InventoryModule.OgpGtDtlEntity;
+import com.astro.entity.InventoryModule.OgpGtMasterEntity;
 import com.astro.entity.InventoryModule.OgpMasterEntity;
 import com.astro.entity.InventoryModule.OgpMasterPoEntity;
 import com.astro.entity.InventoryModule.OgpMasterRejectedGiEntity;
@@ -77,6 +95,15 @@ public class OgpServiceImpl implements OgpService {
 
     @Autowired
     private OgpDetailRejectedGiRepository odrgr;
+
+    @Autowired
+    private OgpGtMasterRepository ogmr;
+
+    @Autowired
+    private OgpGtDtlRepository ogdr;
+
+    @Autowired
+    private GtService gtService;
 
     @Override
     @Transactional
@@ -622,6 +649,107 @@ public class OgpServiceImpl implements OgpService {
                                         "OGP not found")));
         omrge.setStatus("REJECTED");
         omrgr.save(omrge);
+    }
+
+    @Override
+    @Transactional
+    public String saveGtOgp(GtMasterDto gtMasterDto){
+        OgpGtMasterEntity gtMasterEntity = new OgpGtMasterEntity();
+        gtMasterEntity.setGtId(Long.parseLong(gtMasterDto.getId().split("/")[1]));
+        gtMasterEntity.setSenderLocationId(gtMasterDto.getSenderLocationId());
+        
+        gtMasterEntity.setReceiverLocationId(gtMasterDto.getReceiverLocationId());
+        gtMasterEntity.setReceiverCustodianId(gtMasterDto.getReceiverCustodianId());
+        gtMasterEntity.setSenderCustodianId(gtMasterDto.getSenderCustodianId());
+        gtMasterEntity.setGtDate(CommonUtils.convertStringToDateObject(gtMasterDto.getGtDate()));
+        gtMasterEntity.setCreatedBy(gtMasterDto.getCreatedBy());
+        gtMasterEntity.setCreateDate(LocalDateTime.now());
+        gtMasterEntity.setStatus("AWAITING APPROVAL");
+        gtMasterEntity = ogmr.save(gtMasterEntity);
+
+        for (GtDtl gtDtl : gtMasterDto.getMaterialDtlList()) {
+            OgpGtDtlEntity gtDtlEntity = new OgpGtDtlEntity();
+            gtDtlEntity.setGtId(gtMasterEntity.getId());
+            gtDtlEntity.setAssetId(gtDtl.getAssetId());
+            gtDtlEntity.setAssetDesc(gtDtl.getAssetDesc());
+            gtDtlEntity.setMaterialCode(gtDtl.getMaterialCode());
+            gtDtlEntity.setUnitPrice(gtDtl.getUnitPrice());
+            gtDtlEntity.setDepriciationRate(gtDtl.getDepriciationRate());
+            gtDtlEntity.setBookValue(gtDtl.getBookValue());
+            gtDtlEntity.setMaterialDesc(gtDtl.getMaterialDesc());
+            gtDtlEntity.setQuantity(gtDtl.getQuantity());
+            gtDtlEntity.setReceiverLocatorId(gtDtl.getReceiverLocatorId());
+            gtDtlEntity.setSenderLocatorId(gtDtl.getSenderLocatorId());
+            ogdr.save(gtDtlEntity);
+        }
+
+        return "INV/" + gtMasterEntity.getId();
+    }
+
+    @Override
+    public List<GtMasterDto> getPendingGtOgp(){
+        List<OgpGtMasterEntity> gtMasterEntityList = ogmr.findByStatus("AWAITING APPROVAL");
+        List<GtMasterDto> gtMasterDtoList = new ArrayList<>();
+        for (OgpGtMasterEntity gtMasterEntity : gtMasterEntityList) {
+            GtMasterDto gtMasterDto = new GtMasterDto();
+            gtMasterDto.setGtId("INV/" + gtMasterEntity.getGtId());
+            gtMasterDto.setId("INV/" + gtMasterEntity.getId());
+            gtMasterDto.setSenderLocationId(gtMasterEntity.getSenderLocationId());
+            gtMasterDto.setReceiverLocationId(gtMasterEntity.getReceiverLocationId());
+            gtMasterDto.setReceiverCustodianId(gtMasterEntity.getReceiverCustodianId());
+            gtMasterDto.setSenderCustodianId(gtMasterEntity.getSenderCustodianId());
+            gtMasterDto.setGtDate(CommonUtils.convertDateToString(gtMasterEntity.getGtDate()));
+            gtMasterDto.setStatus(gtMasterEntity.getStatus());
+            gtMasterDto.setCreatedBy(gtMasterEntity.getCreatedBy());
+
+            List<OgpGtDtlEntity> gtDtlEntityList = ogdr.findByGtId(gtMasterEntity.getId());
+            List<GtDtl> gtDtlList = new ArrayList<>();
+            for (OgpGtDtlEntity gtDtlEntity : gtDtlEntityList) {
+                GtDtl gtDtl = new GtDtl();
+                gtDtl.setAssetId(gtDtlEntity.getAssetId());
+                gtDtl.setAssetDesc(gtDtlEntity.getAssetDesc());
+                gtDtl.setMaterialCode(gtDtlEntity.getMaterialCode());
+                gtDtl.setMaterialDesc(gtDtlEntity.getMaterialDesc());
+                gtDtl.setQuantity(gtDtlEntity.getQuantity());
+                gtDtl.setUnitPrice(gtDtlEntity.getUnitPrice());
+                gtDtl.setDepriciationRate(gtDtlEntity.getDepriciationRate());
+                gtDtl.setBookValue(gtDtlEntity.getBookValue());
+                gtDtl.setReceiverLocatorId(gtDtlEntity.getReceiverLocatorId());
+                gtDtl.setSenderLocatorId(gtDtlEntity.getSenderLocatorId());
+                gtDtlList.add(gtDtl);
+            }
+            gtMasterDto.setMaterialDtlList(gtDtlList);
+            gtMasterDtoList.add(gtMasterDto);
+        }
+        return gtMasterDtoList;
+    }
+
+
+    @Override
+    @Transactional
+    public void approveGtOgp(String ogpId){
+        OgpGtMasterEntity gtMasterEntity = ogmr.findById(Long.parseLong(ogpId.split("/")[1]))
+                                    .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                                        AppConstant.ERROR_CODE_RESOURCE,
+                                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                        AppConstant.ERROR_TYPE_RESOURCE,
+                                        "OGP not found")));
+        gtMasterEntity.setStatus("APPROVED");
+        ogmr.save(gtMasterEntity);
+        gtService.approveGtFromOgp("INV/" + gtMasterEntity.getGtId());
+    }
+
+    @Override
+    @Transactional
+    public void rejectGtOgp(String ogpId){
+        OgpGtMasterEntity gtMasterEntity = ogmr.findById(Long.parseLong(ogpId.split("/")[1]))
+                                    .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                                        AppConstant.ERROR_CODE_RESOURCE,
+                                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                        AppConstant.ERROR_TYPE_RESOURCE,
+                                        "OGP not found")));
+        gtMasterEntity.setStatus("REJECTED");
+        ogmr.save(gtMasterEntity);
     }
 
 

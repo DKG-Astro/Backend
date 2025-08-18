@@ -36,6 +36,7 @@ import com.astro.service.ProcessService;
 import com.astro.service.InventoryModule.AssetMasterService;
 import com.astro.service.InventoryModule.GiService;
 import com.astro.service.InventoryModule.IgpService;
+import com.astro.service.InventoryModule.OgpService;
 import com.astro.service.impl.InventoryModule.GiServiceImpl;
 import com.astro.util.ResponseBuilder;
 
@@ -75,6 +76,9 @@ public class ProcessController {
 
     @Autowired
     private GtService gtService;
+
+    @Autowired
+    private OgpService ogpService;
 
     @PostMapping("/saveGprn")
     public ResponseEntity<Object> saveGprn(@RequestBody SaveGprnDto req) {
@@ -465,6 +469,30 @@ public class ProcessController {
         gtService.rejectGt(req.getGtId());
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(), HttpStatus.OK);
     }
+
+    @PostMapping("/saveGtOgp")
+    public ResponseEntity<Object> saveGtOgp(@RequestBody GtMasterDto req) {
+        String id = ogpService.saveGtOgp(req);
+        Map<String, String> res = new HashMap<>();
+        res.put("processNo", id);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
     
-    
+    @GetMapping("/getPendingGtOgp")
+    public ResponseEntity<Object> getPendingGtOgp() {
+        List<GtMasterDto> res = ogpService.getPendingGtOgp();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @PostMapping("/approveGtOgp")
+    public ResponseEntity<Object> approveGtOgp(@RequestBody OgpIdDto req) {
+        ogpService.approveGtOgp(req.getOgpId());
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(), HttpStatus.OK);
+    }
+
+    @PostMapping("/rejectGtOgp")
+    public ResponseEntity<Object> rejectGtOgp(@RequestBody OgpIdDto req) {
+        ogpService.rejectGtOgp(req.getOgpId());
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(), HttpStatus.OK);
+    }
 }
