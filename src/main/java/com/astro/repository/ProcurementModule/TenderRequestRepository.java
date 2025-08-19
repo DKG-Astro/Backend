@@ -39,6 +39,8 @@ public interface TenderRequestRepository extends JpaRepository<TenderRequest, St
             "AND wt.requestId NOT IN (SELECT so.tenderId FROM ServiceOrder so)")
     List<ApprovedTenderIdDtos> findApprovedTenderIdsAndTitlesForPOANDSO();
 
+    List<TenderRequest> findByTenderIdIn(List<String> tenderIds);
+
 
     //  TenderRequest getByTenderId(String tenderId);
 }

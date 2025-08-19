@@ -1,5 +1,6 @@
 package com.astro.controller;
 
+import com.astro.dto.workflow.ProcurementDtos.approvedTenderIdWithTitle;
 import com.astro.dto.workflow.RegisteredVendorsDataDto;
 import com.astro.dto.workflow.VendorContractReportDTO;
 import com.astro.dto.workflow.VendorMasterRequestDto;
@@ -69,7 +70,7 @@ public class VendorMasterController {
     }
     @GetMapping("/approvedtenderIDs/{vendorId}")
     public ResponseEntity<Object> getAllTenderIdsByVendor(@PathVariable String vendorId) {
-        List<String> response = vendorMasterService.getTenderIds(vendorId);
+        List<approvedTenderIdWithTitle> response = vendorMasterService.getTenderIds(vendorId);
         return ResponseEntity.ok(ResponseBuilder.getSuccessResponse(response));
     }
 

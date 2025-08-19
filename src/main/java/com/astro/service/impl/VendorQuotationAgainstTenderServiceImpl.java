@@ -2,14 +2,12 @@ package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.*;
+import com.astro.dto.workflow.ProcurementDtos.AllVendorStatus;
 import com.astro.dto.workflow.ProcurementDtos.QuotationViewHistoryDto;
 import com.astro.dto.workflow.ProcurementDtos.VendorQuotationChangeRequestDto;
+import com.astro.entity.*;
 import com.astro.entity.ProcurementModule.TenderEvaluation;
 import com.astro.entity.ProcurementModule.TenderRequest;
-import com.astro.entity.VendorLoginDetails;
-import com.astro.entity.VendorMaster;
-import com.astro.entity.VendorMasterUtil;
-import com.astro.entity.VendorQuotationAgainstTender;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.repository.*;
@@ -51,6 +49,8 @@ public class VendorQuotationAgainstTenderServiceImpl implements VendorQuotationA
     private TenderRequestRepository tenderRepo;
     @Autowired
     private TenderEvaluationRepository tenderEvaluationRepository;
+    @Autowired
+    private WorkflowTransitionRepository workflowTransitionRepository;
    /* @Override
     public VendorQuotationAgainstTenderDto saveQuotation(VendorQuotationAgainstTenderDto dto) {
         VendorQuotationAgainstTender quotation = new VendorQuotationAgainstTender();
@@ -659,6 +659,74 @@ public boolean acceptVendorQuotation(String tenderId, String vendorId,Integer us
   public List<CompletedVendorsDto> getVendorsNamesWithCompletedQuotation(String tenderId) {
       return vendorQuotationAgainstTenderRepository.findVendorsNameWithCompletedStatus(tenderId);
   }
+
+    @Override
+    public List<AllVendorStatus> getAllVendorStatusOnTenderid(String tenderId) {
+        TenderRequest tenderRequest = tenderRepo.findById(tenderId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Tender not found for the provided asset ID.")
+                ));
+        List<AllVendorStatus> resultList = new ArrayList<>();
+
+        List<String> indentIds = indentRepo.findTenderWithIndent(tenderId);
+
+        List<String> allVendorIds = new ArrayList<>();
+        for (String indentId : indentIds) {
+            List<String> vendorIds = vRepo.findVendorNamesByIndentId(indentId);
+            allVendorIds.addAll(vendorIds);
+        }
+
+        Set<String> uniqueVendorIds = new HashSet<>(allVendorIds);
+
+        for (String vendorId : uniqueVendorIds) {
+            Optional<VendorQuotationAgainstTender> latestOpt =
+                    vendorQuotationAgainstTenderRepository
+                            .findTopByTenderIdAndVendorIdAndIsLatestTrueOrderByVersionDesc(tenderId, vendorId);
+             Optional<VendorMaster> vm =   vendorMasterRepository.findByVendorId(vendorId);
+
+            AllVendorStatus dto = new AllVendorStatus();
+            dto.setTenderId(tenderId);
+            dto.setVendorId(vendorId);
+            if(vm.isPresent()){
+                VendorMaster vendorm = vm.get();
+                dto.setVendorName(vendorm.getVendorName());
+            }
+            if (latestOpt.isPresent()) {
+                VendorQuotationAgainstTender latest = latestOpt.get();
+
+                if(latest.getStatus().equalsIgnoreCase("Completed")){
+                    dto.setStatus("Qualified");
+                    if (tenderRequest.getVendorId() != null
+                            && tenderRequest.getVendorId().equalsIgnoreCase(vendorId)){
+                        String poRequestId = tenderId.replace("T", "PO");
+                        WorkflowTransition wt = workflowTransitionRepository
+                                .findTopByRequestIdOrderByWorkflowSequenceDesc(poRequestId);
+
+                        if (wt.getStatus().equalsIgnoreCase("Completed")) {
+                            dto.setPo("Generated");
+                        } else {
+                            dto.setPo("Proposed");
+                        }
+                    }
+                }else if(latest.getStatus().equalsIgnoreCase("Rejected")){
+                    dto.setStatus("Disqualified");
+                }else {
+                    dto.setStatus("In-progress");
+                }
+
+            } else {
+            }
+
+
+            resultList.add(dto);
+        }
+
+        return resultList;
+    }
 
 
 

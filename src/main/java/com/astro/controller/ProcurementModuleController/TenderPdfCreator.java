@@ -59,7 +59,7 @@ public class TenderPdfCreator {
         }
 
         // Vendor info
-        Optional<VendorMaster> vm = vendorMasterRepository.findByVendorId(vendorId);
+        Optional<VendorMaster> vm = vendorMasterRepository.findByVendorId(tenderData.getVendorId());
         VendorDto vendor = new VendorDto();
         if (vm.isPresent()) {
             VendorMaster ve = vm.get();

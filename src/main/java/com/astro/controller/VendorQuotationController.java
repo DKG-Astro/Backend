@@ -1,6 +1,7 @@
 package com.astro.controller;
 
 import com.astro.dto.workflow.*;
+import com.astro.dto.workflow.ProcurementDtos.AllVendorStatus;
 import com.astro.dto.workflow.ProcurementDtos.QuotationViewHistoryDto;
 import com.astro.dto.workflow.ProcurementDtos.VendorQuotationChangeRequestDto;
 import com.astro.service.VendorQuotationAgainstTenderService;
@@ -128,6 +129,14 @@ public class VendorQuotationController {
         List<String> vendorIds = vqService.getVendorsWithCompletedQuotation(tenderId);
         return new ResponseEntity<>(
                 ResponseBuilder.getSuccessResponse(vendorIds),
+                HttpStatus.OK
+        );
+    }
+    @GetMapping("/all-vendors/Status/{tenderId}")
+    public ResponseEntity<Object> getAllVendorsStatusOfTender(@PathVariable String tenderId) {
+        List<AllVendorStatus> vendor = vqService.getAllVendorStatusOnTenderid(tenderId);
+        return new ResponseEntity<>(
+                ResponseBuilder.getSuccessResponse(vendor),
                 HttpStatus.OK
         );
     }

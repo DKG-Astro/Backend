@@ -2,6 +2,7 @@ package com.astro.service;
 
 
 
+import com.astro.dto.workflow.ProcurementDtos.approvedTenderIdWithTitle;
 import com.astro.dto.workflow.RegisteredVendorsDataDto;
 import com.astro.dto.workflow.VendorContractReportDTO;
 import com.astro.dto.workflow.VendorMasterRequestDto;
@@ -22,7 +23,7 @@ public interface VendorMasterService {
 
     public RegisteredVendorsDataDto getVendorPurchaseOrders(String tenderId);
 
-    public List<String> getTenderIds(String vendorId);
+    public List<approvedTenderIdWithTitle> getTenderIds(String vendorId);
     public boolean checkPanExists(String panNumber);
     public boolean checkEmailExistsForInternational(String email);
 

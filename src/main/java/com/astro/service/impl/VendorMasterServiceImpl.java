@@ -1,6 +1,8 @@
 package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.ProcurementDtos.AllVendorStatus;
+import com.astro.dto.workflow.ProcurementDtos.approvedTenderIdWithTitle;
 import com.astro.dto.workflow.RegisteredVendorsDataDto;
 import com.astro.dto.workflow.VendorContractReportDTO;
 import com.astro.dto.workflow.VendorMasterRequestDto;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -230,7 +233,7 @@ public class VendorMasterServiceImpl implements VendorMasterService {
     }
 
     @Override
-    public List<String> getTenderIds(String vendorId) {
+    public List<approvedTenderIdWithTitle> getTenderIds(String vendorId) {
 
         List<VendorNamesForJobWorkMaterial> vendorMaterials =
                 vendorNamesForJobWorkMaterialRepository.findByVendorName(vendorId);
@@ -246,10 +249,40 @@ public class VendorMasterServiceImpl implements VendorMasterService {
                 .distinct()
                 .collect(Collectors.toList());
 
+     //   List<approvedTenderIdWithTitle> resultList = new ArrayList<>();
+     /*   for(String tenderId : tenderIds){
+            TenderRequest tenderRequest = tenderRequestRepository.findById(tenderId)
+                    .orElseThrow(() -> new BusinessException(
+                            new ErrorDetails(
+                                    AppConstant.ERROR_CODE_RESOURCE,
+                                    AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                    AppConstant.ERROR_TYPE_RESOURCE,
+                                    "Tender not found for the provided asset ID.")
+                    ));
+            approvedTenderIdWithTitle approved = new approvedTenderIdWithTitle();
+            approved.setTenderId(tenderId);
+            approved.setTitle(tenderRequest.getTitleOfTender());
+            resultList.add(approved);
+        }*/
+        // Fetch all TenderRequests in one query
+        List<TenderRequest> tenderRequests = tenderRequestRepository.findByTenderIdIn(tenderIds);
 
-        return tenderIds;
+        // Convert to Map for quick lookup
+        Map<String, TenderRequest> tenderRequestMap = tenderRequests.stream()
+                .collect(Collectors.toMap(TenderRequest::getTenderId, tr -> tr));
 
-        
+        List<approvedTenderIdWithTitle> resultList = new ArrayList<>();
+        for (String tenderId : tenderIds) {
+            TenderRequest tenderRequest = tenderRequestMap.get(tenderId);
+            if (tenderRequest != null) {
+                approvedTenderIdWithTitle approved = new approvedTenderIdWithTitle();
+                approved.setTenderId(tenderId);
+                approved.setTitle(tenderRequest.getTitleOfTender());
+                resultList.add(approved);
+            }
+        }
+
+        return resultList;
     }
 
 

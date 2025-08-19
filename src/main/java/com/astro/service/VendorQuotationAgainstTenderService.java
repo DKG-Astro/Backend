@@ -1,6 +1,7 @@
 package com.astro.service;
 
 import com.astro.dto.workflow.*;
+import com.astro.dto.workflow.ProcurementDtos.AllVendorStatus;
 import com.astro.dto.workflow.ProcurementDtos.QuotationViewHistoryDto;
 import com.astro.dto.workflow.ProcurementDtos.VendorQuotationChangeRequestDto;
 import org.springframework.stereotype.Service;
@@ -30,5 +31,6 @@ public interface VendorQuotationAgainstTenderService {
     public List<TenderEvaluationHistory> getFullQuotationHistory(String tenderId, String vendorId);
     List<String> getVendorsWithCompletedQuotation(String tenderId);
     public List<CompletedVendorsDto> getVendorsNamesWithCompletedQuotation(String tenderId);
+    public List<AllVendorStatus> getAllVendorStatusOnTenderid(String tenderId);
 
     }
