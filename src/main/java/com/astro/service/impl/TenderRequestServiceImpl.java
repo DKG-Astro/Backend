@@ -1099,6 +1099,12 @@ public List<SearchTenderIdDto> searchTenderIds(String type, String value) {
   public List<ApprovedTenderIdDtos> getApprovedTenderIdsForTenderEvaluation() {
       return TRrepo.findApprovedTenderIdsAndTitlesForPOANDSO();
   }
+  @Override
+  public List<ApprovedTenderIdDtos> getApprovedTenderIdsForGemTenderEvaluation() {
+        return TRrepo.findApprovedTenderIdsForGemAndTitlesForPOANDSO();
+  }
+
+
 
 
 

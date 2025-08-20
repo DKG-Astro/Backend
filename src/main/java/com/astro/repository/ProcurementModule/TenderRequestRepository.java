@@ -39,6 +39,18 @@ public interface TenderRequestRepository extends JpaRepository<TenderRequest, St
             "AND wt.requestId NOT IN (SELECT so.tenderId FROM ServiceOrder so)")
     List<ApprovedTenderIdDtos> findApprovedTenderIdsAndTitlesForPOANDSO();
 
+    @Query("SELECT new com.astro.dto.workflow.ProcurementDtos.ApprovedTenderIdDtos(wt.requestId, tr.titleOfTender) " +
+            "FROM WorkflowTransition wt " +
+            "JOIN TenderRequest tr ON tr.tenderId = wt.requestId " +
+            "WHERE wt.workflowName = 'Tender Approver Workflow' " +
+            "AND wt.status = 'Completed' " +
+            "AND wt.nextAction IS NULL " +
+           // "AND wt.requestId NOT IN (SELECT po.tenderId FROM PurchaseOrder po) " +
+           // "AND wt.requestId NOT IN (SELECT so.tenderId FROM ServiceOrder so) " +
+            "AND tr.modeOfProcurement IN ('Gem','CPPP')")   // filter applied
+    List<ApprovedTenderIdDtos> findApprovedTenderIdsForGemAndTitlesForPOANDSO();
+
+
     List<TenderRequest> findByTenderIdIn(List<String> tenderIds);
 
 

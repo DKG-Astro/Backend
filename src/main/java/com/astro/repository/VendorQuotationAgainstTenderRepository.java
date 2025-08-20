@@ -80,7 +80,7 @@ public interface VendorQuotationAgainstTenderRepository extends JpaRepository<Ve
           AND UPPER(v.status) = 'COMPLETED'
     """)
     List<String> findVendorIdsWithCompletedStatus(@Param("tenderId") String tenderId);
-  @Query("""
+ /* @Query("""
     SELECT DISTINCT new com.astro.dto.workflow.CompletedVendorsDto(vq.vendorId, vm.vendorName)
     FROM VendorQuotationAgainstTender vq
     JOIN VendorMaster vm ON vq.vendorId = vm.vendorId
@@ -88,7 +88,37 @@ public interface VendorQuotationAgainstTenderRepository extends JpaRepository<Ve
       AND vq.isLatest = true
       AND UPPER(vq.status) = 'COMPLETED'
 """)
-  List<CompletedVendorsDto> findVendorsNameWithCompletedStatus(@Param("tenderId") String tenderId);
+  List<CompletedVendorsDto> findVendorsNameWithCompletedStatus(@Param("tenderId") String tenderId);*/
+ // For VendorMaster (vendorId starts with "V")
+ @Query("""
+    SELECT new com.astro.dto.workflow.CompletedVendorsDto(vq.vendorId, vm.vendorName)
+    FROM VendorQuotationAgainstTender vq
+    JOIN VendorMaster vm ON vq.vendorId = vm.vendorId
+    WHERE vq.tenderId = :tenderId
+      AND vq.isLatest = true
+      AND UPPER(vq.status) = 'COMPLETED'
+      AND vq.vendorId LIKE 'V%'
+""")
+ List<CompletedVendorsDto> findVendorMasterCompleted(@Param("tenderId") String tenderId);
+
+    // For GemVendorIdTracker (vendorId starts with "Gem")
+    @Query("""
+    SELECT new com.astro.dto.workflow.CompletedVendorsDto(
+        gem.gemVendorId, gem.vendorName)
+    FROM GemVendorIdTracker gem
+    JOIN VendorQuotationAgainstTender vq ON vq.vendorId = gem.gemVendorId
+    WHERE vq.tenderId = :tenderId
+      AND vq.isLatest = true
+      AND UPPER(vq.status) = 'COMPLETED'
+      AND vq.vendorId LIKE 'Gem%'
+""")
+    List<CompletedVendorsDto> findGemVendorCompleted(@Param("tenderId") String tenderId);
+
+    @Query("SELECT v.vendorId " +
+            "FROM VendorQuotationAgainstTender v " +
+            "WHERE v.tenderId = :tenderId " +
+            "AND v.isLatest = true")
+    List<String> findLatestVendorIdsByTenderId(@Param("tenderId") String tenderId);
 
 
 }

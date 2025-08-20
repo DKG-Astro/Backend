@@ -248,23 +248,6 @@ public class VendorMasterServiceImpl implements VendorMasterService {
                 .filter(approvedTenderIds::contains)
                 .distinct()
                 .collect(Collectors.toList());
-
-     //   List<approvedTenderIdWithTitle> resultList = new ArrayList<>();
-     /*   for(String tenderId : tenderIds){
-            TenderRequest tenderRequest = tenderRequestRepository.findById(tenderId)
-                    .orElseThrow(() -> new BusinessException(
-                            new ErrorDetails(
-                                    AppConstant.ERROR_CODE_RESOURCE,
-                                    AppConstant.ERROR_TYPE_CODE_RESOURCE,
-                                    AppConstant.ERROR_TYPE_RESOURCE,
-                                    "Tender not found for the provided asset ID.")
-                    ));
-            approvedTenderIdWithTitle approved = new approvedTenderIdWithTitle();
-            approved.setTenderId(tenderId);
-            approved.setTitle(tenderRequest.getTitleOfTender());
-            resultList.add(approved);
-        }*/
-        // Fetch all TenderRequests in one query
         List<TenderRequest> tenderRequests = tenderRequestRepository.findByTenderIdIn(tenderIds);
 
         // Convert to Map for quick lookup

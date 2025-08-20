@@ -140,6 +140,14 @@ public class VendorQuotationController {
                 HttpStatus.OK
         );
     }
+    @GetMapping("/all-gem-vendors/Status/{tenderId}")
+    public ResponseEntity<Object> getAllGemVendorsStatusOfTender(@PathVariable String tenderId) {
+        List<AllVendorStatus> vendor = vqService.getAllVendorStatusOnTenderidsForGem(tenderId);
+        return new ResponseEntity<>(
+                ResponseBuilder.getSuccessResponse(vendor),
+                HttpStatus.OK
+        );
+    }
 
     @GetMapping("/completed-vendorNames/{tenderId}")
     public ResponseEntity<Object> getVendorsNamesWithCompletedStatus(@PathVariable String tenderId) {

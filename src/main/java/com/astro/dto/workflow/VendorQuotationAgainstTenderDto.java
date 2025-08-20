@@ -22,6 +22,7 @@ public class VendorQuotationAgainstTenderDto {
     private boolean canSpoAct;
     private String clarificationFileName;
     private String vendorResponse;
+    private String type;
 
 
 

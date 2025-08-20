@@ -32,5 +32,6 @@ public interface VendorQuotationAgainstTenderService {
     List<String> getVendorsWithCompletedQuotation(String tenderId);
     public List<CompletedVendorsDto> getVendorsNamesWithCompletedQuotation(String tenderId);
     public List<AllVendorStatus> getAllVendorStatusOnTenderid(String tenderId);
+    public List<AllVendorStatus> getAllVendorStatusOnTenderidsForGem(String tenderId);
 
     }

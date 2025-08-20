@@ -6,6 +6,7 @@ import com.astro.dto.workflow.ProcurementDtos.AllVendorStatus;
 import com.astro.dto.workflow.ProcurementDtos.QuotationViewHistoryDto;
 import com.astro.dto.workflow.ProcurementDtos.VendorQuotationChangeRequestDto;
 import com.astro.entity.*;
+import com.astro.entity.GemVendorIdTracker;
 import com.astro.entity.ProcurementModule.TenderEvaluation;
 import com.astro.entity.ProcurementModule.TenderRequest;
 import com.astro.exception.BusinessException;
@@ -51,6 +52,8 @@ public class VendorQuotationAgainstTenderServiceImpl implements VendorQuotationA
     private TenderEvaluationRepository tenderEvaluationRepository;
     @Autowired
     private WorkflowTransitionRepository workflowTransitionRepository;
+    @Autowired
+    private GemVendorIdTrackerRepository gemVendorIdTrackerRepository;
    /* @Override
     public VendorQuotationAgainstTenderDto saveQuotation(VendorQuotationAgainstTenderDto dto) {
         VendorQuotationAgainstTender quotation = new VendorQuotationAgainstTender();
@@ -101,6 +104,22 @@ public class VendorQuotationAgainstTenderServiceImpl implements VendorQuotationA
    }*/
    @Override
    public VendorQuotationAgainstTenderDto saveQuotation(VendorQuotationAgainstTenderDto dto) {
+
+       if (dto.getVendorId() == null && "GEM".equalsIgnoreCase(dto.getType())) {
+           // get last vendorId
+           Optional<GemVendorIdTracker> latest = gemVendorIdTrackerRepository.findTopByOrderByVendorIdDesc();
+           Long newVendorId = latest.map(v -> v.getVendorId() + 1).orElse(1000L); // start from 1000
+           String vendorId = "GEM" + newVendorId;
+           // save new vendor entry
+           GemVendorIdTracker tracker = new GemVendorIdTracker();
+           tracker.setVendorId(newVendorId);
+           tracker.setVendorName(dto.getVendorName());
+           tracker.setGemVendorId(vendorId);
+           gemVendorIdTrackerRepository.save(tracker);
+           // assign back to DTO
+           dto.setVendorId(vendorId);
+       }
+
        List<VendorQuotationAgainstTender> existingQuotations =
                vendorQuotationAgainstTenderRepository.findAllByTenderIdAndVendorId(dto.getTenderId(), dto.getVendorId());
 
@@ -171,11 +190,27 @@ public class VendorQuotationAgainstTenderServiceImpl implements VendorQuotationA
                .map(vq -> {
                    VendorQuotationAgainstTenderDto dto = new VendorQuotationAgainstTenderDto();
                    dto.setTenderId(vq.getTenderId());
-                  Optional<VendorMaster> vm = vendorMasterRepository.findByVendorId(vq.getVendorId());
+                /*  Optional<VendorMaster> vm = vendorMasterRepository.findByVendorId(vq.getVendorId());
                   if(vm.isPresent()){
                       VendorMaster vendor = vm.get();
                       dto.setVendorName(vendor.getVendorName());
-                  }
+                  }*/
+                   String vendorId = vq.getVendorId();
+
+                   if (vendorId.startsWith("V")) {
+                       Optional<VendorMaster> vm = vendorMasterRepository.findByVendorId(vendorId);
+                       if(vm.isPresent()){
+                           VendorMaster vendor = vm.get();
+                           dto.setVendorName(vendor.getVendorName());
+                       }
+                   } else if (vendorId.startsWith("GEM")) {
+                       Optional<GemVendorIdTracker> gemVendor =
+                               gemVendorIdTrackerRepository.findByGemVendorId(vendorId);
+                       if (gemVendor.isPresent()) {
+                           GemVendorIdTracker gem = gemVendor.get();
+                          dto.setVendorName(gem.getVendorName());
+                       }
+                   }
                    dto.setVendorId(vq.getVendorId());
                    dto.setQuotationFileName(vq.getQuotationFileName());
                    dto.setFileType(vq.getFileType());
@@ -657,7 +692,11 @@ public boolean acceptVendorQuotation(String tenderId, String vendorId,Integer us
     }
   @Override
   public List<CompletedVendorsDto> getVendorsNamesWithCompletedQuotation(String tenderId) {
-      return vendorQuotationAgainstTenderRepository.findVendorsNameWithCompletedStatus(tenderId);
+     // return vendorQuotationAgainstTenderRepository.findVendorsNameWithCompletedStatus(tenderId);
+      List<CompletedVendorsDto> allVendors = new ArrayList<>();
+      allVendors.addAll(vendorQuotationAgainstTenderRepository.findVendorMasterCompleted(tenderId));
+      allVendors.addAll(vendorQuotationAgainstTenderRepository.findGemVendorCompleted(tenderId));
+   return allVendors;
   }
 
     @Override
@@ -693,6 +732,75 @@ public boolean acceptVendorQuotation(String tenderId, String vendorId,Integer us
             dto.setVendorId(vendorId);
             if(vm.isPresent()){
                 VendorMaster vendorm = vm.get();
+                dto.setVendorName(vendorm.getVendorName());
+            }
+            if (latestOpt.isPresent()) {
+                VendorQuotationAgainstTender latest = latestOpt.get();
+
+                if(latest.getStatus().equalsIgnoreCase("Completed")){
+                    dto.setStatus("Qualified");
+                    if (tenderRequest.getVendorId() != null
+                            && tenderRequest.getVendorId().equalsIgnoreCase(vendorId)){
+                        String poRequestId = tenderId.replace("T", "PO");
+                        WorkflowTransition wt = workflowTransitionRepository
+                                .findTopByRequestIdOrderByWorkflowSequenceDesc(poRequestId);
+
+                        if (wt.getStatus().equalsIgnoreCase("Completed")) {
+                            dto.setPo("Generated");
+                        } else {
+                            dto.setPo("Proposed");
+                        }
+                    }
+                }else if(latest.getStatus().equalsIgnoreCase("Rejected")){
+                    dto.setStatus("Disqualified");
+                }else {
+                    dto.setStatus("In-progress");
+                }
+
+            } else {
+            }
+
+
+            resultList.add(dto);
+        }
+
+        return resultList;
+    }
+    @Override
+    public List<AllVendorStatus> getAllVendorStatusOnTenderidsForGem(String tenderId) {
+        TenderRequest tenderRequest = tenderRepo.findById(tenderId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Tender not found for the provided asset ID.")
+                ));
+        List<AllVendorStatus> resultList = new ArrayList<>();
+
+       // List<String> indentIds = indentRepo.findTenderWithIndent(tenderId);
+
+       /* List<String> allVendorIds = new ArrayList<>();
+        for (String indentId : indentIds) {
+            List<String> vendorIds = vRepo.findVendorNamesByIndentId(indentId);
+            allVendorIds.addAll(vendorIds);
+        }*/
+        List<String> allVendorIds = vendorQuotationAgainstTenderRepository.findLatestVendorIdsByTenderId(tenderId);
+
+        Set<String> uniqueVendorIds = new HashSet<>(allVendorIds);
+
+        for (String vendorId : uniqueVendorIds) {
+            Optional<VendorQuotationAgainstTender> latestOpt =
+                    vendorQuotationAgainstTenderRepository
+                            .findTopByTenderIdAndVendorIdAndIsLatestTrueOrderByVersionDesc(tenderId, vendorId);
+           // Optional<VendorMaster> vm =   vendorMasterRepository.findByVendorId(vendorId);
+             Optional<GemVendorIdTracker> gem = gemVendorIdTrackerRepository.findByGemVendorId(vendorId);
+
+            AllVendorStatus dto = new AllVendorStatus();
+            dto.setTenderId(tenderId);
+            dto.setVendorId(vendorId);
+            if(gem.isPresent()){
+                GemVendorIdTracker vendorm = gem.get();
                 dto.setVendorName(vendorm.getVendorName());
             }
             if (latestOpt.isPresent()) {
