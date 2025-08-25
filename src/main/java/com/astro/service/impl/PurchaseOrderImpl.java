@@ -3,9 +3,11 @@ package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
 
+import com.astro.dto.workflow.MaterialTransitionHistory;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.SearchIndentIdDto;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.materialHistoryDto;
 import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.*;
@@ -34,16 +36,21 @@ import com.astro.service.IndentCreationService;
 import com.astro.service.PurchaseOrderService;
 import com.astro.service.TenderRequestService;
 import com.astro.util.CommonUtils;
+import com.azure.core.http.rest.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import net.bytebuddy.ClassFileVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -846,8 +853,8 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
 
             dto.setOrderNo((String) row[0]);
 
-            if (row[1] instanceof java.sql.Date) {
-                dto.setOrderDate(((java.sql.Date) row[1]).toLocalDate());
+            if (row[1] instanceof Date) {
+                dto.setOrderDate(((Date) row[1]).toLocalDate());
             } else if (row[1] instanceof LocalDate) {
                 dto.setOrderDate((LocalDate) row[1]);
             }
@@ -870,7 +877,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
 
             //  deliveryDate may or may not be present
             if (row.length > 6 && row[6] != null) {
-                dto.setDeliveryDate(CommonUtils.convertDateToString(((java.sql.Date) row[6]).toLocalDate()));
+                dto.setDeliveryDate(CommonUtils.convertDateToString(((Date) row[6]).toLocalDate()));
             } else {
                 dto.setDeliveryDate(null);
             }
@@ -1070,6 +1077,17 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
 
         return result;
     }
+
+
+ /*   public List<materialHistoryDto> materialHistory(String materialCode) {
+
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<materialHistoryDto> history = purchaseOrderRepository.findMaterialHistory(materialCode, pageable);
+        return history.getContent();
+    }*/
+
+
+
 
 
 

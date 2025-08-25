@@ -130,7 +130,6 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation, 
                   
                   """, nativeQuery = true)
     List<Object[]> fetchIndentReportDetails(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
-
     @Query(value = """
                    SELECT
                        indent.created_date AS 'Date',

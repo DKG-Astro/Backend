@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -100,9 +102,9 @@ WHERE wt.status = :status
     """, nativeQuery = true)
     Boolean isPoCompleted(@Param("requestId") String requestId);
 
-
-
-
-
+    @Query("SELECT w FROM WorkflowTransition w " +
+            "WHERE w.status NOT IN ('Completed','APPROVED','Rejected') " +
+            "AND w.createdDate <= :threshold")
+    List<WorkflowTransition> findPendingOlderThan(@Param("threshold") Date threshold);
 
 }

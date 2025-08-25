@@ -1,13 +1,16 @@
 package com.astro.repository.ProcurementModule.PurchaseOrder;
 
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.materialHistoryDto;
 import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.SearchPOIdDto;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
+import com.azure.core.http.rest.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.awt.print.Pageable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -258,6 +261,18 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, St
             "FROM PurchaseOrder p WHERE p.vendorId = :vendorName")
     List<SearchPOIdDto> findPoIdsByVendorName(@Param("vendorName") String vendorName);
 
+    @Query("SELECT po FROM PurchaseOrder po " +
+            "WHERE po.deliveryDate <= :endDate " +
+            "AND NOT EXISTS (SELECT g FROM GrnMasterEntity g WHERE g.grnProcessId = SUBSTRING(po.poId, 3))")
+    List<PurchaseOrder> findPOsExpiringWithoutGRN(@Param("endDate") LocalDate endDate);
+
+
+  /*  @Query("SELECT new com.astro.dto.materialHistoryDto(p.poId, CAST(p.createdDate AS string), p.vendorName) " +
+            "FROM PurchaseOrder p " +
+            "JOIN p.purchaseOrderAttributes a " +
+            "WHERE a.materialCode = :materialCode " +
+            "ORDER BY p.createdDate DESC, p.poId DESC")
+    Page<materialHistoryDto> findMaterialHistory(@Param("materialCode") String materialCode, Pageable pageable);*/
 
 
     // PurchaseOrder getByPoId(String poId);

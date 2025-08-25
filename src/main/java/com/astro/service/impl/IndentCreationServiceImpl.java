@@ -854,6 +854,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         // Fetch results from the repository
         List<Object[]> results = indentCreationRepository.fetchIndentReportDetails(startLocalDate, endLocalDate);
 
+        System.out.println(results);
         // Map results to DTO
         return results.stream().map(result -> {
 
@@ -904,6 +905,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
     @Override
     public List<materialHistoryDto> getIndentIdAndUserId(String materialCode) {
         List<String> indentIds = materialDetailsRepository.findIndentIdsByMaterialCode(materialCode);
+
 
         return indentIds.stream()
                 .map(id -> {

@@ -1,8 +1,10 @@
 package com.astro.util;
 import com.astro.dto.workflow.SubWorkflowTransitionDto;
 import com.astro.dto.workflow.WorkflowTransitionDto;
+import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.UserMaster;
 import com.astro.entity.VendorMaster;
+import com.astro.entity.WorkflowTransition;
 import com.astro.repository.UserMasterRepository;
 import com.astro.repository.VendorMasterRepository;
 import com.astro.service.TenderRequestService;
@@ -244,7 +246,156 @@ private void sendMail(List<String> toEmails, String subject, String htmlContent)
         mailSender.send(message);
     }
 
+        @Async
+        public void sendReminder(String approverRole, List<WorkflowTransition> transitions) {
+            for (WorkflowTransition wt : transitions) {
+                try {
+                    sendWorkflowReminderEmail(wt);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    // Optionally log the failed email
+                }
+            }
+        }
+
+        private void sendWorkflowReminderEmail(WorkflowTransition wt) throws MessagingException {
+            // Prepare Thymeleaf context
+            Context context = new Context();
+            context.setVariable("workflowName", wt.getWorkflowName());
+            context.setVariable("requestId", wt.getRequestId());
+            context.setVariable("createdBy", wt.getCreatedBy());
+            context.setVariable("status", wt.getStatus());
+            context.setVariable("nextAction", wt.getNextAction());
+            context.setVariable("currentRole", wt.getCurrentRole());
+            context.setVariable("nextRole", wt.getNextRole());
+
+            String body = templateEngine.process("workflow-reminder-email-template", context);
+
+            // Example: fetch emails by role from database
+            List<String> recipients = getEmailsForRole(wt.getNextRole());
+
+            sendRemainderMail(recipients, "Pending Workflow Approval - Request ID: " + wt.getRequestId(), body);
+        }
+        /*
+
+        private List<String> getEmailsForRole(String role) {
+            // Replace with actual DB call to fetch emails for this role
+            if (role.equals("Reporting Officer")) {
+                return Arrays.asList("udaychowdhary743@gmail.com");
+            } else if (role.equals("Project Head")) {
+                return Arrays.asList("satish.k@iiap.res.in");
+            }
+            return new ArrayList<>();
+        }
+*/
+        private List<String> getEmailsForRole(String role) {
+            // Send all reminders to this single email
+            return Arrays.asList("udaychowdhary743@gmail.com");
+        }
+
+    private void sendRemainderMail(List<String> toEmails, String subject, String body) throws MessagingException {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom("iiapdkg@gmail.com");
+            helper.setTo(toEmails.toArray(new String[0]));
+            helper.setSubject(subject);
+            helper.setText(body, true); // true = HTML
+
+            mailSender.send(message);
+        }
+
+  /*  @Async
+    public void sendPONotifications(List<PurchaseOrder> poList) {
+        for (PurchaseOrder po : poList) {
+            try {
+                notifyPurchaseDeptGrnIsNotGenerated(po);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void notifyPurchaseDeptGrnIsNotGenerated(PurchaseOrder po) throws MessagingException {
+        // Prepare Thymeleaf context
+        Context context = new Context();
+        context.setVariable("poId", po.getPoId());
+        context.setVariable("vendorName", po.getVendorName());
+        context.setVariable("projectName", po.getProjectName());
+        context.setVariable("deliveryDate", po.getDeliveryDate());
+        context.setVariable("totalValue", po.getTotalValueOfPo());
+
+        // Process the Thymeleaf template (create purchase-grn-notification-template.html)
+        String body = templateEngine.process("purchase-grn-notification-template", context);
+
+        // Fetch recipients - you can hardcode or fetch from DB
+        List<String> recipients = getPurchaseDeptEmails();
+
+        // Send the email
+        sendNotificationMail(recipients,
+                "PO Delivery Expiring Soon & GRN Not Generated - PO: " + po.getPoId(),
+                body);
+    }
+
+    // Example method to get recipients
+    private List<String> getPurchaseDeptEmails() {
+        return Arrays.asList("udaychowdhary743@gmail.com");
+    }
+
+    // Method to send email
+    private void sendNotificationMail(List<String> toEmails, String subject, String body) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setFrom("iiapdkg@gmail.com");
+        helper.setTo(toEmails.toArray(new String[0]));
+        helper.setSubject(subject);
+        helper.setText(body, true); // true = HTML
+
+        mailSender.send(message);
+    }*/
+  @Async
+  public void sendPONotification(PurchaseOrder po, List<String> recipients) {
+      try {
+          notifyPurchaseDeptGrnIsNotGenerated(po, recipients);
+      } catch (Exception e) {
+          e.printStackTrace();
+          // log the error properly instead of just stack trace
+      }
+  }
+
+    private void notifyPurchaseDeptGrnIsNotGenerated(PurchaseOrder po, List<String> recipients) throws MessagingException {
+        // Prepare Thymeleaf context
+        Context context = new Context();
+        context.setVariable("poId", po.getPoId());
+        context.setVariable("vendorName", po.getVendorName());
+        context.setVariable("projectName", po.getProjectName());
+        context.setVariable("deliveryDate", po.getDeliveryDate());
+        context.setVariable("totalValue", po.getTotalValueOfPo());
+
+        // Process the Thymeleaf template
+        String body = templateEngine.process("purchase-grn-notification-template", context);
+
+        // Send email to recipients
+        sendNotificationMail(
+                recipients,
+                "PO Delivery Expiring Soon & GRN Not Generated - PO: " + po.getPoId(),
+                body
+        );
+    }
+    private void sendNotificationMail(List<String> toEmails, String subject, String body) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setFrom("iiapdkg@gmail.com");
+        helper.setTo(toEmails.toArray(new String[0]));
+        helper.setSubject(subject);
+        helper.setText(body, true); // true = HTML
+
+        mailSender.send(message);
+    }
+
+
 }
+
+
 
 
 
