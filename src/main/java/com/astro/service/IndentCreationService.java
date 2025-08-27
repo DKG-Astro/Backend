@@ -1,5 +1,6 @@
 package com.astro.service;
 
+import com.astro.dto.workflow.AssignEmployeeToIndentDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.*;
 import com.astro.dto.workflow.ProcurementDtos.IndentWorkflowStatusDto;
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ApprovedSoListReportDto;
@@ -38,5 +39,7 @@ public interface IndentCreationService {
     public List<IndentWorkflowStatusDto> getIndentWorkflowStatus(String indentId);
 
    public List<SearchIndentIdDto> searchIndentIds(String type, String value);
+
+    public String assignEmployeeToIndent(AssignEmployeeToIndentDto dto);
 
 }

@@ -39,6 +39,7 @@ public class poWithTenderAndIndentResponseDTO {
  private String comparativeStatementFileName;
  private LocalDateTime createdDate;
  private LocalDateTime updatedDate;
+ private List<String> gemContractFileName;
 
  private TenderWithIndentResponseDTO tenderDetails;
 

@@ -2,9 +2,12 @@ package com.astro.service;
 
 
 
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.materialHistoryDto;
 import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
+import com.astro.dto.workflow.ProcurementDtos.performanceWarrsntySecurityReportDto;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.*;
 import com.astro.dto.workflow.VendorContractReportDTO;
+import com.astro.dto.workflow.poMaterialHistoryDto;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,7 +21,7 @@ public interface PurchaseOrderService {
 
    public List<PurchaseOrderResponseDTO > getAllPurchaseOrders();
 
-    public poWithTenderAndIndentResponseDTO getPurchaseOrderById(String poId);
+    public poWithTenderAndIndentResponseDTO getPurchaseOrderById(String poId) ;
     public PoWithTenderAndIndentBase64FilesDto getPurchaseOrderBase64FilesById(String poId) throws IOException;
     public void deletePurchaseOrder(String poId);
 
@@ -35,5 +38,9 @@ public interface PurchaseOrderService {
     public List<MonthlyProcurementReportDto> getMonthlyProcurementReport(String startDate, String endDate);
 
     public List<SearchPOIdDto> searchPOIds(String type, String value);
+
+    public List<poMaterialHistoryDto> getLatestPurchaseOrders(String materialCode);
+
+    public List<performanceWarrsntySecurityReportDto> getPerformanceSecurityReport(String startDate, String endDate);
 
 }

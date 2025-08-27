@@ -351,7 +351,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         return workflowTransitionDtoList;
     }
 
-    @Override
+ /*   @Override
     public List<QueueResponse> allCompletedWorkflowTransition(String roleName) {
         List<WorkflowTransitionDto> workflowTransitionDtoList = new ArrayList<>();
         List<QueueResponse> queueResponseList = new ArrayList<>();
@@ -364,7 +364,7 @@ public class WorkflowServiceImpl implements WorkflowService {
             }).collect(Collectors.toList());
         }*
 
-      */  List<WorkflowTransition> workflowTransitionList = workflowTransitionRepository.findValidTransitions(AppConstant.COMPLETED_TYPE, workflowId);
+      */ /* List<WorkflowTransition> workflowTransitionList = workflowTransitionRepository.findValidTransitions(AppConstant.COMPLETED_TYPE, workflowId);
 
         if (Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()) {
             queueResponseList = workflowTransitionList.stream()
@@ -374,7 +374,20 @@ public class WorkflowServiceImpl implements WorkflowService {
         }
 
         return queueResponseList;
-    }
+    }*/
+ public List<QueueResponse> allCompletedWorkflowTransition(String roleName) {
+     int workflowId = 1;
+
+     return workflowTransitionRepository.findValidTransitions(AppConstant.COMPLETED_TYPE, workflowId)
+             .stream()
+             .filter(transition -> !indentCreationRepository.isAssigned(transition.getRequestId())) // only not assigned
+             .sorted(Comparator.comparing(WorkflowTransition::getRequestId)
+                     .thenComparing(WorkflowTransition::getCreatedDate))
+             .map(this::mapToQueueResponse)
+             .collect(Collectors.toList());
+ }
+
+
 
    /* @Override
     public List<String> allPreviousRoleWorkflowTransition(Integer workflowId, String requestId) {

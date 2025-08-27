@@ -3,9 +3,11 @@ package com.astro.controller.ProcurementModuleController;
 
 
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.SearchIndentIdDto;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.materialHistoryDto;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.*;
 
 import com.astro.dto.workflow.WorkflowTransitionDto;
+import com.astro.dto.workflow.poMaterialHistoryDto;
 import com.astro.entity.UserMaster;
 import com.astro.service.PurchaseOrderService;
 import com.astro.service.UserService;
@@ -69,7 +71,7 @@ public class PurchaseOrderController {
 
     // Get a PO by ID
     @GetMapping("/{poId}")
-    public ResponseEntity<Object> getPurchaseOrderById(@PathVariable String poId){
+    public ResponseEntity<Object> getPurchaseOrderById(@PathVariable String poId)  {
         poWithTenderAndIndentResponseDTO po = poService.getPurchaseOrderById(poId);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(po), HttpStatus.OK);
     }
@@ -95,6 +97,12 @@ public class PurchaseOrderController {
         List<SearchPOIdDto> result = poService.searchPOIds(type, value);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(result), HttpStatus.OK);
 
+    }
+
+    @GetMapping("/materialHistoryPo/{materialCode}")
+    public ResponseEntity<Object> getMaterialHistory(@PathVariable String materialCode) {
+        List<poMaterialHistoryDto> responseDTO = poService.getLatestPurchaseOrders(materialCode);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 
 

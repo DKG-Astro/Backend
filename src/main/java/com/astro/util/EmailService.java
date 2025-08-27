@@ -1,6 +1,7 @@
 package com.astro.util;
 import com.astro.dto.workflow.SubWorkflowTransitionDto;
 import com.astro.dto.workflow.WorkflowTransitionDto;
+import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.UserMaster;
 import com.astro.entity.VendorMaster;
@@ -40,8 +41,7 @@ public class EmailService {
     private UserMasterRepository userMasterRepository;
     @Autowired
     private SpringTemplateEngine templateEngine;
-    @Autowired
-    private TenderRequestService TRService;
+
     @Autowired
     private VendorMasterRepository vendorMasterRepository;
     @Autowired
@@ -388,6 +388,39 @@ private void sendMail(List<String> toEmails, String subject, String htmlContent)
         helper.setTo(toEmails.toArray(new String[0]));
         helper.setSubject(subject);
         helper.setText(body, true); // true = HTML
+
+        mailSender.send(message);
+    }
+
+
+    //mail to employee when purchase dept assigned indent to employee
+    @Async
+    public void notifyEmployeeAssigned(IndentCreation indent ,String  recipients) throws MessagingException {
+        // Prepare Thymeleaf context
+        Context context = new Context();
+        context.setVariable("indentId", indent.getIndentId());
+        context.setVariable("employeeName", indent.getEmployeeName());
+        context.setVariable("projectName", indent.getProjectName());
+        context.setVariable("indentorName", indent.getIndentorName());
+        context.setVariable("employeeId", indent.getEmployeeId());
+
+        // Process Thymeleaf template
+        String body = templateEngine.process("employee-assignment-notification", context);
+
+        // Send email
+        sendNotificationMailToEmployee(recipients, // or employee email if you store it
+                "Indent Assigned to You - ID: " + indent.getIndentId(),
+                body
+        );
+    }
+
+    private void sendNotificationMailToEmployee(String toEmail, String subject, String body) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setFrom("iiapdkg@gmail.com");
+        helper.setTo(toEmail);
+        helper.setSubject(subject);
+        helper.setText(body, true);
 
         mailSender.send(message);
     }

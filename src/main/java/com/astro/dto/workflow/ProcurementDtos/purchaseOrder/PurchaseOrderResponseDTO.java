@@ -33,6 +33,7 @@ public class PurchaseOrderResponseDTO {
     private BigDecimal projectLimit;
     private String deliveryDate;
     private String comparativeStatementFileName;
+    private List<String> gemContractFileName;
     private List<PurchaseOrderAttributesResponseDTO> purchaseOrderAttributes;
     private Integer createdBy;
     private String updatedBy;

@@ -60,6 +60,21 @@ public class PurchaseOrder {
     @Column(name = "delivery_date")
     private LocalDate deliveryDate;
     private String comparativeStatementFileName;
+    @Column(name = "gem_contract_file_name")
+    private String gemContractUpload;
+
+    @Column(name = "type_of_security")
+    private String typeOfSecurity;
+
+    @Column(name = "security_number")
+    private String securityNumber;
+
+    @Column(name = "security_date")
+    private LocalDate securityDate;
+
+    @Column(name = "expiry_date")
+    private LocalDate expiryDate;
+
    // @OneToMany(cascade = CascadeType.ALL)
    // @JoinColumn(name = "purchase_order_id")
   /* @ManyToMany(cascade = CascadeType.PERSIST)

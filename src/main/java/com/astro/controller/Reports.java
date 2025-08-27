@@ -8,6 +8,7 @@ import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentListReportDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentReportDetailsDTO;
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ApprovedSoListReportDto;
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.PendingSoReportDto;
+import com.astro.dto.workflow.ProcurementDtos.performanceWarrsntySecurityReportDto;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.*;
 import com.astro.repository.InventoryModule.AssetMasterRepository;
 import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
@@ -227,6 +228,14 @@ public class Reports {
     public ResponseEntity<Object> getAssetReport() {
 
         List<AssetMasterReportDto> response = assetMasterService.getAssetReport();
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+    }
+    @GetMapping("/performanceSecurityReport")
+    public ResponseEntity<Object> getPerformanceSecurityReport(  @RequestParam String startDate,
+                                                                 @RequestParam String endDate) {
+
+        List<performanceWarrsntySecurityReportDto> response = purchaseOrderService.getPerformanceSecurityReport( startDate,
+               endDate);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
     

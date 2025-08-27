@@ -44,6 +44,14 @@ public class PoWithTenderAndIndentBase64FilesDto {
         private String processStage;
 
         private TenderWithIndentResponseDTO tenderDetails;
+        private List<String> gemContractFileName;
+        private String typeOfSecurity;
+
+        private String securityNumber;
+
+        private String securityDate;
+
+        private String expiryDate;
 
 
 }

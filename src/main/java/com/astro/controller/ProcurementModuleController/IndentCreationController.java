@@ -1,6 +1,7 @@
 package com.astro.controller.ProcurementModuleController;
 
 
+import com.astro.dto.workflow.AssignEmployeeToIndentDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.*;
 
 import com.astro.dto.workflow.ProcurementDtos.IndentWorkflowStatusDto;
@@ -136,6 +137,13 @@ public class IndentCreationController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(result), HttpStatus.OK);
 
     }
+
+    @PostMapping("/assign-employee")
+    public ResponseEntity<Object> assignEmployee(@RequestBody AssignEmployeeToIndentDto dto) {
+        String response = indentCreationService.assignEmployeeToIndent(dto);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+    }
+
 
 
 

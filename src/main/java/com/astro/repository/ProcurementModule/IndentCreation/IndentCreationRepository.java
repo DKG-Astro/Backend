@@ -32,11 +32,8 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation, 
                   ORDER BY wt.createdDate DESC LIMIT 1) AS `Approved Date`,
               
                  -- Assigned To (latest next role from workflow transition table)
-                (SELECT wt.nextRole
-                  FROM workflow_transition wt
-                   WHERE wt.requestId = ic.indent_id
-                   ORDER BY wt.createdDate DESC LIMIT 1) AS `Assigned To`,
-              
+                
+               ic.employee_name AS `Assigned To`,
                  tr.tender_id AS `Tender Request`,
                  tr.mode_of_procurement AS `Mode of Tendering`,
               
@@ -227,6 +224,7 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation, 
     List<SearchIndentIdDto> findByMaterialDescription(@Param("desc") String desc);
 
 
-
+    @Query("SELECT CASE WHEN COUNT(ic) > 0 THEN true ELSE false END FROM IndentCreation ic WHERE ic.indentId = :requestId AND ic.employeeId IS NOT NULL")
+    boolean isAssigned(@Param("requestId") String requestId);
 
 }

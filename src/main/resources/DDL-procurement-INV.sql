@@ -1365,3 +1365,19 @@ CREATE TABLE gi_workflow_status (
     created_by INT,
     create_date DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+
+
+##################
+ALTER TABLE indent_creation
+ADD COLUMN employee_id VARCHAR(50),
+ADD COLUMN employee_name VARCHAR(100);
+
+ALTER TABLE purchase_order ADD COLUMN gem_contract_file_name VARCHAR(500),
+
+
+ALTER TABLE purchase_order
+ADD COLUMN type_of_security VARCHAR(255),
+ADD COLUMN security_number VARCHAR(255),
+ADD COLUMN security_date DATE,
+ADD COLUMN expiry_date DATE;

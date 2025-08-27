@@ -1,9 +1,11 @@
 package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.AssignEmployeeToIndentDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.*;
 import com.astro.dto.workflow.ProcurementDtos.IndentWorkflowStatusDto;
 import com.astro.dto.workflow.ProcurementDtos.TechnoMomReportDTO;
+import com.astro.entity.EmployeeDepartmentMaster;
 import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.entity.ProcurementModule.MaterialDetails;
 import com.astro.entity.ProjectMaster;
@@ -12,6 +14,7 @@ import com.astro.entity.WorkflowTransition;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
+import com.astro.repository.EmployeeDepartmentMasterRepository;
 import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
 import com.astro.repository.ProcurementModule.IndentCreation.IndentMaterialMappingRepository;
 import com.astro.repository.ProcurementModule.IndentCreation.MaterialDetailsRepository;
@@ -20,6 +23,7 @@ import com.astro.repository.VendorNamesForJobWorkMaterialRepository;
 import com.astro.repository.WorkflowTransitionRepository;
 import com.astro.service.IndentCreationService;
 import com.astro.util.CommonUtils;
+import com.astro.util.EmailService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -29,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,6 +68,10 @@ public class IndentCreationServiceImpl implements IndentCreationService {
 
     @Autowired
     private VendorNamesForJobWorkMaterialRepository vendorNameRepository;
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private EmployeeDepartmentMasterRepository employeeDepartmentMasterRepository;
     @Value("${filePath}")
     private String bp;
     private final String basePath;
@@ -923,6 +932,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
     }
 
 
+
+
     public void handleFileUpload(IndentCreation indentCreation, MultipartFile file, Consumer<byte[]> fileSetter) {
         if (file != null) {
             try (InputStream inputStream = file.getInputStream()) {
@@ -1015,7 +1026,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         }).collect(Collectors.toList());
 
     }
-
+    @Override
     public List<SearchIndentIdDto> searchIndentIds(String type, String value) {
         List<SearchIndentIdDto> result;
 
@@ -1077,6 +1088,35 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         }
 
         return result;
+    }
+    @Override
+    public String assignEmployeeToIndent(AssignEmployeeToIndentDto dto) {
+        IndentCreation indent = indentCreationRepository.findById(dto.getIndentId())
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Indent not found for the provided ID."
+                        )
+                ));
+        indent.setEmployeeId(dto.getEmployeeId());
+        indent.setEmployeeName(dto.getEmployeeName());
+
+        indentCreationRepository.save(indent); // updates existing record
+
+        Optional<EmployeeDepartmentMaster> em = employeeDepartmentMasterRepository.findByEmployeeId(dto.getEmployeeId());
+        if(em.isPresent()){
+            EmployeeDepartmentMaster employee = em.get();
+            try {
+                emailService.notifyEmployeeAssigned(indent,employee.getContactDetails());
+            } catch (MessagingException e) {
+
+            }
+        }
+
+
+        return "Employee " + dto.getEmployeeName() + " assigned to indent " + dto.getIndentId() + " successfully";
     }
 
 

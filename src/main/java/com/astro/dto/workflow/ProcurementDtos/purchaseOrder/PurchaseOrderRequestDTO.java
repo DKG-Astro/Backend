@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.Column;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -34,6 +35,15 @@ public class PurchaseOrderRequestDTO{
         private List<PurchaseOrderAttributesDTO> purchaseOrderAttributes;
         private String updatedBy;
         private Integer createdBy;
+        private List<String> gemContractFileName;
+
+        private String typeOfSecurity;
+
+        private String securityNumber;
+
+        private String securityDate;
+
+        private String expiryDate;
 
 
 

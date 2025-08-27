@@ -2,6 +2,7 @@ package com.astro.controller;
 
 import com.astro.dto.workflow.EmployeeDepartmentMasterRequestDto;
 import com.astro.dto.workflow.EmployeeDepartmentMasterResponseDto;
+import com.astro.dto.workflow.employeedto;
 import com.astro.service.EmployeeDepartmentMasterService;
 import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,11 @@ public class EmployeeDepartmentMasterController {
     @GetMapping
     public ResponseEntity<Object> getAllEMployeeMaster() {
         List<EmployeeDepartmentMasterResponseDto> response = employeeService.getAllEmployeeDepartmentMasters();
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+    }
+    @GetMapping("/employeeName")
+    public ResponseEntity<Object> getAllEMployeeName() {
+        List<employeedto> response = employeeService.getAllEmployeeDepartmentMasterswithName();
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
 

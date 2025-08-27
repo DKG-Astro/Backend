@@ -2,6 +2,7 @@ package com.astro.repository.ProcurementModule.PurchaseOrder;
 
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.materialHistoryDto;
 import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
+import com.astro.dto.workflow.ProcurementDtos.performanceWarrsntySecurityReportDto;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.SearchPOIdDto;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.azure.core.http.rest.Page;
@@ -265,6 +266,31 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, St
             "WHERE po.deliveryDate <= :endDate " +
             "AND NOT EXISTS (SELECT g FROM GrnMasterEntity g WHERE g.grnProcessId = SUBSTRING(po.poId, 3))")
     List<PurchaseOrder> findPOsExpiringWithoutGRN(@Param("endDate") LocalDate endDate);
+
+    @Query("""
+    SELECT new com.astro.dto.workflow.ProcurementDtos.performanceWarrsntySecurityReportDto(
+        po.poId,
+        po.createdDate,
+        tr.modeOfProcurement,
+        po.vendorName,
+        tr.titleOfTender,
+        po.totalValueOfPo,
+        po.typeOfSecurity,
+        po.securityNumber,
+        po.securityDate,
+        po.expiryDate
+    )
+    FROM PurchaseOrder po
+    JOIN TenderRequest tr ON tr.tenderId = po.tenderId
+    WHERE po.createdDate BETWEEN :startDate AND :endDate
+      AND po.typeOfSecurity IS NOT NULL
+      AND po.typeOfSecurity <> ''
+""")
+    List<performanceWarrsntySecurityReportDto> getPerformanceSecurityAndWarrantyReport(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
+
 
 
   /*  @Query("SELECT new com.astro.dto.materialHistoryDto(p.poId, CAST(p.createdDate AS string), p.vendorName) " +

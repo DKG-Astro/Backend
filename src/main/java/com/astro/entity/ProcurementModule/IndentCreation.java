@@ -122,6 +122,13 @@ public class IndentCreation {
       @OneToMany(mappedBy = "indentCreation", cascade = CascadeType.ALL, orphanRemoval = true)
       private List<MaterialDetails> materialDetails = new ArrayList<>();
 
+        @Column(name = "employee_id")
+        private String employeeId;
+
+        @Column(name = "employee_name")
+        private String employeeName;
+
+
         @Column(name = "created_by")
         private Integer createdBy;
 

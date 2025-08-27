@@ -3,6 +3,7 @@ package com.astro.service.impl;
 import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.EmployeeDepartmentMasterRequestDto;
 import com.astro.dto.workflow.EmployeeDepartmentMasterResponseDto;
+import com.astro.dto.workflow.employeedto;
 import com.astro.entity.EmployeeDepartmentMaster;
 
 import com.astro.exception.BusinessException;
@@ -100,6 +101,14 @@ public class EmployeeDepartmentMasterServiceImpl implements EmployeeDepartmentMa
 
 
     }
+    @Override
+    public List<employeedto> getAllEmployeeDepartmentMasterswithName() {
+        List<EmployeeDepartmentMaster> employees = employeeRepository.findAll();
+        return employees.stream()
+                .map(emp -> new employeedto(emp.getEmployeeId(), emp.getEmployeeName()))
+                .collect(Collectors.toList());
+    }
+
 
     @Override
     public EmployeeDepartmentMasterResponseDto getEmployeeDepartmentMasterById(String employeeId) {

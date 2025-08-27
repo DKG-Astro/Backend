@@ -10,8 +10,10 @@ import com.astro.dto.workflow.ProcurementDtos.IndentDto.SearchIndentIdDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.materialHistoryDto;
 import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.performanceWarrsntySecurityReportDto;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.*;
 import com.astro.dto.workflow.VendorContractReportDTO;
+import com.astro.dto.workflow.poMaterialHistoryDto;
 import com.astro.entity.ProcurementModule.MaterialDetails;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
@@ -282,6 +284,27 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
             String saved = saveBase64Files(purchaseOrderRequestDTO.getComparativeStatementFileName(), basePath);
             purchaseOrder.setComparativeStatementFileName(saved);
         }
+        if (purchaseOrderRequestDTO.getGemContractFileName() == null || purchaseOrderRequestDTO.getGemContractFileName().isEmpty()) {
+            purchaseOrder.setGemContractUpload(null);
+        } else {
+            String saved = saveBase64Files(purchaseOrderRequestDTO.getGemContractFileName(), basePath);
+            purchaseOrder.setGemContractUpload(saved);
+        }
+        purchaseOrder.setTypeOfSecurity(purchaseOrderRequestDTO.getTypeOfSecurity());
+        purchaseOrder.setSecurityNumber(purchaseOrderRequestDTO.getSecurityNumber());
+        String Date = purchaseOrderRequestDTO.getSecurityDate();
+        if (Date != null) {
+            purchaseOrder.setSecurityDate(CommonUtils.convertStringToDateObject(Date));
+        } else {
+            purchaseOrder.setSecurityDate(null);
+        }
+        String expiryDate = purchaseOrderRequestDTO.getExpiryDate();
+        if(Date != null){
+            purchaseOrder.setExpiryDate(CommonUtils.convertStringToDateObject(expiryDate));
+        } else {
+            purchaseOrder.setExpiryDate(null);
+        }
+
 
         String date = purchaseOrderRequestDTO.getDeliveryDate();
         purchaseOrder.setDeliveryDate(date != null ? CommonUtils.convertStringToDateObject(date) : null);
@@ -342,7 +365,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
     @Autowired
     private GprnMaterialDtlRepository gprnMaterialDtlRepository;
 
-    public poWithTenderAndIndentResponseDTO getPurchaseOrderById(String poId){
+    public poWithTenderAndIndentResponseDTO getPurchaseOrderById(String poId)  {
         PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(poId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
@@ -383,6 +406,17 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         responseDTO.setVendorAccountName(purchaseOrder.getVendorAccountName());
         responseDTO.setVendorId(purchaseOrder.getVendorId());
         responseDTO.setComparativeStatementFileName(purchaseOrder.getComparativeStatementFileName());
+       // responseDTO.setGemContractFileName(purchaseOrder.getGemContractUpload());
+        if (purchaseOrder.getGemContractUpload() == null || purchaseOrder.getGemContractUpload().isEmpty()) {
+            responseDTO.setGemContractFileName(null);
+        } else {
+            try {
+                responseDTO.setGemContractFileName(
+                        convertFilesToBase64(purchaseOrder.getGemContractUpload(), basePath));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         //  responseDTO.setProjectName(purchaseOrder.getProjectName());
        // responseDTO.setTotalValueOfPo(tenderWithIndent.getTotalTenderValue());
         responseDTO.setTotalValueOfPo(purchaseOrder.getTotalValueOfPo());
@@ -490,8 +524,22 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         responseDTO.setVendorAccountName(purchaseOrder.getVendorAccountName());
         responseDTO.setVendorId(purchaseOrder.getVendorId());
         responseDTO.setComparativeStatementFileName(purchaseOrder.getComparativeStatementFileName());
+        responseDTO.setTypeOfSecurity(purchaseOrder.getTypeOfSecurity());
+        responseDTO.setSecurityNumber(purchaseOrder.getSecurityNumber());
+        responseDTO.setSecurityDate(CommonUtils.convertDateToString(purchaseOrder.getSecurityDate()));
+        responseDTO.setExpiryDate(CommonUtils.convertDateToString(purchaseOrder.getExpiryDate()));
         //  responseDTO.setProjectName(purchaseOrder.getProjectName());
         // responseDTO.setTotalValueOfPo(tenderWithIndent.getTotalTenderValue());
+        if (purchaseOrder.getGemContractUpload() == null || purchaseOrder.getGemContractUpload().isEmpty()) {
+            responseDTO.setGemContractFileName(null);
+        } else {
+            try {
+                responseDTO.setGemContractFileName(
+                        convertFilesToBase64(purchaseOrder.getGemContractUpload(), basePath));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         responseDTO.setTotalValueOfPo(purchaseOrder.getTotalValueOfPo());
         LocalDate date = purchaseOrder.getDeliveryDate();
         if (date != null) {
@@ -1086,8 +1134,22 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         return history.getContent();
     }*/
 
+    @Override
+    public List<poMaterialHistoryDto> getLatestPurchaseOrders(String materialCode) {
+        Pageable limit = PageRequest.of(0, 10); // latest 10 records
+        LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
+        return purchaseOrderAttributesRepository.findLatestPOByMaterialCode(materialCode, oneYearAgo);
+    }
 
 
+    @Override
+    public List<performanceWarrsntySecurityReportDto> getPerformanceSecurityReport(String startDate, String endDate) {
+        List<LocalDateTime> range = CommonUtils.getDateRenge(startDate, endDate);
+        LocalDateTime start = range.get(0);
+        LocalDateTime end = range.get(1);
+
+        return purchaseOrderRepository.getPerformanceSecurityAndWarrantyReport(start, end);
+    }
 
 
 
