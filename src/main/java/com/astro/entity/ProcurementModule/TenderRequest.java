@@ -92,6 +92,12 @@ public class TenderRequest {
     @Column
     private String projectName;
     private String fileType;
+    @Column(name = "cancel_status")
+    private Boolean cancelStatus = false;
+
+    @Column(name = "cancel_remarks")
+    private String cancelRemarks;
+
     @Column(name = "updated_by")
     private String updatedBy;
     @Column(name = "created_by")

@@ -5,9 +5,11 @@ import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.ApprovedIndentsDto;
 import com.astro.dto.workflow.ApprovedTenderDto;
 import com.astro.dto.workflow.ProcurementDtos.*;
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.CancelIndentRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.SearchIndentIdDto;
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ServiceOrderMaterialRequestDTO;
+import com.astro.dto.workflow.TransitionActionReqDto;
 import com.astro.entity.ProcurementModule.*;
 import com.astro.entity.ProjectMaster;
 import com.astro.entity.VendorQuotationAgainstTender;
@@ -23,6 +25,7 @@ import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.service.IndentCreationService;
 import com.astro.service.TenderRequestService;
 import com.astro.service.VendorQuotationAgainstTenderService;
+import com.astro.service.WorkflowService;
 import com.astro.util.CommonUtils;
 import com.ctc.wstx.shaded.msv_core.verifier.jarv.TheFactoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +70,7 @@ public class TenderRequestServiceImpl implements TenderRequestService {
     private UserMasterRepository userRepository;
     @Autowired
     private VendorQuotationAgainstTenderService vqService;
+
 
     @Value("${filePath}")
     private String bp;
@@ -1103,6 +1107,8 @@ public List<SearchTenderIdDto> searchTenderIds(String type, String value) {
   public List<ApprovedTenderIdDtos> getApprovedTenderIdsForGemTenderEvaluation() {
         return TRrepo.findApprovedTenderIdsForGemAndTitlesForPOANDSO();
   }
+
+
 
 
 

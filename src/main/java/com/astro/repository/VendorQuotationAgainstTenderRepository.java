@@ -121,4 +121,5 @@ public interface VendorQuotationAgainstTenderRepository extends JpaRepository<Ve
     List<String> findLatestVendorIdsByTenderId(@Param("tenderId") String tenderId);
 
 
+    List<VendorQuotationAgainstTender> findAllLatestByTenderId(String tenderId);
 }

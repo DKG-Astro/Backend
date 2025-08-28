@@ -2,6 +2,7 @@ package com.astro.controller.ProcurementModuleController;
 
 import com.astro.dto.workflow.ProcurementDtos.*;
 
+import com.astro.dto.workflow.ProcurementDtos.IndentDto.CancelIndentRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.SearchPOIdDto;
@@ -10,6 +11,7 @@ import com.astro.service.TenderRequestService;
 
 import com.astro.service.WorkflowService;
 import com.astro.util.ResponseBuilder;
+import com.astro.util.UtilProcurementService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -39,6 +41,8 @@ public class TenderRequestController {
     private WorkflowService workflowService;
     @Autowired
     private ObjectMapper mapper;
+    @Autowired
+    private UtilProcurementService cancelTender;
     @PostMapping
     public ResponseEntity<Object> createTenderRequest(@RequestBody TenderRequestDto tenderRequestDTO) {
 
@@ -147,7 +151,13 @@ public class TenderRequestController {
     }
 
 
+    @PutMapping("tender/cancel")
+    public ResponseEntity<?> cancelTender(@RequestBody CancelTenderRequestDto request) {
 
+        String  response = cancelTender.cancelTender(request);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+
+    }
 
 
 

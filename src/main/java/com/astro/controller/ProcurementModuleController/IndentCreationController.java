@@ -144,6 +144,13 @@ public class IndentCreationController {
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
 
+    @PutMapping("indent/cancel")
+    public ResponseEntity<?> cancelIndent(@RequestBody CancelIndentRequestDto request) {
+
+          String  response = indentCreationService.cancelIndent(request);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+
+    }
 
 
 

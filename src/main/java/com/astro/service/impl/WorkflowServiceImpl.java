@@ -38,6 +38,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class WorkflowServiceImpl implements WorkflowService {
@@ -324,6 +325,8 @@ public class WorkflowServiceImpl implements WorkflowService {
         return workflowTransitionDtoList;
     }
 
+
+
     @Override
     public List<WorkflowTransitionDto> allWorkflowTransition(String roleName) {
         List<WorkflowTransitionDto> workflowTransitionDtoList = new ArrayList<>();
@@ -375,7 +378,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 
         return queueResponseList;
     }*/
- public List<QueueResponse> allCompletedWorkflowTransition(String roleName) {
+ /*public List<QueueResponse> allCompletedWorkflowTransition(String roleName) {
      int workflowId = 1;
 
      return workflowTransitionRepository.findValidTransitions(AppConstant.COMPLETED_TYPE, workflowId)
@@ -385,7 +388,55 @@ public class WorkflowServiceImpl implements WorkflowService {
                      .thenComparing(WorkflowTransition::getCreatedDate))
              .map(this::mapToQueueResponse)
              .collect(Collectors.toList());
+ }*/
+ public List<QueueResponse> allCompletedWorkflowTransition(String roleName) {
+     int workflowId = 1; // fetch dynamically if needed
+     return workflowTransitionRepository.findValidTransitions(AppConstant.COMPLETED_TYPE, workflowId)
+             .stream()
+             .sorted(Comparator.comparing(WorkflowTransition::getRequestId)
+                     .thenComparing(WorkflowTransition::getCreatedDate))
+             .map(this::mapToQueueResponse)
+             .collect(Collectors.toList());
  }
+
+
+
+    public List<QueueResponse> allCancelledIndents() {
+        List<IndentCreation> cancelledIndents = indentCreationRepository.findAllByCancelStatusTrue();
+
+        List<QueueResponse> responses = cancelledIndents.stream()
+                .filter(indent -> {
+                    // Fetch the latest workflow transition by workflowTransitionId
+                    Optional<WorkflowTransition> lastTransitionOpt =
+                            workflowTransitionRepository.findFirstByRequestIdOrderByWorkflowTransitionIdDesc(indent.getIndentId());
+
+                    // Include only if last transition is NOT "Canceled"
+                    return lastTransitionOpt.map(t -> !"Canceled".equalsIgnoreCase(t.getStatus()))
+                            .orElse(true); // If no transition exists, include it
+                })
+                .map(indent -> {
+                    QueueResponse response = new QueueResponse();
+                    response.setRequestId(indent.getIndentId());
+                    response.setIndentorName(indent.getIndentorName());
+                    response.setAction("Indentor Cancelled");
+                    response.setStatus("Indentor Cancelled");
+                    response.setWorkflowName("Indent Workflow");
+                    response.setAmount(indent.getTotalIntentValue());
+                    response.setProjectName(indent.getProjectName());
+                    response.setModeOfProcurement("");
+                    response.setConsignee(indent.getConsignesLocation());
+                    response.setCreatedDate(new Date());
+                    response.setWorkflowId(1);
+                    return response;
+                })
+                .collect(Collectors.toList());
+
+        return responses;
+    }
+
+
+
+
 
 
 
@@ -510,10 +561,16 @@ public class WorkflowServiceImpl implements WorkflowService {
         }else {
             validateUserRole(transitionActionReqDto.getActionBy(), currentTransition.getNextRoleId());
         }
-        if (AppConstant.COMPLETED_TYPE.equalsIgnoreCase(workflowTransition.getStatus())) {
+       /* if (AppConstant.COMPLETED_TYPE.equalsIgnoreCase(workflowTransition.getStatus())) {
+            throw new BusinessException(new ErrorDetails(AppConstant.INVALID_ACTION, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION, "Workflow already completed."));
+        }*/
+        if (AppConstant.COMPLETED_TYPE.equalsIgnoreCase(workflowTransition.getStatus())
+                && !AppConstant.REJECT_TYPE.equalsIgnoreCase(transitionActionReqDto.getAction())) {
             throw new BusinessException(new ErrorDetails(AppConstant.INVALID_ACTION, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Workflow already completed."));
         }
+
         if (AppConstant.APPROVE_TYPE.equalsIgnoreCase(transitionActionReqDto.getAction())) {
             WorkflowTransitionDto wt = approveTransition(workflowTransition, currentTransition, transitionActionReqDto);
             if (wt != null) {
@@ -573,9 +630,13 @@ public class WorkflowServiceImpl implements WorkflowService {
             }
         } else if (AppConstant.REJECT_TYPE.equalsIgnoreCase(transitionActionReqDto.getAction())) {
           WorkflowTransitionDto wt=  rejectTransition(workflowTransition, currentTransition, transitionActionReqDto);
+           // List<WorkflowTransition> transitions = workflowTransitionRepository.findByRequestId(transitionActionReqDto.getRequestId());
+            List<WorkflowTransition> transitions = workflowTransitionRepository.findByRequestId(transitionActionReqDto.getRequestId());
+
             if (wt != null) {
                 try {
-                    emailService.sendWorkflowEmail(wt); // @Async method
+                  //  emailService.sendWorkflowEmail(wt); // @Async method
+                 sendRejectionTransitionEmails(transitions, wt);
                 } catch (Exception e) {
                     // log.error("Failed to send transition email", e);
                 }
@@ -597,6 +658,38 @@ public class WorkflowServiceImpl implements WorkflowService {
 
          return null;
     }
+    private void sendRejectionTransitionEmails(List<WorkflowTransition> transitions, WorkflowTransitionDto wt) {
+        if (transitions == null || transitions.isEmpty() || wt == null) {
+            return;
+        }
+
+        // Collect all distinct createdBy and modifiedBy from all records
+        Set<Integer> userIds = transitions.stream()
+                .flatMap(t -> Stream.of(t.getCreatedBy(), t.getModifiedBy()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        if (userIds.isEmpty()) {
+            return; // No users to send email
+        }
+
+        // Fetch email addresses from UserMaster
+        List<String> emails = userMasterRepository.findByUserIdIn(userIds).stream()
+                .map(UserMaster::getEmail)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+
+        if (!emails.isEmpty()) {
+            try {
+                emailService.sendRejectionWorkflowEmail(emails, wt); // Pass list of emails and transition data
+            } catch (Exception e) {
+                // log.error("Failed to send workflow email", e);
+            }
+        }
+    }
+
+
 
     @Override
     @Transactional
@@ -1513,6 +1606,7 @@ public List<ApprovedIndentsDto> getApprovedIndents() {
                     .collect(Collectors.toList());
             queueResponseList.addAll(changeRequestQueueResponses);
         }
+
         return queueResponseList;
     }
 

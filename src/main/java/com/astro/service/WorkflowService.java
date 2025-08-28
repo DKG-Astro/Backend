@@ -36,4 +36,5 @@ public interface WorkflowService {
     public List<SubWorkflowQueueDto> getSubWorkflowQueue(Integer modifiedBy);
 
     public List<WorkflowTransitionDto> performAllTransitionAction(List<TransitionActionReqDto> transitionActionReqDto);
+    public List<QueueResponse> allCancelledIndents();
 }

@@ -687,6 +687,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         response.setUploadBuyBackFileNames(indentCreation.getUploadBuyBackFileNames());
         response.setSerialNumber(indentCreation.getSerialNumber());
         response.setModelNumber(indentCreation.getModelNumber());
+        response.setCancelStatus(indentCreation.getCancelStatus());
+        response.setCancelRemarks(indentCreation.getCancelRemarks());
         LocalDate dateOfPurchase = indentCreation.getDateOfPurchase();
         if (dateOfPurchase != null) {
             response.setDateOfPurchase(CommonUtils.convertDateToString(dateOfPurchase));
@@ -1117,6 +1119,24 @@ public class IndentCreationServiceImpl implements IndentCreationService {
 
 
         return "Employee " + dto.getEmployeeName() + " assigned to indent " + dto.getIndentId() + " successfully";
+    }
+    @Override
+    public String cancelIndent(CancelIndentRequestDto request)  {
+        IndentCreation indent = indentCreationRepository.findById(request.getIndentId())
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Indent not found for the provided ID."
+                        )
+                ));
+
+        indent.setCancelStatus(request.getCancelStatus());
+        indent.setCancelRemarks(request.getCancelRemarks());
+
+        indentCreationRepository.save(indent);
+        return "indent saved";
     }
 
 

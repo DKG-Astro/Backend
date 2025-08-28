@@ -66,7 +66,7 @@ public interface WorkflowTransitionRepository extends JpaRepository<WorkflowTran
     List<WorkflowTransition> findByWorkflowIdAndRequestIdOrderByWorkflowTransitionIdAsc(Integer workflowId, String requestId);
 
   //  List<WorkflowTransition> findByStatusAndWorkflowId(String completedType, int workflowId);
-  @Query("""
+ /* @Query("""
 SELECT wt 
 FROM WorkflowTransition wt 
 WHERE wt.status = :status 
@@ -80,7 +80,40 @@ WHERE wt.status = :status
   List<WorkflowTransition> findValidTransitions(
           @Param("status") String status,
           @Param("workflowId") int workflowId
+  );*/
+  /*  @Query("""
+SELECT wt
+FROM WorkflowTransition wt
+WHERE wt.workflowId = :workflowId
+  AND wt.workflowTransitionId IN (
+        SELECT MAX(wt2.workflowTransitionId)
+        FROM WorkflowTransition wt2
+        GROUP BY wt2.requestId
+  )
+  AND wt.status = :status
+""")
+    List<WorkflowTransition> findValidTransitions(
+            @Param("status") String status,
+            @Param("workflowId") int workflowId
+    );*/
+  @Query("""
+SELECT wt
+FROM WorkflowTransition wt
+WHERE wt.workflowId = :workflowId
+  AND wt.status = :status
+  AND wt.workflowTransitionId = (
+        SELECT MAX(wt2.workflowTransitionId)
+        FROM WorkflowTransition wt2
+        WHERE wt2.requestId = wt.requestId
+  )
+""")
+  List<WorkflowTransition> findValidTransitions(
+          @Param("status") String status,
+          @Param("workflowId") int workflowId
   );
+
+
+
 
     // Import proper entity and package
 
@@ -107,4 +140,9 @@ WHERE wt.status = :status
             "AND w.createdDate <= :threshold")
     List<WorkflowTransition> findPendingOlderThan(@Param("threshold") Date threshold);
 
+
+
+    Optional<WorkflowTransition> findFirstByRequestIdOrderByWorkflowTransitionIdDesc(String requestId);
+
+    WorkflowTransition findTopByRequestIdOrderByTransitionOrderDescWorkflowTransitionIdDesc(String tenderId);
 }

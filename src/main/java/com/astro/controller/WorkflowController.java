@@ -63,6 +63,10 @@ public class WorkflowController {
     public ResponseEntity<Object> allPendingWorkflowTransition(@RequestParam String roleName)  {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.allPendingWorkflowTransition(roleName)), HttpStatus.OK);
     }
+    @GetMapping("/allCancledIndents")
+    public ResponseEntity<Object> allCancledIndents()  {
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(workflowService.allCancelledIndents()), HttpStatus.OK);
+    }
 
     @GetMapping("/allWorkflowTransition")
     public ResponseEntity<Object> allWorkflowTransition(@RequestParam String roleName)  {

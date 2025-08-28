@@ -426,6 +426,66 @@ private void sendMail(List<String> toEmails, String subject, String htmlContent)
     }
 
 
+
+
+    @Async
+    public void sendRejectionWorkflowEmail(List<String> emails, WorkflowTransitionDto wt) throws MessagingException {
+        if (emails == null || emails.isEmpty() || wt == null) {
+            return;
+        }
+
+        // Subject
+        String subject = "Workflow Rejection - Request ID: " + wt.getRequestId();
+
+        // Determine workflow name
+        String workflowName = null;
+        if (wt.getWorkflowId() == 1) {
+            workflowName = "Indent Workflow";
+        } else if (wt.getWorkflowId() == 4) {
+            workflowName = "Tender Approver Workflow";
+        } else if (wt.getWorkflowId() == 7) {
+            workflowName = "Tender Evaluator Workflow";
+        } else if (wt.getWorkflowId() == 3) {
+            workflowName = "Purchase Order Workflow";
+        } else if (wt.getWorkflowId() == 5) {
+            workflowName = "Service Order Workflow";
+        } else if (wt.getWorkflowId() == 2) {
+            workflowName = "Contingency Purchase Workflow";
+        }
+
+        // Prepare template data
+        Context context = new Context();
+        context.setVariable("requestId", wt.getRequestId());
+        context.setVariable("action", wt.getAction());
+        context.setVariable("status", wt.getStatus());
+        context.setVariable("currentRole", wt.getCurrentRole());
+        context.setVariable("nextRole", wt.getNextRole());
+        context.setVariable("remarks", wt.getRemarks());
+        context.setVariable("createdBy", wt.getCreatedBy());
+        context.setVariable("workflowName", wt.getWorkflowName());
+        context.setVariable("modifiedBy", wt.getModifiedBy());
+
+        // Prepare email body using rejection-specific template
+        String body = templateEngine.process("rejection-email-template", context);
+           System.out.println(emails);
+        // Send email to all recipients
+        sendMail(emails, subject, body);
+    }
+    private void sendRejectionMail(List<String> toEmails, String subject, String htmlContent) throws MessagingException {
+        for (String email : toEmails) {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setTo(email);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+            helper.setFrom("iiapdkg@gmail.com");
+
+            mailSender.send(message);
+        }
+    }
+
+
 }
 
 

@@ -5,6 +5,7 @@ import com.astro.dto.workflow.ProcurementDtos.IndentDto.*;
 import com.astro.dto.workflow.ProcurementDtos.IndentWorkflowStatusDto;
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.ApprovedSoListReportDto;
 import com.astro.dto.workflow.ProcurementDtos.TechnoMomReportDTO;
+import com.astro.entity.ProcurementModule.IndentCreation;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -41,5 +42,7 @@ public interface IndentCreationService {
    public List<SearchIndentIdDto> searchIndentIds(String type, String value);
 
     public String assignEmployeeToIndent(AssignEmployeeToIndentDto dto);
+
+    public String cancelIndent(CancelIndentRequestDto request);
 
 }

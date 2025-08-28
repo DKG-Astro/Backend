@@ -227,4 +227,5 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation, 
     @Query("SELECT CASE WHEN COUNT(ic) > 0 THEN true ELSE false END FROM IndentCreation ic WHERE ic.indentId = :requestId AND ic.employeeId IS NOT NULL")
     boolean isAssigned(@Param("requestId") String requestId);
 
+    List<IndentCreation> findAllByCancelStatusTrue();
 }

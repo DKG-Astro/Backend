@@ -128,6 +128,12 @@ public class IndentCreation {
         @Column(name = "employee_name")
         private String employeeName;
 
+        @Column(name = "cancel_status")
+        private Boolean cancelStatus = false;
+
+        @Column(name = "cancel_remarks")
+        private String cancelRemarks;
+
 
         @Column(name = "created_by")
         private Integer createdBy;

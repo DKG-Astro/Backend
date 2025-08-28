@@ -1381,3 +1381,13 @@ ADD COLUMN type_of_security VARCHAR(255),
 ADD COLUMN security_number VARCHAR(255),
 ADD COLUMN security_date DATE,
 ADD COLUMN expiry_date DATE;
+
+
+
+ALTER TABLE indent_creation
+ADD COLUMN cancel_status BOOLEAN DEFAULT FALSE,
+ADD COLUMN cancel_remarks VARCHAR(1000);
+
+ALTER TABLE tender_request
+ADD COLUMN cancel_status BOOLEAN DEFAULT FALSE,
+ADD COLUMN cancel_remarks VARCHAR(1000);

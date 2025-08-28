@@ -3,6 +3,7 @@ package com.astro.dto.workflow.ProcurementDtos.IndentDto;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import java.math.BigDecimal;
 
 import java.util.List;
@@ -54,4 +55,6 @@ public class IndentCreationResponseDTO {
     private Integer createdBy;
     private String updatedBy;
 
+    private Boolean cancelStatus;
+    private String cancelRemarks;
 }
