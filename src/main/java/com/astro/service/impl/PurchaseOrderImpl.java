@@ -4,25 +4,25 @@ package com.astro.service.impl;
 import com.astro.constant.AppConstant;
 
 import com.astro.dto.workflow.MaterialTransitionHistory;
+import com.astro.dto.workflow.ProcurementDtos.*;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.SearchIndentIdDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.materialHistoryDto;
-import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
-import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
-import com.astro.dto.workflow.ProcurementDtos.performanceWarrsntySecurityReportDto;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.*;
 import com.astro.dto.workflow.VendorContractReportDTO;
+import com.astro.dto.workflow.WorkflowTransitionDto;
 import com.astro.dto.workflow.poMaterialHistoryDto;
+import com.astro.entity.*;
 import com.astro.entity.ProcurementModule.MaterialDetails;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
 import com.astro.entity.ProcurementModule.TenderRequest;
-import com.astro.entity.ProjectMaster;
-import com.astro.entity.WorkflowTransition;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
+import com.astro.repository.*;
+import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
 import com.astro.repository.ProcurementModule.IndentCreation.MaterialDetailsRepository;
 import com.astro.repository.ProcurementModule.IndentIdRepository;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;
@@ -31,12 +31,11 @@ import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderReposit
 
 import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrderRepository;
 import com.astro.repository.ProcurementModule.TenderRequestRepository;
-import com.astro.repository.ProjectMasterRepository;
 import com.astro.repository.InventoryModule.GprnRepository.GprnMaterialDtlRepository;
-import com.astro.repository.WorkflowTransitionRepository;
 import com.astro.service.IndentCreationService;
 import com.astro.service.PurchaseOrderService;
 import com.astro.service.TenderRequestService;
+import com.astro.service.WorkflowService;
 import com.astro.util.CommonUtils;
 import com.azure.core.http.rest.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,13 +48,18 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 
+import java.math.RoundingMode;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -83,7 +87,20 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
     private WorkflowTransitionRepository workflowTransitionRepository;
     @Autowired
     private TenderRequestRepository trRepo;
-
+    @Autowired
+    private VendorMasterRepository vendorMasterRepository;
+    @Autowired
+    private IndentCreationRepository indentCreationRepository;
+    @Autowired
+    private MaterialMasterRepository materialMasterRepository;
+    @Autowired
+    private GemVendorIdTrackerRepository gemVendorIdTrackerRepository;
+    @Autowired
+    private IiaAddressForConsigneeLocationRepository iiaAddressForConsigneeLocationRepository;
+    @Autowired
+    private IiaFreightForwarderDetailsRepository iiaFreightForwarderDetailsRepository;
+    @Autowired
+    private OfficerSignatureRepository officerSignatureRepository;
 
     @Value("${filePath}")
     private String bp;
@@ -142,12 +159,20 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setVendorsZfscCode(purchaseOrderRequestDTO.getVendorsIfscCode());
         purchaseOrder.setVendorAccountName(purchaseOrderRequestDTO.getVendorAccountName());
         purchaseOrder.setVendorId(purchaseOrderRequestDTO.getVendorId());
+        purchaseOrder.setQuotationNumber(purchaseOrderRequestDTO.getQuotationNumber());
+        purchaseOrder.setAdditionalTermsAndConditions(purchaseOrderRequestDTO.getAdditionalTermsAndConditions());
         //  purchaseOrder.setTotalValueOfPo(purchaseOrderRequestDTO.getTotalValueOfPo());
         String Date = purchaseOrderRequestDTO.getDeliveryDate();
         if (Date != null) {
             purchaseOrder.setDeliveryDate(CommonUtils.convertStringToDateObject(Date));
         } else {
             purchaseOrder.setDeliveryDate(null);
+        }
+        String quotationDate = purchaseOrderRequestDTO.getQuotationDate();
+        if (Date != null) {
+            purchaseOrder.setQuotationDate(CommonUtils.convertStringToDateObject(quotationDate));
+        } else {
+            purchaseOrder.setQuotationDate(null);
         }
         if (purchaseOrderRequestDTO.getComparativeStatementFileName() == null || purchaseOrderRequestDTO.getComparativeStatementFileName().isEmpty()) {
             purchaseOrder.setComparativeStatementFileName(null);
@@ -609,7 +634,60 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
 
         // Set Tender & Indent details
         responseDTO.setTenderDetails(tenderWithIndent);
+       PoFormateDto dtp = getPoFormatDetails(poId);
+       responseDTO.setPoFormateData(dtp);
+     List<WorkflowTransitionDto> wtd =workflowTransitionHistory(poId);
+        List<PoFormateApprovalHistory> historyList = wtd.stream().map(dto -> {
+            PoFormateApprovalHistory history = new PoFormateApprovalHistory();
+            history.setStatus(dto.getStatus());
+            history.setNextAction(dto.getNextAction());
+            history.setAction(dto.getAction());
+            history.setRemarks(dto.getRemarks());
+            history.setCreatedBy(dto.getCreatedBy());
+            history.setCreatedRole(dto.getCreatedRole());
+            history.setModifiedBy(dto.getModifiedBy());
+            history.setModificationDate(dto.getModificationDate());
+            history.setCreatedDate(dto.getCreatedDate());
+            return history;
+        }).toList();
+
+        responseDTO.setPoHistory(historyList);
+
         return responseDTO;
+    }
+    public List<WorkflowTransitionDto> workflowTransitionHistory(String requestId) {
+
+        List<WorkflowTransitionDto> workflowTransitionDtoList = new ArrayList<>();
+        List<WorkflowTransition> workflowTransitionList = null;
+        workflowTransitionList = workflowTransitionRepository.findByRequestId(requestId);
+        if (Objects.nonNull(workflowTransitionList) && !workflowTransitionList.isEmpty()) {
+            workflowTransitionDtoList = workflowTransitionList.stream().sorted(Comparator.comparing(WorkflowTransition::getWorkflowSequence)).map(e -> {
+                return mapWorkflowTransitionDto(e);
+            }).collect(Collectors.toList());
+        }
+
+        return workflowTransitionDtoList;
+    } private WorkflowTransitionDto mapWorkflowTransitionDto(WorkflowTransition workflowTransition) {
+        WorkflowTransitionDto workflowTransitionDto = new WorkflowTransitionDto();
+        workflowTransitionDto.setWorkflowTransitionId(workflowTransition.getWorkflowTransitionId());
+        workflowTransitionDto.setTransitionId(workflowTransition.getTransitionId());
+        workflowTransitionDto.setWorkflowId(workflowTransition.getWorkflowId());
+        workflowTransitionDto.setWorkflowName(workflowTransition.getWorkflowName());
+        workflowTransitionDto.setModificationDate(workflowTransition.getModificationDate());
+        workflowTransitionDto.setCreatedBy(workflowTransition.getCreatedBy());
+        workflowTransitionDto.setTransitionOrder(workflowTransition.getTransitionOrder());
+        workflowTransitionDto.setRequestId(workflowTransition.getRequestId());
+        workflowTransitionDto.setStatus(workflowTransition.getStatus());
+        workflowTransitionDto.setTransitionSubOrder(workflowTransition.getTransitionSubOrder());
+        workflowTransitionDto.setCreatedDate(workflowTransition.getCreatedDate());
+        workflowTransitionDto.setModifiedBy(workflowTransition.getModifiedBy());
+        workflowTransitionDto.setNextAction(workflowTransition.getNextAction());
+        workflowTransitionDto.setCurrentRole(workflowTransition.getCurrentRole());
+        workflowTransitionDto.setNextRole(workflowTransition.getNextRole());
+        workflowTransitionDto.setWorkflowSequence(workflowTransition.getWorkflowSequence());
+        workflowTransitionDto.setAction(workflowTransition.getAction());
+        workflowTransitionDto.setRemarks(workflowTransition.getRemarks());
+        return workflowTransitionDto;
     }
     public static List<String> convertFilesToBase64(String fileNames, String basePath) throws IOException {
         List<String> base64List = new ArrayList<>();
@@ -1148,8 +1226,228 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         LocalDateTime start = range.get(0);
         LocalDateTime end = range.get(1);
 
-        return purchaseOrderRepository.getPerformanceSecurityAndWarrantyReport(start, end);
+        List<performanceWarrsntySecurityReportDto> report = purchaseOrderRepository.getPerformanceSecurityAndWarrantyReport(start, end);
+
+        for (performanceWarrsntySecurityReportDto dto : report) {
+            String pbgValue = dto.getApplicablePbgToBeSubmitted();
+            BigDecimal performanceSecurity = BigDecimal.ZERO;
+
+            if (pbgValue != null && !pbgValue.equalsIgnoreCase("NA")) {
+                int pbg = Integer.parseInt(pbgValue);
+                if (pbg > 0) {
+                    performanceSecurity = dto.getTotalValueOfPo()
+                            .multiply(BigDecimal.valueOf(pbg))
+                            .divide(BigDecimal.valueOf(100));
+                }
+            }
+
+            dto.setSecurityAmount(performanceSecurity);
+        }
+
+        return report;
     }
+
+    public PoFormateDto getPoFormatDetails(String poId) throws IOException {
+        System.out.println("PoId:" +poId);
+        PurchaseOrder po = purchaseOrderRepository.findById(poId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Purchase order not found for the provided ID."
+                        )
+                ));
+       TenderRequest tr = tenderRequestRepository.findByTenderId(po.getTenderId())
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Tender not found for the provided ID."
+                        )
+                ));
+     /*   VendorMaster vendor = vendorMasterRepository.findById(po.getVendorId())
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "vendor not found for the vendor ID."
+                        )
+                ));*/
+
+        //  Map PurchaseOrderAttributes → poFormateMaterial
+        List<poFormateMaterial> materialList = po.getPurchaseOrderAttributes().stream()
+                .map(attr -> {
+                    String uom = materialMasterRepository.findUomByMaterialCode(attr.getMaterialCode());
+                    poFormateMaterial dto = new poFormateMaterial();
+                    dto.setMaterialDescription(attr.getMaterialDescription());
+                    dto.setQuantity(attr.getQuantity());
+                    dto.setUom(uom);
+                    dto.setCurrency(attr.getCurrency());
+                    dto.setUnitPrice(attr.getRate());
+                    dto.setGstRate(attr.getGst());
+                   // dto.setTotalMaterialPrice(attr.getTotalPoMaterialPriceInInr());
+                    return dto;
+                }).collect(Collectors.toList());
+        // Calculate totals
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        BigDecimal totalGst = BigDecimal.ZERO;
+
+        for (poFormateMaterial mat : materialList) {
+            BigDecimal quantity = mat.getQuantity() != null ? mat.getQuantity() : BigDecimal.ZERO;
+            BigDecimal unitPrice = mat.getUnitPrice() != null ? mat.getUnitPrice() : BigDecimal.ZERO;
+            BigDecimal gstRate = mat.getGstRate() != null ? mat.getGstRate() : BigDecimal.ZERO;
+
+            BigDecimal materialTotal = quantity.multiply(unitPrice);
+          //  BigDecimal materialGst = materialTotal.multiply(gstRate).divide(BigDecimal.valueOf(100));
+            BigDecimal materialGst = materialTotal.multiply(gstRate).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+
+            totalAmount = totalAmount.add(materialTotal.setScale(2, RoundingMode.HALF_UP));
+            totalGst = totalGst.add(materialGst);
+
+            //mat.setTotalMaterialPrice(materialTotal);
+            mat.setTotalMaterialPrice(materialTotal.setScale(2, RoundingMode.HALF_UP));
+        }
+
+       // BigDecimal grandTotal = totalAmount.add(totalGst);
+        BigDecimal grandTotal = totalAmount.add(totalGst).setScale(2, RoundingMode.HALF_UP);
+        PoFormateDto dto = new PoFormateDto();
+        if (po.getVendorId() != null) {
+            if (po.getVendorId().startsWith("V")) {
+                VendorMaster vendor = vendorMasterRepository.findById(po.getVendorId())
+                        .orElseThrow(() -> new BusinessException(
+                                new ErrorDetails(
+                                        AppConstant.ERROR_CODE_RESOURCE,
+                                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                        AppConstant.ERROR_TYPE_RESOURCE,
+                                        "Vendor not found for the vendor ID: " + po.getVendorId()
+                                )
+                        ));
+                if (vendor != null) {
+                    dto.setVendorCode(vendor.getVendorId());
+                    dto.setVendorName(vendor.getVendorName());
+                    dto.setVendorAddress(vendor.getAddress());
+                    dto.setGstin(vendor.getGstNo());
+                    dto.setContactNumber(vendor.getContactNo());
+                    dto.setEmail(vendor.getEmailAddress());
+                }
+                // use vendor details
+            } else if (po.getVendorId().startsWith("GEM")) {
+                GemVendorIdTracker gem = gemVendorIdTrackerRepository.findByGemVendorId(po.getVendorId())
+                        .orElseThrow(() -> new BusinessException(
+                                new ErrorDetails(
+                                        AppConstant.ERROR_CODE_RESOURCE,
+                                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                        AppConstant.ERROR_TYPE_RESOURCE,
+                                        "GEM vendor not found for the vendor ID: " + po.getVendorId()
+                                )
+                        ));
+                if (gem != null) {
+                    dto.setVendorCode(po.getVendorId());
+                    dto.setVendorName(gem.getVendorName());
+                    //  dto.setVendorAddress();
+                    //  dto.setGstin(vendor.getGstNo());
+                    //   dto.setContactNumber(vendor.getContactNo());
+                    dto.setEmail("kudaykiran.9949@gmail.com");  //send to purchase dept mail
+                }
+                // use vq details
+            } else {
+                throw new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Invalid vendor ID format: " + po.getVendorId()
+                        )
+                );
+            }
+        }
+        dto.setPoNumber(po.getPoId());
+        LocalDateTime finalApprovedPoDate = workflowTransitionRepository.findLastCreatedDateByRequestId(po.getPoId());
+        dto.setPoDate(LocalDate.from(finalApprovedPoDate));
+        dto.setTenderNumber(po.getTenderId());
+        dto.setTenderDate(LocalDate.from(tr.getCreatedDate()));
+        dto.setQuotationNo(po.getQuotationNumber());
+        dto.setQuotationDate(po.getQuotationDate());
+        dto.setDeliveryPeriod(String.valueOf(po.getDeliveryPeriod()));
+        List<String> indentIds = indentIdRepository.findTenderWithIndent(tr.getTenderId());
+        List<LocalDateTime> createdDates = indentCreationRepository.findCreatedDatesByIndentIds(indentIds);
+        String indentIndss = indentIds.stream().collect(Collectors.joining(", "));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        String createdDatesStr = createdDates.stream()
+                .map(LocalDateTime::toLocalDate)
+                .map(date -> date.format(formatter)) // format as String
+                .collect(Collectors.joining(", "));
+
+        List<String> buyBackAmount = indentCreationRepository.findBuyBackAmountsByIndentIds(indentIds);
+        BigDecimal totalBuyBackAmount = buyBackAmount.stream()
+                .filter(a -> a != null && !a.isBlank())
+                .map(BigDecimal::new)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        String consigneeLocation = iiaAddressForConsigneeLocationRepository.findIiaAddressByConsignee(po.getConsignesAddress());
+        dto.setConsigneeLocation(consigneeLocation);
+        dto.setBuyBackAmount(totalBuyBackAmount);
+
+        dto.setIndentIds(indentIndss);
+        String forwardDetails = iiaFreightForwarderDetailsRepository
+                .findFreightForwarderDetailsByCountryName(po.getTransporterAndFreightForWarderDetails());
+        dto.setFreightForwarderDetails(forwardDetails);
+        dto.setIndentDates(createdDatesStr);
+        dto.setProjectName(po.getProjectName());
+        dto.setBudgetCode("");
+        dto.setTotalAmount(totalAmount);
+        dto.setTotalGst(totalGst);
+        dto.setGrandTotal(grandTotal);
+        dto.setWarranty(po.getWarranty());
+        dto.setAdditionalTermsAndConditions(po.getAdditionalTermsAndConditions());
+        String pbgValue = po.getApplicablePbgToBeSubmitted();
+        BigDecimal performanceSecurity = BigDecimal.ZERO;
+
+        if (pbgValue != null && !pbgValue.equalsIgnoreCase("NA")) {
+
+                int pbg = Integer.parseInt(pbgValue);
+                if (pbg > 0) {
+                    performanceSecurity = grandTotal
+                            .multiply(BigDecimal.valueOf(pbg))
+                            .divide(BigDecimal.valueOf(100));
+                }
+        }
+        dto.setPerformanceAndWarrantySecurity(String.valueOf(performanceSecurity));
+
+
+        dto.setWarranty(po.getWarranty());
+        dto.setIncoTerms(po.getIncoTerms());
+        dto.setPaymentTerms(po.getPaymentTerms());
+        Long weeks = ChronoUnit.WEEKS.between(LocalDate.from(finalApprovedPoDate), po.getDeliveryDate());
+        dto.setDeliveryPeriodWeeks(weeks);
+        dto.setPerformanceAndWarrantySecurity(po.getApplicablePbgToBeSubmitted());
+
+        dto.setMaterialDetails(materialList);
+
+        String fileName = officerSignatureRepository.findSignaturePathByDesignation("Store Purchase");
+        dto.setOfficerSignatureFileName(fileName);
+        String base64 = convertImageToBase64(fileName, basePath);
+        dto.setOfficerSignatureBase64(base64);
+
+
+        return dto;
+    }
+    public static String convertImageToBase64(String fileName, String basePath) throws IOException {
+        String filePath = basePath + File.separator + fileName;
+        File file = new File(filePath);
+        if (!file.exists() || file.isDirectory()) {
+            throw new IOException("File not found: " + filePath);
+        }
+        try (FileInputStream fis = new FileInputStream(file)) {
+            byte[] fileBytes = fis.readAllBytes();
+            // Only return base64 string, NO prefix
+            return Base64.getEncoder().encodeToString(fileBytes);
+        }
+    }
+
 
 
 

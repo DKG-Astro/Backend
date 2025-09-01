@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IndentIdRepository extends JpaRepository<IndentId,Long> {
@@ -22,6 +23,8 @@ public interface IndentIdRepository extends JpaRepository<IndentId,Long> {
     List<SearchTenderIdDto> findTenderIdsByIndentIds(@Param("indentIds") List<String> indentIds);
 
     List<IndentId> findByIndentIdIn(List<String> indentIds);
+
+    Optional<IndentId> findByIndentId(String requestId);
 
 
     //  List<String> findIndentIdsByTenderId(String tenderId);

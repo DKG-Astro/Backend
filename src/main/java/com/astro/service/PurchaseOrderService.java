@@ -3,6 +3,7 @@ package com.astro.service;
 
 
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.materialHistoryDto;
+import com.astro.dto.workflow.ProcurementDtos.PoFormateDto;
 import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
 import com.astro.dto.workflow.ProcurementDtos.performanceWarrsntySecurityReportDto;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.*;
@@ -42,5 +43,6 @@ public interface PurchaseOrderService {
     public List<poMaterialHistoryDto> getLatestPurchaseOrders(String materialCode);
 
     public List<performanceWarrsntySecurityReportDto> getPerformanceSecurityReport(String startDate, String endDate);
+    public PoFormateDto getPoFormatDetails(String poId) throws IOException;
 
 }

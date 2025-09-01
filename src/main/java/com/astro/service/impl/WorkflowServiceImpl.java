@@ -6,6 +6,7 @@ import com.astro.dto.workflow.*;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseResponseDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.PoFormateDto;
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.soWithTenderAndIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.woWithTenderAndIndentResponseDTO;
@@ -120,6 +121,8 @@ public class WorkflowServiceImpl implements WorkflowService {
     private TenderRequestService TRService;
     @Autowired
     private VendorMasterRepository vendorMasterRepository;
+    @Autowired
+    private IndentIdRepository indentIdtenderIdsRepository;
 
     @Override
     public WorkflowDto workflowByWorkflowName(String workflowName) {
@@ -579,6 +582,11 @@ public class WorkflowServiceImpl implements WorkflowService {
                   /*  if ("Tender Approver".equals(wt.getCurrentRole())) {
                         tenderEmailService.handleTenderApproverEmail(wt);
                     }*/
+                    if(wt.getWorkflowName().equalsIgnoreCase("PO Workflow") && (wt.getStatus().equalsIgnoreCase("In-progress") || wt.getStatus().equalsIgnoreCase("Completed"))){
+                        PoFormateDto poData = purchaseOrderService.getPoFormatDetails(wt.getRequestId());
+                        String purchaseDeptMail ="kudaykiran.9949@gmail.com";  //change. get the purchase dept mail from db
+                        tenderEmailService.handlePoApproverEmail(poData, purchaseDeptMail);
+                    }
                     if ("Tender Approver".equals(wt.getCurrentRole())) {
                         TenderWithIndentResponseDTO tenderData = TRService.getTenderRequestById(wt.getRequestId());
 
@@ -623,6 +631,7 @@ public class WorkflowServiceImpl implements WorkflowService {
                         tenderEmailService.handleTenderApproverEmail(wt.getRequestId(), tenderData, vendorMap);
 
                     }
+
 
                 } catch (Exception e) {
                    // log.error("Failed to send transition email", e);
@@ -925,6 +934,47 @@ public class WorkflowServiceImpl implements WorkflowService {
     }
 
     private WorkflowTransitionDto rejectTransition(WorkflowTransition currentWorkflowTransition, TransitionMaster currentTransition, TransitionActionReqDto transitionActionReqDto) {
+
+        String requestId = transitionActionReqDto.getRequestId();
+
+        // Check if requestId starts with IND
+        if (requestId != null && requestId.startsWith("IND")) {
+
+            // Fetch the IndentId entity
+            Optional<IndentId> optionalIndent = indentIdtenderIdsRepository.findByIndentId(requestId);
+            if (optionalIndent.isEmpty()) {
+                throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                        AppConstant.ERROR_TYPE_VALIDATION, "Invalid indent ids."));
+            }
+
+            IndentId indent = optionalIndent.get();
+            String tenderId = indent.getTenderRequest().getTenderId();
+
+            if (tenderId != null) {
+                // Fetch latest WorkflowTransition for this tender
+                Optional<WorkflowTransition> latestTransitionOpt =
+                        workflowTransitionRepository.findTopByRequestIdOrderByWorkflowTransitionIdDesc(tenderId);
+
+                if (latestTransitionOpt.isEmpty()) {
+                    throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                            AppConstant.ERROR_TYPE_VALIDATION, "no workflow transition fount."));
+                }
+
+                WorkflowTransition latestTransition = latestTransitionOpt.get();
+
+                // If tender is not canceled, return message without canceling indent
+                if (!AppConstant.CANCELED_TYPE.equalsIgnoreCase(latestTransition.getStatus())) {
+                    // Could return null or custom DTO with message
+                    throw new InvalidInputException(new ErrorDetails(AppConstant.USER_INVALID_INPUT, AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                            AppConstant.ERROR_TYPE_VALIDATION, "Cannot cancel Indent " + requestId + ". Tender " + tenderId + " is not canceled yet.")
+                    );
+
+                }
+            }
+        }
+
+
+
         //update currentWorkflowTransition and save
         currentWorkflowTransition.setNextAction(AppConstant.COMPLETED_TYPE);
         workflowTransitionRepository.save(currentWorkflowTransition);

@@ -4,6 +4,7 @@ package com.astro.controller.ProcurementModuleController;
 
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.SearchIndentIdDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.materialHistoryDto;
+import com.astro.dto.workflow.ProcurementDtos.PoFormateDto;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.*;
 
 import com.astro.dto.workflow.WorkflowTransitionDto;
@@ -16,6 +17,7 @@ import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -103,6 +105,13 @@ public class PurchaseOrderController {
     public ResponseEntity<Object> getMaterialHistory(@PathVariable String materialCode) {
         List<poMaterialHistoryDto> responseDTO = poService.getLatestPurchaseOrders(materialCode);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
+    }
+
+    @GetMapping("/data/po-internal-format")
+    public ResponseEntity<Object> getPoFormatPage(@RequestParam("poId") String poId) throws IOException {
+        PoFormateDto poData = poService.getPoFormatDetails(poId);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(poData), HttpStatus.OK);
+
     }
 
 

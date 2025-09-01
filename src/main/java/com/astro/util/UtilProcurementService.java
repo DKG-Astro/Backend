@@ -60,9 +60,6 @@ public class UtilProcurementService {
             return lastTransition != null && !"Canceled".equalsIgnoreCase(lastTransition.getStatus());
         });
 
-        if (hasActiveIndents) {
-            return "Cannot cancel tender. Some indents are not yet cancelled.";
-        }
 
         //  All indents are cancelled → proceed to cancel tender
         tenderRequest.setCancelStatus(request.getCancelStatus());

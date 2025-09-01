@@ -278,7 +278,8 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, St
         po.typeOfSecurity,
         po.securityNumber,
         po.securityDate,
-        po.expiryDate
+        po.expiryDate,
+        po.applicablePbgToBeSubmitted
     )
     FROM PurchaseOrder po
     JOIN TenderRequest tr ON tr.tenderId = po.tenderId

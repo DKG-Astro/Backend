@@ -91,6 +91,11 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation, 
                (SELECT SUM(md.total_price) FROM material_details md WHERE md.indent_id = ic.indent_id) AS `Value of Indent`,
                -- Value of PO (linked via Tender)
                (SELECT po.total_value_of_po FROM purchase_order po WHERE po.tender_id = tr.tender_id ORDER BY po.created_date DESC LIMIT 1) AS `Value of PO`,
+               (SELECT po.gem_contract_file_name
+                FROM purchase_order po
+                WHERE po.tender_id = tr.tender_id
+                ORDER BY po.created_date DESC
+                LIMIT 1) AS `PO GEM Contract File`,
                -- GRIN No (latest GRIN entry)
                -- (SELECT gr.grin_no FROM goods_receipt_inspection gr WHERE gr.indent_id = ic.indent_id ORDER BY gr.create_date DESC LIMIT 1) AS `GRIN No`,
                ic.project_name AS `Project`,
@@ -228,4 +233,12 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation, 
     boolean isAssigned(@Param("requestId") String requestId);
 
     List<IndentCreation> findAllByCancelStatusTrue();
+
+    @Query("SELECT i.createdDate FROM IndentCreation i WHERE i.indentId IN :indentIds")
+    List<LocalDateTime> findCreatedDatesByIndentIds(@Param("indentIds") List<String> indentIds);
+
+    @Query("SELECT i.buyBackAmount FROM IndentCreation i " +
+            "WHERE i.indentId IN :indentIds AND i.buyBack = true")
+    List<String> findBuyBackAmountsByIndentIds(@Param("indentIds") List<String> indentIds);
+
 }

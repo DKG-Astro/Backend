@@ -5,22 +5,16 @@ import com.astro.dto.workflow.AssignEmployeeToIndentDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.*;
 import com.astro.dto.workflow.ProcurementDtos.IndentWorkflowStatusDto;
 import com.astro.dto.workflow.ProcurementDtos.TechnoMomReportDTO;
-import com.astro.entity.EmployeeDepartmentMaster;
+import com.astro.entity.*;
 import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.entity.ProcurementModule.MaterialDetails;
-import com.astro.entity.ProjectMaster;
-import com.astro.entity.VendorNamesForJobWorkMaterial;
-import com.astro.entity.WorkflowTransition;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
-import com.astro.repository.EmployeeDepartmentMasterRepository;
+import com.astro.repository.*;
 import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
 import com.astro.repository.ProcurementModule.IndentCreation.IndentMaterialMappingRepository;
 import com.astro.repository.ProcurementModule.IndentCreation.MaterialDetailsRepository;
-import com.astro.repository.ProjectMasterRepository;
-import com.astro.repository.VendorNamesForJobWorkMaterialRepository;
-import com.astro.repository.WorkflowTransitionRepository;
 import com.astro.service.IndentCreationService;
 import com.astro.util.CommonUtils;
 import com.astro.util.EmailService;
@@ -72,6 +66,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
     private EmailService emailService;
     @Autowired
     private EmployeeDepartmentMasterRepository employeeDepartmentMasterRepository;
+    @Autowired
+    private UserMasterRepository userMasterRepository;
     @Value("${filePath}")
     private String bp;
     private final String basePath;
@@ -140,6 +136,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreation.setSingleAndMultipleJob(indentRequestDTO.getSingleAndMultipleJob());
         indentCreation.setFileType(indentRequestDTO.getFileType());
         indentCreation.setEmployeeDepartment(indentRequestDTO.getEmployeeDepartment());
+        indentCreation.setBuyBackAmount(indentRequestDTO.getBuyBackAmount());
         indentCreation.setProprietaryAndLimitedDeclaration(indentRequestDTO.getProprietaryAndLimitedDeclaration());
 
         // indentCreation.setTechnicalSpecificationsFileName(indentRequestDTO.getTechnicalSpecificationsFileName());
@@ -888,14 +885,17 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                     (String) result[14],                         // indentorName
                     result[15] != null ? ((BigDecimal) result[15]).doubleValue() : null, // valueOfIndent
                     result[16] != null ? ((BigDecimal) result[16]).doubleValue() : null, // valueOfPo
-                    (String) result[17],                        // project
+                    (String) result[17],
+                    (String) result[18],                        // project
                     //  (String) result[18],                        // grinNo
-                    (String) result[18],                         // invoiceNo
-                    (String) result[19],                        // gissNo
-                    result[20] != null ? ((BigDecimal) result[20]).doubleValue() : null, // valuePendingToBePaid
-                    (String) result[21],                        // currentStageOfIndent
-                    (String) result[22],                        // shortClosedAndCancelled
-                    (String) result[23]                          // reasonForShortClosure
+                    (String) result[19],                         // invoiceNo
+                    (String) result[20],                        // gissNo
+                    result[21] != null ? ((BigDecimal) result[21]).doubleValue() : null, // valuePendingToBePaid
+                    (String) result[22],                        // currentStageOfIndent
+                    (String) result[23],                        // shortClosedAndCancelled
+                    (String) result[24]                     // reasonForShortClosure
+
+
             );
         }).collect(Collectors.toList());
     }
@@ -1108,10 +1108,11 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         indentCreationRepository.save(indent); // updates existing record
 
         Optional<EmployeeDepartmentMaster> em = employeeDepartmentMasterRepository.findByEmployeeId(dto.getEmployeeId());
+        UserMaster um = userMasterRepository.findByUserId(indent.getCreatedBy());
         if(em.isPresent()){
             EmployeeDepartmentMaster employee = em.get();
             try {
-                emailService.notifyEmployeeAssigned(indent,employee.getContactDetails());
+                emailService.notifyEmployeeAssigned(indent,employee.getContactDetails(), um.getEmail());
             } catch (MessagingException e) {
 
             }

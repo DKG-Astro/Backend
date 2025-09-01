@@ -1369,6 +1369,15 @@ CREATE TABLE gi_workflow_status (
 
 
 ##################
+CREATE TABLE `gem_vendor_id_tracker` (
+   `id` bigint NOT NULL AUTO_INCREMENT,
+   `vendor_id` bigint NOT NULL,
+   `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   `gem_vendor_id` varchar(100) DEFAULT NULL,
+   `vendor_name` varchar(255) DEFAULT NULL,
+   PRIMARY KEY (`id`),
+   UNIQUE KEY `vendor_id` (`vendor_id`)
+ )
 ALTER TABLE indent_creation
 ADD COLUMN employee_id VARCHAR(50),
 ADD COLUMN employee_name VARCHAR(100);
@@ -1391,3 +1400,29 @@ ADD COLUMN cancel_remarks VARCHAR(1000);
 ALTER TABLE tender_request
 ADD COLUMN cancel_status BOOLEAN DEFAULT FALSE,
 ADD COLUMN cancel_remarks VARCHAR(1000);
+
+ALTER TABLE indent_creation
+ADD COLUMN buy_back_amount VARCHAR(50);
+
+ALTER TABLE purchase_order
+ADD COLUMN quotation_number VARCHAR(255),
+ADD COLUMN quotation_date DATE;
+
+CREATE TABLE iia_freight_forwarder_details (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    country_name VARCHAR(255) NOT NULL,
+    freight_forwarder_details TEXT
+);
+
+CREATE TABLE iia_address_for_consignee_location (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    consignee VARCHAR(255),
+    iia_address TEXT
+);
+
+
+ALTER TABLE purchase_order
+ADD COLUMN additional_terms_and_conditions VARCHAR(500);
+
+
+CREATE TABLE officer_signature ( id BIGINT AUTO_INCREMENT PRIMARY KEY, officer_name VARCHAR(100) NOT NULL, designation VARCHAR(100), signature_path VARCHAR(255), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP );

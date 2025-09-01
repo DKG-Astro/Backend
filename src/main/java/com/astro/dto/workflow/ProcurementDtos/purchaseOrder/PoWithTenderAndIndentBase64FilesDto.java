@@ -1,5 +1,6 @@
 package com.astro.dto.workflow.ProcurementDtos.purchaseOrder;
 
+import com.astro.dto.workflow.ProcurementDtos.PoFormateDto;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import lombok.Data;
 
@@ -53,5 +54,8 @@ public class PoWithTenderAndIndentBase64FilesDto {
 
         private String expiryDate;
 
+        private PoFormateDto poFormateData;
+
+        private List<PoFormateApprovalHistory> poHistory;
 
 }

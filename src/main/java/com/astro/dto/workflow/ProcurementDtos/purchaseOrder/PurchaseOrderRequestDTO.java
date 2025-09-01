@@ -45,7 +45,9 @@ public class PurchaseOrderRequestDTO{
 
         private String expiryDate;
 
-
+        private String quotationNumber;
+        private String quotationDate;
+        private String additionalTermsAndConditions;
 
 
 

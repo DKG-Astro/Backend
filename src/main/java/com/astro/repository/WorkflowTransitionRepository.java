@@ -145,4 +145,17 @@ WHERE wt.workflowId = :workflowId
     Optional<WorkflowTransition> findFirstByRequestIdOrderByWorkflowTransitionIdDesc(String requestId);
 
     WorkflowTransition findTopByRequestIdOrderByTransitionOrderDescWorkflowTransitionIdDesc(String tenderId);
+
+    @Query("""
+    SELECT wt.createdDate 
+    FROM WorkflowTransition wt
+    WHERE wt.requestId = :requestId
+    AND wt.workflowTransitionId = (
+        SELECT MAX(wt2.workflowTransitionId)
+        FROM WorkflowTransition wt2
+        WHERE wt2.requestId = :requestId
+    )
+""")
+    LocalDateTime findLastCreatedDateByRequestId(@Param("requestId") String requestId);
+
 }

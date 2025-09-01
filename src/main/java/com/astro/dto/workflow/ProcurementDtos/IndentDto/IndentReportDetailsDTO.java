@@ -24,6 +24,7 @@ public class IndentReportDetailsDTO {
     private String indentorName;
     private Double valueOfIndent;
     private Double valueOfPo;
+    private String gemContractFileName;
     private String Project;
   //  private String grinNo;
     private String invoiceNo;
@@ -37,7 +38,7 @@ public class IndentReportDetailsDTO {
             String indentId, Date approvedDate, String assignedTo, String tenderRequest, String modeOfTendering,
             String correspondingPoSo, String statusOfPoSo, Date submittedDate, String pendingApprovalWithAndPendingFrom,
             Date poSoApprovedDate, String material, String materialCategory, String materialSubCategory,
-            String vendorName, String indentorName, Double valueOfIndent,Double valueOfPo,String Project,
+            String vendorName, String indentorName, Double valueOfIndent, Double valueOfPo,String gemContractFileName, String Project,
             String invoiceNo, String gissNo, Double valuePendingToBePaid, String currentStageOfIndent,
             String shortClosedAndCancelledThroughAmendment, String reasonForShortClosureAndCancellation) {
         // Assign fields here
@@ -59,6 +60,7 @@ public class IndentReportDetailsDTO {
         this.indentorName = indentorName;
         this.valueOfIndent = valueOfIndent;
         this.valueOfPo = valueOfPo;
+        this.gemContractFileName= gemContractFileName;
         this.Project = Project;
        // this.grinNo = grinNo;
         this.invoiceNo = invoiceNo;
@@ -67,6 +69,7 @@ public class IndentReportDetailsDTO {
         this.currentStageOfIndent = currentStageOfIndent;
         this.shortClosedAndCancelledThroughAmendment = shortClosedAndCancelledThroughAmendment;
         this.reasonForShortClosureAndCancellation = reasonForShortClosureAndCancellation;
+
     }
 
 }

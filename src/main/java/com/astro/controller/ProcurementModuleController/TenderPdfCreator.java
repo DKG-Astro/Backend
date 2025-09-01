@@ -4,6 +4,7 @@ import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.ProcurementDtos.CancelTenderRequestDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.PoFormateDto;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.dto.workflow.TransitionActionReqDto;
 import com.astro.dto.workflow.VendorDto;
@@ -18,6 +19,7 @@ import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.repository.VendorMasterRepository;
 import com.astro.repository.WorkflowTransitionRepository;
 import com.astro.service.IndentCreationService;
+import com.astro.service.PurchaseOrderService;
 import com.astro.service.TenderRequestService;
 import com.astro.service.WorkflowService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,6 +44,8 @@ public class TenderPdfCreator {
     private TenderRequestService TRService;
     @Autowired
     private VendorMasterRepository vendorMasterRepository;
+    @Autowired
+    private PurchaseOrderService purchaseOrderService;
     @Autowired
     private ObjectMapper mapper;
 
@@ -91,6 +95,15 @@ public class TenderPdfCreator {
         return "Tender-Format";
     }
 
+
+    @GetMapping("/data/po-format")
+    public String getPoFormatPage( @RequestParam("poId") String poId, ModelMap model) throws IOException {
+       PoFormateDto poData = purchaseOrderService.getPoFormatDetails(poId);
+       System.out.println(poData);
+        model.addAttribute("po", poData);
+
+        return "po-formate";
+    }
 
 
 

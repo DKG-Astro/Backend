@@ -395,7 +395,7 @@ private void sendMail(List<String> toEmails, String subject, String htmlContent)
 
     //mail to employee when purchase dept assigned indent to employee
     @Async
-    public void notifyEmployeeAssigned(IndentCreation indent ,String  recipients) throws MessagingException {
+    public void notifyEmployeeAssigned(IndentCreation indent ,String  recipients, String indentorMail) throws MessagingException {
         // Prepare Thymeleaf context
         Context context = new Context();
         context.setVariable("indentId", indent.getIndentId());
@@ -412,6 +412,23 @@ private void sendMail(List<String> toEmails, String subject, String htmlContent)
                 "Indent Assigned to You - ID: " + indent.getIndentId(),
                 body
         );
+        if (indentorMail != null && !indentorMail.isEmpty()) {
+            Context indentorContext = new Context();
+            indentorContext.setVariable("indentId", indent.getIndentId());
+            indentorContext.setVariable("employeeName", indent.getEmployeeName());
+            indentorContext.setVariable("projectName", indent.getProjectName());
+            indentorContext.setVariable("indentorName", indent.getIndentorName());
+            indentorContext.setVariable("employeeId", indent.getEmployeeId());
+
+           // String indentorBody = templateEngine.process("indentor-assignment-notification", indentorContext);
+            String indentorBody = templateEngine.process("employee-assignment-notification", context);
+
+            sendNotificationMailToEmployee(
+                    indentorMail,
+                    "Your Indent Assigned - ID: " + indent.getIndentId(),
+                    indentorBody
+            );
+        }
     }
 
     private void sendNotificationMailToEmployee(String toEmail, String subject, String body) throws MessagingException {

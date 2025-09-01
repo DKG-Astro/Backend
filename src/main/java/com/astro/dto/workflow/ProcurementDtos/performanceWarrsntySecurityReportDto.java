@@ -10,8 +10,6 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class performanceWarrsntySecurityReportDto {
     private String poId;
     private LocalDateTime createdDate;
@@ -24,6 +22,25 @@ public class performanceWarrsntySecurityReportDto {
     private String securityNumber;
     private LocalDate securityDate;
     private LocalDate expiryDate;
+  //  private BigDecimal securityAmount;
+    private BigDecimal securityAmount; // calculated
+    private String applicablePbgToBeSubmitted;
+    public performanceWarrsntySecurityReportDto(String poId, LocalDateTime createdDate, String modeOfProcurement,
+                                                String vendorName, String titleOfTender, BigDecimal totalValueOfPo,
+                                                String typeOfSecurity, String securityNumber, LocalDate securityDate,
+                                                LocalDate expiryDate, String applicablePbgToBeSubmitted) {
+        this.poId = poId;
+        this.createdDate = createdDate;
+        this.modeOfProcurement = modeOfProcurement;
+        this.vendorName = vendorName;
+        this.titleOfTender = titleOfTender;
+        this.totalValueOfPo = totalValueOfPo;
+        this.typeOfSecurity = typeOfSecurity;
+        this.securityNumber = securityNumber;
+        this.securityDate = securityDate;
+        this.expiryDate = expiryDate;
+        this.applicablePbgToBeSubmitted = applicablePbgToBeSubmitted;
+    }
 
 
 }

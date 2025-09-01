@@ -75,6 +75,11 @@ public class PurchaseOrder {
     @Column(name = "expiry_date")
     private LocalDate expiryDate;
 
+    private String quotationNumber;
+    private LocalDate quotationDate;
+    private String additionalTermsAndConditions;
+
+
    // @OneToMany(cascade = CascadeType.ALL)
    // @JoinColumn(name = "purchase_order_id")
   /* @ManyToMany(cascade = CascadeType.PERSIST)

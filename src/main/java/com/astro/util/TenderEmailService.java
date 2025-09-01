@@ -2,6 +2,7 @@ package com.astro.util;
 
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.PoFormateDto;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.dto.workflow.VendorDto;
 import com.astro.dto.workflow.WorkflowTransitionDto;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 import org.thymeleaf.context.Context;
@@ -166,6 +168,65 @@ public class TenderEmailService {
 
         return files;
     }
+
+//after po approval mail go to vendro and purchase dept
+@Async
+public void handlePoApproverEmail(PoFormateDto poData, String purchaseDeptEmail) throws IOException {
+
+    // Generate HTML from PO template and convert to PDF
+    Context context = new Context();
+    context.setVariable("po", poData);
+    byte[] logoBytes = Files.readAllBytes(Paths.get("src/main/resources/static/images/iia-logo.png"));
+    String base64Logo = Base64.getEncoder().encodeToString(logoBytes);
+
+    context.setVariable("base64Logo", base64Logo);
+    String html = templateEngine.process("po-format", context);
+    byte[] pdfBytes = pdfGeneratorService.generatePdfFromHtml(html);
+
+    File pdfFile = File.createTempFile("po-format-" + poData.getPoNumber(), ".pdf");
+    try (FileOutputStream fos = new FileOutputStream(pdfFile)) {
+        fos.write(pdfBytes);
+    }
+
+    List<File> attachments = new ArrayList<>();
+    attachments.add(pdfFile);
+
+    //  Send to Vendor
+    if (poData.getEmail() != null && !poData.getEmail().isEmpty()) {
+        Context vendorContext = new Context();
+        vendorContext.setVariable("po", poData);
+        String vendorEmailBody = templateEngine.process("vendor-po-email-template", vendorContext);
+
+        sendMailWithAttachments(
+                poData.getEmail(),
+                "Purchase Order - " + poData.getPoNumber(),
+                vendorEmailBody,
+                attachments
+        );
+        System.out.println("PO Email Sent to Vendor: " + poData.getEmail());
+    } else {
+        System.err.println("Vendor email not available for PO: " + poData.getPoNumber());
+    }
+
+    // Send to Purchase Department
+    if (purchaseDeptEmail != null && !purchaseDeptEmail.isEmpty()) {
+        Context purchaseContext = new Context();
+        purchaseContext.setVariable("po", poData);
+      //  String purchaseEmailBody = templateEngine.process("purchase-dept-po-email-template", purchaseContext);
+        String purchaseEmailBody = templateEngine.process("vendor-po-email-template", purchaseContext);
+        //create new template tp purchase dept also
+
+        sendMailWithAttachments(
+                purchaseDeptEmail,
+                "Purchase Order - " + poData.getPoNumber(),
+                purchaseEmailBody,
+                attachments
+        );
+        System.out.println("PO Email Sent to Purchase Dept: " + purchaseDeptEmail);
+    } else {
+        System.err.println("Purchase department email not provided for PO: " + poData.getPoNumber());
+    }
+}
 
 
 }
