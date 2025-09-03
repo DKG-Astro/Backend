@@ -40,7 +40,7 @@ public class PoFormateDto {
     private List<poFormateMaterial> materialDetails;
 
     // Other PO attributes
-    private BigDecimal warranty;
+    private String warranty;
     private String incoTerms;
     private String paymentTerms;
     private BigDecimal dutiesAndTaxes;

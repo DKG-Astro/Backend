@@ -1,5 +1,6 @@
 package com.astro.dto.workflow;
 
+
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -40,6 +41,9 @@ public class QueueResponse {
     private Integer workflowSequence;
     private Date modificationDate;
     private Date createdDate;
+
+
+
 
 
 }

@@ -163,6 +163,8 @@ public interface ServiceOrderRepository extends JpaRepository<ServiceOrder, Stri
     List<Object[]> findShortClosedCancelledSoOrders(@Param("startDate") LocalDate startDate,
                                                  @Param("endDate") LocalDate endDate);
 
+    @Query("SELECT so FROM ServiceOrder so WHERE so.endDateAmc <= :alertDate")
+    List<ServiceOrder> findExpiringServiceOrders(@Param("alertDate") LocalDate alertDate);
 
 
     //ServiceOrder getSoId(String soId);

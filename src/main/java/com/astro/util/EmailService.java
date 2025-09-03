@@ -3,6 +3,7 @@ import com.astro.dto.workflow.SubWorkflowTransitionDto;
 import com.astro.dto.workflow.WorkflowTransitionDto;
 import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
+import com.astro.entity.ProcurementModule.ServiceOrder;
 import com.astro.entity.UserMaster;
 import com.astro.entity.VendorMaster;
 import com.astro.entity.WorkflowTransition;
@@ -502,6 +503,27 @@ private void sendMail(List<String> toEmails, String subject, String htmlContent)
         }
     }
 
+
+    public void sendAMCNotification(ServiceOrder so, List<String> recipients) throws MessagingException {
+        // Prepare Thymeleaf context
+        Context context = new Context();
+        context.setVariable("soId", so.getSoId());
+        context.setVariable("vendorName", so.getVendorName());
+        context.setVariable("projectName", so.getProjectName());
+        context.setVariable("startDateAmc", so.getStartDateAmc());
+        context.setVariable("endDateAmc", so.getEndDateAmc());
+        context.setVariable("totalValue", so.getTotalValueOfSo());
+
+        // Process the Thymeleaf template
+        String body = templateEngine.process("amc-expiry-notification-template", context);
+
+        // Send email to recipients
+        sendNotificationMail(
+                recipients,
+                "AMC Expiry Reminder - SO: " + so.getSoId(),
+                body
+        );
+    }
 
 }
 

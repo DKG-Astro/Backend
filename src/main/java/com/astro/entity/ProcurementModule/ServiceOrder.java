@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -48,6 +49,10 @@ public class ServiceOrder {
     @Column(name = "project_name")
     private String projectName;
 
+    @Column(name = "start_date_amc")
+    private LocalDate startDateAmc;
+    @Column(name = "end_date_amc")
+    private LocalDate endDateAmc;
   //  @OneToMany(cascade = CascadeType.ALL)
    // @JoinColumn(name = "service_order_id")
     @OneToMany(mappedBy = "serviceOrder", cascade = CascadeType.ALL, orphanRemoval = true)

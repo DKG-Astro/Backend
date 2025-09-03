@@ -1371,7 +1371,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         dto.setTenderDate(LocalDate.from(tr.getCreatedDate()));
         dto.setQuotationNo(po.getQuotationNumber());
         dto.setQuotationDate(po.getQuotationDate());
-        dto.setDeliveryPeriod(String.valueOf(po.getDeliveryPeriod()));
+        dto.setDeliveryPeriod(String.valueOf(po.getDeliveryPeriod().setScale(0, RoundingMode.HALF_UP)));
         List<String> indentIds = indentIdRepository.findTenderWithIndent(tr.getTenderId());
         List<LocalDateTime> createdDates = indentCreationRepository.findCreatedDatesByIndentIds(indentIds);
         String indentIndss = indentIds.stream().collect(Collectors.joining(", "));
@@ -1401,7 +1401,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         dto.setTotalAmount(totalAmount);
         dto.setTotalGst(totalGst);
         dto.setGrandTotal(grandTotal);
-        dto.setWarranty(po.getWarranty());
+        dto.setWarranty(String.valueOf(po.getWarranty().setScale(0, RoundingMode.HALF_UP)));
         dto.setAdditionalTermsAndConditions(po.getAdditionalTermsAndConditions());
         String pbgValue = po.getApplicablePbgToBeSubmitted();
         BigDecimal performanceSecurity = BigDecimal.ZERO;
@@ -1415,15 +1415,15 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                             .divide(BigDecimal.valueOf(100));
                 }
         }
-        dto.setPerformanceAndWarrantySecurity(String.valueOf(performanceSecurity));
+        dto.setPerformanceAndWarrantySecurity(String.valueOf(performanceSecurity.setScale(2, RoundingMode.HALF_UP)));
 
 
-        dto.setWarranty(po.getWarranty());
+       // dto.setWarranty(po.getWarranty());
         dto.setIncoTerms(po.getIncoTerms());
         dto.setPaymentTerms(po.getPaymentTerms());
         Long weeks = ChronoUnit.WEEKS.between(LocalDate.from(finalApprovedPoDate), po.getDeliveryDate());
         dto.setDeliveryPeriodWeeks(weeks);
-        dto.setPerformanceAndWarrantySecurity(po.getApplicablePbgToBeSubmitted());
+       // dto.setPerformanceAndWarrantySecurity(po.getApplicablePbgToBeSubmitted());
 
         dto.setMaterialDetails(materialList);
 

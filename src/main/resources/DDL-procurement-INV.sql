@@ -1426,3 +1426,7 @@ ADD COLUMN additional_terms_and_conditions VARCHAR(500);
 
 
 CREATE TABLE officer_signature ( id BIGINT AUTO_INCREMENT PRIMARY KEY, officer_name VARCHAR(100) NOT NULL, designation VARCHAR(100), signature_path VARCHAR(255), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP );
+
+ALTER TABLE service_order
+ADD COLUMN start_date_amc DATE,
+ADD COLUMN end_date_amc DATE;

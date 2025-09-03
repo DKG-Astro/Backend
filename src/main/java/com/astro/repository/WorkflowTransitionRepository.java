@@ -1,5 +1,7 @@
 package com.astro.repository;
 
+import com.astro.dto.workflow.CompletedIndentsQueueResponse;
+import com.astro.dto.workflow.QueueResponse;
 import com.astro.entity.WorkflowTransition;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -157,5 +159,40 @@ WHERE wt.workflowId = :workflowId
     )
 """)
     LocalDateTime findLastCreatedDateByRequestId(@Param("requestId") String requestId);
+
+    @Query("""
+SELECT new com.astro.dto.workflow.CompletedIndentsQueueResponse(
+    wt.workflowTransitionId, wt.workflowId, wt.workflowName,
+    wt.transitionId, wt.requestId, wt.createdBy, wt.modifiedBy,
+    wt.status, wt.nextAction, wt.action, wt.remarks,
+    wt.transitionOrder, wt.transitionSubOrder, wt.currentRole, wt.nextRole,
+    wt.workflowSequence, wt.modificationDate, wt.createdDate,
+    ic.indentorName, ic.projectName, ic.totalIntentValue,
+    md.budgetCode, md.modeOfProcurement, ic.consignesLocation
+)
+FROM WorkflowTransition wt
+LEFT JOIN IndentCreation ic ON wt.requestId = ic.indentId
+LEFT JOIN MaterialDetails md ON md.indentCreation = ic AND md.id = (
+    SELECT MIN(md2.id) 
+    FROM MaterialDetails md2 
+    WHERE md2.indentCreation = ic
+)
+WHERE wt.workflowId = :workflowId
+  AND wt.status = :status
+  AND ic.employeeId IS NULL
+  AND wt.workflowTransitionId = (
+        SELECT MAX(wt2.workflowTransitionId)
+        FROM WorkflowTransition wt2
+        WHERE wt2.requestId = wt.requestId
+          AND wt2.status = :status
+  )
+ORDER BY wt.requestId, wt.createdDate
+""")
+    List<CompletedIndentsQueueResponse> findCompletedIndents(
+            @Param("status") String status,
+            @Param("workflowId") int workflowId
+    );
+
+
 
 }

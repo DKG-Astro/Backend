@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.Column;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -24,6 +25,8 @@ public class ServiceOrderRequestDTO {
     private String vendorsAccountNo;
     private String vendorsZRSCCode;
     private String vendorsAccountName;
+    private String startDateAmc;
+    private String endDateAmc;
   //private BigDecimal totalValueOfSo;
     private String projectName;
     private List<ServiceOrderMaterialRequestDTO> materials;

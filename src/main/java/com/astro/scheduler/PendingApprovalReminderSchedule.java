@@ -1,9 +1,11 @@
 package com.astro.scheduler;
 
 import com.astro.entity.ProcurementModule.PurchaseOrder;
+import com.astro.entity.ProcurementModule.ServiceOrder;
 import com.astro.entity.UserMaster;
 import com.astro.entity.WorkflowTransition;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderRepository;
+import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrderRepository;
 import com.astro.repository.UserMasterRepository;
 import com.astro.repository.WorkflowTransitionRepository;
 import com.astro.util.EmailService;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.mail.MessagingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -28,6 +31,8 @@ public class PendingApprovalReminderSchedule {
     private PurchaseOrderRepository purchaseOrderRepository;
     @Autowired
     private UserMasterRepository userMasterRepository;
+    @Autowired
+    private ServiceOrderRepository serviceOrderRepository;
 
     @Autowired
     private EmailService emailService; // or internal notification service
@@ -87,5 +92,38 @@ public class PendingApprovalReminderSchedule {
             }
         }
     }
+
+//Auto-alerts to the Purchase Department and the indentor, two months before AMC expiry
+@Scheduled(cron = "0 23 15 * * ?")
+public void sendExpiringAMCNotifications() throws MessagingException {
+        LocalDate alertDate = LocalDate.now().plusMonths(2); // 2 months before expiry
+        List<ServiceOrder> expiringSOs = serviceOrderRepository.findExpiringServiceOrders(alertDate);
+
+        for (ServiceOrder so : expiringSOs) {
+            List<String> recipients = new ArrayList<>();
+
+            // Get indentor (creator of SO)
+            UserMaster indentor = userMasterRepository.findById(so.getCreatedBy()).orElse(null);
+            if (indentor != null && indentor.getEmail() != null) {
+                recipients.add(indentor.getEmail());
+            }
+
+            // Get Purchase Department officer by role
+           /* UserMaster purchaseDept = userMasterRepository.findByRoleName("PURCHASE_DEPARTMENT")
+                    .orElse(null);
+            if (purchaseDept != null && purchaseDept.getEmail() != null) {
+                recipients.add(purchaseDept.getEmail());
+            }*/
+
+            recipients.add("udaychowdhary743@gmail.com");
+
+            if (!recipients.isEmpty()) {
+                emailService.sendAMCNotification(so, recipients);
+            }
+        }
+    }
+
+
+
 
 }

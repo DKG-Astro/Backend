@@ -92,6 +92,19 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         serviceOrder.setVendorsZRSCCode(serviceOrderRequestDTO.getVendorsZRSCCode());
         serviceOrder.setVendorsAccountName(serviceOrderRequestDTO.getVendorsAccountName());
         serviceOrder.setVendorId(serviceOrderRequestDTO.getVendorId());
+        String Date = serviceOrderRequestDTO.getStartDateAmc();
+        if (Date != null) {
+            serviceOrder.setStartDateAmc(CommonUtils.convertStringToDateObject(Date));
+        } else {
+            serviceOrder.setStartDateAmc(null);
+        }
+        String endDate = serviceOrderRequestDTO.getEndDateAmc();
+        if (Date != null) {
+            serviceOrder.setEndDateAmc(CommonUtils.convertStringToDateObject(endDate));
+        } else {
+            serviceOrder.setEndDateAmc(null);
+        }
+
         //  serviceOrder.setTotalValueOfSo(serviceOrderRequestDTO.getTotalValueOfSo());
         serviceOrder.setProjectName(serviceOrderRequestDTO.getProjectName());
         serviceOrder.setCreatedBy(serviceOrderRequestDTO.getCreatedBy());
