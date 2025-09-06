@@ -13,7 +13,7 @@ public class PurchaseOrderResponseDTO {
     private String poId;
     private String tenderId;
     private String indentId;
-    private BigDecimal warranty;
+    private String warranty;
     private String consignesAddress;
     private String billingAddress;
     private BigDecimal deliveryPeriod;
@@ -34,6 +34,7 @@ public class PurchaseOrderResponseDTO {
     private String deliveryDate;
     private String comparativeStatementFileName;
     private List<String> gemContractFileName;
+    private BigDecimal buyBackAmount;
     private List<PurchaseOrderAttributesResponseDTO> purchaseOrderAttributes;
     private Integer createdBy;
     private String updatedBy;

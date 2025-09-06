@@ -1,6 +1,7 @@
 package com.astro.repository;
 
 import com.astro.dto.workflow.CompletedIndentsQueueResponse;
+import com.astro.dto.workflow.ProcurementDtos.pendingRecordsDto;
 import com.astro.dto.workflow.QueueResponse;
 import com.astro.entity.WorkflowTransition;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -194,5 +195,7 @@ ORDER BY wt.requestId, wt.createdDate
     );
 
 
+    @Query("SELECT new com.astro.dto.workflow.ProcurementDtos.pendingRecordsDto(w.status, w.requestId, w.workflowName) FROM WorkflowTransition w WHERE w.nextRole = :roleName")
+    List<pendingRecordsDto> findPendingByNextRole(@Param("roleName") String roleName);
 
 }

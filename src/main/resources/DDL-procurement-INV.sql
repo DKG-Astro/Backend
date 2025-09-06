@@ -1430,3 +1430,9 @@ CREATE TABLE officer_signature ( id BIGINT AUTO_INCREMENT PRIMARY KEY, officer_n
 ALTER TABLE service_order
 ADD COLUMN start_date_amc DATE,
 ADD COLUMN end_date_amc DATE;
+
+ALTER TABLE purchase_order
+MODIFY COLUMN warranty VARCHAR(50);
+
+ALTER TABLE purchase_order
+ADD COLUMN buy_back_amount DECIMAL(18,2);

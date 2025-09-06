@@ -11,18 +11,22 @@ public class PoFormateDto {
 
     // PO details
     private String poNumber;
-    private LocalDate poDate;
+   // private LocalDate poDate;
+   private String poDate;
+    private String tenderDate;
+    private String quotationDate;
+
 
     private String indentIds;
     private String indentDates;
 
     // Tender details
     private String tenderNumber;
-    private LocalDate tenderDate;
+  //  private LocalDate tenderDate;
 
     // Quotation details
     private String quotationNo;
-    private LocalDate quotationDate;
+  //  private LocalDate quotationDate;
     private String deliveryPeriod;
 
     // Project & Budget
@@ -46,6 +50,7 @@ public class PoFormateDto {
     private BigDecimal dutiesAndTaxes;
     private Long deliveryPeriodWeeks;
     private String performanceAndWarrantySecurity;
+    private String performanceAndWarranty;
     private String additionalTermsAndConditions;
     private String freightForwarderDetails;
 
@@ -54,6 +59,7 @@ public class PoFormateDto {
     private BigDecimal grandTotal;
 
     private BigDecimal buyBackAmount;
+    private String currencyOfMaterial;
 
     private String consigneeLocation;
 
@@ -61,6 +67,7 @@ public class PoFormateDto {
     private String officerSignatureBase64;
 
 
+    private BigDecimal duties;
 
 
 

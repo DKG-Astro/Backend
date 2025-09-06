@@ -161,6 +161,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         purchaseOrder.setVendorId(purchaseOrderRequestDTO.getVendorId());
         purchaseOrder.setQuotationNumber(purchaseOrderRequestDTO.getQuotationNumber());
         purchaseOrder.setAdditionalTermsAndConditions(purchaseOrderRequestDTO.getAdditionalTermsAndConditions());
+        purchaseOrder.setBuyBackAmount(purchaseOrderRequestDTO.getBuyBackAmount());
         //  purchaseOrder.setTotalValueOfPo(purchaseOrderRequestDTO.getTotalValueOfPo());
         String Date = purchaseOrderRequestDTO.getDeliveryDate();
         if (Date != null) {
@@ -1278,6 +1279,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                 ));*/
 
         //  Map PurchaseOrderAttributes → poFormateMaterial
+
         List<poFormateMaterial> materialList = po.getPurchaseOrderAttributes().stream()
                 .map(attr -> {
                     String uom = materialMasterRepository.findUomByMaterialCode(attr.getMaterialCode());
@@ -1288,7 +1290,8 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                     dto.setCurrency(attr.getCurrency());
                     dto.setUnitPrice(attr.getRate());
                     dto.setGstRate(attr.getGst());
-                   // dto.setTotalMaterialPrice(attr.getTotalPoMaterialPriceInInr());
+
+                    // dto.setTotalMaterialPrice(attr.getTotalPoMaterialPriceInInr());
                     return dto;
                 }).collect(Collectors.toList());
         // Calculate totals
@@ -1366,30 +1369,44 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         }
         dto.setPoNumber(po.getPoId());
         LocalDateTime finalApprovedPoDate = workflowTransitionRepository.findLastCreatedDateByRequestId(po.getPoId());
-        dto.setPoDate(LocalDate.from(finalApprovedPoDate));
+       // dto.setPoDate(LocalDate.from(finalApprovedPoDate));
         dto.setTenderNumber(po.getTenderId());
-        dto.setTenderDate(LocalDate.from(tr.getCreatedDate()));
+      //  dto.setTenderDate(LocalDate.from(tr.getCreatedDate()));
         dto.setQuotationNo(po.getQuotationNumber());
-        dto.setQuotationDate(po.getQuotationDate());
+     //   dto.setQuotationDate(po.getQuotationDate());
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH);
+
+        dto.setPoDate(finalApprovedPoDate != null ? finalApprovedPoDate.format(dateFormatter) : null);
+        dto.setTenderDate(tr.getCreatedDate() != null ? tr.getCreatedDate().format(dateFormatter) : null);
+        dto.setQuotationDate(po.getQuotationDate() != null ? po.getQuotationDate().format(dateFormatter) : null);
+
         dto.setDeliveryPeriod(String.valueOf(po.getDeliveryPeriod().setScale(0, RoundingMode.HALF_UP)));
         List<String> indentIds = indentIdRepository.findTenderWithIndent(tr.getTenderId());
         List<LocalDateTime> createdDates = indentCreationRepository.findCreatedDatesByIndentIds(indentIds);
         String indentIndss = indentIds.stream().collect(Collectors.joining(", "));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        String createdDatesStr = createdDates.stream()
+       /* String createdDatesStr = createdDates.stream()
                 .map(LocalDateTime::toLocalDate)
                 .map(date -> date.format(formatter)) // format as String
+                .collect(Collectors.joining(", "));*/
+        String createdDatesStr = createdDates.stream()
+                .map(LocalDateTime::toLocalDate)
+                .map(date -> date.format(dateFormatter))
                 .collect(Collectors.joining(", "));
 
-        List<String> buyBackAmount = indentCreationRepository.findBuyBackAmountsByIndentIds(indentIds);
-        BigDecimal totalBuyBackAmount = buyBackAmount.stream()
-                .filter(a -> a != null && !a.isBlank())
-                .map(BigDecimal::new)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        dto.setIndentDates(createdDatesStr);
+
+
+        // List<String> buyBackAmount = indentCreationRepository.findBuyBackAmountsByIndentIds(indentIds);
+      //  BigDecimal totalBuyBackAmount = buyBackAmount.stream()
+           //     .filter(a -> a != null && !a.isBlank())
+            //    .map(BigDecimal::new)
+              //  .reduce(BigDecimal.ZERO, BigDecimal::add);
         String consigneeLocation = iiaAddressForConsigneeLocationRepository.findIiaAddressByConsignee(po.getConsignesAddress());
         dto.setConsigneeLocation(consigneeLocation);
-        dto.setBuyBackAmount(totalBuyBackAmount);
+        //dto.setBuyBackAmount(po.getBuyBackAmount());
+
 
         dto.setIndentIds(indentIndss);
         String forwardDetails = iiaFreightForwarderDetailsRepository
@@ -1400,8 +1417,17 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         dto.setBudgetCode("");
         dto.setTotalAmount(totalAmount);
         dto.setTotalGst(totalGst);
-        dto.setGrandTotal(grandTotal);
-        dto.setWarranty(String.valueOf(po.getWarranty().setScale(0, RoundingMode.HALF_UP)));
+        BigDecimal buyBackAmount = po.getBuyBackAmount() != null ? po.getBuyBackAmount() : BigDecimal.ZERO;
+
+
+        BigDecimal grandT = grandTotal.subtract(buyBackAmount);
+
+// Set values in DTO
+        dto.setBuyBackAmount(buyBackAmount);
+        dto.setGrandTotal(grandT);
+        dto.setCurrencyOfMaterial(po.getPurchaseOrderAttributes().get(0).getCurrency());
+
+        dto.setWarranty(po.getWarranty());
         dto.setAdditionalTermsAndConditions(po.getAdditionalTermsAndConditions());
         String pbgValue = po.getApplicablePbgToBeSubmitted();
         BigDecimal performanceSecurity = BigDecimal.ZERO;
@@ -1418,6 +1444,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         dto.setPerformanceAndWarrantySecurity(String.valueOf(performanceSecurity.setScale(2, RoundingMode.HALF_UP)));
 
 
+        dto.setPerformanceAndWarranty(po.getApplicablePbgToBeSubmitted());
        // dto.setWarranty(po.getWarranty());
         dto.setIncoTerms(po.getIncoTerms());
         dto.setPaymentTerms(po.getPaymentTerms());
@@ -1426,7 +1453,11 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
        // dto.setPerformanceAndWarrantySecurity(po.getApplicablePbgToBeSubmitted());
 
         dto.setMaterialDetails(materialList);
+        BigDecimal totalDuties = po.getPurchaseOrderAttributes().stream()
+                .map(attr -> attr.getDuties() != null ? attr.getDuties() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        dto.setDuties(totalDuties.setScale(0, RoundingMode.HALF_UP));
         String fileName = officerSignatureRepository.findSignaturePathByDesignation("Store Purchase");
         dto.setOfficerSignatureFileName(fileName);
         String base64 = convertImageToBase64(fileName, basePath);

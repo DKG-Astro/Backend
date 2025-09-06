@@ -10,6 +10,7 @@ import com.astro.dto.workflow.ProcurementDtos.PoFormateDto;
 import com.astro.dto.workflow.ProcurementDtos.SreviceOrderDto.soWithTenderAndIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.TenderWithIndentResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.WorkOrderDto.woWithTenderAndIndentResponseDTO;
+import com.astro.dto.workflow.ProcurementDtos.pendingRecordsDto;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.poWithTenderAndIndentResponseDTO;
 import com.astro.entity.*;
 import com.astro.entity.ProcurementModule.*;
@@ -2043,6 +2044,10 @@ public List<ApprovedIndentsDto> getApprovedIndents() {
         return workflow;
     }
 
+    @Override
+    public List<pendingRecordsDto> getPendingRecordsForRole(String roleName) {
+        return workflowTransitionRepository.findPendingByNextRole(roleName);
+    }
 
 }
 

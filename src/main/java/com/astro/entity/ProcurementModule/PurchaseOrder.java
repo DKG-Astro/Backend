@@ -24,7 +24,7 @@ public class PurchaseOrder {
     @Column(name = "indent_id")
     private String indentId;
     @Column(name = "warranty")
-    private BigDecimal warranty;
+    private String warranty;
     @Column(name = "consignes_address")
     private String consignesAddress;
     @Column(name = "billing_address")
@@ -78,6 +78,7 @@ public class PurchaseOrder {
     private String quotationNumber;
     private LocalDate quotationDate;
     private String additionalTermsAndConditions;
+    private BigDecimal buyBackAmount;
 
 
    // @OneToMany(cascade = CascadeType.ALL)

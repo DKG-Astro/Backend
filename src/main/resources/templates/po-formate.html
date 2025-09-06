@@ -279,12 +279,12 @@
             <td th:text="${po.totalAmount}"></td>
         </tr>
         <tr>
-            <td colspan="6" style="text-align: right;">(+) Buyback Amount</td>
-            <td th:text="${po.buyBackAmount}"></td>
-        </tr>
-        <tr>
             <td colspan="6" style="text-align: right;">(+) GST Amount</td>
             <td th:text="${po.totalGst}"></td>
+        </tr>
+        <tr>
+            <td colspan="6" style="text-align: right;">(-) Buyback Amount</td>
+            <td th:text="${po.buyBackAmount}"></td>
         </tr>
         <tr>
             <td colspan="6" style="text-align: right;">Grand Total</td>
@@ -298,10 +298,18 @@
         Warranty: <span th:text="${po.warranty}"></span><br/>
         Inco Term: <span th:text="${po.incoTerms}"></span><br/>
         Payment Term: <span th:text="${po.paymentTerms}"></span><br/>
-        Duties  Taxes: <span th:text="${po.dutiesAndTaxes}"></span><br/>
+        Duties  Taxes: <span th:text="${po.duties}"></span><br/>
         Delivery Period: <span th:text="${po.deliveryPeriod}"></span> weeks from date of PO.<br/>
         Liquidated Damages: @ 0.5% per week to a maximum of 10% of PO value will be deducted for delay in delivery.<br/>
-        Performance  Warranty Security: <span th:text="${po.performanceAndWarrantySecurity}"></span><br/>
+        Performance And Warranty Security:
+        <span th:text="'CCY Amount ('
+    + ${po.currencyOfMaterial} + ' '
+    + ${po.performanceAndWarrantySecurity}
+    + ') (computed as per percentage '
+    + ${po.performanceAndWarranty}
+    + ' mentioned in PO) to be submitted within 14 days from the date of purchase order as Security towards performance and warranty whose validity shall be 60 days beyond warranty/contract period.'">
+</span><br/>
+
         Freight Forwarder: <span th:text="${po.freightForwarderDetails}"></span><br/>
         Additional Terms And Conditions (ATC): <span th:text="${po.additionalTermsAndConditions}"></span><br/>
         General Terms  Conditions: ( link to Download the doc )
@@ -310,8 +318,8 @@
     <p>Please confirm your acceptance to fulfil the purchase order under specified terms. If no acceptance is received within seven days from the date of receipt of this order, it will be deemed that this order and its terms has been accepted.</p>
 
     <p>Mark any communications to <a href="mailto:purchase@iiap.res.in">purchase@iiap.res.in</a></p>
-    <p>For Purchase related queries contact: 080 22541384, 1363, 1244 </p>
-    <p>For Delivery and Payment related queries contact: 080 22541340, 1234</p>
+    <p>For Purchase related queries contact: 080 2254 1384/ 1363/ 1244 </p>
+    <p>For Delivery and Payment related queries contact: 080 2254 1340/ 1234</p>
 
     <div class="signature-block" role="contentinfo">
         भवदीय Yours faithfully,<br/>

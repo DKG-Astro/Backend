@@ -1,6 +1,7 @@
 package com.astro.service;
 
 import com.astro.dto.workflow.*;
+import com.astro.dto.workflow.ProcurementDtos.pendingRecordsDto;
 
 import java.util.List;
 
@@ -37,5 +38,6 @@ public interface WorkflowService {
 
     public List<WorkflowTransitionDto> performAllTransitionAction(List<TransitionActionReqDto> transitionActionReqDto);
     public List<QueueResponse> allCancelledIndents();
+    public List<pendingRecordsDto> getPendingRecordsForRole(String roleName);
 
 }

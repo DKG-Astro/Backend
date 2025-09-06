@@ -13,7 +13,7 @@ public class poWithTenderAndIndentResponseDTO {
  private String poId;
  private String tenderId;
  private String indentId;
- private BigDecimal warranty;
+ private String warranty;
  private String consignesAddress;
  private String billingAddress;
  private BigDecimal deliveryPeriod;

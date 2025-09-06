@@ -13,7 +13,7 @@ public class PurchaseOrderRequestDTO{
       //  private String poId;
         private String tenderId;
         private String indentId;
-        private BigDecimal warranty;
+        private String warranty;
         private String consignesAddress;
         private String billingAddress;
         private BigDecimal deliveryPeriod;
@@ -44,7 +44,7 @@ public class PurchaseOrderRequestDTO{
         private String securityDate;
 
         private String expiryDate;
-
+    private BigDecimal buyBackAmount;
         private String quotationNumber;
         private String quotationDate;
         private String additionalTermsAndConditions;
