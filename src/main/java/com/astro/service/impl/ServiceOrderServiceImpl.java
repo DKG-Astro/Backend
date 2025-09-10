@@ -365,12 +365,18 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
 
 
     @Override
-    public List<ApprovedSoListReportDto> getApprovedSoListReport(String startDate, String endDate) {
+    public List<ApprovedSoListReportDto> getApprovedSoListReport(String startDate, String endDate, Integer userId, String roleName) {
         LocalDate from = CommonUtils.convertStringToDateObject(startDate);
         LocalDate to = CommonUtils.convertStringToDateObject(endDate);
 
-        List<Object[]> rows = serviceOrderRepository.getApprovedSoReport(from, to);
-
+      //  List<Object[]> rows = serviceOrderRepository.getApprovedSoReport(from, to);
+        List<Object[]> rows;
+        if ("Indent Creator".equalsIgnoreCase(roleName)) {
+            rows = serviceOrderRepository.getApprovedUserIdsSoReport(from, to, userId);
+            System.out.println(roleName);
+        } else {
+            rows =serviceOrderRepository.getApprovedSoReport(from, to);
+        }
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -412,12 +418,19 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
 
 
     @Override
-    public List<PendingSoReportDto> getPendingSoReport(String startDate, String endDate) {
+    public List<PendingSoReportDto> getPendingSoReport(String startDate, String endDate , Integer userId, String roleName) {
 
         LocalDate from = CommonUtils.convertStringToDateObject(startDate);
         LocalDate to = CommonUtils.convertStringToDateObject(endDate);
 
-        List<Object[]> rows = serviceOrderRepository.getPendingSoReport(from, to);
+       // List<Object[]> rows = serviceOrderRepository.getPendingSoReport(from, to);
+        List<Object[]> rows;
+        if ("Indent Creator".equalsIgnoreCase(roleName)) {
+            rows = serviceOrderRepository.getPendingSoUserIdReport(from, to, userId);
+            System.out.println(roleName);
+        } else {
+            rows =serviceOrderRepository.getPendingSoReport(from, to);
+        }
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
@@ -434,9 +447,7 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
             dto.setIndentIds((String) row[2]);
 
             if (row[3] != null) {
-                dto.setValue(((BigDecimal) row[3]).doubleValue());
-            } else {
-                dto.setValue(0.0);
+                dto.setValue(((BigDecimal) row[3]));
             }
             dto.setVendorName((String) row[4]);
 

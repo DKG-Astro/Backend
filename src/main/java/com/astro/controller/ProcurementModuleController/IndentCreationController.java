@@ -103,8 +103,9 @@ public class IndentCreationController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
     @GetMapping("/indentStatus/{indentId}")
-    public ResponseEntity<Object> getIndentStauts(@PathVariable String indentId) throws IOException {
-        List<IndentWorkflowStatusDto> responseDTO = indentCreationService.getIndentWorkflowStatus(indentId);
+    public ResponseEntity<Object> getIndentStauts(@PathVariable String indentId,
+    @RequestParam Integer userId , @RequestParam String roleName) throws IOException {
+        List<IndentWorkflowStatusDto> responseDTO = indentCreationService.getIndentWorkflowStatus(indentId, userId, roleName);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 

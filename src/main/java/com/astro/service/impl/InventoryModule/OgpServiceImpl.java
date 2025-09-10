@@ -664,7 +664,8 @@ public class OgpServiceImpl implements OgpService {
         gtMasterEntity.setGtDate(CommonUtils.convertStringToDateObject(gtMasterDto.getGtDate()));
         gtMasterEntity.setCreatedBy(gtMasterDto.getCreatedBy());
         gtMasterEntity.setCreateDate(LocalDateTime.now());
-        gtMasterEntity.setStatus("AWAITING APPROVAL");
+       // gtMasterEntity.setStatus("AWAITING APPROVAL");
+        gtMasterEntity.setStatus("PENDING RECEIVER APPROVAL");
         gtMasterEntity = ogmr.save(gtMasterEntity);
 
         for (GtDtl gtDtl : gtMasterDto.getMaterialDtlList()) {
@@ -688,7 +689,8 @@ public class OgpServiceImpl implements OgpService {
 
     @Override
     public List<GtMasterDto> getPendingGtOgp(){
-        List<OgpGtMasterEntity> gtMasterEntityList = ogmr.findByStatus("AWAITING APPROVAL");
+       // List<OgpGtMasterEntity> gtMasterEntityList = ogmr.findByStatus("AWAITING APPROVAL");
+        List<OgpGtMasterEntity> gtMasterEntityList = ogmr.findByStatus("RECEIVER APPROVED");
         List<GtMasterDto> gtMasterDtoList = new ArrayList<>();
         for (OgpGtMasterEntity gtMasterEntity : gtMasterEntityList) {
             GtMasterDto gtMasterDto = new GtMasterDto();
@@ -726,6 +728,65 @@ public class OgpServiceImpl implements OgpService {
 
 
     @Override
+    public List<GtMasterDto> getReciverPendingGtOgp(Integer userId) {
+        // Fetch only records with status = PENDING RECEIVER APPROVAL
+        List<OgpGtMasterEntity> gtMasterEntityList = ogmr.findByStatus("PENDING RECEIVER APPROVAL");
+        List<GtMasterDto> gtMasterDtoList = new ArrayList<>();
+
+        for (OgpGtMasterEntity gtMasterEntity : gtMasterEntityList) {
+            // Filter by userId = receiverCustodianId
+            if (gtMasterEntity.getReceiverCustodianId() != null &&
+                    gtMasterEntity.getReceiverCustodianId().equals(userId)) {
+
+                GtMasterDto gtMasterDto = new GtMasterDto();
+                gtMasterDto.setGtId("INV/" + gtMasterEntity.getGtId());
+                gtMasterDto.setId("INV/" + gtMasterEntity.getId());
+                gtMasterDto.setSenderLocationId(gtMasterEntity.getSenderLocationId());
+                gtMasterDto.setReceiverLocationId(gtMasterEntity.getReceiverLocationId());
+                gtMasterDto.setReceiverCustodianId(gtMasterEntity.getReceiverCustodianId());
+                gtMasterDto.setSenderCustodianId(gtMasterEntity.getSenderCustodianId());
+                gtMasterDto.setGtDate(CommonUtils.convertDateToString(gtMasterEntity.getGtDate()));
+                gtMasterDto.setStatus(gtMasterEntity.getStatus());
+                gtMasterDto.setCreatedBy(gtMasterEntity.getCreatedBy());
+
+                // Fetch material details
+                List<OgpGtDtlEntity> gtDtlEntityList = ogdr.findByGtId(gtMasterEntity.getId());
+                List<GtDtl> gtDtlList = new ArrayList<>();
+                for (OgpGtDtlEntity gtDtlEntity : gtDtlEntityList) {
+                    GtDtl gtDtl = new GtDtl();
+                    gtDtl.setAssetId(gtDtlEntity.getAssetId());
+                    gtDtl.setAssetDesc(gtDtlEntity.getAssetDesc());
+                    gtDtl.setMaterialCode(gtDtlEntity.getMaterialCode());
+                    gtDtl.setMaterialDesc(gtDtlEntity.getMaterialDesc());
+                    gtDtl.setQuantity(gtDtlEntity.getQuantity());
+                    gtDtl.setUnitPrice(gtDtlEntity.getUnitPrice());
+                    gtDtl.setDepriciationRate(gtDtlEntity.getDepriciationRate());
+                    gtDtl.setBookValue(gtDtlEntity.getBookValue());
+                    gtDtl.setReceiverLocatorId(gtDtlEntity.getReceiverLocatorId());
+                    gtDtl.setSenderLocatorId(gtDtlEntity.getSenderLocatorId());
+                    gtDtlList.add(gtDtl);
+                }
+                gtMasterDto.setMaterialDtlList(gtDtlList);
+                gtMasterDtoList.add(gtMasterDto);
+            }
+        }
+        return gtMasterDtoList;
+    }
+    @Override
+    @Transactional
+    public void approveReceiverGtOgp(String ogpId) {
+        OgpGtMasterEntity gtMasterEntity = ogmr.findById(Long.parseLong(ogpId.split("/")[1]))
+                .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                        AppConstant.ERROR_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_RESOURCE,
+                        "OGP not found")));
+
+        gtMasterEntity.setStatus("RECEIVER APPROVED");
+        ogmr.save(gtMasterEntity);
+    }
+
+    @Override
     @Transactional
     public void approveGtOgp(String ogpId){
         OgpGtMasterEntity gtMasterEntity = ogmr.findById(Long.parseLong(ogpId.split("/")[1]))
@@ -734,6 +795,14 @@ public class OgpServiceImpl implements OgpService {
                                         AppConstant.ERROR_TYPE_CODE_RESOURCE,
                                         AppConstant.ERROR_TYPE_RESOURCE,
                                         "OGP not found")));
+        if (!"RECEIVER APPROVED".equals(gtMasterEntity.getStatus())) {
+            throw new InvalidInputException(new ErrorDetails(
+                    AppConstant.ERROR_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                    AppConstant.ERROR_TYPE_RESOURCE,
+                    "Receiver approval pending. Cannot approve GT."
+            ));
+        }
         gtMasterEntity.setStatus("APPROVED");
         ogmr.save(gtMasterEntity);
         gtService.approveGtFromOgp("INV/" + gtMasterEntity.getGtId());

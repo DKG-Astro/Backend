@@ -747,6 +747,8 @@ public class GrnServiceImpl implements GrnService {
         }).toList();
     }
 
+
+
     @Override
     @Transactional
     public String saveMaterialGrn(GrnMaterialMasterDto req){
@@ -795,8 +797,10 @@ public class GrnServiceImpl implements GrnService {
                     ohq.setMaterialCode(materialDtl.getMaterialCode());
                     ohq.setLocatorId(locatorId);
                     ohq.setQuantity(materialDtl.getQuantity());
-                    ohq.setBookValue(materialDtl.getBookValue());
-                    ohq.setDepriciationRate(materialDtl.getDepriciationRate());
+                   // ohq.setBookValue(materialDtl.getBookValue());
+                  //  ohq.setDepriciationRate(materialDtl.getDepriciationRate());
+                    ohq.setBookValue(materialDtl.getBookValue() != null ? materialDtl.getBookValue() : BigDecimal.ZERO);
+                    ohq.setDepriciationRate(materialDtl.getDepriciationRate() != null ? materialDtl.getDepriciationRate() : BigDecimal.ZERO);
                     ohq.setUnitPrice(materialDtl.getUnitPrice());
                 }
                 omcr.save(ohq);
@@ -815,11 +819,16 @@ public class GrnServiceImpl implements GrnService {
 
                 if (existingOhq.isPresent()) {
                     OhqMasterEntity ohq = existingOhq.get();
-                    grnMaterialDtl.setBookValue(ohq.getBookValue());
+                   /* grnMaterialDtl.setBookValue(ohq.getBookValue());
                     grnMaterialDtl.setDepriciationRate(ohq.getDepriciationRate());
                 } else {
                     grnMaterialDtl.setBookValue(null);
                     grnMaterialDtl.setDepriciationRate(null);
+                }*/  grnMaterialDtl.setBookValue(ohq.getBookValue() != null ? ohq.getBookValue() : BigDecimal.ZERO);
+                    grnMaterialDtl.setDepriciationRate(ohq.getDepriciationRate() != null ? ohq.getDepriciationRate() : BigDecimal.ZERO);
+                } else {
+                    grnMaterialDtl.setBookValue(BigDecimal.ZERO);
+                    grnMaterialDtl.setDepriciationRate(BigDecimal.ZERO);
                 }
 
                 grnMaterialDtlList.add(grnMaterialDtl);
@@ -882,8 +891,16 @@ public class GrnServiceImpl implements GrnService {
                 ohq.setDepriciationRate(existingOhqRecord.getDepriciationRate());
                 ohq.setUnitPrice(existingOhqRecord.getUnitPrice());
             } else {
-                String priceStr = materialDtl.getEstimatedPriceWithCcy().replaceAll("[^\\d.]", "");
-                BigDecimal bookValue = new BigDecimal(priceStr);
+             //   String priceStr = materialDtl.getEstimatedPriceWithCcy().replaceAll("[^\\d.]", "");
+             //   String priceStr = String.valueOf(materialDtl.getUnitPrice()).replaceAll("[^\\d.]", "");
+                BigDecimal bookValue = BigDecimal.ZERO;
+                if (materialDtl.getUnitPrice() != null) {
+                    String priceStr = String.valueOf(materialDtl.getUnitPrice()).replaceAll("[^\\d.]", "");
+                    if (!priceStr.isEmpty()) {
+                        bookValue = new BigDecimal(priceStr);
+                    }
+                }
+              //  BigDecimal bookValue = new BigDecimal(priceStr);
                 ohq.setBookValue(bookValue);
                 ohq.setDepriciationRate(BigDecimal.ZERO);
                 ohq.setUnitPrice(bookValue);

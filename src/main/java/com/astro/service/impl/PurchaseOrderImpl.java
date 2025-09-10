@@ -41,6 +41,7 @@ import com.azure.core.http.rest.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.swagger.models.auth.In;
 import net.bytebuddy.ClassFileVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -861,11 +862,18 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
 
 
     @Override
-    public List<ApprovedPoListReportDto> getApprovedPoReport(String startDate, String endDate) {
+    public List<ApprovedPoListReportDto> getApprovedPoReport(String startDate, String endDate, Integer userId, String roleName) {
         LocalDate from = CommonUtils.convertStringToDateObject(startDate);
         LocalDate to = CommonUtils.convertStringToDateObject(endDate);
 
-        List<Object[]> rows = purchaseOrderRepository.getApprovedPoReport(from, to);
+     //   List<Object[]> rows = purchaseOrderRepository.getApprovedPoReport(from, to);
+        List<Object[]> rows;
+        if ("Indent Creator".equalsIgnoreCase(roleName)) {
+            rows = purchaseOrderRepository.getApprovedPoReportByIndentCreator(from, to, userId);
+            System.out.println(roleName);
+        } else {
+            rows = purchaseOrderRepository.getApprovedPoReport(from, to);
+        }
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
@@ -907,12 +915,22 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
 
 
     @Override
-    public List<pendingPoReportDto> getPendingPoReport(String startDate, String endDate) {
+    public List<pendingPoReportDto> getPendingPoReport(String startDate, String endDate, Integer userId, String roleName) {
 
         LocalDate from = CommonUtils.convertStringToDateObject(startDate);
         LocalDate to = CommonUtils.convertStringToDateObject(endDate);
 
-        List<Object[]> rows = purchaseOrderRepository.getPendingPoReport(from, to);
+       // List<Object[]> rows = purchaseOrderRepository.getPendingPoReport(from, to);
+        List<Object[]> rows;
+
+        if ("Indent Creator".equalsIgnoreCase(roleName) && userId != null) {
+            // Call the new query that filters by userId for indent creation
+            rows = purchaseOrderRepository.getPendingPoReportForIndentCreator(from, to, userId);
+        } else {
+            // Call the normal query for other roles
+            rows = purchaseOrderRepository.getPendingPoReport(from, to);
+        }
+
 
 
         ObjectMapper mapper = new ObjectMapper();

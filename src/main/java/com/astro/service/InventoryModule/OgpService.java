@@ -30,7 +30,9 @@ public interface OgpService {
 
     public void rejectGiOgp(String ogpId);
     public String saveGtOgp(GtMasterDto gtMasterDto);
+    public List<GtMasterDto> getReciverPendingGtOgp(Integer userId);
     public List<GtMasterDto> getPendingGtOgp();
     public void rejectGtOgp(String ogpId);
     public void approveGtOgp(String ogpId);
+    public void approveReceiverGtOgp(String ogpId);
 }

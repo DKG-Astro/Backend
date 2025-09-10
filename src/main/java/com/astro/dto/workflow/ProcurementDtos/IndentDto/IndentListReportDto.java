@@ -2,6 +2,7 @@ package com.astro.dto.workflow.ProcurementDtos.IndentDto;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class IndentListReportDto {
     private String status;
     private LocalDate asOnDate;
     private Integer createdBy;
+    private BigDecimal indentValue;
     private List<IndentMaterialListReportDto> materialDetails;
 
 }

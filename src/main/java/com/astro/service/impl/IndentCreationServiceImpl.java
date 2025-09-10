@@ -952,13 +952,20 @@ public class IndentCreationServiceImpl implements IndentCreationService {
     }
 
     @Override
-    public List<IndentListReportDto> getAllIndentsReport(String startDate, String endDate) {
+    public List<IndentListReportDto> getAllIndentsReport(String startDate, String endDate, Integer userId, String roleName) {
 
         List<LocalDateTime> range = CommonUtils.getDateRenge(startDate, endDate);
         LocalDateTime from = range.get(0);
         LocalDateTime to = range.get(1);
 
-        List<Object[]> rows = indentCreationRepository.getAllIndentListReport(from, to);
+      //  List<Object[]> rows = indentCreationRepository.getAllIndentListReport(from, to);
+        List<Object[]> rows;
+        if ("Indent Creator".equalsIgnoreCase(roleName)) {
+            rows = indentCreationRepository.getAllIndentListUserIdsReport(from, to, userId);
+            System.out.println(roleName);
+        } else {
+            rows =indentCreationRepository.getAllIndentListReport(from, to);
+        }
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
@@ -985,9 +992,10 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             dto.setStatus((String) row[9]);
             dto.setAsOnDate(LocalDate.now());
             dto.setCreatedBy((Integer) row[10]);
+            dto.setIndentValue((BigDecimal) row[11]);
 
 
-            String json = (String) row[11];
+            String json = (String) row[12];
             try {
                 List<IndentMaterialListReportDto> materials = mapper.readValue(
                         json,
@@ -1006,9 +1014,16 @@ public class IndentCreationServiceImpl implements IndentCreationService {
     }
 
     @Override
-    public List<IndentWorkflowStatusDto> getIndentWorkflowStatus(String indentId) {
+    public List<IndentWorkflowStatusDto> getIndentWorkflowStatus(String indentId, Integer userId, String roleName) {
 
         List<WorkflowTransition> wts = workflowTransitionRepository.findByRequestId(indentId);
+
+        // If roleName = Indent Creator, filter by createdBy = userId
+        if ("Indent Creator".equalsIgnoreCase(roleName)) {
+            wts = wts.stream()
+                    .filter(wt -> wt.getCreatedBy() != null && wt.getCreatedBy().equals(userId))
+                    .collect(Collectors.toList());
+        }
 
         return wts.stream().map(wt -> {
 

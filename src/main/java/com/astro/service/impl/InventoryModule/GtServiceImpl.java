@@ -3,16 +3,22 @@ package com.astro.service.impl.InventoryModule;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
 import com.astro.dto.workflow.InventoryModule.GtDtlDto;
 import com.astro.dto.workflow.InventoryModule.GtMasterResponseDto;
+import com.astro.dto.workflow.InventoryModule.GtReportDtlDto;
+import com.astro.dto.workflow.InventoryModule.withinFieldStationGtDto;
+import com.astro.entity.UserMaster;
+import com.astro.repository.InventoryModule.ogp.OgpGtDtlRepository;
+import com.astro.repository.InventoryModule.ogp.OgpGtMasterRepository;
+import com.astro.repository.UserMasterRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +53,13 @@ public class GtServiceImpl implements GtService {
 
     @Autowired
     private OhqMasterRepository ohqmr;
+    @Autowired
+    private UserMasterRepository userMasterRepository;
+    @Autowired
+    private OgpGtMasterRepository ogmr;
+
+    @Autowired
+    private OgpGtDtlRepository ogdr;
 
     @Override
     @Transactional
@@ -59,7 +72,8 @@ public class GtServiceImpl implements GtService {
         gtMasterEntity.setGtDate(CommonUtils.convertStringToDateObject(gtMasterDto.getGtDate()));
         gtMasterEntity.setCreatedBy(gtMasterDto.getCreatedBy());
         gtMasterEntity.setCreateDate(LocalDateTime.now());
-        gtMasterEntity.setStatus("AWAITING APPROVAL");
+      //  gtMasterEntity.setStatus("AWAITING APPROVAL");
+        gtMasterEntity.setStatus("PENDING RECEIVER APPROVAL");
         gtMasterEntity = gtmr.save(gtMasterEntity);
 
         for (GtDtl gtDtl : gtMasterDto.getMaterialDtlList()) {
@@ -96,6 +110,22 @@ public class GtServiceImpl implements GtService {
         gtMasterEntity.setStatus("REJECTED");
         gtmr.save(gtMasterEntity);
     }
+    @Override
+    @Transactional
+    public void receiverApproveGt(String gtId) {
+        Long id = Long.valueOf(gtId.split("/")[1]);
+        GtMasterEntity gtMasterEntity = gtmr.findById(id)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "Goods Transfer not found for the provided process number.")));
+
+        // After receiver accepts, move to awaiting store purchase officer approval
+        gtMasterEntity.setStatus("AWAITING APPROVAL");
+        gtmr.save(gtMasterEntity);
+    }
+
 
     @Override
     @Transactional
@@ -233,6 +263,22 @@ public class GtServiceImpl implements GtService {
     public List<GtMasterDto> getPendingGt(){
         List<GtMasterEntity> gtMasterEntityList = gtmr.findByStatus("AWAITING APPROVAL");
         List<GtMasterDto> gtMasterDtoList = new ArrayList<>();
+        Set<Integer> userIds = new HashSet<>();
+        for (GtMasterEntity entity : gtMasterEntityList) {
+            userIds.add(entity.getSenderCustodianId());
+            userIds.add(entity.getReceiverCustodianId());
+        }
+
+        List<UserMaster> users = userMasterRepository.findByUserIdIn(userIds);
+        Map<Integer, String> userMap = users.stream()
+                .filter(u -> u.getUserId() != null)
+                .collect(Collectors.toMap(
+                        UserMaster::getUserId,
+                        u -> u.getUserName() != null ? u.getUserName() : "Unknown",
+                        (v1, v2) -> v1
+                ));
+
+
         for (GtMasterEntity gtMasterEntity : gtMasterEntityList) {
             GtMasterDto gtMasterDto = new GtMasterDto();
             gtMasterDto.setId("INV/" + gtMasterEntity.getId());
@@ -241,6 +287,65 @@ public class GtServiceImpl implements GtService {
             gtMasterDto.setReceiverLocationId(gtMasterEntity.getReceiverLocationId());
             gtMasterDto.setSenderCustodianId(gtMasterEntity.getSenderCustodianId());
             gtMasterDto.setReceiverCustodianId(gtMasterEntity.getReceiverCustodianId());
+            gtMasterDto.setSenderCustodianName(
+                    userMap.getOrDefault(gtMasterEntity.getSenderCustodianId(), "Unknown"));
+            gtMasterDto.setReceiverCustodianName(
+                    userMap.getOrDefault(gtMasterEntity.getReceiverCustodianId(), "Unknown"));
+
+            List<GtDtlEntity> gtDtlEntityList = gtdr.findByGtId(gtMasterEntity.getId());
+            List<GtDtl> gtDtlList = new ArrayList<>();
+            for (GtDtlEntity gtDtlEntity : gtDtlEntityList) {
+                GtDtl gtDtl = new GtDtl();
+                gtDtl.setAssetId(gtDtlEntity.getAssetId());
+                gtDtl.setAssetDesc(gtDtlEntity.getAssetDesc());
+                gtDtl.setMaterialCode(gtDtlEntity.getMaterialCode());
+                gtDtl.setMaterialDesc(gtDtlEntity.getMaterialDesc());
+                gtDtl.setQuantity(gtDtlEntity.getQuantity());
+                gtDtl.setReceiverLocatorId(gtDtlEntity.getReceiverLocatorId());
+                gtDtl.setSenderLocatorId(gtDtlEntity.getSenderLocatorId());
+                gtDtl.setUnitPrice(gtDtlEntity.getUnitPrice());
+                gtDtl.setDepriciationRate(gtDtlEntity.getDepriciationRate());
+                gtDtl.setBookValue(gtDtlEntity.getBookValue());
+                gtDtlList.add(gtDtl);
+            }
+            gtMasterDto.setMaterialDtlList(gtDtlList);
+            gtMasterDtoList.add(gtMasterDto);
+
+        }
+        return gtMasterDtoList;
+    }
+    @Override
+    public List<GtMasterDto> getRecevierPendingGt(){
+        List<GtMasterEntity> gtMasterEntityList = gtmr.findByStatus("PENDING RECEIVER APPROVAL");
+        List<GtMasterDto> gtMasterDtoList = new ArrayList<>();
+        Set<Integer> userIds = new HashSet<>();
+        for (GtMasterEntity entity : gtMasterEntityList) {
+            userIds.add(entity.getSenderCustodianId());
+            userIds.add(entity.getReceiverCustodianId());
+        }
+
+        List<UserMaster> users = userMasterRepository.findByUserIdIn(userIds);
+        Map<Integer, String> userMap = users.stream()
+                .filter(u -> u.getUserId() != null)
+                .collect(Collectors.toMap(
+                        UserMaster::getUserId,
+                        u -> u.getUserName() != null ? u.getUserName() : "Unknown",
+                        (v1, v2) -> v1
+                ));
+
+        for (GtMasterEntity gtMasterEntity : gtMasterEntityList) {
+            GtMasterDto gtMasterDto = new GtMasterDto();
+            gtMasterDto.setId("INV/" + gtMasterEntity.getId());
+            gtMasterDto.setGtDate(CommonUtils.convertDateToString(gtMasterEntity.getGtDate()));
+            gtMasterDto.setSenderLocationId(gtMasterEntity.getSenderLocationId());
+            gtMasterDto.setReceiverLocationId(gtMasterEntity.getReceiverLocationId());
+            gtMasterDto.setSenderCustodianId(gtMasterEntity.getSenderCustodianId());
+            gtMasterDto.setReceiverCustodianId(gtMasterEntity.getReceiverCustodianId());
+            gtMasterDto.setSenderCustodianName(
+                    userMap.getOrDefault(gtMasterEntity.getSenderCustodianId(), "Unknown"));
+            gtMasterDto.setReceiverCustodianName(
+                    userMap.getOrDefault(gtMasterEntity.getReceiverCustodianId(), "Unknown"));
+
             List<GtDtlEntity> gtDtlEntityList = gtdr.findByGtId(gtMasterEntity.getId());
             List<GtDtl> gtDtlList = new ArrayList<>();
             for (GtDtlEntity gtDtlEntity : gtDtlEntityList) {
@@ -360,4 +465,87 @@ public class GtServiceImpl implements GtService {
         gtMasterDto.setStatus(gtme.getStatus());
         return gtMasterDto;
     }
+  /*  @Override
+    public List<withinFieldStationGtDto> getGtReport(String startDate, String endDate) {
+        List<LocalDate> dateRange = CommonUtils.getDateRengeAsLocalDate(startDate, endDate);
+        List<Object[]> results = gtmr.getGtReport(dateRange.get(0), dateRange.get(1));
+        ObjectMapper mapper = new ObjectMapper();
+        List<withinFieldStationGtDto> reportList = new ArrayList<>();
+
+        for (Object[] row : results) {
+            withinFieldStationGtDto dto = new withinFieldStationGtDto();
+            dto.setGtId(((Number) row[0]).longValue());
+            dto.setSenderLocationId((String) row[1]);
+            dto.setReceiverLocationId((String) row[2]);
+            dto.setSenderCustodianId((Integer) row[3]);
+            dto.setReceiverCustodianId((Integer) row[4]);
+            dto.setStatus((String) row[5]);
+            dto.setGtDate(((java.sql.Date) row[6]).toLocalDate());
+            dto.setCreateDate(((java.sql.Timestamp) row[7]).toLocalDateTime());
+            dto.setCreatedBy((Integer) row[8]);
+
+            try {
+                String materialDetailsJson = (String) row[9];
+                List<GtReportDtlDto> materialDetails = mapper.readValue(
+                        materialDetailsJson, new TypeReference<List<GtReportDtlDto>>() {}
+                );
+                dto.setMaterialDetails(materialDetails);
+            } catch (Exception e) {
+                dto.setMaterialDetails(new ArrayList<>());
+            }
+
+            reportList.add(dto);
+        }
+
+        return reportList;
+    }*/
+  @Override
+  public List<withinFieldStationGtDto> getGtReport(String startDate, String endDate) {
+      List<LocalDate> dateRange = CommonUtils.getDateRengeAsLocalDate(startDate, endDate);
+      ObjectMapper mapper = new ObjectMapper();
+      List<withinFieldStationGtDto> reportList = new ArrayList<>();
+
+
+      List<Object[]> gtResults = gtmr.getGtReport(dateRange.get(0), dateRange.get(1));
+      for (Object[] row : gtResults) {
+          withinFieldStationGtDto dto = mapRowToDto(row, mapper);
+          dto.setType("WITHIN FIELD STATION");
+          reportList.add(dto);
+      }
+
+      List<Object[]> ogpResults = ogmr.getOgpGtReport(dateRange.get(0), dateRange.get(1));
+      for (Object[] row : ogpResults) {
+          withinFieldStationGtDto dto = mapRowToDto(row, mapper);
+          dto.setType("INTER FIELD STATION");
+          reportList.add(dto);
+      }
+
+      return reportList;
+  }
+    private withinFieldStationGtDto mapRowToDto(Object[] row, ObjectMapper mapper) {
+        withinFieldStationGtDto dto = new withinFieldStationGtDto();
+        dto.setGtId(((Number) row[0]).longValue());
+        dto.setSenderLocationId((String) row[1]);
+        dto.setReceiverLocationId((String) row[2]);
+        dto.setSenderCustodianId((Integer) row[3]);
+        dto.setReceiverCustodianId((Integer) row[4]);
+        dto.setStatus((String) row[5]);
+        dto.setGtDate(((java.sql.Date) row[6]).toLocalDate());
+        dto.setCreateDate(((java.sql.Timestamp) row[7]).toLocalDateTime());
+        dto.setCreatedBy((Integer) row[8]);
+
+        try {
+            String materialDetailsJson = (String) row[9];
+            List<GtReportDtlDto> materialDetails = mapper.readValue(
+                    materialDetailsJson, new TypeReference<List<GtReportDtlDto>>() {}
+            );
+            dto.setMaterialDetails(materialDetails);
+        } catch (Exception e) {
+            dto.setMaterialDetails(new ArrayList<>());
+        }
+
+        return dto;
+    }
+
+
 }

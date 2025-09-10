@@ -453,6 +453,11 @@ public class ProcessController {
         List<GtMasterDto> res = gtService.getPendingGt();
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
+    @GetMapping("/getRecevierPendingGt")
+    public ResponseEntity<Object> getRecevierPendingGt() {
+        List<GtMasterDto> res = gtService.getRecevierPendingGt();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
     @GetMapping("/SearchById")
     public ResponseEntity<Object> getGtById(@RequestParam String gtId) {
         GtMasterResponseDto res = gtService.getGtById(gtId);
@@ -462,6 +467,11 @@ public class ProcessController {
     @PostMapping("/approveGt")
     public ResponseEntity<Object> approveGt(@RequestBody GtIdDto req) {
         gtService.approveGt(req.getGtId());
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(), HttpStatus.OK);
+    }
+    @PostMapping("/receiverApproveGt")
+    public ResponseEntity<Object> receiverApproveGt(@RequestBody GtIdDto req) {
+        gtService.receiverApproveGt(req.getGtId());
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(), HttpStatus.OK);
     }
     @PostMapping("/rejectGt")
@@ -483,10 +493,21 @@ public class ProcessController {
         List<GtMasterDto> res = ogpService.getPendingGtOgp();
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
+    @GetMapping("/getRecevierPendingGtOgp")
+    public ResponseEntity<Object> getRecevierPendingGtOgp(@RequestParam("userId") Integer userId) {
+        List<GtMasterDto> res = ogpService.getReciverPendingGtOgp(userId);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
 
     @PostMapping("/approveGtOgp")
     public ResponseEntity<Object> approveGtOgp(@RequestBody OgpIdDto req) {
         ogpService.approveGtOgp(req.getOgpId());
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(), HttpStatus.OK);
+    }
+    @PostMapping("/approveReciverGtOgp")
+    public ResponseEntity<Object> approveReciverGtOgp(@RequestBody OgpIdDto req) {
+        ogpService.approveReceiverGtOgp(req.getOgpId());
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(), HttpStatus.OK);
     }
 

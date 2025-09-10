@@ -502,7 +502,13 @@ public List<IgpMaterialInReportDto> getIgpMaterialInReport(String startDate, Str
             igpMaterialDtlEntity.setSubCategory(materialIgpDetailDto.getSubCategory());
             igpMaterialDtlEntity.setDescription(materialIgpDetailDto.getDescription());
             igpMaterialDtlEntity.setUom(materialIgpDetailDto.getUom());
-            igpMaterialDtlEntity.setEstimatedPriceWithCcy(materialIgpDetailDto.getEstimatedPriceWithCcy());
+           // igpMaterialDtlEntity.setEstimatedPriceWithCcy(materialIgpDetailDto.getEstimatedPriceWithCcy());
+            igpMaterialDtlEntity.setEstimatedPriceWithCcy(
+                    materialIgpDetailDto.getUnitPrice() != null
+                            ? materialIgpDetailDto.getUnitPrice().doubleValue()
+                            : 0.0
+            );
+
             igpMaterialDtlEntity.setIndigenousOrImported(materialIgpDetailDto.getIndigenousOrImported());
             imdr.save(igpMaterialDtlEntity);
         }
@@ -550,7 +556,13 @@ public List<IgpMaterialInReportDto> getIgpMaterialInReport(String startDate, Str
             igpMaterialDtlEntity.setSubCategory(materialIgpDetailDto.getSubCategory());
             igpMaterialDtlEntity.setDescription(materialIgpDetailDto.getDescription());
             igpMaterialDtlEntity.setUom(materialIgpDetailDto.getUom());
-            igpMaterialDtlEntity.setEstimatedPriceWithCcy(materialIgpDetailDto.getEstimatedPriceWithCcy());
+           // igpMaterialDtlEntity.setEstimatedPriceWithCcy(materialIgpDetailDto.getEstimatedPriceWithCcy());
+            igpMaterialDtlEntity.setEstimatedPriceWithCcy(
+                    materialIgpDetailDto.getUnitPrice() != null
+                            ? materialIgpDetailDto.getUnitPrice().doubleValue()
+                            : 0.0
+            );
+
             igpMaterialDtlEntity.setIndigenousOrImported(materialIgpDetailDto.getIndigenousOrImported());
             imdr.save(igpMaterialDtlEntity);
         }
@@ -605,7 +617,13 @@ public List<IgpMaterialInReportDto> getIgpMaterialInReport(String startDate, Str
             igpMaterialDetailDto.setSubCategory(igpMaterialDtlEntity.getSubCategory());
             igpMaterialDetailDto.setDescription(igpMaterialDtlEntity.getDescription());
             igpMaterialDetailDto.setUom(igpMaterialDtlEntity.getUom());
-            igpMaterialDetailDto.setEstimatedPriceWithCcy(igpMaterialDtlEntity.getEstimatedPriceWithCcy());
+          //  igpMaterialDetailDto.setEstimatedPriceWithCcy(igpMaterialDtlEntity.getEstimatedPriceWithCcy());
+           // igpMaterialDetailDto.setUnitPrice(BigDecimal.valueOf(igpMaterialDtlEntity.getEstimatedPriceWithCcy()));
+            Double estimatedPrice = igpMaterialDtlEntity.getEstimatedPriceWithCcy();
+            igpMaterialDetailDto.setUnitPrice(
+                    estimatedPrice != null ? BigDecimal.valueOf(estimatedPrice) : BigDecimal.ZERO
+            );
+
             igpMaterialDetailDto.setIndigenousOrImported(igpMaterialDtlEntity.getIndigenousOrImported());
             igpMaterialDetailDtoList.add(igpMaterialDetailDto);
         }

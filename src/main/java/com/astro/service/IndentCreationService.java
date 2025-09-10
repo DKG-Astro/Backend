@@ -35,9 +35,9 @@ public interface IndentCreationService {
 
     public List<materialHistoryDto> getIndentIdAndUserId(String materialCode);
 
-    public List<IndentListReportDto> getAllIndentsReport(String startDate, String endDate);
+    public List<IndentListReportDto> getAllIndentsReport(String startDate, String endDate, Integer userId, String roleName);
 
-    public List<IndentWorkflowStatusDto> getIndentWorkflowStatus(String indentId);
+    public List<IndentWorkflowStatusDto> getIndentWorkflowStatus(String indentId, Integer userId, String roleName);
 
    public List<SearchIndentIdDto> searchIndentIds(String type, String value);
 

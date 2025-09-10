@@ -292,6 +292,109 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, St
             @Param("endDate") LocalDateTime endDate
     );
 
+    @Query(value = """
+    SELECT
+      wt.createdDate AS approvedDate,
+      po.po_id AS poId,
+      po.vendor_name AS vendorName,
+      po.total_value_of_po AS value,
+      po.tender_id AS tenderId,
+      po.project_name AS project,
+      po.vendor_id AS vendorId,
+      GROUP_CONCAT(DISTINCT i.indent_id SEPARATOR ', ') AS indentIds,
+      (SELECT md.mode_of_procurement
+         FROM material_details md
+         WHERE md.indent_id IN (
+             SELECT i.indent_id
+             FROM indent_id i
+             JOIN indent_creation ic ON i.indent_id = ic.indent_id
+             WHERE i.tender_id = po.tender_id
+               AND ic.created_by = :userId
+         ) LIMIT 1) AS modeOfProcurement,
+      JSON_ARRAYAGG(
+        JSON_OBJECT(
+          'materialCode', attr.material_code,
+          'materialDescription', attr.material_description,
+          'quantity', attr.quantity,
+          'rate', attr.rate,
+          'currency', attr.currency,
+          'exchangeRate', attr.exchange_rate,
+          'gst', attr.gst,
+          'duties', attr.duties,
+          'freightCharge', attr.freight_charge,
+          'budgetCode', attr.budget_code,
+          'receivedQuantity', attr.received_quantity
+        )
+      ) AS attributesJson
+    FROM workflow_transition wt
+    JOIN purchase_order po ON wt.requestId = po.po_id
+    JOIN purchase_order_attributes attr ON po.po_id = attr.po_id
+    JOIN indent_id i ON i.tender_id = po.tender_id
+    JOIN indent_creation ic ON i.indent_id = ic.indent_id AND ic.created_by = :userId
+    WHERE wt.workflowName = 'PO Workflow'
+      AND wt.status = 'Completed'
+      AND wt.nextAction IS NULL
+      AND wt.createdDate BETWEEN :from AND :to
+    GROUP BY
+      wt.createdDate, po.po_id, po.vendor_name,
+      po.total_value_of_po, po.tender_id,
+      po.project_name, po.vendor_id
+    ORDER BY wt.createdDate, po.po_id
+    """, nativeQuery = true)
+    List<Object[]> getApprovedPoReportByIndentCreator(
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to,
+            @Param("userId") Integer userId
+    );
+
+
+    @Query(value = """
+    SELECT
+      po.po_id AS poId,
+      po.tender_id AS tenderId,
+      GROUP_CONCAT(DISTINCT i.indent_id SEPARATOR ', ') AS indentIds,
+      po.total_value_of_po AS value,
+      po.vendor_name AS vendorName,
+      wt.createdDate AS submittedDate,
+      wt.nextRole AS pendingWith,
+      wt.modificationDate AS pendingFrom,
+      wt.status AS status,
+      JSON_ARRAYAGG(
+        JSON_OBJECT(
+          'materialCode', attr.material_code,
+          'materialDescription', attr.material_description,
+          'quantity', attr.quantity,
+          'rate', attr.rate,
+          'currency', attr.currency,
+          'exchangeRate', attr.exchange_rate,
+          'gst', attr.gst,
+          'duties', attr.duties,
+          'freightCharge', attr.freight_charge,
+          'budgetCode', attr.budget_code,
+          'receivedQuantity', attr.received_quantity
+        )
+      ) AS attributesJson
+    FROM workflow_transition wt
+    JOIN purchase_order po ON wt.requestId = po.po_id
+    JOIN purchase_order_attributes attr ON po.po_id = attr.po_id
+    JOIN indent_id i ON i.tender_id = po.tender_id
+    JOIN indent_creation ic ON ic.indent_id = i.indent_id AND ic.created_by = :userId
+    WHERE wt.workflowName = 'PO Workflow'
+      AND wt.nextAction = 'Pending'
+      AND wt.nextRole IS NOT NULL
+      AND wt.createdDate BETWEEN :fromDate AND :toDate
+    GROUP BY
+      po.po_id, po.tender_id, po.total_value_of_po,
+      po.vendor_name, wt.createdDate, wt.nextRole,
+      wt.modificationDate, wt.status
+    ORDER BY wt.createdDate, po.po_id
+    """, nativeQuery = true)
+    List<Object[]> getPendingPoReportForIndentCreator(
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate,
+            @Param("userId") Integer userId
+    );
+
 
 
   /*  @Query("SELECT new com.astro.dto.materialHistoryDto(p.poId, CAST(p.createdDate AS string), p.vendorName) " +

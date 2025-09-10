@@ -12,6 +12,9 @@ public class GtMasterDto {
     private String receiverLocationId;
     private Integer receiverCustodianId;
     private Integer senderCustodianId;
+    private String senderCustodianName;
+    private String receiverCustodianName;
+
     private String gtDate;
     private String status;
     private Integer createdBy;

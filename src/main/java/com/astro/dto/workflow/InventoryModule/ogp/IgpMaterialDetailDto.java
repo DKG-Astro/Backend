@@ -18,6 +18,7 @@ public class IgpMaterialDetailDto {
     private String description;
     private String uom;
     private BigDecimal quantity;
-    private Double estimatedPriceWithCcy; // or BigDecimal if preferred
+   // private Double estimatedPriceWithCcy; // or BigDecimal if preferred
+    private BigDecimal unitPrice;
     private Boolean indigenousOrImported;
 }

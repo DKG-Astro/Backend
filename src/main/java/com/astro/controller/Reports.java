@@ -3,6 +3,7 @@ package com.astro.controller;
 import com.astro.dto.workflow.InventoryModule.asset.AssetMasterReportDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpMaterialInReportDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpRejectedGiReportDto;
+import com.astro.dto.workflow.InventoryModule.withinFieldStationGtDto;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseReportDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentListReportDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentReportDetailsDTO;
@@ -20,10 +21,7 @@ import com.astro.dto.workflow.InventoryModule.isn.IsnReportDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpReportDto;
 import com.astro.dto.workflow.InventoryModule.ohq.OhqReportDto;
 import com.astro.service.*;
-import com.astro.service.InventoryModule.AssetMasterService;
-import com.astro.service.InventoryModule.IgpService;
-import com.astro.service.InventoryModule.IsnService;
-import com.astro.service.InventoryModule.OgpService;
+import com.astro.service.InventoryModule.*;
 import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -63,6 +61,8 @@ public class Reports {
     private IgpService igpService;
     @Autowired
     private ServiceOrderService serviceOrderService;
+    @Autowired
+    private GtService gtService;
 
     @GetMapping("/indent")
     public ResponseEntity<Object> getIndentReport(
@@ -109,18 +109,22 @@ public class Reports {
     @GetMapping("poList-report")
     public ResponseEntity<Object> getPoListReport(
             @RequestParam String startDate,
-            @RequestParam String endDate) {
+            @RequestParam String endDate,
+            @RequestParam Integer userId,
+            @RequestParam String roleName) {
 
-        List<ApprovedPoListReportDto> response = purchaseOrderService.getApprovedPoReport(startDate, endDate);
+        List<ApprovedPoListReportDto> response = purchaseOrderService.getApprovedPoReport(startDate, endDate, userId, roleName);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
 
     }
     @GetMapping("soList-report")
     public ResponseEntity<Object> getSoListReport(
             @RequestParam String startDate,
-            @RequestParam String endDate) {
+            @RequestParam String endDate,
+            @RequestParam Integer userId,
+            @RequestParam String roleName) {
 
-        List<ApprovedSoListReportDto> response = serviceOrderService.getApprovedSoListReport(startDate, endDate);
+        List<ApprovedSoListReportDto> response = serviceOrderService.getApprovedSoListReport(startDate, endDate, userId, roleName);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
 
     }
@@ -143,9 +147,12 @@ public class Reports {
     @GetMapping("pending-po-report")
     public ResponseEntity<Object> getPendingPoReport(
             @RequestParam String startDate,
-            @RequestParam String endDate) {
+            @RequestParam String endDate,
+            @RequestParam Integer userId,
+            @RequestParam String roleName
+            ) {
 
-        List<pendingPoReportDto> response = purchaseOrderService.getPendingPoReport(startDate, endDate);
+        List<pendingPoReportDto> response = purchaseOrderService.getPendingPoReport(startDate, endDate, userId, roleName);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
 
     }
@@ -161,9 +168,11 @@ public class Reports {
     @GetMapping("pending-so-report")
     public ResponseEntity<Object> getPendingSoReport(
             @RequestParam String startDate,
-            @RequestParam String endDate) {
+            @RequestParam String endDate,
+            @RequestParam Integer userId,
+            @RequestParam String roleName) {
 
-        List<PendingSoReportDto> response = serviceOrderService.getPendingSoReport(startDate, endDate);
+        List<PendingSoReportDto> response = serviceOrderService.getPendingSoReport(startDate, endDate, userId,roleName);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
 
     }
@@ -171,9 +180,11 @@ public class Reports {
     @GetMapping("indentList-report")
     public ResponseEntity<Object> getIndentListReport(
             @RequestParam String startDate,
-            @RequestParam String endDate) {
+            @RequestParam String endDate,
+            @RequestParam Integer userId,
+            @RequestParam String roleName) {
 
-        List<IndentListReportDto> response = indentCreationService.getAllIndentsReport(startDate, endDate);
+        List<IndentListReportDto> response = indentCreationService.getAllIndentsReport(startDate, endDate ,userId, roleName);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
 
     }
@@ -238,6 +249,16 @@ public class Reports {
                endDate);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
-    
+
+    @GetMapping("/withInField-gt-report")
+    public ResponseEntity<Object> getGtReport(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+
+      List<withinFieldStationGtDto> response = gtService.getGtReport(startDate,endDate);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+
+    }
+
 
 }

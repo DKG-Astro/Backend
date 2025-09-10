@@ -16,8 +16,8 @@ public interface ServiceOrderService {
     public soWithTenderAndIndentResponseDTO getServiceOrderById(String soId);
     public void deleteServiceOrder(String soId);
 
-    public List<ApprovedSoListReportDto> getApprovedSoListReport(String startDate, String endDate);
+    public List<ApprovedSoListReportDto> getApprovedSoListReport(String startDate, String endDate,Integer userId, String roleName);
 
-    public List<PendingSoReportDto> getPendingSoReport(String startDate, String endDate);
+    public List<PendingSoReportDto> getPendingSoReport(String startDate, String endDate , Integer userId, String roleName);
 
 }
