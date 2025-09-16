@@ -1,19 +1,20 @@
 package com.astro.dto.workflow.InventoryModule;
 
-import java.math.BigDecimal;
-
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
-public class AssetDisposalDetailDto {
+public class AssetDisposalMaterialDto {
+    private Long disposalDetailId;
     private Integer assetId;
     private String assetDesc;
-    private BigDecimal quantity;
+    private BigDecimal disposalQuantity;
     private String disposalCategory;
     private String disposalMode;
     private String salesNoteFilename;
     private Integer locatorId;
-    private Integer ohqId;
+    private Long ohqId;
     private BigDecimal bookValue;
     private BigDecimal depriciationRate;
     private BigDecimal unitPrice;

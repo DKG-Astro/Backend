@@ -1,5 +1,7 @@
 package com.astro.controller.InventoryModule;
 
+import com.astro.dto.workflow.InventoryModule.AssetDisposalDto;
+import com.astro.dto.workflow.InventoryModule.DiMasterDto;
 import com.astro.dto.workflow.InventoryModule.GiDto.GiApprovalDto;
 import com.astro.dto.workflow.InventoryModule.GiDto.GiWorkflowStatusDto;
 import com.astro.dto.workflow.InventoryModule.GiDto.SaveGiDto;
@@ -7,6 +9,7 @@ import com.astro.dto.workflow.InventoryModule.GoodsTransfer.GtIdDto;
 import com.astro.dto.workflow.InventoryModule.GoodsTransfer.GtMasterDto;
 import com.astro.dto.workflow.InventoryModule.GprnDto.SaveGprnDto;
 import com.astro.dto.workflow.InventoryModule.GtMasterResponseDto;
+import com.astro.dto.workflow.InventoryModule.asset.AssetOhqDisposalDto;
 import com.astro.dto.workflow.InventoryModule.gprn.GprnPendingInspectionDto;
 import com.astro.dto.workflow.InventoryModule.grn.GrnDto;
 import com.astro.dto.workflow.InventoryModule.grn.GrnMaterialMasterDto;
@@ -25,18 +28,9 @@ import com.astro.dto.workflow.InventoryModule.ogp.OgpIdDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpMasterRejectedGiDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
-import com.astro.entity.InventoryModule.GiMasterEntity;
-import com.astro.entity.InventoryModule.GrnMasterEntity;
-import com.astro.entity.InventoryModule.IsnAssetOhqDtlsDto;
-import com.astro.entity.InventoryModule.OhqMasterConsumableEntity;
-import com.astro.entity.InventoryModule.OhqMasterEntity;
-import com.astro.service.InventoryModule.GrnService;
-import com.astro.service.InventoryModule.GtService;
+import com.astro.entity.InventoryModule.*;
+import com.astro.service.InventoryModule.*;
 import com.astro.service.ProcessService;
-import com.astro.service.InventoryModule.AssetMasterService;
-import com.astro.service.InventoryModule.GiService;
-import com.astro.service.InventoryModule.IgpService;
-import com.astro.service.InventoryModule.OgpService;
 import com.astro.service.impl.InventoryModule.GiServiceImpl;
 import com.astro.util.ResponseBuilder;
 
@@ -79,6 +73,10 @@ public class ProcessController {
 
     @Autowired
     private OgpService ogpService;
+    @Autowired
+    private DiService diService;
+    @Autowired
+    private ogpAssetService ogpAssetDisposalService;
 
     @PostMapping("/saveGprn")
     public ResponseEntity<Object> saveGprn(@RequestBody SaveGprnDto req) {
@@ -432,6 +430,11 @@ public class ProcessController {
         List<OhqMasterEntity> res = assetMasterService.getAssetOhqList();
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
+    @GetMapping("/getAssetOhqForDisposal")
+    public ResponseEntity<Object> getAssetOhqForDisposal() {
+        List<AssetOhqDisposalDto> res = assetMasterService.getAllAssetsForDisposal();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
 
     @GetMapping("/getAssetOhqConsumable")
     public ResponseEntity<Object> getAssetOhqConsumable() {
@@ -516,4 +519,101 @@ public class ProcessController {
         ogpService.rejectGtOgp(req.getOgpId());
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(), HttpStatus.OK);
     }
+
+    @PostMapping("/createDi")
+    public ResponseEntity<Object> createDi(@RequestBody DiMasterDto req) {
+        //TODO: process POST request
+        String id = diService.createDi(req);
+        Map<String, String> res = new HashMap<>();
+        res.put("processNo", id);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+    @GetMapping("/getPendingDi")
+    public ResponseEntity<Object> getPendingDi() {
+        List<DiMasterDto> res = diService.getPendingDi();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+    @PostMapping("/approveDi")
+    public ResponseEntity<Object> approveDi(@RequestParam String diId) {
+        diService.approveDi(diId);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(), HttpStatus.OK);
+    }
+    @PostMapping("/rejectDi")
+    public ResponseEntity<Object> rejectDi(@RequestParam String diId) {
+        diService.rejectDi(diId);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(), HttpStatus.OK);
+    }
+    @GetMapping("/getStoreStockOhqConsumable")
+    public ResponseEntity<Object> getStoreStockOhqConsumable() {
+        List<OhqConsumableStoreStockEntity> res = assetMasterService.getStoreStockOhqConsumableList();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+    @GetMapping("/SearchByDiId")
+    public ResponseEntity<Object> getDiById(@RequestParam String diId) {
+        DiMasterDto res = diService.getDiById(diId);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+    @PutMapping("/issueNote")
+    public ResponseEntity<Object> updateDiIssueNote(
+            @RequestBody DiMasterDto diMasterDto) {
+
+        String res = diService.updateDi(diMasterDto.getDiId(), diMasterDto);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @GetMapping("/AssetDisposalApproval")
+    public ResponseEntity<Object> getAllPendingAssetDisposal() {
+        List<AssetDisposalDto> res = assetMasterService.getAllAssetDisposalAwaitingForApproval();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+    @PostMapping("/approveAssetDisposal")
+    public ResponseEntity<Object> getAssetDisposalApproval(@RequestParam String disposalId) {
+        assetMasterService.approveDisposal(disposalId);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(), HttpStatus.OK);
+    }
+    @PostMapping("/rejectAssetDisposal")
+    public ResponseEntity<Object> getAssetDisposalReject(@RequestParam String disposalId) {
+        assetMasterService.rejectDisposal(disposalId);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(), HttpStatus.OK);
+    }
+
+    @GetMapping("/SearchByDisposalId")
+    public ResponseEntity<Object> getDisposalById(@RequestParam String disposalId) {
+        AssetDisposalDto res = assetMasterService.getAssetDisposalById(disposalId);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @PutMapping("/updateAssetDisposal")
+    public ResponseEntity<Object> updateAssetDisposal(
+            @RequestBody AssetDisposalDto assetDisposalDtoMasterDto) {
+
+        String res = assetMasterService.updateAssetDisposal(assetDisposalDtoMasterDto);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @PostMapping("/saveAssetDisposal")
+    public ResponseEntity<Object> saveAssetDisposalOgp(@RequestBody AssetDisposalDto req) {
+        String id = ogpAssetDisposalService.saveAssetDisposalOgp(req);
+        Map<String, String> res = new HashMap<>();
+        res.put("processNo", id);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+    @GetMapping("/pendingOgpAssetDisposal")
+    public ResponseEntity<Object> getAllPendingassetDisposal() {
+        List<AssetDisposalDto> res = ogpAssetDisposalService.getPendingApprovals();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+    @PostMapping("/approveOgpAssetDisposal")
+    public ResponseEntity<Object> getOgpAssetDisposalApproval(@RequestParam Integer disposalId) {
+      String res=  ogpAssetDisposalService.approveOgpAssetDisposal(disposalId);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+    @PostMapping("/rejectOgpAssetDisposal")
+    public ResponseEntity<Object> getOgpAssetDisposalReject(@RequestParam Integer disposalId) {
+        String res=  ogpAssetDisposalService.rejectOgpAssetDisposal(disposalId);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+
+
 }

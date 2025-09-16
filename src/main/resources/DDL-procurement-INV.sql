@@ -1369,70 +1369,97 @@ CREATE TABLE gi_workflow_status (
 
 
 ##################
-CREATE TABLE `gem_vendor_id_tracker` (
-   `id` bigint NOT NULL AUTO_INCREMENT,
-   `vendor_id` bigint NOT NULL,
-   `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-   `gem_vendor_id` varchar(100) DEFAULT NULL,
-   `vendor_name` varchar(255) DEFAULT NULL,
-   PRIMARY KEY (`id`),
-   UNIQUE KEY `vendor_id` (`vendor_id`)
- )
-ALTER TABLE indent_creation
-ADD COLUMN employee_id VARCHAR(50),
-ADD COLUMN employee_name VARCHAR(100);
+CREATE TABLE `gem_vendor_id_tracker` ( `id` bigint NOT NULL AUTO_INCREMENT, `vendor_id` bigint NOT NULL, `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, `gem_vendor_id` varchar(100) DEFAULT NULL, `vendor_name` varchar(255) DEFAULT NULL,  PRIMARY KEY (`id`), UNIQUE KEY `vendor_id` (`vendor_id`) );
+ALTER TABLE indent_creation ADD COLUMN employee_id VARCHAR(50), ADD COLUMN employee_name VARCHAR(100);
 
-ALTER TABLE purchase_order ADD COLUMN gem_contract_file_name VARCHAR(500),
+ALTER TABLE purchase_order ADD COLUMN gem_contract_file_name VARCHAR(500);
 
 
-ALTER TABLE purchase_order
-ADD COLUMN type_of_security VARCHAR(255),
-ADD COLUMN security_number VARCHAR(255),
-ADD COLUMN security_date DATE,
-ADD COLUMN expiry_date DATE;
+ALTER TABLE purchase_order ADD COLUMN type_of_security VARCHAR(255), ADD COLUMN security_number VARCHAR(255), ADD COLUMN security_date DATE, ADD COLUMN expiry_date DATE;
 
 
 
-ALTER TABLE indent_creation
-ADD COLUMN cancel_status BOOLEAN DEFAULT FALSE,
-ADD COLUMN cancel_remarks VARCHAR(1000);
+ALTER TABLE indent_creation ADD COLUMN cancel_status BOOLEAN DEFAULT FALSE, ADD COLUMN cancel_remarks VARCHAR(1000);
 
-ALTER TABLE tender_request
-ADD COLUMN cancel_status BOOLEAN DEFAULT FALSE,
-ADD COLUMN cancel_remarks VARCHAR(1000);
+ALTER TABLE tender_request ADD COLUMN cancel_status BOOLEAN DEFAULT FALSE, ADD COLUMN cancel_remarks VARCHAR(1000);
 
-ALTER TABLE indent_creation
-ADD COLUMN buy_back_amount VARCHAR(50);
+ALTER TABLE indent_creation ADD COLUMN buy_back_amount VARCHAR(50);
 
-ALTER TABLE purchase_order
-ADD COLUMN quotation_number VARCHAR(255),
-ADD COLUMN quotation_date DATE;
+ALTER TABLE purchase_order ADD COLUMN quotation_number VARCHAR(255), ADD COLUMN quotation_date DATE;
 
-CREATE TABLE iia_freight_forwarder_details (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    country_name VARCHAR(255) NOT NULL,
-    freight_forwarder_details TEXT
-);
+CREATE TABLE iia_freight_forwarder_details ( id BIGINT PRIMARY KEY AUTO_INCREMENT, country_name VARCHAR(255) NOT NULL, freight_forwarder_details TEXT);
 
-CREATE TABLE iia_address_for_consignee_location (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    consignee VARCHAR(255),
-    iia_address TEXT
-);
+CREATE TABLE iia_address_for_consignee_location ( id BIGINT AUTO_INCREMENT PRIMARY KEY, consignee VARCHAR(255),  iia_address TEXT);
 
 
-ALTER TABLE purchase_order
-ADD COLUMN additional_terms_and_conditions VARCHAR(500);
+ALTER TABLE purchase_order ADD COLUMN additional_terms_and_conditions VARCHAR(500);
 
 
 CREATE TABLE officer_signature ( id BIGINT AUTO_INCREMENT PRIMARY KEY, officer_name VARCHAR(100) NOT NULL, designation VARCHAR(100), signature_path VARCHAR(255), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP );
 
-ALTER TABLE service_order
-ADD COLUMN start_date_amc DATE,
-ADD COLUMN end_date_amc DATE;
+ALTER TABLE service_order ADD COLUMN start_date_amc DATE, ADD COLUMN end_date_amc DATE;
 
-ALTER TABLE purchase_order
-MODIFY COLUMN warranty VARCHAR(50);
+ALTER TABLE purchase_order MODIFY COLUMN warranty VARCHAR(50);
 
-ALTER TABLE purchase_order
-ADD COLUMN buy_back_amount DECIMAL(18,2);
+ALTER TABLE purchase_order ADD COLUMN buy_back_amount DECIMAL(18,2);
+
+
+
+
+
+######not create bellow tables#############
+
+CREATE TABLE demand_and_issue_master (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    sender_location_id VARCHAR(255) NOT NULL,
+    status VARCHAR(255),
+    sender_custodian_id INT NOT NULL,
+    receiver_location_id VARCHAR(255) NOT NULL,
+    receiver_custodian_id INT NOT NULL,
+    create_date DATETIME NOT NULL,
+    di_date DATE NOT NULL,
+    created_by INT NOT NULL
+);
+select *from demand_and_issue_dtl
+select *from  demand_and_issue_master
+CREATE TABLE demand_and_issue_dtl (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    di_id BIGINT,
+    asset_id INT,
+    asset_desc VARCHAR(500),
+    material_code VARCHAR(100),
+    material_desc VARCHAR(500),
+    quantity DECIMAL(18,2) NOT NULL,
+    receiver_locator_id INT,
+    sender_locator_id INT,
+    unit_price DECIMAL(18,2),
+    depriciation_rate DECIMAL(18,2),
+    book_value DECIMAL(18,2),
+    CONSTRAINT fk_di_id FOREIGN KEY (di_id) REFERENCES demand_and_issue_master(id)
+);
+
+CREATE TABLE ohq_consumable_store_stock_entity (
+    ohq_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    material_code VARCHAR(255),
+    locator_id INT,
+    book_value DECIMAL(19,2),
+    depriciation_rate DECIMAL(19,2),
+    unit_price DECIMAL(19,2),
+    custodian_id VARCHAR(255),
+    quantity DECIMAL(19,2),
+    uom VARCHAR(100),
+    create_date TIMESTAMP NOT NULL
+);
+ALTER TABLE demand_and_issue_dtl
+ADD COLUMN uom VARCHAR(50);
+
+
+ALTER TABLE demand_and_issue_master
+ADD COLUMN issue_date DATE,
+ADD COLUMN issued_by INT;
+
+ALTER TABLE demand_and_issue_master
+DROP COLUMN receiver_location_id,
+DROP COLUMN receiver_custodian_id;
+
+##########

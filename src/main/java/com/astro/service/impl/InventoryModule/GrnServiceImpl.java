@@ -3,6 +3,7 @@ package com.astro.service.impl.InventoryModule;
 import com.astro.dto.workflow.InventoryModule.GiDto.GiApprovalDto;
 import com.astro.dto.workflow.InventoryModule.GiDto.GiWorkflowStatusDto;
 import com.astro.repository.InventoryModule.GiRepository.GiMasterRepository;
+import com.astro.repository.InventoryModule.OhqConsumableStoreStockRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import javax.transaction.Transactional;
@@ -67,8 +68,8 @@ public class GrnServiceImpl implements GrnService {
     private GiMasterRepository gimr;
     @Autowired
     private GrnWorkflowStatusRepository grnWorkRepo;
-
-
+    @Autowired
+    private OhqConsumableStoreStockRepository ohqStockrepo;
 
     @Override
     @Transactional
@@ -169,72 +170,87 @@ public class GrnServiceImpl implements GrnService {
                 updateAssetAndOhq(materialDtl, req.getCustodianId());
             }
 
-            else{
+            else {
 
-                System.out.println("NOT ASSET ID");
-                Optional<GoodsInspectionConsumableDetailEntity> giConsumable = giConsumableList.stream()
-                       .filter(consumable -> consumable.getMaterialCode().equals(materialDtl.getMaterialCode()))
-                       .findFirst();
-                       if (giConsumable.isEmpty()) {
+                    System.out.println("NOT ASSET ID");
+                    Optional<GoodsInspectionConsumableDetailEntity> giConsumable = giConsumableList.stream()
+                            .filter(consumable -> consumable.getMaterialCode().equals(materialDtl.getMaterialCode()))
+                            .findFirst();
+                    if (giConsumable.isEmpty()) {
                         errorMessage.append("Material Code " + materialDtl.getMaterialCode() + " not found in GI. ");
                         errorFound = true;
                         continue;
                     }
-                BigDecimal prevRecQuant =  gcdr.findByGiSubProcessIdAndMaterialCode(
-                    Integer.parseInt(req.getGiNo().split("/")[1]),
-                    materialDtl.getMaterialCode())
-                    .stream()
-                    .map(GrnConsumableDtlEntity::getQuantity)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    BigDecimal prevRecQuant = gcdr.findByGiSubProcessIdAndMaterialCode(
+                                    Integer.parseInt(req.getGiNo().split("/")[1]),
+                                    materialDtl.getMaterialCode())
+                            .stream()
+                            .map(GrnConsumableDtlEntity::getQuantity)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-                BigDecimal totRecQuant = prevRecQuant.add(materialDtl.getAcceptedQuantity());
+                    BigDecimal totRecQuant = prevRecQuant.add(materialDtl.getAcceptedQuantity());
 
-                if(totRecQuant.compareTo(giConsumable.get().getAcceptedQuantity()) > 0){
-                    errorMessage.append("Total received quantity for Asset ID " + materialDtl.getAssetId() +
-                            " exceeds accepted quantity in GI. ");
-                    errorFound = true;
-                    continue;
+                    if (totRecQuant.compareTo(giConsumable.get().getAcceptedQuantity()) > 0) {
+                        errorMessage.append("Total received quantity for Asset ID " + materialDtl.getAssetId() +
+                                " exceeds accepted quantity in GI. ");
+                        errorFound = true;
+                        continue;
+                    }
+
+                    GrnConsumableDtlEntity gcde = new GrnConsumableDtlEntity();
+                    mapper.map(materialDtl, gcde);  // Change from mapping giConsumable to mapping materialDtl
+                    gcde.setQuantity(materialDtl.getAcceptedQuantity());
+                    gcde.setGrnProcessId(grnMaster.getGrnProcessId());
+                    gcde.setGiSubProcessId(Integer.parseInt(req.getGiNo().split("/")[1]));
+                    gcde.setGrnSubProcessId(grnMaster.getGrnSubProcessId());
+                    gcde.setBookValue(materialDtl.getBookValue());         // Set book value
+                    gcde.setDepriciationRate(materialDtl.getDepriciationRate()); // Set depreciation rate
+                    gcdeList.add(gcde);
+
+                    System.out.println("ADDED TO LIST");
+                    if (Boolean.TRUE.equals(req.getStoresStock())) {
+                        //if stores stock is true then saveing in store stock ohq other wise consumableohq
+                       OhqConsumableStoreStockEntity storeStock = new OhqConsumableStoreStockEntity();
+                        storeStock.setMaterialCode(materialDtl.getMaterialCode());
+                        storeStock.setLocatorId(materialDtl.getLocatorId());
+                        storeStock.setQuantity(materialDtl.getAcceptedQuantity());
+
+                        storeStock.setBookValue(materialDtl.getBookValue());
+                        storeStock.setDepriciationRate(materialDtl.getDepriciationRate());
+                        storeStock.setCustodianId(req.getCustodianId());
+                        storeStock.setUom(materialDtl.getUomId());
+                        storeStock.setCreateDate(LocalDateTime.now());
+                        ohqStockrepo.save(storeStock);
+                        System.out.println("STORE STOCK ENTRY SAVED");
+                    } else {
+                        // UPDATE FUNC FOR CONSUMABLE OHQ
+                        Optional<OhqMasterConsumableEntity> existingOhq = omcr.findByMaterialCodeAndLocatorIdAndCustodianId(
+                                materialDtl.getMaterialCode(),
+                                materialDtl.getLocatorId(),
+                                req.getCustodianId());
+
+                        OhqMasterConsumableEntity ohq;
+                        if (existingOhq.isPresent()) {
+                            ohq = existingOhq.get();
+                            BigDecimal currentQty = ohq.getQuantity() != null ? ohq.getQuantity() : BigDecimal.ZERO;
+                            ohq.setQuantity(currentQty.add(materialDtl.getAcceptedQuantity()));
+                        } else {
+                            ohq = new OhqMasterConsumableEntity();
+                            ohq.setCustodianId(req.getCustodianId());
+                            ohq.setMaterialCode(materialDtl.getMaterialCode());
+                            ohq.setLocatorId(materialDtl.getLocatorId());
+                            ohq.setQuantity(materialDtl.getAcceptedQuantity());
+                            System.out.println("INSIDE ELSE ABOVE BV");
+                            ohq.setBookValue(materialDtl.getBookValue());
+                            System.out.println("INSIDE ELSE BELOW BV");
+                            ohq.setDepriciationRate(materialDtl.getDepriciationRate());
+                            ohq.setUnitPrice(materialDtl.getBookValue());
+                        }
+                        System.out.println("BEFORE OMCR SAVING");
+                        omcr.save(ohq);
+                        System.out.println("AFTER OMCR SAVING");
+                    }
                 }
-
-                GrnConsumableDtlEntity gcde = new GrnConsumableDtlEntity();
-                mapper.map(materialDtl, gcde);  // Change from mapping giConsumable to mapping materialDtl
-                gcde.setQuantity(materialDtl.getAcceptedQuantity());
-                gcde.setGrnProcessId(grnMaster.getGrnProcessId());
-                gcde.setGiSubProcessId(Integer.parseInt(req.getGiNo().split("/")[1]));
-                gcde.setGrnSubProcessId(grnMaster.getGrnSubProcessId());
-                gcde.setBookValue(materialDtl.getBookValue());         // Set book value
-                gcde.setDepriciationRate(materialDtl.getDepriciationRate()); // Set depreciation rate
-                gcdeList.add(gcde);
-
-                System.out.println("ADDED TO LIST");
-
-                // UPDATE FUNC FOR CONSUMABLE OHQ
-                Optional<OhqMasterConsumableEntity> existingOhq = omcr.findByMaterialCodeAndLocatorIdAndCustodianId(
-                    materialDtl.getMaterialCode(),
-                    materialDtl.getLocatorId(),
-                    req.getCustodianId());
-
-                OhqMasterConsumableEntity ohq;
-                if (existingOhq.isPresent()) {
-                    ohq = existingOhq.get();
-                    BigDecimal currentQty = ohq.getQuantity() != null ? ohq.getQuantity() : BigDecimal.ZERO;
-                    ohq.setQuantity(currentQty.add(materialDtl.getAcceptedQuantity()));
-                } else {
-                    ohq = new OhqMasterConsumableEntity();
-                    ohq.setCustodianId(req.getCustodianId());
-                    ohq.setMaterialCode(materialDtl.getMaterialCode());
-                    ohq.setLocatorId(materialDtl.getLocatorId());
-                    ohq.setQuantity(materialDtl.getAcceptedQuantity());
-                    System.out.println("INSIDE ELSE ABOVE BV");
-                    ohq.setBookValue(materialDtl.getBookValue());
-                    System.out.println("INSIDE ELSE BELOW BV");
-                    ohq.setDepriciationRate(materialDtl.getDepriciationRate());
-                    ohq.setUnitPrice(materialDtl.getBookValue());
-                }
-                System.out.println("BEFORE OMCR SAVING");
-                omcr.save(ohq);
-                System.out.println("AFTER OMCR SAVING");
-            }
             }
         } else {
             // IGP validation logic - skip GI-specific validations

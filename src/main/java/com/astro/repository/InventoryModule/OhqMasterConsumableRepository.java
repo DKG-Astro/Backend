@@ -43,4 +43,6 @@ public interface OhqMasterConsumableRepository extends JpaRepository<OhqMasterCo
                  ohq.book_value, ohq.depriciation_rate, ohq.unit_price, ohq.custodian_id
     """, nativeQuery = true)
 List<Object[]> getOhqConsumableReport();
+
+    Optional<OhqMasterConsumableEntity> findByMaterialCodeAndCustodianId(String materialCode, String custodianId);
 }

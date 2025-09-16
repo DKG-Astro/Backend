@@ -1,32 +1,31 @@
 package com.astro.entity.InventoryModule;
 
 import lombok.Data;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 @Entity
-@Table(name = "asset_disposal")
+@Table(name = "ogp_asset_disposal")
 @Data
-public class AssetDisposalMasterEntity {
-    
+public class OgpAssetDisposal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "disposal_id")
-    private Integer disposalId;
-    
+    @Column(name = "disposal_ogp_id")
+    private Integer disposalOgpId;
+
     @Column(name = "disposal_date", nullable = false)
     private LocalDate disposalDate;
 
     private String custodianId;
-    
+
     @Column(name = "created_by", nullable = false)
     private Integer createdBy;
-    
+
     @Column(name = "create_date", nullable = false, updatable = false)
     private LocalDateTime createDate;
-    
+
     @Column(name = "location_id", nullable = false)
     private String locationId;
 
@@ -38,6 +37,4 @@ public class AssetDisposalMasterEntity {
     private BigDecimal reservePrice;
     private BigDecimal auctionPrice;
     private String vendorName;
-
-
 }

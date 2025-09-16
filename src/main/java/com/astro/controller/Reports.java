@@ -1,9 +1,9 @@
 package com.astro.controller;
 
+import com.astro.dto.workflow.InventoryModule.*;
 import com.astro.dto.workflow.InventoryModule.asset.AssetMasterReportDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpMaterialInReportDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpRejectedGiReportDto;
-import com.astro.dto.workflow.InventoryModule.withinFieldStationGtDto;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseReportDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentListReportDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentReportDetailsDTO;
@@ -15,7 +15,6 @@ import com.astro.repository.InventoryModule.AssetMasterRepository;
 import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
 import com.astro.dto.workflow.ProcurementDtos.TechnoMomReportDTO;
 import com.astro.dto.workflow.VendorContractReportDTO;
-import com.astro.dto.workflow.InventoryModule.AssetMasterDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpReportDto;
 import com.astro.dto.workflow.InventoryModule.isn.IsnReportDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpReportDto;
@@ -63,6 +62,9 @@ public class Reports {
     private ServiceOrderService serviceOrderService;
     @Autowired
     private GtService gtService;
+    @Autowired
+    private DiService diService;
+
 
     @GetMapping("/indent")
     public ResponseEntity<Object> getIndentReport(
@@ -258,6 +260,28 @@ public class Reports {
       List<withinFieldStationGtDto> response = gtService.getGtReport(startDate,endDate);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
 
+    }
+    @GetMapping("/demand-issue-report")
+    public ResponseEntity<Object> getDemandissueReport(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+
+        List<DemandAndIssueReportDto> response = diService.getDemandAndIssueReport(startDate,endDate);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+
+    }
+    @GetMapping("/ApprovedAssetDisposals")
+    public ResponseEntity<Object> getApprovedAssetDisposals() {
+
+        List<AssetDisposalDto> response = assetMasterService.getAllApprovedAssetDisposalReport();
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+    }
+    @GetMapping("/DisposalReport")
+    public ResponseEntity<Object> getAllAssetDisposalsReport(  @RequestParam String startDate,
+                                                               @RequestParam String endDate) {
+
+        List<AssetDisposalReportDto> response = assetMasterService.getAssetDisposalReport(startDate,endDate);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
 
 

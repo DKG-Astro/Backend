@@ -408,164 +408,57 @@ CREATE TABLE igp_po_detail (
 
 ----------------------------------------------
 
-ALTER TABLE goods_inspection_detail
-ADD COLUMN rejection_type VARCHAR(50);
+ALTER TABLE goods_inspection_detail ADD COLUMN rejection_type VARCHAR(50);
 
-ALTER TABLE goods_inspection_consumable_detail
-ADD COLUMN rejection_type VARCHAR(50);
+ALTER TABLE goods_inspection_consumable_detail ADD COLUMN rejection_type VARCHAR(50);
 
-ALTER TABLE gprn_master
-ADD COLUMN indent_id VARCHAR(100);
+ALTER TABLE gprn_master ADD COLUMN indent_id VARCHAR(100);
 
-ALTER TABLE ohq_master
-ADD COLUMN custodian_id VARCHAR(100);
+ALTER TABLE ohq_master ADD COLUMN custodian_id VARCHAR(100);
 
-ALTER TABLE ohq_master_consumable
-ADD COLUMN custodian_id VARCHAR(100);
+ALTER TABLE ohq_master_consumable ADD COLUMN custodian_id VARCHAR(100);
 
-CREATE TABLE field_station_master(
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    field_station_name VARCHAR(255) NOT NULL
-);
+CREATE TABLE field_station_master( id INT AUTO_INCREMENT PRIMARY KEY, field_station_name VARCHAR(255) NOT NULL);
 
-CREATE TABLE ogp_master_rejected_gi(
-    ogp_sub_process_id INT AUTO_INCREMENT PRIMARY KEY,
-    ogp_type VARCHAR(20),
-    status VARCHAR(20),
-    gi_id VARCHAR(255),
-    ogp_date DATE,
-    return_date DATE
-);
+CREATE TABLE ogp_master_rejected_gi( ogp_sub_process_id INT AUTO_INCREMENT PRIMARY KEY, ogp_type VARCHAR(20), status VARCHAR(20), gi_id VARCHAR(255), ogp_date DATE, return_date DATE);
 
-ALTER TABLE ogp_master_rejected_gi
-ADD COLUMN location_id VARCHAR(50);
+ALTER TABLE ogp_master_rejected_gi ADD COLUMN location_id VARCHAR(50);
 
-ALTER TABLE ogp_master_rejected_gi
-ADD COLUMN created_by VARCHAR(50);
+ALTER TABLE ogp_master_rejected_gi ADD COLUMN created_by VARCHAR(50);
 
-ALTER TABLE ogp_master_rejected_gi
-ADD COLUMN sender_name VARCHAR(50);
+ALTER TABLE ogp_master_rejected_gi ADD COLUMN sender_name VARCHAR(50);
 
-ALTER TABLE ogp_master_rejected_gi
-ADD COLUMN receiver_name VARCHAR(50);
+ALTER TABLE ogp_master_rejected_gi ADD COLUMN receiver_name VARCHAR(50);
 
-ALTER TABLE ogp_master_rejected_gi
-ADD COLUMN receiver_location VARCHAR(50);
+ALTER TABLE ogp_master_rejected_gi ADD COLUMN receiver_location VARCHAR(50);
 
-CREATE TABLE ogp_detail_rejected_gi(
-    detail_id INT AUTO_INCREMENT PRIMARY KEY,
-    ogp_sub_process_id INT NOT NULL,
-    material_code VARCHAR(255),
-    material_desc VARCHAR(255),
-    asset_id INT,
-    asset_desc VARCHAR(255),
-    rejection_type VARCHAR(50),
-    rejected_quantity DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (ogp_sub_process_id) REFERENCES ogp_master_rejected_gi(ogp_sub_process_id)
-);
+CREATE TABLE ogp_detail_rejected_gi( detail_id INT AUTO_INCREMENT PRIMARY KEY, ogp_sub_process_id INT NOT NULL, material_code VARCHAR(255),material_desc VARCHAR(255),asset_id INT,asset_desc VARCHAR(255), rejection_type VARCHAR(50), rejected_quantity DECIMAL(10,2) NOT NULL,FOREIGN KEY (ogp_sub_process_id) REFERENCES ogp_master_rejected_gi(ogp_sub_process_id));
 
 ----------------------newest------------
 
-CREATE TABLE igp_material_master (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    ogp_id VARCHAR(255),
-    igp_date VARCHAR(20),
-    status VARCHAR(50),
-    igp_type VARCHAR(50),
-    indent_id INT
-);
+CREATE TABLE igp_material_master ( id BIGINT AUTO_INCREMENT PRIMARY KEY, ogp_id VARCHAR(255), igp_date VARCHAR(20), status VARCHAR(50), igp_type VARCHAR(50), indent_id INT);
 
-ALTER TABLE igp_material_master
-ADD COLUMN created_by INT;
+ALTER TABLE igp_material_master ADD COLUMN created_by INT;
 
-ALTER TABLE igp_material_master
-ADD COLUMN create_date DATETIME;
+ALTER TABLE igp_material_master ADD COLUMN create_date DATETIME;
 
-CREATE TABLE igp_material_detail (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    material_code VARCHAR(100),
-    category VARCHAR(100),
-    sub_category VARCHAR(100),
-    material_description VARCHAR(255),
-    uom VARCHAR(20),
-    estimated_price_with_ccy DECIMAL(10,2),
-    indigenous_or_imported BOOLEAN,
-    quantity DECIMAL(10,2),
-    igp_id BIGINT,
-    FOREIGN KEY (igp_id)
-        REFERENCES igp_material_master(id)
-        ON DELETE CASCADE
-);
+CREATE TABLE igp_material_detail ( id BIGINT AUTO_INCREMENT PRIMARY KEY, material_code VARCHAR(100), category VARCHAR(100), sub_category VARCHAR(100),  material_description VARCHAR(255), uom VARCHAR(20),  estimated_price_with_ccy DECIMAL(10,2), indigenous_or_imported BOOLEAN, quantity DECIMAL(10,2), igp_id BIGINT,  FOREIGN KEY (igp_id)  REFERENCES igp_material_master(id) ON DELETE CASCADE );
 
-alter table asset_master
-add column igp_id bigint;
+alter table asset_master add column igp_id bigint;
 
-alter table igp_material_detail
-add column asset_id INT;
+alter table igp_material_detail add column asset_id INT;
 
-alter table igp_material_master
-add column location_id VARCHAR(50);
+alter table igp_material_master add column location_id VARCHAR(50);
 
 
 -----------------goods transfer newest-----------------
-CREATE TABLE gt_master (
-  id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  sender_location_id VARCHAR(255) NOT NULL,
-  status VARCHAR(255),
-  sender_custodian_id INT NOT NULL,
-  receiver_location_id VARCHAR(255) NOT NULL,
-  receiver_custodian_id INT NOT NULL,
-  create_date DATETIME NOT NULL,
-  gt_date DATE NOT NULL,
-  created_by INT NOT NULL
-);
+CREATE TABLE gt_master (id BIGINT AUTO_INCREMENT PRIMARY KEY,sender_location_id VARCHAR(255) NOT NULL, status VARCHAR(255),sender_custodian_id INT NOT NULL,receiver_location_id VARCHAR(255) NOT NULL,receiver_custodian_id INT NOT NULL,create_date DATETIME NOT NULL,gt_date DATE NOT NULL, created_by INT NOT NULL);
 
-CREATE TABLE gt_dtl (
-  id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  gt_id BIGINT,
-  asset_id INT,
-  asset_desc VARCHAR(500),
-  material_code VARCHAR(100),
-  material_desc VARCHAR(500),
-  quantity DECIMAL(18,2) NOT NULL,
-  receiver_locator_id INT,
-  sender_locator_id INT,
-  unit_price DECIMAL(18,2),
-  depriciation_rate DECIMAL(5,2),
-  book_value DECIMAL(18,2),
-  FOREIGN KEY (gt_id) REFERENCES gt_master(id)
-);
+CREATE TABLE gt_dtl ( id BIGINT AUTO_INCREMENT PRIMARY KEY, gt_id BIGINT, asset_id INT, asset_desc VARCHAR(500), material_code VARCHAR(100), material_desc VARCHAR(500), quantity DECIMAL(18,2) NOT NULL, receiver_locator_id INT, sender_locator_id INT, unit_price DECIMAL(18,2), depriciation_rate DECIMAL(5,2), book_value DECIMAL(18,2),FOREIGN KEY (gt_id) REFERENCES gt_master(id) );
 
 
 --------------- 16 / 08/ 2025 -------
-CREATE TABLE ogp_gt_master (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE ogp_gt_master ( id BIGINT AUTO_INCREMENT PRIMARY KEY, sender_location_id VARCHAR(255) NOT NULL, status VARCHAR(255), sender_custodian_id INT NOT NULL,  receiver_location_id VARCHAR(255) NOT NULL, receiver_custodian_id INT NOT NULL,  create_date DATETIME NOT NULL, gt_date DATE NOT NULL, created_by INT NOT NULL);
 
-    sender_location_id VARCHAR(255) NOT NULL,
-    status VARCHAR(255),
-
-    sender_custodian_id INT NOT NULL,
-    receiver_location_id VARCHAR(255) NOT NULL,
-    receiver_custodian_id INT NOT NULL,
-
-    create_date DATETIME NOT NULL,
-    gt_date DATE NOT NULL,
-
-    created_by INT NOT NULL
-);
-
-CREATE TABLE ogp_gt_dtl (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    gt_id BIGINT,
-    asset_id INT,
-    asset_desc VARCHAR(500),
-    material_code VARCHAR(100),
-    material_desc VARCHAR(500),
-    quantity DECIMAL(18,6) NOT NULL,
-    receiver_locator_id INT,
-    sender_locator_id INT,
-    unit_price DECIMAL(18,6),
-    depriciation_rate DECIMAL(18,6),
-    book_value DECIMAL(18,6)
-);
+CREATE TABLE ogp_gt_dtl ( id BIGINT AUTO_INCREMENT PRIMARY KEY, gt_id BIGINT,  asset_id INT,  asset_desc VARCHAR(500), material_code VARCHAR(100), material_desc VARCHAR(500), quantity DECIMAL(18,6) NOT NULL, receiver_locator_id INT, sender_locator_id INT, unit_price DECIMAL(18,6),  depriciation_rate DECIMAL(18,6),  book_value DECIMAL(18,6));
 

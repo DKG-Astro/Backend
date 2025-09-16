@@ -1,31 +1,27 @@
 package com.astro.dto.workflow.InventoryModule;
 
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import lombok.Data;
-
-import javax.persistence.Column;
-
 @Data
-public class AssetDisposalDto {
-    private Integer disposalId;
-    private String disposalDate;
-    private Integer createdBy;
+public class AssetDisposalReportDto {
+
+    private Long id;
     private String locationId;
-    private String custodianId;
-    private String action;
     private String status;
+    private Integer custodianId;
+    private LocalDateTime createDate;
+    private LocalDate disposalDate;
+    private Integer createdBy;
+    private String action;
     private String auctionId;
-    private String auctionDate;
+    private LocalDate auctionDate;
     private BigDecimal reservePrice;
     private BigDecimal auctionPrice;
     private String vendorName;
-
-    private List<AssetDisposalDetailDto> materialDtlList;
-
-
-
+    private List<AssetDisposalMaterialDto> materialDtos;
 }
