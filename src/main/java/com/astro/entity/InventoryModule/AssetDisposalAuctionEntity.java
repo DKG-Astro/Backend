@@ -9,21 +9,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "ogp_asset_disposal")
+@Table(name = "asset_disposal_auction")
 @Data
-public class OgpAssetDisposal {
+public class AssetDisposalAuctionEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "disposal_ogp_id")
-    private Integer disposalOgpId;
-
     @Column(name = "auction_id")
     private Integer auctionId;
 
-    @Column(name = "auction_code")
+    @Column(name = "auction_code", nullable = false, unique = true)
     private String auctionCode;
 
-    @Column(name = "auction_date")
+    @Column(name = "auction_date", nullable = false)
     private LocalDate auctionDate;
 
     @Column(name = "reserve_price")
@@ -35,15 +33,12 @@ public class OgpAssetDisposal {
     @Column(name = "vendor_name")
     private String vendorName;
 
-    @Column(name = "status")
-    private String status;
-
-    @Column(name = "created_by")
+    @Column(name = "created_by", nullable = false)
     private Integer createdBy;
 
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
+    @Column(name = "created_date", nullable = false)
+    private LocalDateTime createdDate;
 
-    @OneToMany(mappedBy = "disposal", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<OgpAssetDisposalDetail> assets;
+    @OneToMany(mappedBy = "auction", cascade = CascadeType.ALL)
+    private List<AssetDisposalAuctionDetailEntity> auctionDetails;
 }

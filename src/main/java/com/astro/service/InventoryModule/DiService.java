@@ -11,6 +11,7 @@ import java.util.List;
 public interface DiService {
     public String createDi(DiMasterDto diMasterDto);
     public List<DiMasterDto> getPendingDi();
+    public List<DiMasterDto> getPendingIssueNote();
     public void approveDi(String diId);
     public void rejectDi(String diId);
     public DiMasterDto getDiById(String diId);

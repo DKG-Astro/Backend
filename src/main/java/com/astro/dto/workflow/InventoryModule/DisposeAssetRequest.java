@@ -4,17 +4,16 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-
 @Data
-public class AssetDisposalReportDto {
+public class DisposeAssetRequest {
 
-    private String auctionId;
+    private List<Integer> disposalIds;
     private String auctionCode;
     private String auctionDate;
     private BigDecimal reservePrice;
     private BigDecimal auctionPrice;
     private String vendorName;
-    private List<AutionAssetDisposalReportDto> disposals;
+    private Integer updatedBy;
+    private String locationId;
 }

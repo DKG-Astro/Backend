@@ -1409,57 +1409,71 @@ ALTER TABLE purchase_order ADD COLUMN buy_back_amount DECIMAL(18,2);
 
 ######not create bellow tables#############
 
-CREATE TABLE demand_and_issue_master (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    sender_location_id VARCHAR(255) NOT NULL,
-    status VARCHAR(255),
-    sender_custodian_id INT NOT NULL,
-    receiver_location_id VARCHAR(255) NOT NULL,
-    receiver_custodian_id INT NOT NULL,
-    create_date DATETIME NOT NULL,
-    di_date DATE NOT NULL,
-    created_by INT NOT NULL
-);
-select *from demand_and_issue_dtl
-select *from  demand_and_issue_master
-CREATE TABLE demand_and_issue_dtl (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    di_id BIGINT,
-    asset_id INT,
-    asset_desc VARCHAR(500),
-    material_code VARCHAR(100),
-    material_desc VARCHAR(500),
-    quantity DECIMAL(18,2) NOT NULL,
-    receiver_locator_id INT,
-    sender_locator_id INT,
-    unit_price DECIMAL(18,2),
-    depriciation_rate DECIMAL(18,2),
-    book_value DECIMAL(18,2),
-    CONSTRAINT fk_di_id FOREIGN KEY (di_id) REFERENCES demand_and_issue_master(id)
-);
+CREATE TABLE demand_and_issue_master ( id BIGINT AUTO_INCREMENT PRIMARY KEY, sender_location_id VARCHAR(255) NOT NULL, status VARCHAR(255), sender_custodian_id INT NOT NULL, receiver_location_id VARCHAR(255) NOT NULL, receiver_custodian_id INT NOT NULL, create_date DATETIME NOT NULL, di_date DATE NOT NULL, created_by INT NOT NULL );
 
-CREATE TABLE ohq_consumable_store_stock_entity (
-    ohq_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    material_code VARCHAR(255),
-    locator_id INT,
-    book_value DECIMAL(19,2),
-    depriciation_rate DECIMAL(19,2),
-    unit_price DECIMAL(19,2),
-    custodian_id VARCHAR(255),
-    quantity DECIMAL(19,2),
-    uom VARCHAR(100),
-    create_date TIMESTAMP NOT NULL
-);
-ALTER TABLE demand_and_issue_dtl
-ADD COLUMN uom VARCHAR(50);
+CREATE TABLE demand_and_issue_dtl ( id BIGINT AUTO_INCREMENT PRIMARY KEY, di_id BIGINT,  asset_id INT,  asset_desc VARCHAR(500),   material_code VARCHAR(100),  material_desc VARCHAR(500), quantity DECIMAL(18,2) NOT NULL, receiver_locator_id INT, sender_locator_id INT, unit_price DECIMAL(18,2), depriciation_rate DECIMAL(18,2), book_value DECIMAL(18,2),  CONSTRAINT fk_di_id FOREIGN KEY (di_id) REFERENCES demand_and_issue_master(id) );
+
+CREATE TABLE ohq_consumable_store_stock_entity ( ohq_id BIGINT AUTO_INCREMENT PRIMARY KEY, material_code VARCHAR(255),  locator_id INT,  book_value DECIMAL(19,2), depriciation_rate DECIMAL(19,2),  unit_price DECIMAL(19,2),  custodian_id VARCHAR(255),  quantity DECIMAL(19,2), uom VARCHAR(100), create_date TIMESTAMP NOT NULL );
+
+ALTER TABLE demand_and_issue_dtl ADD COLUMN uom VARCHAR(50);
 
 
-ALTER TABLE demand_and_issue_master
-ADD COLUMN issue_date DATE,
-ADD COLUMN issued_by INT;
+ALTER TABLE demand_and_issue_master ADD COLUMN issue_date DATE, ADD COLUMN issued_by INT;
 
-ALTER TABLE demand_and_issue_master
-DROP COLUMN receiver_location_id,
-DROP COLUMN receiver_custodian_id;
+ALTER TABLE demand_and_issue_master DROP COLUMN receiver_location_id, DROP COLUMN receiver_custodian_id;
 
 ##########
+
+
+#########16/09/2025#####
+ALTER TABLE asset_disposal ADD COLUMN custodian_id VARCHAR(50);
+
+ALTER TABLE asset_disposal ADD COLUMN status VARCHAR(50);
+
+ALTER TABLE asset_disposal ADD COLUMN action VARCHAR(50);
+
+ALTER TABLE asset_disposal_detail ADD COLUMN ohq_id INT, ADD COLUMN locator_id INT, ADD COLUMN book_value DECIMAL(18,2), ADD COLUMN depriciation_rate DECIMAL(18,2), ADD COLUMN unit_price DECIMAL(18,2), ADD COLUMN custodian_id VARCHAR(50), ADD COLUMN po_value DECIMAL(18,2);
+
+ALTER TABLE asset_disposal ADD COLUMN auction_id VARCHAR(50), ADD COLUMN auction_date DATE, ADD COLUMN reserve_price DECIMAL(18,2), ADD COLUMN auction_price DECIMAL(18,2), ADD COLUMN vendor_name VARCHAR(100);
+
+ALTER TABLE asset_disposal_detail reason_for_disposal VARCHAR(150);
+
+CREATE TABLE `asset_disposal_auction` ( `auction_id` INT NOT NULL AUTO_INCREMENT, `auction_code` VARCHAR(50) NOT NULL UNIQUE, `auction_date` DATE NOT NULL, `reserve_price` DECIMAL(18,2) DEFAULT NULL, `auction_price` DECIMAL(18,2) DEFAULT NULL, `vendor_name` VARCHAR(100) DEFAULT NULL, `created_by` INT NOT NULL, `created_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`auction_id`) );
+
+CREATE TABLE `asset_disposal_auction_detail` (
+`auction_detail_id` INT NOT NULL AUTO_INCREMENT,
+`auction_id` INT NOT NULL,
+`disposal_id` INT NOT NULL,
+PRIMARY KEY (`auction_detail_id`),
+KEY `auction_id_idx` (`auction_id`),
+KEY `disposal_id_idx` (`disposal_id`),
+CONSTRAINT `fk_auction_detail_auction` FOREIGN KEY (`auction_id`) REFERENCES `asset_disposal_auction`(`auction_id`) ON DELETE CASCADE ON UPDATE CASCADE,  CONSTRAINT `fk_auction_detail_disposal` FOREIGN KEY (`disposal_id`) REFERENCES `asset_disposal`(`disposal_id`) ON DELETE CASCADE ON UPDATE CASCADE );
+
+
+CREATE TABLE ogp_asset_disposal (
+disposal_ogp_id INT PRIMARY KEY AUTO_INCREMENT,
+auction_id INT NOT NULL,
+auction_code VARCHAR(50) NOT NULL,
+auction_date DATE, reserve_price DECIMAL(15,2),
+auction_price DECIMAL(15,2), vendor_name VARCHAR(100),
+status VARCHAR(50),
+created_by INT,
+create_date DATETIME DEFAULT CURRENT_TIMESTAMP );
+
+CREATE TABLE ogp_asset_disposal_detail (
+ogp_disposal_detail_id INT PRIMARY KEY AUTO_INCREMENT,
+disposal_ogp_id INT NOT NULL,
+ disposal_id INT NOT NULL,
+ asset_id INT NOT NULL,
+ asset_desc VARCHAR(255),
+ disposal_quantity DECIMAL(10,2),
+ locator_id INT,
+ book_value DECIMAL(15,2),
+ depriciation_rate DECIMAL(5,2),
+ unit_price DECIMAL(15,2),
+ custodian_id VARCHAR(50),
+ po_value DECIMAL(15,2),
+ reason_for_disposal VARCHAR(255),
+ disposal_date DATE, location_id VARCHAR(50),
+ status VARCHAR(50),
+  FOREIGN KEY (disposal_ogp_id) REFERENCES ogp_asset_disposal(disposal_ogp_id) ON DELETE CASCADE);

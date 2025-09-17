@@ -1,14 +1,12 @@
 package com.astro.controller.InventoryModule;
 
-import com.astro.dto.workflow.InventoryModule.AssetDisposalDto;
-import com.astro.dto.workflow.InventoryModule.DiMasterDto;
+import com.astro.dto.workflow.InventoryModule.*;
 import com.astro.dto.workflow.InventoryModule.GiDto.GiApprovalDto;
 import com.astro.dto.workflow.InventoryModule.GiDto.GiWorkflowStatusDto;
 import com.astro.dto.workflow.InventoryModule.GiDto.SaveGiDto;
 import com.astro.dto.workflow.InventoryModule.GoodsTransfer.GtIdDto;
 import com.astro.dto.workflow.InventoryModule.GoodsTransfer.GtMasterDto;
 import com.astro.dto.workflow.InventoryModule.GprnDto.SaveGprnDto;
-import com.astro.dto.workflow.InventoryModule.GtMasterResponseDto;
 import com.astro.dto.workflow.InventoryModule.asset.AssetOhqDisposalDto;
 import com.astro.dto.workflow.InventoryModule.gprn.GprnPendingInspectionDto;
 import com.astro.dto.workflow.InventoryModule.grn.GrnDto;
@@ -39,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -533,6 +532,11 @@ public class ProcessController {
         List<DiMasterDto> res = diService.getPendingDi();
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
+    @GetMapping("/getPendingIssueNote")
+    public ResponseEntity<Object> getPendingIssueNote() {
+        List<DiMasterDto> res = diService.getPendingIssueNote();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
     @PostMapping("/approveDi")
     public ResponseEntity<Object> approveDi(@RequestParam String diId) {
         diService.approveDi(diId);
@@ -592,7 +596,7 @@ public class ProcessController {
     }
 
     @PostMapping("/saveAssetDisposal")
-    public ResponseEntity<Object> saveAssetDisposalOgp(@RequestBody AssetDisposalDto req) {
+    public ResponseEntity<Object> saveAssetDisposalOgp(@RequestBody AssetsAuctionDto req) {
         String id = ogpAssetDisposalService.saveAssetDisposalOgp(req);
         Map<String, String> res = new HashMap<>();
         res.put("processNo", id);
@@ -600,20 +604,35 @@ public class ProcessController {
     }
     @GetMapping("/pendingOgpAssetDisposal")
     public ResponseEntity<Object> getAllPendingassetDisposal() {
-        List<AssetDisposalDto> res = ogpAssetDisposalService.getPendingApprovals();
+        List<AssetsAuctionDto> res = ogpAssetDisposalService.getPendingApprovals();
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
     @PostMapping("/approveOgpAssetDisposal")
-    public ResponseEntity<Object> getOgpAssetDisposalApproval(@RequestParam Integer disposalId) {
-      String res=  ogpAssetDisposalService.approveOgpAssetDisposal(disposalId);
+    public ResponseEntity<Object> getOgpAssetDisposalApproval(@RequestParam Integer disposalOgpId) {
+      String res=  ogpAssetDisposalService.approveOgpAssetDisposal(disposalOgpId);
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
     @PostMapping("/rejectOgpAssetDisposal")
-    public ResponseEntity<Object> getOgpAssetDisposalReject(@RequestParam Integer disposalId) {
-        String res=  ogpAssetDisposalService.rejectOgpAssetDisposal(disposalId);
+    public ResponseEntity<Object> getOgpAssetDisposalReject(@RequestParam Integer disposalOgpId) {
+        String res=  ogpAssetDisposalService.rejectOgpAssetDisposal(disposalOgpId);
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
 
+    @PutMapping("/MultipleAssetsDisposal")
+    public ResponseEntity<Object> disposeMultipleAssets(
+            @RequestBody DisposeAssetRequest request) {
+
+      String id =  assetMasterService.disposeMultipleAssets(request);
+        Map<String, String> res = new HashMap<>();
+        res.put("processNo", id);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @GetMapping("/SearchByAuctionId")
+    public ResponseEntity<Object> getAuctionById(@RequestParam String auctionId) {
+        AssetsAuctionDto res = assetMasterService.searchByAuctionId(auctionId);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
 
 
 }

@@ -2,10 +2,13 @@ package com.astro.dto.workflow.InventoryModule;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
-public class AssetDisposalMaterialDto {
+public class AutionAssetsDisposalsDto {
     private Integer disposalDetailId;
     private Integer disposalId;
     private Integer assetId;

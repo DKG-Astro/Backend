@@ -60,6 +60,10 @@ public class AssetMasterServiceImpl implements AssetMasterService {
     private OhqMasterConsumableRepository ohqMasterConsumableRepository;
     @Autowired
     private OhqConsumableStoreStockRepository ohqStoreStockRepo;
+    @Autowired
+    private AssetDisposalAuctionEntityRepository assetDisposalAuctionEntityRepository;
+    @Autowired
+    private AssetDisposalAuctionDetailEntityRepository assetDisposalAuctionDetailEntityRepository;
 
     public AssetMasterServiceImpl(@Value("${filePath}") String bp) {
         this.basePath = bp + "/INV";
@@ -589,48 +593,163 @@ public List<OhqConsumableStoreStockEntity> getStoreStockOhqConsumableList(){
        return dtos;
    }
 
+
     @Override
     public List<AssetDisposalReportDto> getAssetDisposalReport(String startDate, String endDate) {
         List<LocalDateTime> range = CommonUtils.getDateRenge(startDate, endDate);
         LocalDateTime start = range.get(0);
         LocalDateTime end = range.get(1);
 
-        List<Object[]> rows = disposalMasterRepository.getDisposedAssetDisposalReport(start, end);
-        ObjectMapper mapper = new ObjectMapper();
+        // Step 1: Fetch all auctions in range
+        List<AssetDisposalAuctionEntity> auctions = assetDisposalAuctionEntityRepository.findByCreatedDateBetween(start, end);
         List<AssetDisposalReportDto> reports = new ArrayList<>();
 
-        for (Object[] row : rows) {
+        for (AssetDisposalAuctionEntity auction : auctions) {
             AssetDisposalReportDto dto = new AssetDisposalReportDto();
-            dto.setId(((Number) row[0]).longValue());
-            dto.setLocationId((String) row[1]);
-            dto.setStatus((String) row[2]);
-            dto.setCustodianId(row[3] != null ? Integer.valueOf(row[3].toString()) : null);
-            dto.setCreateDate(((Timestamp) row[4]).toLocalDateTime());
-            dto.setDisposalDate(row[5] != null ? ((java.sql.Date) row[5]).toLocalDate() : null);
-            dto.setCreatedBy(row[6] != null ? Integer.valueOf(row[6].toString()) : null);
-            dto.setAction(row[7] != null ? row[7].toString() : null);
-            dto.setAuctionId(row[8] != null ? row[8].toString() : null);
-            dto.setAuctionDate(row[9] != null ? ((Date) row[9]).toLocalDate() : null);
-            dto.setReservePrice(row[10] != null ? new BigDecimal(row[10].toString()) : null);
-            dto.setAuctionPrice(row[11] != null ? new BigDecimal(row[11].toString()) : null);
-            dto.setVendorName(row[12] != null ? row[12].toString() : null);
-            try {
-                String materialsJson = (String) row[13];
-                if (materialsJson != null && !materialsJson.isEmpty()) {
-                    List<AssetDisposalMaterialDto> materials = mapper.readValue(
-                            materialsJson, new TypeReference<List<AssetDisposalMaterialDto>>() {}
-                    );
-                    dto.setMaterialDtos(materials);
-                } else {
-                    dto.setMaterialDtos(new ArrayList<>());
+            dto.setAuctionId(auction.getAuctionId().toString());
+            dto.setAuctionCode(auction.getAuctionCode());
+            dto.setAuctionDate(auction.getAuctionDate().toString());
+            dto.setReservePrice(auction.getReservePrice());
+            dto.setAuctionPrice(auction.getAuctionPrice());
+            dto.setVendorName(auction.getVendorName());
+
+            // Step 2: Fetch disposal IDs for this auction
+            List<Integer> disposalIds = auction.getAuctionDetails()
+                    .stream()
+                    .map(AssetDisposalAuctionDetailEntity::getDisposalId)
+                    .toList();
+
+            List<AutionAssetDisposalReportDto> disposals = new ArrayList<>();
+
+            if (!disposalIds.isEmpty()) {
+                // Step 3: Fetch disposals
+                List<AssetDisposalMasterEntity> disposalEntities = disposalMasterRepository.findByDisposalIdIn(disposalIds);
+
+                for (AssetDisposalMasterEntity disposal : disposalEntities) {
+                    AutionAssetDisposalReportDto disposalDto = new AutionAssetDisposalReportDto();
+                    disposalDto.setDisposalId(disposal.getDisposalId());
+                    disposalDto.setDisposalDate(disposal.getDisposalDate() != null ? disposal.getDisposalDate().toString() : null);
+                    disposalDto.setLocationId(disposal.getLocationId());
+                    disposalDto.setStatus(disposal.getStatus());
+                    disposalDto.setCustodianId(disposal.getCustodianId());
+                    disposalDto.setCreatedBy(disposal.getCreatedBy());
+                    disposalDto.setCreateDate(disposal.getCreateDate() != null ? disposal.getCreateDate().toString() : null);
+                    disposalDto.setAction(disposal.getAction());
+
+                    // Step 4: Fetch assets for this disposal
+                    List<AssetDisposalDetailEntity> assetDetails = disposalDetailRepository.findByDisposalId(disposal.getDisposalId());
+                    List<AssetDisposalMaterialDto> assetDtos = assetDetails.stream().map(dd -> {
+                        AssetDisposalMaterialDto ad = new AssetDisposalMaterialDto();
+                        ad.setDisposalDetailId(dd.getDisposalDetailId());
+                        ad.setDisposalId(dd.getDisposalId());
+                        ad.setAssetId(dd.getAssetId());
+                        ad.setAssetDesc(dd.getAssetDesc());
+                        ad.setDisposalQuantity(dd.getDisposalQuantity());
+                        ad.setLocatorId(dd.getLocatorId());
+                        ad.setBookValue(dd.getBookValue());
+                        ad.setDepriciationRate(dd.getDepriciationRate());
+                        ad.setUnitPrice(dd.getUnitPrice());
+                        ad.setCustodianId(dd.getCustodianId());
+                        ad.setPoValue(dd.getPoValue());
+                        ad.setReasonForDisposal(dd.getReasonForDisposal());
+                        return ad;
+                    }).toList();
+
+                    disposalDto.setAssets(assetDtos);
+                    disposals.add(disposalDto);
                 }
-            } catch (Exception e) {
-                dto.setMaterialDtos(new ArrayList<>());
             }
+
+            dto.setDisposals(disposals);
             reports.add(dto);
         }
 
         return reports;
     }
+
+
+    @Transactional
+    public String disposeMultipleAssets(DisposeAssetRequest request) {
+        //Create Auction record
+        AssetDisposalAuctionEntity auction = new AssetDisposalAuctionEntity();
+        auction.setAuctionCode(request.getAuctionCode());
+        auction.setAuctionDate(CommonUtils.convertStringToDateObject(request.getAuctionDate()));
+        auction.setReservePrice(request.getReservePrice());
+        auction.setAuctionPrice(request.getAuctionPrice());
+        auction.setVendorName(request.getVendorName());
+        auction.setCreatedBy(request.getUpdatedBy());
+        auction.setCreatedDate(LocalDateTime.now());
+        auction = assetDisposalAuctionEntityRepository.save(auction);
+
+        for (Integer disposalId : request.getDisposalIds()) {
+            AssetDisposalAuctionDetailEntity detail = new AssetDisposalAuctionDetailEntity();
+            detail.setAuction(auction);
+            detail.setDisposalId(disposalId);
+            assetDisposalAuctionDetailEntityRepository.save(detail);
+        }
+
+        //  Update each disposal
+        List<AssetDisposalMasterEntity> disposals = disposalMasterRepository.findAllById(request.getDisposalIds());
+        for (AssetDisposalMasterEntity disposal : disposals) {
+            disposal.setStatus("Disposed");
+            disposal.setAuctionId(auction.getAuctionCode());
+            disposalMasterRepository.save(disposal);
+        }
+        return "INV/" +  auction.getAuctionId();
+    }
+
+    @Override
+    public AssetsAuctionDto searchByAuctionId(String auctionId) {
+        Integer id = Integer.valueOf(auctionId.split("/")[1]);
+        // 1. Run query and fetch rows
+        List<Object[]> rows = assetDisposalAuctionEntityRepository.findAuctionWithFullDetails(id);
+
+        if (rows.isEmpty()) {
+            return null; // or throw custom exception
+        }
+
+        // 2. Extract Auction entity from first row
+        AssetDisposalAuctionEntity auction = (AssetDisposalAuctionEntity) rows.get(0)[0];
+
+        // 3. Prepare Auction DTO (top-level info)
+        AssetsAuctionDto auctionDto = new AssetsAuctionDto();
+        auctionDto.setAuctionId("INV/"+auction.getAuctionId());
+        auctionDto.setAuctionCode(auction.getAuctionCode());
+        auctionDto.setAuctionDate(CommonUtils.convertDateToString(auction.getAuctionDate()));
+        auctionDto.setReservePrice(auction.getReservePrice());
+        auctionDto.setAuctionPrice(auction.getAuctionPrice());
+        auctionDto.setVendorName(auction.getVendorName());
+
+        // 4. Map assets from each row
+        List<AutionAssetsDisposalsDto> assetList = rows.stream().map(row -> {
+            AssetDisposalMasterEntity master = (AssetDisposalMasterEntity) row[2];
+            AssetDisposalDetailEntity detail = (AssetDisposalDetailEntity) row[3];
+
+            AutionAssetsDisposalsDto dto = new AutionAssetsDisposalsDto();
+            dto.setDisposalDetailId(detail.getDisposalDetailId());
+            dto.setDisposalId(master.getDisposalId());
+            dto.setAssetId(detail.getAssetId());
+            dto.setAssetDesc(detail.getAssetDesc());
+            dto.setDisposalQuantity(detail.getDisposalQuantity());
+            dto.setLocatorId(detail.getLocatorId());
+            dto.setBookValue(detail.getBookValue());
+            dto.setDepriciationRate(detail.getDepriciationRate());
+            dto.setUnitPrice(detail.getUnitPrice());
+            dto.setCustodianId(detail.getCustodianId());
+            dto.setPoValue(detail.getPoValue());
+            dto.setReasonForDisposal(detail.getReasonForDisposal());
+            dto.setDisposalDate(CommonUtils.convertDateToString(master.getDisposalDate()));
+            dto.setLocationId(master.getLocationId());
+            dto.setStatus(master.getStatus());
+            return dto;
+        }).collect(Collectors.toList());
+
+        // 5. Attach assets to auction DTO
+        auctionDto.setAssets(assetList);
+
+        return auctionDto;
+    }
+
+
 
 }

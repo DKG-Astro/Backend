@@ -3,6 +3,8 @@ package com.astro.service.impl.InventoryModule;
 import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.InventoryModule.AssetDisposalDetailDto;
 import com.astro.dto.workflow.InventoryModule.AssetDisposalDto;
+import com.astro.dto.workflow.InventoryModule.AssetsAuctionDto;
+import com.astro.dto.workflow.InventoryModule.AutionAssetsDisposalsDto;
 import com.astro.entity.InventoryModule.OgpAssetDisposal;
 import com.astro.entity.InventoryModule.OgpAssetDisposalDetail;
 import com.astro.exception.BusinessException;
@@ -30,100 +32,97 @@ public class ogpAssetServiceImpl implements ogpAssetService {
 
     @Override
     @Transactional
-    public String saveAssetDisposalOgp(AssetDisposalDto request) {
-        // 1. Create and save OgpAssetDisposal master record
+    public String saveAssetDisposalOgp(AssetsAuctionDto request) {
+
+        Integer id = Integer.valueOf(request.getAuctionId().split("/")[1]);
         OgpAssetDisposal ogpMaster = new OgpAssetDisposal();
-        String Date = request.getDisposalDate();
-        ogpMaster.setDisposalDate(CommonUtils.convertStringToDateObject(Date));
-        ogpMaster.setCustodianId(request.getCustodianId());
-        ogpMaster.setCreatedBy(request.getCreatedBy());
-        ogpMaster.setCreateDate(LocalDateTime.now());
-        ogpMaster.setLocationId(request.getLocationId());
-        ogpMaster.setStatus("Awaiting For Approval"); // or any default status
-        ogpMaster.setAction(request.getAction());
-        ogpMaster.setAuctionId(request.getAuctionId());
+        ogpMaster.setAuctionId(id);
+        ogpMaster.setAuctionCode(request.getAuctionCode());
         ogpMaster.setAuctionDate(CommonUtils.convertStringToDateObject(request.getAuctionDate()));
         ogpMaster.setReservePrice(request.getReservePrice());
         ogpMaster.setAuctionPrice(request.getAuctionPrice());
         ogpMaster.setVendorName(request.getVendorName());
+        ogpMaster.setStatus("Awaiting For Approval");
 
-        // Save master to get ID
+        ogpMaster.setCreatedBy(1);
+        ogpMaster.setCreateDate(LocalDateTime.now());
+
         ogpMaster = ogpAssetDisposalRepository.save(ogpMaster);
 
         // 2. Save details
         List<OgpAssetDisposalDetail> detailList = new ArrayList<>();
-        if (request.getMaterialDtlList() != null) {
-            for (AssetDisposalDetailDto detailDto : request.getMaterialDtlList()) {
+        if (request.getAssets() != null) {
+            for (AutionAssetsDisposalsDto assetDto : request.getAssets()) {
                 OgpAssetDisposalDetail detail = new OgpAssetDisposalDetail();
-                detail.setDisposalOgpId(ogpMaster.getDisposalOgpId());
-                detail.setAssetId(detailDto.getAssetId());
-                detail.setAssetDesc(detailDto.getAssetDesc());
-                detail.setDisposalQuantity(detailDto.getQuantity());
-                detail.setDisposalCategory(detailDto.getDisposalCategory());
-                detail.setDisposalMode(detailDto.getDisposalMode());
-                detail.setSalesNoteFilename(detailDto.getSalesNoteFilename());
-                detail.setOhqId(detailDto.getOhqId());
-                detail.setLocatorId(detailDto.getLocatorId());
-                detail.setBookValue(detailDto.getBookValue());
-                detail.setDepriciationRate(detailDto.getDepriciationRate());
-                detail.setUnitPrice(detailDto.getUnitPrice());
-                detail.setCustodianId(detailDto.getCustodianId());
-                detail.setPoValue(detailDto.getPoValue());
+                detail.setDisposal(ogpMaster); // foreign key to parent table
+                detail.setDisposalId(assetDto.getDisposalId());
+                detail.setAssetId(assetDto.getAssetId());
+                detail.setAssetDesc(assetDto.getAssetDesc());
+                detail.setDisposalQuantity(assetDto.getDisposalQuantity());
+                detail.setLocatorId(assetDto.getLocatorId());
+                detail.setBookValue(assetDto.getBookValue());
+                detail.setDepriciationRate(assetDto.getDepriciationRate());
+                detail.setUnitPrice(assetDto.getUnitPrice());
+                detail.setCustodianId(assetDto.getCustodianId());
+                detail.setPoValue(assetDto.getPoValue());
+                detail.setReasonForDisposal(assetDto.getReasonForDisposal());
+                detail.setDisposalDate(CommonUtils.convertStringToDateObject(assetDto.getDisposalDate()));
+                detail.setLocationId(assetDto.getLocationId());
+                detail.setStatus(assetDto.getStatus());
 
                 detailList.add(detail);
             }
             ogpAssetDisposalDetailRepository.saveAll(detailList);
         }
 
-
         return "INV/" + ogpMaster.getDisposalOgpId();
     }
 
-    public List<AssetDisposalDto> getPendingApprovals() {
+
+    public List<AssetsAuctionDto> getPendingApprovals() {
         List<OgpAssetDisposal> pendingList = ogpAssetDisposalRepository.findByStatus("Awaiting For Approval");
 
         return pendingList.stream().map(disposal -> {
-            AssetDisposalDto dto = new AssetDisposalDto();
-            dto.setDisposalId(disposal.getDisposalOgpId());
-            dto.setDisposalDate(disposal.getDisposalDate() != null ? disposal.getDisposalDate().toString() : null);
-            dto.setCreatedBy(disposal.getCreatedBy());
-            dto.setLocationId(disposal.getLocationId());
-            dto.setCustodianId(disposal.getCustodianId());
-            dto.setStatus(disposal.getStatus());
-            dto.setAction(disposal.getAction());
-            dto.setAuctionId(disposal.getAuctionId());
-            dto.setAuctionDate(disposal.getAuctionDate() != null ? disposal.getAuctionDate().toString() : null);
-            dto.setReservePrice(disposal.getReservePrice());
-            dto.setAuctionPrice(disposal.getAuctionPrice());
-            dto.setVendorName(disposal.getVendorName());
 
-            // Fetch details for this disposal
+            AssetsAuctionDto auctionDto = new AssetsAuctionDto();
+            auctionDto.setDisposalOgpId(disposal.getDisposalOgpId());
+            auctionDto.setAuctionId(String.valueOf(disposal.getAuctionId()));
+            auctionDto.setAuctionCode(disposal.getAuctionCode());
+            auctionDto.setAuctionDate(CommonUtils.convertDateToString(disposal.getAuctionDate()));
+            auctionDto.setVendorName(disposal.getVendorName());
+            auctionDto.setReservePrice(disposal.getReservePrice());
+            auctionDto.setAuctionPrice(disposal.getAuctionPrice());
+
+
             List<OgpAssetDisposalDetail> details = ogpAssetDisposalDetailRepository.findByDisposalOgpId(disposal.getDisposalOgpId());
-            List<AssetDisposalDetailDto> detailDtos = details.stream().map(detail -> {
-                AssetDisposalDetailDto dDto = new AssetDisposalDetailDto();
-                dDto.setAssetId(detail.getAssetId());
-                dDto.setAssetDesc(detail.getAssetDesc());
-                dDto.setQuantity(detail.getDisposalQuantity());
-                dDto.setDisposalCategory(detail.getDisposalCategory());
-                dDto.setDisposalMode(detail.getDisposalMode());
-                dDto.setSalesNoteFilename(detail.getSalesNoteFilename());
-                dDto.setLocatorId(detail.getLocatorId());
-                dDto.setOhqId(detail.getOhqId());
-                dDto.setBookValue(detail.getBookValue());
-                dDto.setDepriciationRate(detail.getDepriciationRate());
-                dDto.setUnitPrice(detail.getUnitPrice());
-                dDto.setCustodianId(detail.getCustodianId());
-                dDto.setPoValue(detail.getPoValue());
-                return dDto;
+            List<AutionAssetsDisposalsDto> assetDtos = details.stream().map(detail -> {
+                AutionAssetsDisposalsDto dto = new AutionAssetsDisposalsDto();
+                dto.setDisposalDetailId(detail.getOgpDisposalDetailId());
+                dto.setDisposalId(detail.getDisposalId());
+                dto.setAssetId(detail.getAssetId());
+                dto.setAssetDesc(detail.getAssetDesc());
+                dto.setDisposalQuantity(detail.getDisposalQuantity());
+                dto.setLocatorId(detail.getLocatorId());
+                dto.setBookValue(detail.getBookValue());
+                dto.setDepriciationRate(detail.getDepriciationRate());
+                dto.setUnitPrice(detail.getUnitPrice());
+                dto.setCustodianId(detail.getCustodianId());
+                dto.setPoValue(detail.getPoValue());
+                dto.setReasonForDisposal(detail.getReasonForDisposal());
+                dto.setDisposalDate(CommonUtils.convertDateToString(detail.getDisposalDate()));
+                dto.setLocationId(detail.getLocationId());
+                dto.setStatus(disposal.getStatus());
+                return dto;
             }).collect(Collectors.toList());
 
-            dto.setMaterialDtlList(detailDtos);
-            return dto;
+            auctionDto.setAssets(assetDtos);
+
+            return auctionDto;
         }).collect(Collectors.toList());
     }
 
-    public String approveOgpAssetDisposal(Integer disposalId) {
-        OgpAssetDisposal disposal = ogpAssetDisposalRepository.findById(disposalId)
+    public String approveOgpAssetDisposal(Integer disposalOgpId) {
+        OgpAssetDisposal disposal = ogpAssetDisposalRepository.findById(disposalOgpId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -136,8 +135,8 @@ public class ogpAssetServiceImpl implements ogpAssetService {
         return "Asset Disposal OGP approved successfully.";
     }
 
-    public String rejectOgpAssetDisposal(Integer disposalId) {
-        OgpAssetDisposal disposal = ogpAssetDisposalRepository.findById(disposalId)
+    public String rejectOgpAssetDisposal(Integer disposalOgpId) {
+        OgpAssetDisposal disposal = ogpAssetDisposalRepository.findById(disposalOgpId)
                 .orElseThrow(() -> new BusinessException(
                         new ErrorDetails(
                                 AppConstant.ERROR_CODE_RESOURCE,

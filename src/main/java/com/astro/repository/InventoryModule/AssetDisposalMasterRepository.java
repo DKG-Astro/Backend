@@ -5,6 +5,7 @@ import com.astro.entity.InventoryModule.AssetDisposalMasterEntity;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -68,5 +69,61 @@ public interface AssetDisposalMasterRepository extends JpaRepository<AssetDispos
     );
 
 
+    @Query(value = """
+ SELECT
+                 a.auction_id AS auctionId,
+                 a.auction_code AS auctionCode,
+                 a.auction_date AS auctionDate,
+                 a.reserve_price AS reservePrice,
+                 a.auction_price AS auctionPrice,
+                 a.vendor_name AS vendorName,
+                 IFNULL(JSON_ARRAYAGG(
+                     JSON_OBJECT(
+                         'disposalId', d.disposal_id,
+                         'disposalDate', d.disposal_date,
+                         'locationId', d.location_id,
+                         'status', d.status,
+                         'custodianId', d.custodian_id,
+                         'createdBy', d.created_by,
+                         'createDate', d.create_date,
+                         'action', d.action,
+                         'assets', IFNULL(
+                             (SELECT JSON_ARRAYAGG(
+                                 JSON_OBJECT(
+                                     'disposalDetailId', dd.disposal_detail_id,
+                                     'assetId', dd.asset_id,
+                                     'assetDesc', dd.asset_desc,
+                                     'disposalQuantity', dd.disposal_quantity,
+                                     'disposalCategory', dd.disposal_category,
+                                     'disposalMode', dd.disposal_mode,
+                                     'salesNoteFilename', dd.sales_note_filename,
+                                     'locatorId', dd.locator_id,
+                                     'ohqId', dd.ohq_id,
+                                     'bookValue', dd.book_value,
+                                     'depriciationRate', dd.depriciation_rate,
+                                     'unitPrice', dd.unit_price,
+                                     'custodianId', dd.custodian_id,
+                                     'poValue', dd.po_value,
+                                     'reasonForDisposal', dd.reason_for_disposal
+                                 )
+                             ) FROM asset_disposal_detail dd WHERE dd.disposal_id = d.disposal_id), JSON_ARRAY())
+                     )
+                 ), JSON_ARRAY()) AS disposalsJson
+             FROM asset_disposal_auction a
+             LEFT JOIN asset_disposal_auction_detail ad ON a.auction_id = ad.auction_id
+             LEFT JOIN asset_disposal d ON ad.disposal_id = d.disposal_id
+             WHERE a.auction_date BETWEEN :from AND :to
+             GROUP BY
+                 a.auction_id, a.auction_code, a.auction_date,
+                 a.reserve_price, a.auction_price, a.vendor_name
+             ORDER BY a.auction_date DESC;
+                                       
+""", nativeQuery = true)
+    List<Object[]> getAuctionReport(
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to
+    );
 
+
+    List<AssetDisposalMasterEntity> findByDisposalIdIn(List<Integer> disposalIds);
 }

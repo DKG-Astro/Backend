@@ -2,9 +2,7 @@ package com.astro.service.InventoryModule;
 
 import java.util.List;
 
-import com.astro.dto.workflow.InventoryModule.AssetDisposalDto;
-import com.astro.dto.workflow.InventoryModule.AssetDisposalReportDto;
-import com.astro.dto.workflow.InventoryModule.AssetMasterDto;
+import com.astro.dto.workflow.InventoryModule.*;
 import com.astro.dto.workflow.InventoryModule.asset.AssetMasterReportDto;
 import com.astro.dto.workflow.InventoryModule.asset.AssetOhqDisposalDto;
 import com.astro.entity.InventoryModule.AssetDisposalDetailEntity;
@@ -30,4 +28,6 @@ public interface AssetMasterService {
     public String updateAssetDisposal(AssetDisposalDto request);
     public List<AssetDisposalDto> getAllApprovedAssetDisposalReport();
     public List<AssetDisposalReportDto> getAssetDisposalReport(String startDate, String endDate);
+    public String disposeMultipleAssets(DisposeAssetRequest request);
+    public AssetsAuctionDto searchByAuctionId(String auctionId);
 }

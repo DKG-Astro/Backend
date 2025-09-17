@@ -162,6 +162,67 @@ public class DiServiceImpl implements DiService {
 
         return diMasterDtoList;
     }
+    @Override
+    public List<DiMasterDto> getPendingIssueNote() {
+
+        List<DemandAndIssueMasterEntity> diMasterEntityList = demandAndIssueMasterEntityRepository.findByStatus("DEMAND");
+
+        List<DiMasterDto> diMasterDtoList = new ArrayList<>();
+        Set<Integer> userIds = new HashSet<>();
+
+
+        for (DemandAndIssueMasterEntity entity : diMasterEntityList) {
+            userIds.add(entity.getSenderCustodianId());
+            //  userIds.add(entity.getReceiverCustodianId());
+        }
+
+
+        List<UserMaster> users = userMasterRepository.findByUserIdIn(userIds);
+        Map<Integer, String> userMap = users.stream()
+                .filter(u -> u.getUserId() != null)
+                .collect(Collectors.toMap(
+                        UserMaster::getUserId,
+                        u -> u.getUserName() != null ? u.getUserName() : "Unknown",
+                        (v1, v2) -> v1
+                ));
+
+        for (DemandAndIssueMasterEntity diMasterEntity : diMasterEntityList) {
+            DiMasterDto diMasterDto = new DiMasterDto();
+            diMasterDto.setId("INV/" + diMasterEntity.getId());
+            diMasterDto.setDiDate(CommonUtils.convertDateToString(diMasterEntity.getDemandIssueDate()));
+            diMasterDto.setSenderLocationId(diMasterEntity.getSenderLocationId());
+            //   diMasterDto.setReceiverLocationId(diMasterEntity.getReceiverLocationId());
+            diMasterDto.setSenderCustodianId(diMasterEntity.getSenderCustodianId());
+            diMasterDto.setStatus(diMasterEntity.getStatus());
+            //  diMasterDto.setReceiverCustodianId(diMasterEntity.getReceiverCustodianId());
+            diMasterDto.setSenderCustodianName(
+                    userMap.getOrDefault(diMasterEntity.getSenderCustodianId(), "Unknown"));
+            // diMasterDto.setReceiverCustodianName(
+            //     userMap.getOrDefault(diMasterEntity.getReceiverCustodianId(), "Unknown"));
+
+            List<DemandAndIssueDtlEntity> diDtlEntityList = demandAndIssueDtlEntityRepository.findByDiId(diMasterEntity.getId());
+            List<GtDtl> diDtlList = new ArrayList<>();
+            for (DemandAndIssueDtlEntity diDtlEntity : diDtlEntityList) {
+                GtDtl diDtl = new GtDtl();
+                diDtl.setAssetId(diDtlEntity.getAssetId());
+                diDtl.setAssetDesc(diDtlEntity.getAssetDesc());
+                diDtl.setMaterialCode(diDtlEntity.getMaterialCode());
+                diDtl.setMaterialDesc(diDtlEntity.getMaterialDesc());
+                diDtl.setQuantity(diDtlEntity.getQuantity());
+                diDtl.setReceiverLocatorId(diDtlEntity.getReceiverLocatorId());
+                diDtl.setSenderLocatorId(diDtlEntity.getSenderLocatorId());
+                diDtl.setUnitPrice(diDtlEntity.getUnitPrice());
+                diDtl.setDepriciationRate(diDtlEntity.getDepriciationRate());
+                diDtl.setBookValue(diDtlEntity.getBookValue());
+                diDtlList.add(diDtl);
+            }
+
+            diMasterDto.setMaterialDtlList(diDtlList);
+            diMasterDtoList.add(diMasterDto);
+        }
+
+        return diMasterDtoList;
+    }
 
     @Override
     @Transactional
