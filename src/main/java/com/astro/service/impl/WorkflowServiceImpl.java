@@ -1051,7 +1051,9 @@ public class WorkflowServiceImpl implements WorkflowService {
 
             workflowTransitionRepository.save(nextWorkflowTransition);
         } else {
-            nextTransition = nextTransition(currentTransition.getWorkflowId(), currentWorkflowTransition.getWorkflowName(), roleNameByUserId(transitionActionReqDto.getActionBy()), currentWorkflowTransition.getRequestId());
+          //  nextTransition = nextTransition(currentTransition.getWorkflowId(), currentWorkflowTransition.getWorkflowName(), roleNameByUserId(transitionActionReqDto.getActionBy()), currentWorkflowTransition.getRequestId());
+            nextTransition = nextTransition(currentTransition.getWorkflowId(), currentWorkflowTransition.getWorkflowName(), transitionActionReqDto.getRoleName(), currentWorkflowTransition.getRequestId());
+
             if (Objects.isNull(nextTransition)) {
                 throw new InvalidInputException(new ErrorDetails(AppConstant.NEXT_TRANSITION_NOT_FOUND, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                         AppConstant.ERROR_TYPE_VALIDATION, "Error occurred at approval. No next transition found."));

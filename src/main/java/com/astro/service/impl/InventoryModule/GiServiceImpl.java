@@ -429,8 +429,10 @@ public class GiServiceImpl implements GiService {
 
         for(GiMaterialDtlEntity gimde : gimdeList){
             System.out.println("ADDED AGAIN NON CONSUMABLE");
-           if(gimde.getRejectionType().equalsIgnoreCase("replacement")){
-            // add the quantity to po again
+            String rejectionType = gimde.getRejectionType();
+         //  if(gimde.getRejectionType().equalsIgnoreCase("replacement")){
+            if ("replacement".equalsIgnoreCase(rejectionType)) {
+                // add the quantity to po again
             PurchaseOrderAttributes poa = poar.findByPurchaseOrder_PoIdAndMaterialCode(poId, gimde.getMaterialCode())
                                         .orElseThrow(() -> new BusinessException(new ErrorDetails(
                                                 AppConstant.ERROR_CODE_RESOURCE,
@@ -443,7 +445,9 @@ public class GiServiceImpl implements GiService {
         }
         for(GoodsInspectionConsumableDetailEntity gicde : gicdeList){
             System.out.println("ADDED AGAIN CONSUMABLE");
-            if(gicde.getRejectionType().equalsIgnoreCase("replacement")){
+           // if(gicde.getRejectionType().equalsIgnoreCase("replacement")){
+            String rejectionType = gicde.getRejectionType();
+            if ("replacement".equalsIgnoreCase(rejectionType)) {
                 // add the quantity to po again
                 PurchaseOrderAttributes poa = poar.findByPurchaseOrder_PoIdAndMaterialCode(poId, gicde.getMaterialCode())
                                         .orElseThrow(() -> new BusinessException(new ErrorDetails(

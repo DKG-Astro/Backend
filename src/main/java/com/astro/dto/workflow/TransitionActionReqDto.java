@@ -11,4 +11,5 @@ public class TransitionActionReqDto {
     private String action;
     private String remarks;
     private String assignmentRole;
+    private String roleName;
 }

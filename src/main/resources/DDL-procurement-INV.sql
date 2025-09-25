@@ -1436,7 +1436,7 @@ ALTER TABLE asset_disposal_detail ADD COLUMN ohq_id INT, ADD COLUMN locator_id I
 
 ALTER TABLE asset_disposal ADD COLUMN auction_id VARCHAR(50), ADD COLUMN auction_date DATE, ADD COLUMN reserve_price DECIMAL(18,2), ADD COLUMN auction_price DECIMAL(18,2), ADD COLUMN vendor_name VARCHAR(100);
 
-ALTER TABLE asset_disposal_detail reason_for_disposal VARCHAR(150);
+ALTER TABLE asset_disposal_detail ADD COLUMN reason_for_disposal VARCHAR(150);
 
 CREATE TABLE `asset_disposal_auction` ( `auction_id` INT NOT NULL AUTO_INCREMENT, `auction_code` VARCHAR(50) NOT NULL UNIQUE, `auction_date` DATE NOT NULL, `reserve_price` DECIMAL(18,2) DEFAULT NULL, `auction_price` DECIMAL(18,2) DEFAULT NULL, `vendor_name` VARCHAR(100) DEFAULT NULL, `created_by` INT NOT NULL, `created_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`auction_id`) );
 

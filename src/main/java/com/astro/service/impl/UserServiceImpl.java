@@ -1,6 +1,7 @@
 package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.LoginRoleDto;
 import com.astro.dto.workflow.UserDto;
 import com.astro.dto.workflow.UserRoleDto;
 
@@ -62,21 +63,33 @@ public class UserServiceImpl implements UserService {
                         AppConstant.ERROR_TYPE_VALIDATION, "User not found."));
             }
 
-            UserRoleMaster userRoleMaster = userRoleMasterRepository.findByUserId(userMaster.getUserId());
+        //    UserRoleMaster userRoleMaster = userRoleMasterRepository.findByUserId(userMaster.getUserId());
+            List<UserRoleMaster> userRoles = userRoleMasterRepository.findAllByUserId(userMaster.getUserId());
+
             Optional<EmployeeDepartmentMaster> employee = employeeRepo.findByEmployeeId(userMaster.getEmployeeId());
 
             userRoleDto = new UserRoleDto();
-            userRoleDto.setUserId(userRoleMaster.getUserId());
-            userRoleDto.setUserRoleId(userRoleMaster.getUserRoleId());
-            userRoleDto.setRoleId(userRoleMaster.getRoleId());
-            userRoleDto.setCreatedDate(userRoleMaster.getCreatedDate());
-            userRoleDto.setCreatedBy(userRoleMaster.getCreatedBy());
-            userRoleDto.setReadPermission(userRoleMaster.getReadPermission());
-            userRoleDto.setWritePermission(userRoleMaster.getWritePermission());
-            userRoleDto.setRole(roleNameById(userRoleMaster.getRoleId()));
+            userRoleDto.setUserId(userMaster.getUserId());
+           // userRoleDto.setUserRoleId(userRoleMaster.getUserRoleId());
+         //   userRoleDto.setRoleId(userRoleMaster.getRoleId());
+           // userRoleDto.setCreatedDate(CommonUtils.convertSqlDateToString(userMaster.getCreatedDate()));
+            userRoleDto.setCreatedBy(userMaster.getCreatedBy());
+          //  userRoleDto.setReadPermission(userRoleMaster.getReadPermission());
+          //  userRoleDto.setWritePermission(userRoleMaster.getWritePermission());
+          //  userRoleDto.setRole(roleNameById(userRoleMaster.getRoleId()));
             userRoleDto.setUserName(userMaster.getUserName());
             userRoleDto.setMobileNumber(userMaster.getMobileNumber());
             userRoleDto.setEmail(userMaster.getEmail());
+            List<LoginRoleDto> roleDtos = userRoles.stream().map(role -> {
+                LoginRoleDto dto = new LoginRoleDto();
+                dto.setUserRoleId(role.getUserRoleId());
+                dto.setRoleId(role.getRoleId());
+                dto.setRoleName(roleNameById(role.getRoleId()));
+                dto.setReadPermission(role.getReadPermission());
+                dto.setWritePermission(role.getWritePermission());
+                return dto;
+            }).collect(Collectors.toList());
+            userRoleDto.setRoles(roleDtos);
             if(employee.isPresent()){
                 EmployeeDepartmentMaster emp = employee.get();
                 userRoleDto.setEmployeeDepartment(emp.getDepartmentName());
@@ -99,7 +112,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
+  /*  @Override
     public UserDto createUser(userRequestDto userDto) {
 
         UserMaster userMaster = new UserMaster();
@@ -123,7 +136,7 @@ public class UserServiceImpl implements UserService {
                         "User with username '" + userDto.getUserName() + "' already exists.")
                 ));*/
 
-        userMaster.setUserName(userDto.getUserName());
+      /*  userMaster.setUserName(userDto.getUserName());
         userMaster.setRoleName(userDto.getRoleName());
         userMaster.setMobileNumber(userDto.getMobileNumber());
         userMaster.setPassword(userDto.getPassword());
@@ -155,7 +168,48 @@ public class UserServiceImpl implements UserService {
       //  employee.setUpdatedDate(LocalDateTime.now());
       //  employeeRepo.save(employee);
         return mapToResponseDTO(userMaster);
-    }
+    }*/
+      @Override
+      public UserDto createUser(userRequestDto userDto) {
+          UserMaster userMaster = new UserMaster();
+          userMaster.setUserName(userDto.getUserName());
+          userMaster.setMobileNumber(userDto.getMobileNumber());
+          userMaster.setPassword(userDto.getPassword());
+          userMaster.setEmail(userDto.getEmail());
+          userMaster.setCreatedBy(userDto.getCreatedBy());
+          userMaster.setEmployeeId(userDto.getEmployeeId());
+
+          // Save role names as comma-separated string in user_master
+          String rolesAsString = String.join(",", userDto.getRoleNames());
+          userMaster.setRoleName(rolesAsString);
+
+          // Save user
+          userMasterRepository.save(userMaster);
+
+          // Save each role in user_role_master
+          for (String roleName : userDto.getRoleNames()) {
+              RoleMaster role = roleMasterRepository.findByRoleName(roleName)
+                      .orElseThrow(() -> new BusinessException(
+                              new ErrorDetails(
+                                      AppConstant.ERROR_CODE_RESOURCE,
+                                      AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                      AppConstant.ERROR_TYPE_VALIDATION,
+                                      "Role with name '" + roleName + "' not found.")
+                      ));
+
+              UserRoleMaster userRole = new UserRoleMaster();
+              userRole.setUserId(userMaster.getUserId());
+              userRole.setRoleId(role.getRoleId());
+              userRole.setReadPermission(true);
+              userRole.setWritePermission(true);
+              userRole.setCreatedBy(userDto.getCreatedBy());
+              userRole.setCreatedDate(new Date());
+              userRoleMasterRepository.save(userRole);
+          }
+
+          return mapToResponseDTO(userMaster);
+      }
+
 
 
 
