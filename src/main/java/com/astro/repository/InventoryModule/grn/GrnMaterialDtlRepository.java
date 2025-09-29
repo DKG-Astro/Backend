@@ -12,4 +12,6 @@ public interface GrnMaterialDtlRepository extends JpaRepository<GrnMaterialDtlEn
     List<GrnMaterialDtlEntity> findByAssetId(Integer assetId);
 
     List<GrnMaterialDtlEntity> findByGiSubProcessIdAndAssetId(Integer giSubProcessId, Integer assetId);
+
+    List<GrnMaterialDtlEntity> findByGrnProcessId(String grnProcessId);
 }

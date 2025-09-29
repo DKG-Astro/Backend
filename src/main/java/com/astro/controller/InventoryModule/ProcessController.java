@@ -26,9 +26,14 @@ import com.astro.dto.workflow.InventoryModule.ogp.OgpIdDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpMasterRejectedGiDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpPoResponseDto;
+import com.astro.dto.workflow.WorkflowTransitionDto;
+import com.astro.dto.workflow.paymentVoucherRequestDto;
 import com.astro.entity.InventoryModule.*;
+import com.astro.entity.PaymentVoucher;
 import com.astro.service.InventoryModule.*;
+import com.astro.service.PaymentVoucherService;
 import com.astro.service.ProcessService;
+import com.astro.service.WorkflowService;
 import com.astro.service.impl.InventoryModule.GiServiceImpl;
 import com.astro.util.ResponseBuilder;
 
@@ -76,6 +81,10 @@ public class ProcessController {
     private DiService diService;
     @Autowired
     private ogpAssetService ogpAssetDisposalService;
+    @Autowired
+    private PaymentVoucherService paymentVoucherService;
+    @Autowired
+    private WorkflowService workflowService;
 
     @PostMapping("/saveGprn")
     public ResponseEntity<Object> saveGprn(@RequestBody SaveGprnDto req) {
@@ -633,6 +642,64 @@ public class ProcessController {
         AssetsAuctionDto res = assetMasterService.searchByAuctionId(auctionId);
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
+
+    @GetMapping("/approvedGrnPoIds")
+    public ResponseEntity<Object> getApprovedGrnPoIds() {
+     List<String> res=   grns.getDistinctGrnProcessIdsForGIAndApproved();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+    @GetMapping("/approvedSoIds")
+    public ResponseEntity<Object> getApprovedSoIds() {
+        List<String> res=   grns.getApprovedSoIds();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+    @GetMapping("/paymentVoucherGrnId")
+    public ResponseEntity<Object> getPaymentVoucherPaymentGrnIds( @RequestParam("grnProcessId") String grnProcessId) {
+        List<String> res=   grns.getGrnDetailsByProcessId(grnProcessId);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+    @GetMapping("/paymen")
+    public ResponseEntity<Object> getPaymen( @RequestParam("processNo") String processNo) {
+        Map<String, Object> res=   grns.getGrnDtls(processNo);
+
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+    @GetMapping("/paymentVoucherData")
+    public ResponseEntity<Object> getPaymentVoucherDetails( @RequestParam("processNo") String processNo) {
+       paymentVoucherDto res=   grns.getPaymentVoucherData(processNo);
+
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+    @GetMapping("/paymentVoucherSOData")
+    public ResponseEntity<Object> getPaymentVoucherSoDetails( @RequestParam("processNo") String processNo) {
+        paymentVoucherDto res=   grns.getPaymentVoucherDtoBySoId(processNo);
+
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+    @PostMapping("/savePaymentVoucher")
+    public ResponseEntity<Object> createPaymentVoucher(@RequestBody paymentVoucherRequestDto dto) {
+      String res = paymentVoucherService.createPaymentVoucher(dto);
+
+        String requestId = res;
+        String workflowName = "Payment Voucher Workflow";
+        Integer userId = dto.getCreatedBy();
+
+        //initiateing Workflow API
+        WorkflowTransitionDto workflowTransitionDto = workflowService.initiateWorkflow(requestId, workflowName, userId);
+        Map<String, String> ress = new HashMap<>();
+        ress.put("processNo", res);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(ress), HttpStatus.OK);
+    }
+
+    @GetMapping("/VoucherData")
+    public ResponseEntity<Object> getPaymentVoucherData(@RequestParam String processNo) {
+        paymentVoucherRequestDto res = paymentVoucherService.getVoucherByProcessNo(processNo);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+
+
+
 
 
 }

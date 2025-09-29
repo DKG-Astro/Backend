@@ -61,8 +61,9 @@ public interface WorkflowTransitionRepository extends JpaRepository<WorkflowTran
     @Query("Select wt.requestId from WorkflowTransition wt WHERE wt.workflowName = 'Tender Approver Workflow' AND wt.status = 'Completed' AND wt.nextAction IS NULL AND wt.requestId NOT IN (SELECT po.tenderId FROM PurchaseOrder po) AND wt.requestId NOT IN (SELECT so.tenderId FROM ServiceOrder so)")
     List<String> findApprovedTenderIdsForPOANDSO();
 
-   @Query("SELECT wt.requestId FROM WorkflowTransition wt WHERE wt.workflowName = 'PO Workflow' AND wt.status = 'Completed' AND wt.nextAction IS NULL")
+    @Query("SELECT wt.requestId FROM WorkflowTransition wt WHERE wt.workflowName = 'PO Workflow' AND wt.status = 'Completed' AND wt.nextAction IS NULL")
     List<String> findApprovedPoIds();
+
     @Query("SELECT wt.requestId FROM WorkflowTransition wt WHERE wt.workflowName = 'Tender Approver Workflow' AND wt.status = 'Completed' AND wt.nextAction IS NULL")
     List<String> findApprovedTenderIds();
 
@@ -197,5 +198,11 @@ ORDER BY wt.requestId, wt.createdDate
 
     @Query("SELECT new com.astro.dto.workflow.ProcurementDtos.pendingRecordsDto(w.status, w.requestId, w.workflowName) FROM WorkflowTransition w WHERE w.nextRole = :roleName")
     List<pendingRecordsDto> findPendingByNextRole(@Param("roleName") String roleName);
+
+    @Query("SELECT wt.requestId FROM WorkflowTransition wt " +
+            "WHERE wt.workflowName = 'SO Workflow' " +
+            "AND wt.status = 'Completed' " +
+            "AND wt.nextAction IS NULL")
+    List<String> findApprovedSoIds();
 
 }

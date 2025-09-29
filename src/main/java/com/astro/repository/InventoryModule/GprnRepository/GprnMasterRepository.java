@@ -31,4 +31,8 @@ public interface GprnMasterRepository extends JpaRepository<GprnMasterEntity,Int
              END) > 0
      """, nativeQuery = true)
     List<String> findPoIdsWithIncompleteGprn();
+
+    GprnMasterEntity findByProcessId(String gprnProcessId);
+
+    GprnMasterEntity findBySubProcessId(Integer gprnSubProcessId);
 }
