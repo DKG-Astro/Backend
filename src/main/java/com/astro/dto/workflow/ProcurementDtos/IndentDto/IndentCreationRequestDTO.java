@@ -57,9 +57,10 @@ public class IndentCreationRequestDTO {
     private String employeeDepartment;
     private String serialNumber;
     private String dateOfPurchase;
-    private String proprietaryAndLimitedDeclaration;
+    private Boolean proprietaryAndLimitedDeclaration;
     private List<String> uploadBuyBackFileNames;
     private List<MaterialDetailsRequestDTO> materialDetails;
+
     private String updatedBy;
     private Integer createdBy;
 

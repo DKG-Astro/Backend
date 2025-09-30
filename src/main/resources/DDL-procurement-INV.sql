@@ -1534,3 +1534,10 @@ CREATE TABLE `payment_voucher` (
     KEY `fk_payment_voucher` (`payment_voucher_id`),
     CONSTRAINT `fk_payment_voucher` FOREIGN KEY (`payment_voucher_id`) REFERENCES `payment_voucher` (`id`) ON DELETE CASCADE
   )
+
+
+ALTER TABLE indent_creation
+DROP COLUMN proprietary_and_limited_declaration;
+
+ALTER TABLE indent_creation
+Add COLUMN proprietary_and_limited_declaration BOOLEAN;

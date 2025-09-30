@@ -108,7 +108,7 @@ public class IndentCreation {
         private String employeeDepartment;
 
         @Column(name = "proprietary_and_limited_declaration")
-        private String proprietaryAndLimitedDeclaration;
+        private Boolean proprietaryAndLimitedDeclaration;
       //  private String totalAmount;
       //  @OneToMany(mappedBy = "indentCreation", cascade = CascadeType.ALL, orphanRemoval = true)
       //@ManyToMany(cascade = CascadeType.PERSIST)

@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -65,6 +66,7 @@ public class PaymentVoucher {
     private String soId;
 
     private Integer createdBy;
+    private LocalDateTime createdDate = LocalDateTime.now();
 
     @OneToMany(mappedBy = "paymentVoucher", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PaymentVoucherMaterials> materialsList;

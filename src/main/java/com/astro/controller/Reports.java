@@ -4,6 +4,7 @@ import com.astro.dto.workflow.InventoryModule.*;
 import com.astro.dto.workflow.InventoryModule.asset.AssetMasterReportDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpMaterialInReportDto;
 import com.astro.dto.workflow.InventoryModule.ogp.OgpRejectedGiReportDto;
+import com.astro.dto.workflow.PaymentVoucherReportDto;
 import com.astro.dto.workflow.ProcurementDtos.ContigencyPurchaseReportDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentListReportDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentReportDetailsDTO;
@@ -64,6 +65,8 @@ public class Reports {
     private GtService gtService;
     @Autowired
     private DiService diService;
+    @Autowired
+    private PaymentVoucherService paymentVoucherService;
 
 
     @GetMapping("/indent")
@@ -281,6 +284,13 @@ public class Reports {
                                                                @RequestParam String endDate) {
 
         List<AssetDisposalReportDto> response = assetMasterService.getAssetDisposalReport(startDate,endDate);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+    }
+    @GetMapping("/PaymentVoucherReport")
+    public ResponseEntity<Object> getAllPaymentVoucherReport(  @RequestParam String startDate,
+                                                               @RequestParam String endDate) {
+
+        List<PaymentVoucherReportDto> response = paymentVoucherService.getPaymentVoucherReport(startDate,endDate);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
     }
 

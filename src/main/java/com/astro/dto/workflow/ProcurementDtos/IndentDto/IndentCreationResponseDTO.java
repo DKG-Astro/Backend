@@ -48,7 +48,7 @@ public class IndentCreationResponseDTO {
     private String serialNumber;
     private String dateOfPurchase;
     private String proprietaryJustification;
-    private String proprietaryAndLimitedDeclaration;
+    private Boolean proprietaryAndLimitedDeclaration;
     private Boolean buyBack;
     private String uploadBuyBackFileNames;
     private String employeeDepartment;

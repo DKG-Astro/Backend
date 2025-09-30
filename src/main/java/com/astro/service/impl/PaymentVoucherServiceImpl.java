@@ -1,5 +1,7 @@
 package com.astro.service.impl;
 
+import com.astro.dto.workflow.PaymentVoucherMaterialDto;
+import com.astro.dto.workflow.PaymentVoucherReportDto;
 import com.astro.dto.workflow.paymentVoucherMaterialRequestDto;
 import com.astro.dto.workflow.paymentVoucherRequestDto;
 import com.astro.entity.PaymentVoucher;
@@ -7,11 +9,15 @@ import com.astro.entity.PaymentVoucherMaterials;
 import com.astro.repository.InventoryModule.PaymentVoucherMaterialsRepository;
 import com.astro.repository.InventoryModule.PaymentVoucherReposiotry;
 import com.astro.service.PaymentVoucherService;
+import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -148,6 +154,75 @@ public class PaymentVoucherServiceImpl implements PaymentVoucherService {
         dto.setGst(m.getGst());
         return dto;
     }
+
+    @Override
+    public List<PaymentVoucherReportDto> getPaymentVoucherReport(String startDate, String endDate) {
+
+
+        List<LocalDateTime> range = CommonUtils.getDateRenge(startDate, endDate);
+        LocalDateTime start = range.get(0);
+        LocalDateTime end = range.get(1);
+
+
+        List<PaymentVoucher> vouchers = paymentVoucherReposiotry
+                .findByCreatedDateBetween(start, end);
+
+        List<PaymentVoucherReportDto> reportList = new ArrayList<>();
+
+        for (PaymentVoucher voucher : vouchers) {
+            PaymentVoucherReportDto dto = new PaymentVoucherReportDto();
+
+
+            String id = voucher.getGrnNumber()+"/"+ voucher.getId();
+            dto.setPaymentVoucherNumber(id);
+            dto.setPaymentVoucherDate(voucher.getPaymentVoucherDate());
+            dto.setPaymentVoucherIsFor(voucher.getPaymentVoucherIsFor());
+            dto.setGrnNumber(voucher.getGrnNumber());
+            if(voucher.getPaymentVoucherIsFor().equalsIgnoreCase("Purchase Order")){
+                String poId = "PO"+voucher.getPurchaseOrderId();
+                dto.setPurchaseOrderId(poId);
+            }else{
+                String soId = "SO"+voucher.getSoId();
+                dto.setSoId(voucher.getSoId());
+            }
+
+           // dto.setServiceOrderDetails(voucher.getServiceOrderDetails());
+            dto.setPaymentVoucherType(voucher.getPaymentVoucherType());
+            dto.setVendorName(voucher.getVendorName());
+            dto.setVendorInvoiceNumber(voucher.getVendorInvoiceNumber());
+            dto.setVendorInvoiceDate(voucher.getVendorInvoiceDate());
+            dto.setCurrency(voucher.getCurrency());
+            dto.setExchangeRate(voucher.getExchangeRate());
+            dto.setRemarks(voucher.getRemarks());
+            dto.setTotalAmount(voucher.getTotalAmount());
+            dto.setPartialAmount(voucher.getPartialAmount());
+            dto.setAdvanceAmount(voucher.getAdvanceAmount());
+            dto.setPaidAmount(voucher.getPaidAmount());
+
+            dto.setCreatedBy(voucher.getCreatedBy());
+            dto.setCreatedDate(voucher.getCreatedDate());
+
+
+            List<PaymentVoucherMaterialDto> materialDtos = voucher.getMaterialsList().stream()
+                    .map(m -> {
+                        PaymentVoucherMaterialDto mdto = new PaymentVoucherMaterialDto();
+                        mdto.setMaterialCode(m.getMaterialCode());
+                        mdto.setMaterialDescription(m.getMaterialDescription());
+                        mdto.setQuantity(m.getQuantity());
+                        mdto.setUnitPrice(m.getUnitPrice());
+                        mdto.setCurrency(m.getCurrency());
+                        mdto.setExchangeRate(m.getExchangeRate());
+                        mdto.setGst(m.getGst());
+                        return mdto;
+                    }).toList();
+
+            dto.setMaterials(materialDtos);
+            reportList.add(dto);
+        }
+
+        return reportList;
+    }
+
 
 
 
