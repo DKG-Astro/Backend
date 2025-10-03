@@ -1494,50 +1494,10 @@ VALUES
 ('Submitted to Administrative Officer', 10, 13, 3, 4, 1),
 ('Final Submission', 10, 3, NULL, 5, 1);
 
-
-CREATE TABLE `payment_voucher` (
-   `id` bigint NOT NULL AUTO_INCREMENT,
-   `payment_voucher_number` varchar(255) DEFAULT NULL,
-   `payment_voucher_date` varchar(50) DEFAULT NULL,
-   `payment_voucher_is_for` varchar(100) DEFAULT NULL,
-   `purchase_order_id` varchar(100) DEFAULT NULL,
-   `grn_number` varchar(100) DEFAULT NULL,
-   `service_order_details` varchar(500) DEFAULT NULL,
-   `payment_voucher_type` varchar(100) NOT NULL,
-   `vendor_name` varchar(255) DEFAULT NULL,
-   `vendor_invoice_number` varchar(255) NOT NULL,
-   `vendor_invoice_date` varchar(50) DEFAULT NULL,
-   `currency` varchar(50) NOT NULL,
-   `exchange_rate` varchar(50) DEFAULT NULL,
-   `status` varchar(100) DEFAULT NULL,
-   `remarks` varchar(500) DEFAULT NULL,
-   `total_amount` decimal(15,2) DEFAULT NULL,
-   `partial_amount` decimal(15,2) DEFAULT NULL,
-   `advance_amount` decimal(15,2) DEFAULT NULL,
-   `paid_amount` decimal(15,2) DEFAULT NULL,
-   `so_id` varchar(50) DEFAULT NULL,
-   `created_by` int DEFAULT NULL,
-   PRIMARY KEY (`id`)
- )
-
- CREATE TABLE `payment_voucher_materials` (
-    `id` bigint NOT NULL AUTO_INCREMENT,
-    `material_code` varchar(100) DEFAULT NULL,
-    `material_description` varchar(500) DEFAULT NULL,
-    `quantity` decimal(18,2) DEFAULT NULL,
-    `unit_price` decimal(18,2) DEFAULT NULL,
-    `currency` varchar(50) DEFAULT NULL,
-    `exchange_rate` decimal(18,2) DEFAULT NULL,
-    `gst` decimal(5,2) DEFAULT NULL,
-    `payment_voucher_id` bigint DEFAULT NULL,
-    PRIMARY KEY (`id`),
-    KEY `fk_payment_voucher` (`payment_voucher_id`),
-    CONSTRAINT `fk_payment_voucher` FOREIGN KEY (`payment_voucher_id`) REFERENCES `payment_voucher` (`id`) ON DELETE CASCADE
-  )
+CREATE TABLE `payment_voucher` ( `id` bigint NOT NULL AUTO_INCREMENT, `payment_voucher_number` varchar(255) DEFAULT NULL, `payment_voucher_date` varchar(50) DEFAULT NULL, `payment_voucher_is_for` varchar(100) DEFAULT NULL, `purchase_order_id` varchar(100) DEFAULT NULL, `grn_number` varchar(100) DEFAULT NULL, `service_order_details` varchar(500) DEFAULT NULL, `payment_voucher_type` varchar(100) NOT NULL, `vendor_name` varchar(255) DEFAULT NULL, `vendor_invoice_number` varchar(255) NOT NULL, `vendor_invoice_date` varchar(50) DEFAULT NULL, `currency` varchar(50) NOT NULL, `exchange_rate` varchar(50) DEFAULT NULL, `status` varchar(100) DEFAULT NULL, `remarks` varchar(500) DEFAULT NULL, `total_amount` decimal(15,2) DEFAULT NULL, `partial_amount` decimal(15,2) DEFAULT NULL, `advance_amount` decimal(15,2) DEFAULT NULL, `paid_amount` decimal(15,2) DEFAULT NULL, `so_id` varchar(50) DEFAULT NULL, `created_by` int DEFAULT NULL, `created_date` datetime DEFAULT NULL, PRIMARY KEY (`id`))
+CREATE TABLE `payment_voucher_materials` ( `id` bigint NOT NULL AUTO_INCREMENT, `material_code` varchar(100) DEFAULT NULL, `material_description` varchar(500) DEFAULT NULL, `quantity` decimal(18,2) DEFAULT NULL, `unit_price` decimal(18,2) DEFAULT NULL, `currency` varchar(50) DEFAULT NULL, `exchange_rate` decimal(18,2) DEFAULT NULL, `gst` decimal(5,2) DEFAULT NULL, `payment_voucher_id` bigint DEFAULT NULL,  PRIMARY KEY (`id`),  KEY `fk_payment_voucher` (`payment_voucher_id`), CONSTRAINT `fk_payment_voucher` FOREIGN KEY (`payment_voucher_id`) REFERENCES `payment_voucher` (`id`) ON DELETE CASCADE );
 
 
-ALTER TABLE indent_creation
-DROP COLUMN proprietary_and_limited_declaration;
+ALTER TABLE indent_creation DROP COLUMN proprietary_and_limited_declaration;
 
-ALTER TABLE indent_creation
-Add COLUMN proprietary_and_limited_declaration BOOLEAN;
+ALTER TABLE indent_creation Add COLUMN proprietary_and_limited_declaration BOOLEAN;ALTER TABLE indent_creation Add COLUMN proprietary_and_limited_declaration BOOLEAN;
