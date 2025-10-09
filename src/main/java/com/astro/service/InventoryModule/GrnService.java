@@ -2,6 +2,8 @@ package com.astro.service.InventoryModule;
 
 import com.astro.dto.workflow.InventoryModule.GiDto.GiApprovalDto;
 import com.astro.dto.workflow.InventoryModule.GiDto.GiWorkflowStatusDto;
+import com.astro.dto.workflow.InventoryModule.GprnDropdownDto;
+import com.astro.dto.workflow.InventoryModule.GrnDropdownDto;
 import com.astro.dto.workflow.InventoryModule.grn.GrnDto;
 import com.astro.dto.workflow.InventoryModule.grn.GrnMaterialMasterDto;
 import com.astro.dto.workflow.InventoryModule.grn.UpdateGrnDto;
@@ -33,4 +35,6 @@ public interface GrnService {
     public paymentVoucherDto getPaymentVoucherData(String grnProcessId);
 
     public paymentVoucherDto getPaymentVoucherDtoBySoId(String soId);
+    public List<GrnDropdownDto> getPendingGrns();
+
 }

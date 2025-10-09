@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface OgpMasterRejectedGiRepository extends JpaRepository<OgpMasterRejectedGiEntity, Integer> {
     List<OgpMasterRejectedGiEntity> findByStatus(String status);
+
+    boolean existsByGiId(String giId);
 }

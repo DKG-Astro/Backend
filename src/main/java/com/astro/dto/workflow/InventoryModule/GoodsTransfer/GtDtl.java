@@ -17,4 +17,8 @@ public class GtDtl {
     private BigDecimal depriciationRate;
     private BigDecimal bookValue;
     private String uom;
+    private String poId;
+    private String modelNo;
+    private String serialNo;
+    private String reasonForTransfer;
 }

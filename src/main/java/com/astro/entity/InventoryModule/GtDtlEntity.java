@@ -53,4 +53,8 @@ public class GtDtlEntity {
 
     @Column(name = "book_value")
     private BigDecimal bookValue;
+    private String poId;
+    private String modelNo;
+    private String serialNo;
+    private String reasonForTransfer;
 }

@@ -438,6 +438,11 @@ public class ProcessController {
         List<OhqMasterEntity> res = assetMasterService.getAssetOhqList();
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
+    @GetMapping("/getAssetOhqDetails")
+    public ResponseEntity<Object> getAssetOhqDetails() {
+        List<AssetOhqDetailsDto> res = assetMasterService.getAssetOhqDetails();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
     @GetMapping("/getAssetOhqForDisposal")
     public ResponseEntity<Object> getAssetOhqForDisposal() {
         List<AssetOhqDisposalDto> res = assetMasterService.getAllAssetsForDisposal();
@@ -698,7 +703,22 @@ public class ProcessController {
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
 
+    @GetMapping("/pendingGprnsForGi")
+    public ResponseEntity<Object> getPendingGprnsForGI() {
+       List<GprnDropdownDto> res = gis.getPendingGprnsForGI();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
 
+    @GetMapping("/getPendingGrns")
+    public ResponseEntity<Object> getgetPendingGrns() {
+        List<GrnDropdownDto> res = grns.getPendingGrns();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
+    @GetMapping("/getPendingRejectedGis")
+    public ResponseEntity<Object> getPendingRejectedGis() {
+        List<GprnDropdownDto> res = gis.getPendingRejectedGis();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
 
 
 

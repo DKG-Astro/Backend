@@ -15,4 +15,9 @@ public class AssetOhqDisposalDto {
     private BigDecimal quantity;
     private String custodianId;
     private BigDecimal poValue;
+    private String poId;
+    private String gprnDate;
+    private String serialNo;
+    private String modelNo;
+
 }

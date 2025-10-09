@@ -12,6 +12,11 @@ public class IsnAssetOhqDtlsDto {
     private String uomId;
     private BigDecimal unitPrice;
     private String poId;
+    private BigDecimal depriciationRate;
+
+    private String makeNo;
+    private String serialNo;
+    private String modelNo;
 
     private List<IsnOhqDtlsDto> qtyList;
 }

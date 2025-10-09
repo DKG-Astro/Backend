@@ -1,8 +1,10 @@
 package com.astro.repository.InventoryModule.GprnRepository;
 
+import com.astro.dto.workflow.InventoryModule.GprnPoVendorDto;
 import com.astro.entity.InventoryModule.GprnMasterEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -35,4 +37,14 @@ public interface GprnMasterRepository extends JpaRepository<GprnMasterEntity,Int
     GprnMasterEntity findByProcessId(String gprnProcessId);
 
     GprnMasterEntity findBySubProcessId(Integer gprnSubProcessId);
+
+    @Query("SELECT DISTINCT g FROM GprnMasterEntity g " +
+            "LEFT JOIN GprnMaterialDtlEntity m ON g.subProcessId = m.subProcessId " +
+            "LEFT JOIN GiMasterEntity gi ON g.subProcessId = gi.gprnSubProcessId " +
+            "WHERE gi.gprnSubProcessId IS NULL")
+    List<GprnMasterEntity> findPendingGprnsWithMaterial();
+
+    @Query("SELECT new com.astro.dto.workflow.InventoryModule.GprnPoVendorDto(g.poId, g.vendorId) " +
+            "FROM GprnMasterEntity g WHERE g.subProcessId = :subProcessId")
+    GprnPoVendorDto findPoIdAndVendorIdBySubProcessId(@Param("subProcessId") Integer subProcessId);
 }

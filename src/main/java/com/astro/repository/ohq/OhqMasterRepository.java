@@ -1,5 +1,6 @@
 package com.astro.repository.ohq;
 
+import com.astro.dto.workflow.InventoryModule.AssetOhqDetailsDto;
 import com.astro.dto.workflow.InventoryModule.asset.AssetOhqDisposalDto;
 import com.astro.entity.InventoryModule.OhqMasterEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -54,11 +55,36 @@ public interface OhqMasterRepository extends JpaRepository<OhqMasterEntity, Inte
             o.unit_price AS unitPrice,
             o.quantity AS quantity,
             o.custodian_id AS custodianId,
-            po.total_value_of_po AS poValue
+            po.total_value_of_po AS poValue,
+            a.po_id As poId,
+            po.delivery_date As gprnDate,
+            a.serial_no As serialNo,
+            a.model_no As modelNo
         FROM ohq_master o
         JOIN asset_master a ON o.asset_id = a.asset_id
         LEFT JOIN purchase_order po ON po.po_id = a.po_id
         WHERE o.quantity > 0
     """, nativeQuery = true)
         List<Object[]> getAllAssetOhqDisposalsNative();
+
+    @Query("""
+    SELECT new com.astro.dto.workflow.InventoryModule.AssetOhqDetailsDto(
+        o.ohqId, 
+        o.assetId, 
+        a.assetDesc, 
+        a.modelNo, 
+        a.serialNo, 
+        a.poId, 
+        o.unitPrice, 
+        o.quantity, 
+        o.bookValue, 
+        o.depriciationRate,
+        o.custodianId,
+        o.locatorId
+    )
+    FROM OhqMasterEntity o
+    JOIN AssetMasterEntity a ON o.assetId = a.assetId
+""")
+    List<AssetOhqDetailsDto> fetchAssetOhqDetails();
+
 }

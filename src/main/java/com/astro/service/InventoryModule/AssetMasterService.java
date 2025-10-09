@@ -18,6 +18,7 @@ public interface AssetMasterService {
     public List<AssetMasterReportDto> getAssetReport();
     List<Integer> getAllAssetIds();
     public List<OhqMasterEntity> getAssetOhqList();
+    public List<AssetOhqDetailsDto> getAssetOhqDetails();
     public List<OhqMasterConsumableEntity> getAssetOhqConsumableList();
     public List<OhqConsumableStoreStockEntity> getStoreStockOhqConsumableList();
     public List<AssetOhqDisposalDto> getAllAssetsForDisposal();

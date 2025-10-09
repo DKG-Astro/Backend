@@ -4,7 +4,9 @@ import com.astro.dto.workflow.InventoryModule.*;
 import com.astro.dto.workflow.InventoryModule.asset.AssetMasterReportDto;
 import com.astro.dto.workflow.InventoryModule.asset.AssetOhqDisposalDto;
 import com.astro.entity.InventoryModule.*;
+import com.astro.entity.UserMaster;
 import com.astro.repository.InventoryModule.*;
+import com.astro.repository.UserMasterRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hibernate.validator.internal.metadata.aggregated.rule.OverridingMethodMustNotAlterParameterConstraints;
@@ -18,6 +20,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -53,6 +56,8 @@ public class AssetMasterServiceImpl implements AssetMasterService {
     
     @Autowired
     private OhqMasterRepository ohqMasterRepository;
+    @Autowired
+    private UserMasterRepository userMasterRepository;
 
     private final String basePath;
 
@@ -203,6 +208,10 @@ public class AssetMasterServiceImpl implements AssetMasterService {
             detail.setCustodianId(detailDto.getCustodianId());
             detail.setPoValue(detailDto.getPoValue());
             detail.setReasonForDisposal(detailDto.getReasonForDisposal());
+            detail.setPoId(detailDto.getPoId());
+            detail.setSerialNo(detailDto.getSerialNo());
+            detail.setModelNo(detailDto.getModelNo());
+            detail.setPoDate(CommonUtils.convertStringToDateObject(detailDto.getPoDate()));
             if(Objects.nonNull(detailDto.getSalesNoteFilename())){
 
                 try {
@@ -249,6 +258,9 @@ public class AssetMasterServiceImpl implements AssetMasterService {
             dto.setDisposalDate(master.getDisposalDate() != null ? master.getDisposalDate().toString() : null);
             dto.setCreatedBy(master.getCreatedBy());
             dto.setLocationId(master.getLocationId());
+            String userName = userMasterRepository.findUserNameByUserId(Integer.valueOf(master.getCustodianId()));
+            dto.setCustodianName(userName);
+
             dto.setCustodianId(master.getCustodianId());
 
             List<AssetDisposalDetailEntity> details = disposalDetailRepository.findByDisposalId(master.getDisposalId());
@@ -270,6 +282,10 @@ public class AssetMasterServiceImpl implements AssetMasterService {
                 dDto.setCustodianId(detail.getCustodianId());
                 dDto.setPoValue(detail.getPoValue());
                 dDto.setReasonForDisposal(detail.getReasonForDisposal());
+                dDto.setPoDate(CommonUtils.convertDateToString(detail.getPoDate()));
+                dDto.setPoId(detail.getPoId());
+                dDto.setModelNo(detail.getModelNo());
+                dDto.setSerialNo(detail.getSerialNo());
                 detailDtos.add(dDto);
             }
 
@@ -561,6 +577,10 @@ public List<Integer> getAllAssetIds() {
 public List<OhqMasterEntity> getAssetOhqList() {
     return ohqMasterRepository.findAll();
 }
+@Override
+public List<AssetOhqDetailsDto> getAssetOhqDetails() {
+        return ohqMasterRepository.fetchAssetOhqDetails();
+    }
 
 @Override
 public List<OhqMasterConsumableEntity> getAssetOhqConsumableList() {
@@ -587,7 +607,21 @@ public List<OhqConsumableStoreStockEntity> getStoreStockOhqConsumableList(){
            dto.setQuantity((BigDecimal) r[7]);
            dto.setCustodianId((String) r[8]);
            dto.setPoValue((BigDecimal) r[9]);
+           dto.setPoId((String) r[10]);
+           DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+           if (r[11] != null) {
+               java.sql.Date sqlDate = (java.sql.Date) r[11];     // cast to java.sql.Date first
+               LocalDate localDate = sqlDate.toLocalDate();       // convert to LocalDate
+               dto.setGprnDate(localDate.format(formatter));     // format as dd/MM/yyyy
+           } else {
+               dto.setGprnDate(null);
+           }
+
+           dto.setSerialNo((String) r[12]);
+           dto.setModelNo((String) r[13]);
            dtos.add(dto);
+
        }
 
        return dtos;

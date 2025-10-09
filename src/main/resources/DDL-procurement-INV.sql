@@ -1501,3 +1501,21 @@ CREATE TABLE `payment_voucher_materials` ( `id` bigint NOT NULL AUTO_INCREMENT, 
 ALTER TABLE indent_creation DROP COLUMN proprietary_and_limited_declaration;
 
 ALTER TABLE indent_creation Add COLUMN proprietary_and_limited_declaration BOOLEAN;ALTER TABLE indent_creation Add COLUMN proprietary_and_limited_declaration BOOLEAN;
+
+
+
+ALTER TABLE astrodatabase.grn_master
+ADD COLUMN custodian_id INT;
+
+ALTER TABLE asset_disposal_detail
+ADD COLUMN po_id VARCHAR(50),
+ADD COLUMN po_date DATE,
+ADD COLUMN serial_no VARCHAR(50),
+ADD COLUMN model_no VARCHAR(50);
+
+
+ALTER TABLE gt_dtl
+ADD COLUMN po_id VARCHAR(50),
+ADD COLUMN model_no VARCHAR(100),
+ADD COLUMN serial_no VARCHAR(100),
+ADD COLUMN reason_for_transfer VARCHAR(255);

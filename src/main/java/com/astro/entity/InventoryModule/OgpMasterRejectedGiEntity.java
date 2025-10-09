@@ -50,5 +50,7 @@ public class OgpMasterRejectedGiEntity {
 
     @Column(name = "return_date")
     private LocalDate returnDate;
+
+
 }
 

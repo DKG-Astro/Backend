@@ -28,4 +28,5 @@ public interface GrnMasterRepository extends JpaRepository<GrnMasterEntity, Inte
     List<GrnMasterEntity> findByGrn(String grnProcessId);
 
 
+    boolean existsByGiSubProcessId(Integer giSubProcessId);
 }

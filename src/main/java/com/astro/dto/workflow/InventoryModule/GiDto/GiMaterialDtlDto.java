@@ -20,6 +20,7 @@ public class GiMaterialDtlDto {
     private String modelNo;
     private String serialNo;
     private String uomId;
+    private String installationReportFileName;
     private String installationReportBase64;
     private BigDecimal receivedQuantity;
     private BigDecimal acceptedQuantity;

@@ -1,6 +1,11 @@
 package com.astro.service.impl.InventoryModule;
 
+import com.astro.dto.workflow.InventoryModule.GprnDropdownDto;
+import com.astro.dto.workflow.InventoryModule.GprnPoVendorDto;
+import com.astro.repository.InventoryModule.GprnRepository.GprnMasterRepository;
+import com.astro.repository.InventoryModule.GprnRepository.GprnMaterialDtlRepository;
 import com.astro.repository.InventoryModule.isn.IssueNoteMasterRepository;
+import com.astro.repository.InventoryModule.ogp.OgpMasterRejectedGiRepository;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;
 
 import org.springframework.stereotype.Service;
@@ -66,7 +71,12 @@ public class GiServiceImpl implements GiService {
 
     @Autowired
     private PurchaseOrderAttributesRepository poar;
-
+    @Autowired
+    private GprnMasterRepository gprnMasterRepository;
+    @Autowired
+    private GprnMaterialDtlRepository gprnMaterialDtlRepository;
+    @Autowired
+    private OgpMasterRejectedGiRepository ogpMasterRejectedGiRepository;
     private final String basePath;
 
     public GiServiceImpl(@Value("${filePath}") String bp) {
@@ -127,6 +137,7 @@ public class GiServiceImpl implements GiService {
                 try {
                     String instlRepFileName = CommonUtils.saveBase64Image(gmdd.getInstallationReportBase64(), basePath);
                     gicde.setInstallationReportFilename(instlRepFileName);
+                  //  System.out.print("Install report for con"+ instlRepFileName);
                 } catch (Exception e) {
                     // Log error
                 }
@@ -165,6 +176,8 @@ public class GiServiceImpl implements GiService {
                 try {
                     String instlRepFileName = CommonUtils.saveBase64Image(gmdd.getInstallationReportBase64(), basePath);
                     gimde.setInstallationReportFileName(instlRepFileName);
+
+                 //   System.out.print("installing report:"+ instlRepFileName);
                 } catch (Exception e) {
                     // Log error
                 }
@@ -223,10 +236,12 @@ public class GiServiceImpl implements GiService {
         List<GiMaterialDtlDto> materialDtlListRes = gicdeList.stream()
                 .map(gicde -> {
                     GiMaterialDtlDto gmdd = mapper.map(gicde, GiMaterialDtlDto.class);
+
                     try {
                         String imageBase64 = CommonUtils.convertImageToBase64(gicde.getInstallationReportFilename(),
                                 basePath);
                         gmdd.setInstallationReportBase64(imageBase64);
+                        gmdd.setInstallationReportFileName(gicde.getInstallationReportFilename());
                     } catch (Exception e) {
                         // Log error
                     }
@@ -237,7 +252,9 @@ public class GiServiceImpl implements GiService {
                 .map(gimde -> {
                     GiMaterialDtlDto gmdd = mapper.map(gimde, GiMaterialDtlDto.class);
                     gmdd.setAssetId(gimde.getAssetId());
+                    gmdd.setRejectReason(gimde.getRejectReason());
 
+                    gmdd.setInstallationReportFileName(gimde.getInstallationReportFileName());
                     Optional<AssetMasterEntity> aeOpt = amr.findById(gimde.getAssetId());
                     if (aeOpt.isPresent()) {
                         gmdd.setAssetDesc(aeOpt.get().getAssetDesc());
@@ -267,7 +284,7 @@ public class GiServiceImpl implements GiService {
         combinedRes.put("giDtls", giRes);
         combinedRes.put("gprnDtls",
                 gprnService.getGprnDtls(processNo.split("/")[0] + "/" + gime.getGprnSubProcessId()));
-
+//System.out.print(combinedRes);
         return combinedRes;
     }
 
@@ -642,5 +659,73 @@ public class GiServiceImpl implements GiService {
             return dto;
         }).toList();
     }
+
+    public List<GprnDropdownDto> getPendingGprnsForGI() {
+        List<GprnMasterEntity> pendingGprns = gprnMasterRepository.findPendingGprnsWithMaterial();
+
+        return pendingGprns.stream()
+                .map(g -> new GprnDropdownDto(
+                        g.getSubProcessId(),
+                      "INV" + g.getProcessId() + "/" + g.getSubProcessId(),
+                        g.getPoId(),
+                        g.getVendorId(),
+                        gprnMaterialDtlRepository.findMaterialDescriptionsBySubProcessId(g.getSubProcessId())
+                ))
+                .collect(Collectors.toList());
+    }
+
+    public List<GprnDropdownDto> getPendingRejectedGis() {
+
+        List<GprnDropdownDto> normalGis = gimdr.findByRejectionType("replacement")
+                .stream()
+                .filter(gi -> {
+                    String giNo = "INV" + gi.getGprnProcessId() + "/" + gi.getInspectionSubProcessId();
+                    return !ogpMasterRejectedGiRepository.existsByGiId(giNo);
+                })
+                .map(gi -> {
+                    String giNo = "INV" + gi.getGprnProcessId() + "/" + gi.getInspectionSubProcessId();
+                    List<String> materialList = gimdr
+                            .findMaterialDescriptionsByInspectionSubProcessId(gi.getInspectionSubProcessId());
+
+                    GprnPoVendorDto gprnDto = gprnMasterRepository.findPoIdAndVendorIdBySubProcessId(gi.getGprnSubProcessId());
+
+                    return new GprnDropdownDto(
+                            gi.getInspectionSubProcessId(),
+                            giNo,
+                            gprnDto.getPoId(),
+                            gprnDto.getVendorId(),
+                            materialList
+                    );
+                }).collect(Collectors.toList());
+
+        List<GprnDropdownDto> consumableGis = gicdr.findByRejectionType("replacement")
+                .stream()
+                .filter(gi -> {
+                    String giNo = "INV" + gi.getGprnProcessId() + "/" + gi.getInspectionSubProcessId();
+                    return !ogpMasterRejectedGiRepository.existsByGiId(giNo);
+                })
+                .map(gi -> {
+                    String giNo = "INV" + gi.getGprnProcessId() + "/" + gi.getInspectionSubProcessId();
+                    List<String> materialList = gicdr
+                            .findMaterialDescriptionsByInspectionSubProcessId(gi.getInspectionSubProcessId());
+
+                    GprnPoVendorDto gprnDto = gprnMasterRepository.findPoIdAndVendorIdBySubProcessId(gi.getGprnSubProcessId());
+
+                    return new GprnDropdownDto(
+                            gi.getInspectionSubProcessId(),
+                            giNo,
+                            gprnDto.getPoId(),
+                            gprnDto.getVendorId(),
+                            materialList
+                    );
+                }).collect(Collectors.toList());
+
+        // Combine both lists
+        normalGis.addAll(consumableGis);
+
+        return normalGis;
+    }
+
+
 
 }

@@ -2,6 +2,8 @@ package com.astro.service.impl.InventoryModule;
 
 import com.astro.dto.workflow.InventoryModule.GiDto.GiApprovalDto;
 import com.astro.dto.workflow.InventoryModule.GiDto.GiWorkflowStatusDto;
+import com.astro.dto.workflow.InventoryModule.GprnPoVendorDto;
+import com.astro.dto.workflow.InventoryModule.GrnDropdownDto;
 import com.astro.dto.workflow.InventoryModule.paymentVoucherDto;
 import com.astro.dto.workflow.InventoryModule.paymentVoucherMaterials;
 import com.astro.entity.PaymentVoucher;
@@ -108,6 +110,7 @@ public class GrnServiceImpl implements GrnService {
 
         ModelMapper mapper = new ModelMapper();
         GrnMasterEntity grnMaster = new GrnMasterEntity();
+        grnMaster.setCustodianId(Integer.valueOf(req.getCustodianId()));
 
         // Handle dates with null checks
         if (req.getGrnDate() != null && !req.getGrnDate().trim().isEmpty()) {
@@ -416,9 +419,30 @@ public class GrnServiceImpl implements GrnService {
 
         List<GrnMaterialDtlEntity> grnMaterialList = grnmdr.findByGrnSubProcessId(grnMaster.getGrnSubProcessId());
 
-        List<GrnMaterialDtlDto> materialDtlListRes = grnMaterialList.stream()
+       /* List<GrnMaterialDtlDto> materialDtlListRes = grnMaterialList.stream()
                 .map(material -> mapper.map(material, GrnMaterialDtlDto.class))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
+        List<GrnMaterialDtlDto> materialDtlListRes;
+        if (grnMaterialList.isEmpty()) {
+            // If no materials, fetch from consumable details
+            List<GrnConsumableDtlEntity> consumableList = gcdr.findByGrnSubProcessId(grnSubProcessId);
+            materialDtlListRes = consumableList.stream()
+                    .map(consumable -> {
+                        GrnMaterialDtlDto dto = new GrnMaterialDtlDto();
+                        dto.setMaterialCode(consumable.getMaterialCode());
+                        dto.setReceivedQuantity(consumable.getQuantity());
+                        dto.setAcceptedQuantity(consumable.getQuantity()); // default accepted
+                        dto.setLocatorId(consumable.getLocatorId());
+                        dto.setBookValue(consumable.getBookValue());
+                        dto.setDepriciationRate(consumable.getDepriciationRate());
+                        return dto;
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            materialDtlListRes = grnMaterialList.stream()
+                    .map(material -> mapper.map(material, GrnMaterialDtlDto.class))
+                    .collect(Collectors.toList());
+        }
 
         GrnDto grnRes = new GrnDto();
         grnRes.setGrnNo(processNo);
@@ -429,6 +453,7 @@ public class GrnServiceImpl implements GrnService {
         grnRes.setCreatedBy(grnMaster.getCreatedBy());
         grnRes.setSystemCreatedBy(grnMaster.getSystemCreatedBy());
         grnRes.setLocationId(grnMaster.getLocationId());
+        grnRes.setCustodianId(String.valueOf(grnMaster.getCustodianId()));
         grnRes.setMaterialDtlList(materialDtlListRes);
 
         Map<String, Object> giDetails = giService.getGiDtls("INV" + grnMaster.getGiProcessId() + "/" +
@@ -1180,6 +1205,41 @@ public class GrnServiceImpl implements GrnService {
         }
         return dto;
     }
+
+    public List<GrnDropdownDto> getPendingGrns() {
+
+        List<GiMasterEntity> pendingGiList = gimr.findAll().stream()
+                .filter(gi -> !grnmr.existsByGiSubProcessId(gi.getInspectionSubProcessId()))
+                .collect(Collectors.toList());
+
+        return pendingGiList.stream()
+                .map(gi -> {
+
+               //   GprnMasterEntity gprn = gprnMasterRepository.findBySubProcessId(gi.getGprnSubProcessId());
+
+                    GprnPoVendorDto gprnDto = gprnMasterRepository.findPoIdAndVendorIdBySubProcessId(gi.getGprnSubProcessId());
+
+                    List<String> materialDescriptions = gimdr
+                            .findMaterialDescriptionsByInspectionSubProcessId(gi.getInspectionSubProcessId());
+
+                    if (materialDescriptions == null || materialDescriptions.isEmpty()) {
+                        materialDescriptions = gicdr
+                                .findByInspectionSubProcessId(gi.getInspectionSubProcessId())
+                                .stream()
+                                .map(GoodsInspectionConsumableDetailEntity::getMaterialDesc)
+                                .collect(Collectors.toList());
+                    }
+                    return new GrnDropdownDto(
+                            gi.getInspectionSubProcessId(),
+                            "INV" + gi.getGprnProcessId() + "/" + gi.getInspectionSubProcessId(), // gprnProcessId
+                            gprnDto.getPoId(),
+                            gprnDto.getVendorId(),
+                            materialDescriptions
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
 
 
 }

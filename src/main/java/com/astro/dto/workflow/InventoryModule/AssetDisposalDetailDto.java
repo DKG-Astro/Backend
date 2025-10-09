@@ -20,4 +20,8 @@ public class AssetDisposalDetailDto {
     private String custodianId;
     private BigDecimal poValue;
     private String reasonForDisposal;
+    private String poId;
+    private String poDate;
+    private String serialNo;
+    private String modelNo;
 }

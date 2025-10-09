@@ -175,6 +175,9 @@ public class IsnServiceImpl implements IsnService {
             assetDto.setUomId(asset.getUomId());
             assetDto.setUnitPrice(asset.getUnitPrice());
             assetDto.setPoId(asset.getPoId()); // Added poId field
+            assetDto.setDepriciationRate(asset.getDepriciationRate());
+            assetDto.setMakeNo(asset.getMakeNo());
+            assetDto.setModelNo(asset.getModelNo());
 
             List<IsnOhqDtlsDto> ohqDtoList = new ArrayList<>();
             for (OhqMasterEntity ohq : ohqList) {
@@ -182,7 +185,18 @@ public class IsnServiceImpl implements IsnService {
                     IsnOhqDtlsDto ohqDto = new IsnOhqDtlsDto();
                     ohqDto.setLocatorId(ohq.getLocatorId().toString());
                     ohqDto.setQuantity(ohq.getQuantity());
+                    try {
+                        ohqDto.setCustodianId(ohq.getCustodianId() != null
+                                ? Integer.valueOf(ohq.getCustodianId())
+                                : null
+                        );
+                    } catch (NumberFormatException e) {
+                        // ignore non-integer custodianIds
+                        ohqDto.setCustodianId(null);
+                    }
+                    ohqDto.setBookValue(ohq.getBookValue());
                     ohqDtoList.add(ohqDto);
+
                 }
             }
 

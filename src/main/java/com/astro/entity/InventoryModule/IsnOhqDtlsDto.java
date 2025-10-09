@@ -8,4 +8,6 @@ import lombok.Data;
 public class IsnOhqDtlsDto {
     private String locatorId;
     private BigDecimal quantity;
+    private Integer CustodianId;
+    private BigDecimal bookValue;
 }

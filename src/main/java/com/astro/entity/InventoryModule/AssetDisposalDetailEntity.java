@@ -3,6 +3,7 @@ package com.astro.entity.InventoryModule;
 import lombok.Data;
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "asset_disposal_detail")
@@ -49,4 +50,16 @@ public class AssetDisposalDetailEntity {
     private BigDecimal poValue;
 
     private String reasonForDisposal;
+
+
+    private String poId;
+
+
+    private LocalDate poDate;
+
+
+    private String serialNo;
+
+    private String modelNo;
+
 }

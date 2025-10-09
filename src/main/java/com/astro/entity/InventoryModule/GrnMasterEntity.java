@@ -56,4 +56,7 @@ public class GrnMasterEntity {
     @Column(name = "status")
     private String status;
 
+    private Integer custodianId;
+
+
 }

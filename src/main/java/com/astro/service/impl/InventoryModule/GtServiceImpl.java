@@ -89,6 +89,10 @@ public class GtServiceImpl implements GtService {
             gtDtlEntity.setQuantity(gtDtl.getQuantity());
             gtDtlEntity.setReceiverLocatorId(gtDtl.getReceiverLocatorId());
             gtDtlEntity.setSenderLocatorId(gtDtl.getSenderLocatorId());
+            gtDtlEntity.setPoId(gtDtl.getPoId());
+            gtDtlEntity.setModelNo(gtDtl.getModelNo());
+            gtDtlEntity.setSerialNo(gtDtl.getSerialNo());
+            gtDtlEntity.setReasonForTransfer(gtDtl.getReasonForTransfer());
             gtdr.save(gtDtlEntity);
         }
 
@@ -306,6 +310,10 @@ public class GtServiceImpl implements GtService {
                 gtDtl.setUnitPrice(gtDtlEntity.getUnitPrice());
                 gtDtl.setDepriciationRate(gtDtlEntity.getDepriciationRate());
                 gtDtl.setBookValue(gtDtlEntity.getBookValue());
+                gtDtl.setPoId(gtDtlEntity.getPoId());
+                gtDtl.setSerialNo(gtDtlEntity.getSerialNo());
+                gtDtl.setReasonForTransfer(gtDtlEntity.getReasonForTransfer());
+                gtDtl.setModelNo(gtDtlEntity.getModelNo());
                 gtDtlList.add(gtDtl);
             }
             gtMasterDto.setMaterialDtlList(gtDtlList);
@@ -360,6 +368,11 @@ public class GtServiceImpl implements GtService {
                 gtDtl.setUnitPrice(gtDtlEntity.getUnitPrice());
                 gtDtl.setDepriciationRate(gtDtlEntity.getDepriciationRate());
                 gtDtl.setBookValue(gtDtlEntity.getBookValue());
+                gtDtl.setPoId(gtDtlEntity.getPoId());
+                gtDtl.setModelNo(gtDtlEntity.getModelNo());
+                gtDtl.setSerialNo(gtDtlEntity.getSerialNo());
+                gtDtl.setReasonForTransfer(gtDtlEntity.getReasonForTransfer());
+
                 gtDtlList.add(gtDtl);
             }
             gtMasterDto.setMaterialDtlList(gtDtlList);

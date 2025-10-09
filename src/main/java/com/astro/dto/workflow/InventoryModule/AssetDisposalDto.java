@@ -16,6 +16,7 @@ public class AssetDisposalDto {
     private Integer createdBy;
     private String locationId;
     private String custodianId;
+    private String custodianName;
     private String action;
     private String status;
     private String auctionId;
@@ -23,6 +24,8 @@ public class AssetDisposalDto {
     private BigDecimal reservePrice;
     private BigDecimal auctionPrice;
     private String vendorName;
+
+
 
     private List<AssetDisposalDetailDto> materialDtlList;
 

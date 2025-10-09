@@ -21,6 +21,7 @@ public interface UserMasterRepository extends JpaRepository<UserMaster, Integer>
 
     @Query("SELECT u FROM UserMaster u WHERE u.userId IN :ids")
     List<UserMaster> findByUserIdIn(@Param("ids") Set<Integer> ids);
-
+ @Query("SELECT u.userName FROM UserMaster u WHERE u.userId = :userId")
+ String findUserNameByUserId(@Param("userId") Integer userId);
 
 }
