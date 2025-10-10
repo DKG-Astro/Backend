@@ -6,35 +6,18 @@
   <component name="ChangeListManager">
     <list default="true" id="ff5636e0-402f-4a63-8653-94f411351cbb" name="Default Changelist" comment="workflow related chnage">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/controller/InventoryModule/ProcessController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/controller/InventoryModule/ProcessController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/InventoryModule/AssetDisposalDetailDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/InventoryModule/AssetDisposalDetailDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/InventoryModule/AssetDisposalDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/InventoryModule/AssetDisposalDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/InventoryModule/GiDto/GiMaterialDtlDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/InventoryModule/GiDto/GiMaterialDtlDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/InventoryModule/GoodsTransfer/GtDtl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/InventoryModule/GoodsTransfer/GtDtl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/InventoryModule/asset/AssetOhqDisposalDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/InventoryModule/asset/AssetOhqDisposalDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/InventoryModule/AssetDisposalDetailEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/InventoryModule/AssetDisposalDetailEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/InventoryModule/GrnMasterEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/InventoryModule/GrnMasterEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/InventoryModule/GtDtlEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/InventoryModule/GtDtlEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/InventoryModule/IsnAssetOhqDtlsDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/InventoryModule/IsnAssetOhqDtlsDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/InventoryModule/IsnOhqDtlsDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/InventoryModule/IsnOhqDtlsDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/InventoryModule/OgpMasterRejectedGiEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/InventoryModule/OgpMasterRejectedGiEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/InventoryModule/GiRepository/GiMaterialDtlRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/InventoryModule/GiRepository/GiMaterialDtlRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/InventoryModule/GoodsInspectionConsumableDetailRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/InventoryModule/GoodsInspectionConsumableDetailRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/InventoryModule/GprnRepository/GprnMasterRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/InventoryModule/GprnRepository/GprnMasterRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/InventoryModule/GprnRepository/GprnMaterialDtlRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/InventoryModule/GprnRepository/GprnMaterialDtlRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/InventoryModule/grn/GrnMasterRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/InventoryModule/grn/GrnMasterRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/InventoryModule/ogp/OgpMasterRejectedGiRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/InventoryModule/ogp/OgpMasterRejectedGiRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/UserMasterRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/UserMasterRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/InventoryModule/AssetOhqDetailsDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/InventoryModule/AssetOhqDetailsDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/InventoryModule/GiDto/SaveGiDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/InventoryModule/GiDto/SaveGiDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/InventoryModule/GprnDto/SaveGprnDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/InventoryModule/GprnDto/SaveGprnDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/InventoryModule/GiMasterEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/InventoryModule/GiMasterEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/InventoryModule/GoodsInspectionConsumableDetailEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/InventoryModule/GoodsInspectionConsumableDetailEntity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/ohq/OhqMasterRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/ohq/OhqMasterRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/InventoryModule/AssetMasterService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/InventoryModule/AssetMasterService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/InventoryModule/GiService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/InventoryModule/GiService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/InventoryModule/GrnService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/InventoryModule/GrnService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/InventoryModule/AssetMasterServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/InventoryModule/AssetMasterServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/InventoryModule/GiServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/InventoryModule/GiServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/InventoryModule/GrnServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/InventoryModule/GrnServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/InventoryModule/GprnServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/InventoryModule/GprnServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/InventoryModule/GtServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/InventoryModule/GtServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/InventoryModule/IsnServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/InventoryModule/IsnServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/util/EmailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/util/EmailService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/DDL-procurement-INV.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/DDL-procurement-INV.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,9 +28,9 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Enum" />
-        <option value="HTML File" />
         <option value="Interface" />
         <option value="Class" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>

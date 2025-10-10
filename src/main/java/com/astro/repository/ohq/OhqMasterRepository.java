@@ -80,7 +80,12 @@ public interface OhqMasterRepository extends JpaRepository<OhqMasterEntity, Inte
         o.bookValue, 
         o.depriciationRate,
         o.custodianId,
-        o.locatorId
+        o.locatorId,
+        (
+                                SELECT MAX(g.createDate)
+                                FROM GprnMasterEntity g
+                                WHERE g.poId = a.poId
+                            )
     )
     FROM OhqMasterEntity o
     JOIN AssetMasterEntity a ON o.assetId = a.assetId

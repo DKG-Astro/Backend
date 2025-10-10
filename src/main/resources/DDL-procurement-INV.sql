@@ -1519,3 +1519,10 @@ ADD COLUMN po_id VARCHAR(50),
 ADD COLUMN model_no VARCHAR(100),
 ADD COLUMN serial_no VARCHAR(100),
 ADD COLUMN reason_for_transfer VARCHAR(255);
+
+ALTER TABLE goods_inspection_master
+ADD COLUMN po_amount DECIMAL(15,2),
+ADD COLUMN gprn_amount DECIMAL(15,2);
+
+alter table goods_inspection_consumable_detail
+Add column reject_reason varchar(100)

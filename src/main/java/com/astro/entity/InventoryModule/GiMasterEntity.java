@@ -2,6 +2,7 @@ package com.astro.entity.InventoryModule;
 
 import javax.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -40,4 +41,7 @@ public class GiMasterEntity {
 
     @Column(name="location_id")
     private String locationId;
+
+    private BigDecimal poAmount;
+    private BigDecimal gprnAmount;
 }

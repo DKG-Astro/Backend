@@ -1,10 +1,12 @@
 package com.astro.dto.workflow.InventoryModule;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -24,5 +26,8 @@ public class AssetOhqDetailsDto {
         private BigDecimal depriciationRate;
         private String custodianId;
         private Integer locatorId;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+        private LocalDateTime gprnDate;
+
 
 }

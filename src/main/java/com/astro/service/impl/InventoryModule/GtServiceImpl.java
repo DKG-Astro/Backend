@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
 import javax.transaction.Transactional;
 
 import com.astro.dto.workflow.InventoryModule.GtDtlDto;
@@ -16,6 +17,7 @@ import com.astro.entity.UserMaster;
 import com.astro.repository.InventoryModule.ogp.OgpGtDtlRepository;
 import com.astro.repository.InventoryModule.ogp.OgpGtMasterRepository;
 import com.astro.repository.UserMasterRepository;
+import com.astro.util.EmailService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.catalina.User;
@@ -39,6 +41,7 @@ import com.astro.repository.InventoryModule.GoodsTransfer.GtMasterRepository;
 import com.astro.repository.ohq.OhqMasterRepository;
 import com.astro.service.InventoryModule.GtService;
 import com.astro.util.CommonUtils;
+import org.thymeleaf.context.Context;
 
 @Service
 public class GtServiceImpl implements GtService {
@@ -60,6 +63,8 @@ public class GtServiceImpl implements GtService {
 
     @Autowired
     private OgpGtDtlRepository ogdr;
+    @Autowired
+    private EmailService emailService;
 
     @Override
     @Transactional
@@ -113,6 +118,25 @@ public class GtServiceImpl implements GtService {
                                 "Goods Transfer not found for the provided process number.")));
         gtMasterEntity.setStatus("REJECTED");
         gtmr.save(gtMasterEntity);
+
+        UserMaster um = userMasterRepository.findByUserId(gtMasterEntity.getSenderCustodianId());
+        UserMaster umR = userMasterRepository.findByUserId(gtMasterEntity.getReceiverCustodianId());
+        List<String> recipients = List.of(
+                um.getEmail(),
+                "udaychowdhary743@gmail.com",   //replace mail store preson and store purchase officer
+                "kudaykiran.9949@gmail.com"
+        );
+        Context context = new Context();
+        context.setVariable("gtId", gtId);
+        context.setVariable("status", gtMasterEntity.getStatus());
+        context.setVariable("senderName", um.getUserName());
+        context.setVariable("receiverName", umR.getUserName());
+        context.setVariable("remarks", "Goods Transfer has been rejected by receiver.");
+
+
+
+        String subject = "Goods Transfer Rejected - GT No: " + gtId;
+        emailService.sendGtReciverRejectedEmail(recipients, subject, "gt-receiver-rejection-template", context);
     }
     @Override
     @Transactional
@@ -125,9 +149,32 @@ public class GtServiceImpl implements GtService {
                                 AppConstant.ERROR_TYPE_VALIDATION,
                                 "Goods Transfer not found for the provided process number.")));
 
+
         // After receiver accepts, move to awaiting store purchase officer approval
         gtMasterEntity.setStatus("AWAITING APPROVAL");
         gtmr.save(gtMasterEntity);
+
+        UserMaster um = userMasterRepository.findByUserId(gtMasterEntity.getSenderCustodianId());
+        UserMaster umR = userMasterRepository.findByUserId(gtMasterEntity.getReceiverCustodianId());
+        List<String> recipients = List.of(
+               um.getEmail(),
+                "udaychowdhary743@gmail.com",   //replace mail store preson and store purchase officer
+                "kudaykiran.9949@gmail.com"
+        );
+
+
+        Context context = new Context();
+        context.setVariable("gtId", gtId);
+        context.setVariable("status", gtMasterEntity.getStatus());
+        context.setVariable("senderName", um.getUserName());
+        context.setVariable("receiverName", umR.getUserName());
+        context.setVariable("remarks", "Goods Transfer has been approved by receiver.");
+
+        String subject = "Goods Transfer Approved - GT No: " + gtId;
+
+        // Send asynchronously
+        emailService.sendGtReciverEmail(recipients, subject, "gt-receiver-approval-template", context);
+
     }
 
 

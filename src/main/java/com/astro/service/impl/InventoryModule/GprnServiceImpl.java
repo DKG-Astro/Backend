@@ -1,7 +1,9 @@
 package com.astro.service.impl.InventoryModule;
 
+import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;
+import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +38,8 @@ public class GprnServiceImpl implements GprnService {
     
     @Autowired
     private GprnMaterialDtlRepository gmdr;
+    @Autowired
+    private PurchaseOrderRepository purchaseOrderRepository;
     
     @Autowired
     private VendorMasterRepository vmr;
@@ -163,6 +167,9 @@ public class GprnServiceImpl implements GprnService {
                 AppConstant.ERROR_TYPE_RESOURCE,
                 "Process not found for the provided process ID.")));
 
+        PurchaseOrder po = purchaseOrderRepository.findByPoId(gme.getPoId());
+
+        BigDecimal totalMaterialAmount = BigDecimal.ZERO;
         List<GprnMaterialDtlEntity> gmdeList = gmdr.findBySubProcessId(gme.getSubProcessId());
         List<MaterialDtlDto> materialDtlListRes = gmdeList.stream()
             .map(gmde -> {
@@ -175,12 +182,18 @@ public class GprnServiceImpl implements GprnService {
                         imageBase64List.add(imageBase64);
                     }
                     mdd.setImageBase64(imageBase64List);
+
                 } catch (Exception e) {
                     // Log exception
                 }
+
                 return mdd;
             })
             .collect(Collectors.toList());
+        totalMaterialAmount = gmdeList.stream()
+                .filter(gmde -> gmde.getReceivedQuantity() != null && gmde.getUnitPrice() != null)
+                .map(gmde -> gmde.getReceivedQuantity().multiply(gmde.getUnitPrice()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         VendorMaster vm = vmr.findById(gme.getVendorId())
             .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
@@ -197,6 +210,9 @@ public class GprnServiceImpl implements GprnService {
         gprnRes.setDate(CommonUtils.convertDateToString(gme.getDate()));
         gprnRes.setSupplyExpectedDate(CommonUtils.convertDateToString(gme.getSupplyExpectedDate()));
         gprnRes.setDeliveryDate(CommonUtils.convertDateToString(gme.getDeliveryDate()));
+        gprnRes.setPoAmount(po.getTotalValueOfPo());
+
+        gprnRes.setGprnAmount(totalMaterialAmount);
         gprnRes.setMaterialDtlList(materialDtlListRes);
 
         return gprnRes;

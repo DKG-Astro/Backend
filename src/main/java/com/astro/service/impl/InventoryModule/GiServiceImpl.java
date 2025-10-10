@@ -99,6 +99,8 @@ public class GiServiceImpl implements GiService {
         gime.setCreatedBy(req.getCreatedBy());
         gime.setLocationId(req.getLocationId());
         gime.setStatus("AWAITING APPROVAL");
+        gime.setGprnAmount(req.getGprnAmount());
+        gime.setPoAmount(req.getPoAmount());
 
         gime = gimr.save(gime);
 
@@ -277,6 +279,8 @@ public class GiServiceImpl implements GiService {
         giRes.setGprnNo(processNo);
         giRes.setInstallationDate(CommonUtils.convertDateToString(gime.getInstallationDate()));
         giRes.setCommissioningDate(CommonUtils.convertDateToString(gime.getCommissioningDate()));
+        giRes.setGprnAmount(gime.getGprnAmount());
+        giRes.setPoAmount(gime.getPoAmount());
         materialDtlListRes.addAll(materialDtlListRes1);
         giRes.setMaterialDtlList(materialDtlListRes);
 

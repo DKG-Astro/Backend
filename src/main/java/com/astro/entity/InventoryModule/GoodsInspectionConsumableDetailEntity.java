@@ -46,4 +46,6 @@ public class GoodsInspectionConsumableDetailEntity {
 
     @Column(name = "rejection_type")
     private String rejectionType;
+    @Column(name = "reject_reason")
+    private String rejectReason;
 }

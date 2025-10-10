@@ -525,6 +525,51 @@ private void sendMail(List<String> toEmails, String subject, String htmlContent)
         );
     }
 
+       @Async
+       public void sendGtReciverEmail(List<String> toEmails, String subject, String templateName, Context context) {
+            try {
+                MimeMessage message = mailSender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+                String body = templateEngine.process(templateName, context);
+
+                helper.setTo(toEmails.toArray(new String[0]));
+                helper.setSubject(subject);
+                helper.setText(body, true); // HTML content
+                helper.setFrom("iiapdkg@gmail.com");
+
+                mailSender.send(message);
+                System.out.println("Email sent successfully to " + toEmails);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+
+    }
+    @Async
+    public void sendGtReciverEmail(String toEmail, String subject, String templateName, Context context) {
+        sendGtReciverEmail(List.of(toEmail).toString(), subject, templateName, context);
+    }
+    @Async
+    public void sendGtReciverRejectedEmail(List<String> recipients, String subject, String templateName, Context context) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            // Process the template
+            String body = templateEngine.process(templateName, context);
+
+            helper.setTo(recipients.toArray(new String[0]));
+            helper.setSubject(subject);
+            helper.setText(body, true); // HTML content
+            helper.setFrom("iiapdkg@gmail.com");
+
+            mailSender.send(message);
+            System.out.println("Email sent successfully to " + recipients);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
 
 
