@@ -1504,25 +1504,14 @@ ALTER TABLE indent_creation Add COLUMN proprietary_and_limited_declaration BOOLE
 
 
 
-ALTER TABLE astrodatabase.grn_master
-ADD COLUMN custodian_id INT;
+ALTER TABLE astrodatabase.grn_master ADD COLUMN custodian_id INT;
 
-ALTER TABLE asset_disposal_detail
-ADD COLUMN po_id VARCHAR(50),
-ADD COLUMN po_date DATE,
-ADD COLUMN serial_no VARCHAR(50),
-ADD COLUMN model_no VARCHAR(50);
+ALTER TABLE asset_disposal_detail ADD COLUMN po_id VARCHAR(50), ADD COLUMN po_date DATE, ADD COLUMN serial_no VARCHAR(50), ADD COLUMN model_no VARCHAR(50);
 
 
-ALTER TABLE gt_dtl
-ADD COLUMN po_id VARCHAR(50),
-ADD COLUMN model_no VARCHAR(100),
-ADD COLUMN serial_no VARCHAR(100),
-ADD COLUMN reason_for_transfer VARCHAR(255);
+ALTER TABLE gt_dtl ADD COLUMN po_id VARCHAR(50), ADD COLUMN model_no VARCHAR(100), ADD COLUMN serial_no VARCHAR(100), ADD COLUMN reason_for_transfer VARCHAR(255);
+ALTER TABLE gt_dtl ADD COLUMN po_id VARCHAR(50), ADD COLUMN model_no VARCHAR(100), ADD COLUMN serial_no VARCHAR(100), ADD COLUMN reason_for_transfer VARCHAR(255);
 
-ALTER TABLE goods_inspection_master
-ADD COLUMN po_amount DECIMAL(15,2),
-ADD COLUMN gprn_amount DECIMAL(15,2);
+ALTER TABLE goods_inspection_master ADD COLUMN po_amount DECIMAL(15,2), ADD COLUMN gprn_amount DECIMAL(15,2);
 
-alter table goods_inspection_consumable_detail
-Add column reject_reason varchar(100)
+alter table goods_inspection_consumable_detail Add column reject_reason varchar(100);alter table goods_inspection_consumable_detail Add column reject_reason varchar(100);

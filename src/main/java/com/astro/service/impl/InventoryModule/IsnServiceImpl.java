@@ -178,6 +178,8 @@ public class IsnServiceImpl implements IsnService {
             assetDto.setDepriciationRate(asset.getDepriciationRate());
             assetDto.setMakeNo(asset.getMakeNo());
             assetDto.setModelNo(asset.getModelNo());
+            assetDto.setSerialNo(asset.getSerialNo());
+            assetDto.setDepriciationRate(asset.getDepriciationRate());
 
             List<IsnOhqDtlsDto> ohqDtoList = new ArrayList<>();
             for (OhqMasterEntity ohq : ohqList) {

@@ -11,9 +11,12 @@ import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.*;
 import com.astro.service.MaterialMasterUtilService;
+import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,6 +36,13 @@ public class MaterialMasterUtilServiceImpl implements MaterialMasterUtilService 
     private MaterialStatusRepository materialStatusRepository;
     @Autowired
     private MaterialIdSequenceRepository materialIdRepo;
+    @Value("${filePath}")
+    private String bp;
+    private final String basePath;
+    public MaterialMasterUtilServiceImpl(@Value("${filePath}") String bp) {
+        this.basePath = bp + "/Material";
+    }
+
 
     @Override
     public MaterialMasterUtilResponseDto createMaterial(MaterialMasterUtilRequestDto dto) {
@@ -62,13 +72,19 @@ public class MaterialMasterUtilServiceImpl implements MaterialMasterUtilService 
         material.setUnitPrice(dto.getUnitPrice());
         material.setCurrency(dto.getCurrency());
         material.setEstimatedPriceWithCcy(dto.getEstimatedPriceWithCcy());
-        material.setUploadImageName(dto.getUploadImageFileName());
+      //  material.setUploadImageName(dto.getUploadImageFileName());
         material.setIndigenousOrImported(dto.getIndigenousOrImported());
         material.setApprovalStatus(MaterialMasterUtil.ApprovalStatus.AWAITING_APPROVAL);
         material.setComments(null);
         material.setBriefDescription(dto.getBriefDescription());
         material.setCreatedBy(dto.getCreatedBy());
         material.setUpdatedBy(dto.getUpdatedBy());
+        if (dto.getUploadImageFileName() == null || dto.getUploadImageFileName().isEmpty()) {
+            material.setUploadImageName(null);
+        } else {
+            String fileName = saveBase64Files(dto.getUploadImageFileName(), basePath);
+            material.setUploadImageName(fileName);
+        }
 
         material = materialMasterUtilRepository.save(material);
 
@@ -78,7 +94,22 @@ public class MaterialMasterUtilServiceImpl implements MaterialMasterUtilService 
 
         return mapToResponse(material);
     }
-
+    public String saveBase64Files(List<String> base64Files, String basePath) {
+        try {
+            List<String> fileNames = new ArrayList<>();
+            for (String base64File : base64Files) {
+                String fileName = CommonUtils.saveBase64Image(base64File, basePath);
+                fileNames.add(fileName);
+            }
+            return String.join(",", fileNames);
+        } catch (Exception e) {
+            throw new InvalidInputException(new ErrorDetails(
+                    AppConstant.FILE_UPLOAD_ERROR,
+                    AppConstant.USER_INVALID_INPUT,
+                    AppConstant.ERROR_TYPE_CORRUPTED,
+                    "Error while uploading files."));
+        }
+    }
 
 
     @Override
@@ -350,7 +381,7 @@ private void saveMaterialTracking(String materialCode, String status, String act
         material.setUnitPrice(dto.getUnitPrice());
         material.setCurrency(dto.getCurrency());
         material.setEstimatedPriceWithCcy(dto.getEstimatedPriceWithCcy());
-        material.setUploadImageName(dto.getUploadImageFileName());
+      //  material.setUploadImageName(dto.getUploadImageFileName());
         material.setIndigenousOrImported(dto.getIndigenousOrImported());
         material.setBriefDescription(dto.getBriefDescription());
         material.setApprovalStatus(MaterialMasterUtil.ApprovalStatus.AWAITING_APPROVAL);

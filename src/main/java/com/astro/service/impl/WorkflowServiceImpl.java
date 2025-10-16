@@ -26,6 +26,7 @@ import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderReposit
 import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrderRepository;
 import com.astro.repository.ProcurementModule.TenderRequestRepository;
 import com.astro.service.*;
+import com.astro.util.CommonUtils;
 import com.astro.util.EmailService;
 import com.astro.util.TenderEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1422,6 +1423,29 @@ public class WorkflowServiceImpl implements WorkflowService {
         }
         return transitionDto;
     }
+    /*
+    public List<ApprovedIndentsDto> getApprovedIndents() {
+        List<String> approvedIndentIds = workflowTransitionRepository.findApprovedIndentRequestIds();
+        List<ApprovedIndentsDto> rawResults = indentCreationRepository.findApprovedIndents(approvedIndentIds);
+
+        Map<String, ApprovedIndentsDto> grouped = new LinkedHashMap<>();
+
+        for (ApprovedIndentsDto dto : rawResults) {
+            grouped.computeIfAbsent(dto.getIndentId(), k -> {
+                ApprovedIndentsDto newDto = new ApprovedIndentsDto();
+                newDto.setIndentId(dto.getIndentId());
+                newDto.setProjectName(dto.getProjectName());
+                newDto.setIndentorName(dto.getIndentorName());
+                newDto.setCreatedDate(dto.getCreatedDate());
+                newDto.setMaterialDes(new ArrayList<>());
+                return newDto;
+            }).getMaterialDes().addAll(dto.getMaterialDes());
+        }
+
+        return new ArrayList<>(grouped.values());
+    }
+*/
+
 
     public List<ApprovedIndentsDto> getApprovedIndents() {
         // Step 1: Retrieve all the approved indent request IDs
@@ -1434,7 +1458,7 @@ public class WorkflowServiceImpl implements WorkflowService {
             // Fetch the indent details from the IndentCreation entity
             IndentCreation indentCreation = indentCreationRepository.findByIndentId(indentId);
 
-            // Step 3: Check if indentCreation is null
+        //  List<MaterialDetails> md =   materialDetailsRepo.findByIndentCreation_IndentId(indentId);
             if (indentCreation != null) {
                 // Get the projectCode from IndentCreation
                 String projectCode = indentCreation.getProjectName();
@@ -1449,7 +1473,10 @@ public class WorkflowServiceImpl implements WorkflowService {
                     dto.setIndentId(indentCreation.getIndentId());
                     dto.setProjectName(pm.getProjectNameDescription());
 
-                    approvedIndents.add(dto);
+                    //dto.setIndentorName(indentCreation.getIndentorName());
+                     approvedIndents.add(dto);
+
+
                 } else {
                     // Handle case where project is not found
                     ApprovedIndentsDto dto = new ApprovedIndentsDto();

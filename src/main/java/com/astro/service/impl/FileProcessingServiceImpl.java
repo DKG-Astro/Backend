@@ -25,7 +25,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @Service
 public class FileProcessingServiceImpl implements FileProcessingService {
 
@@ -33,6 +34,8 @@ public class FileProcessingServiceImpl implements FileProcessingService {
     private String basePath;
 
     final List<String> FILE_TYPE_LIST = Arrays.asList("Indent", "Tender", "CP", "INV","Material");
+
+    private static final Logger log = LoggerFactory.getLogger(FileProcessingServiceImpl.class);
 
     @Override
     public List<String> fileList() {
@@ -44,6 +47,7 @@ public class FileProcessingServiceImpl implements FileProcessingService {
 
     @Override
     public String uploadFile(String fileType, MultipartFile multipartFile) {
+        System.out.print("uday " +fileType +""+ multipartFile);
         if (!FILE_TYPE_LIST.contains(fileType)) {
             throw new FilesNotFoundException(new ErrorDetails(AppConstant.INVALID_FILE_TYPE, AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION, "Invalid File type."));
@@ -64,6 +68,7 @@ public class FileProcessingServiceImpl implements FileProcessingService {
                     AppConstant.ERROR_TYPE_VALIDATION, "File upload error."));
         }
 
+        log.info("Uploading file: {} of type: {}", multipartFile.getOriginalFilename(), fileType);
 
         return fileName;
     }

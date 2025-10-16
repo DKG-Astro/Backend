@@ -132,6 +132,7 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation, 
                   
                   """, nativeQuery = true)
     List<Object[]> fetchIndentReportDetails(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
     @Query(value = """
                    SELECT
                        indent.created_date AS 'Date',
@@ -211,61 +212,60 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation, 
     List<Object[]> getAllIndentListReport(LocalDateTime fromDate, LocalDateTime toDate);
 
     @Query(value = """
-    SELECT
-      ind.indent_id                          AS indentId,
-      ind.indentor_name                      AS indentorName,
-      ind.indentor_mobile_no                 AS indentorMobileNo,
-      ind.indentor_email_address             AS indentorEmail,
-      ind.consignes_location                 AS consignesLocation,
-      ind.project_name                       AS projectName,
-      wt.createdDate                         AS submittedDate,
-      wt.nextRole                            AS pendingWith,
-      wt.modificationDate                    AS pendingFrom,
-      wt.status                              AS status,
-      ind.created_by                         AS createdBy,
-      ind.total_indent_value                 As indentValue,
-      JSON_ARRAYAGG(
-        JSON_OBJECT(
-          'materialCode',        m.material_code,
-          'materialDescription', m.material_description,
-          'quantity',            m.quantity,
-          'unitPrice',           m.unit_price,
-          'uom',                 m.uom,
-          'totalPrice',          m.total_price,
-          'materialCategory',    m.material_category,
-          'materialSubCategory', m.material_sub_category,
-          'modeOfProcurement',   m.mode_of_procurement,
-          'currency',            m.currency,
-          'vendorNames',         (SELECT GROUP_CONCAT(v.vendor_name SEPARATOR ', ')
-                                   FROM vendor_names_for_job_work_material v
-                                   WHERE v.indent_id = ind.indent_id AND v.material_code = m.material_code)
-        )
-      ) AS materialDetails
-    FROM workflow_transition wt
-    JOIN indent_creation ind ON wt.requestId = ind.indent_id
-    JOIN material_details m  ON ind.indent_id = m.indent_id
-    WHERE wt.workflowName = 'Indent Workflow'
-      AND wt.createdDate BETWEEN :fromDate AND :toDate
-      AND ind.created_by = :userId
-    GROUP BY ind.indent_id,
-             ind.indentor_name,
-             ind.indentor_mobile_no,
-             ind.indentor_email_address,
-             ind.consignes_location,
-             ind.project_name,
-             wt.createdDate,
-             wt.nextRole,
-             wt.modificationDate,
-             wt.status
-    ORDER BY wt.createdDate, ind.indent_id
-    """,
+            SELECT
+              ind.indent_id                          AS indentId,
+              ind.indentor_name                      AS indentorName,
+              ind.indentor_mobile_no                 AS indentorMobileNo,
+              ind.indentor_email_address             AS indentorEmail,
+              ind.consignes_location                 AS consignesLocation,
+              ind.project_name                       AS projectName,
+              wt.createdDate                         AS submittedDate,
+              wt.nextRole                            AS pendingWith,
+              wt.modificationDate                    AS pendingFrom,
+              wt.status                              AS status,
+              ind.created_by                         AS createdBy,
+              ind.total_indent_value                 As indentValue,
+              JSON_ARRAYAGG(
+                JSON_OBJECT(
+                  'materialCode',        m.material_code,
+                  'materialDescription', m.material_description,
+                  'quantity',            m.quantity,
+                  'unitPrice',           m.unit_price,
+                  'uom',                 m.uom,
+                  'totalPrice',          m.total_price,
+                  'materialCategory',    m.material_category,
+                  'materialSubCategory', m.material_sub_category,
+                  'modeOfProcurement',   m.mode_of_procurement,
+                  'currency',            m.currency,
+                  'vendorNames',         (SELECT GROUP_CONCAT(v.vendor_name SEPARATOR ', ')
+                                           FROM vendor_names_for_job_work_material v
+                                           WHERE v.indent_id = ind.indent_id AND v.material_code = m.material_code)
+                )
+              ) AS materialDetails
+            FROM workflow_transition wt
+            JOIN indent_creation ind ON wt.requestId = ind.indent_id
+            JOIN material_details m  ON ind.indent_id = m.indent_id
+            WHERE wt.workflowName = 'Indent Workflow'
+              AND wt.createdDate BETWEEN :fromDate AND :toDate
+              AND ind.created_by = :userId
+            GROUP BY ind.indent_id,
+                     ind.indentor_name,
+                     ind.indentor_mobile_no,
+                     ind.indentor_email_address,
+                     ind.consignes_location,
+                     ind.project_name,
+                     wt.createdDate,
+                     wt.nextRole,
+                     wt.modificationDate,
+                     wt.status
+            ORDER BY wt.createdDate, ind.indent_id
+            """,
             nativeQuery = true)
     List<Object[]> getAllIndentListUserIdsReport(
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate,
             @Param("userId") Integer userId
     );
-
 
 
     // Search by indentId (Process ID)
@@ -297,5 +297,20 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation, 
     @Query("SELECT i.buyBackAmount FROM IndentCreation i " +
             "WHERE i.indentId IN :indentIds AND i.buyBack = true")
     List<String> findBuyBackAmountsByIndentIds(@Param("indentIds") List<String> indentIds);
+
+   /* @Query("""
+    SELECT new com.astro.dto.workflow.ApprovedIndentsDto(
+        i.indentId,
+        pm.projectNameDescription,
+        i.indentorName,
+        i.createdDate,
+        md.materialDescription
+    )
+    FROM IndentCreation i
+    JOIN ProjectMaster pm ON pm.projectCode = i.projectName
+    LEFT JOIN MaterialDetails md ON md.indentCreation.indentId = i.indentId
+    WHERE i.indentId IN :approvedIndentIds
+""")
+    List<ApprovedIndentsDto> findApprovedIndents(@Param("approvedIndentIds") List<String> approvedIndentIds);*/
 
 }

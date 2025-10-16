@@ -3,6 +3,7 @@ package com.astro.dto.workflow;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class MaterialMasterUtilRequestDto {
@@ -12,7 +13,8 @@ public class MaterialMasterUtilRequestDto {
     private String description;
     private String uom;
     private BigDecimal estimatedPriceWithCcy;
-    private String uploadImageFileName;
+    private List<String> uploadImageFileName;
+   // private String uploadImageFileName;
     private Boolean indigenousOrImported;
     private BigDecimal unitPrice;
     private String currency;

@@ -7,6 +7,7 @@ import lombok.Data;
 
 @Data
 public class IsnAssetOhqDtlsDto {
+    private Integer ohqId;
     private Integer assetId;
     private String assetDesc;
     private String uomId;
