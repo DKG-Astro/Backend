@@ -15,7 +15,7 @@ public class ApprovedIndentsDto {
 
     private String indentId;
     private String projectName;
-   /* private String indentorName;
+    private String indentorName;
     private String createdDate;
     private List<String> materialDes = new ArrayList<>();
 
@@ -29,5 +29,5 @@ public class ApprovedIndentsDto {
         if (materialDes != null) {
             this.materialDes.add(materialDes);
         }
-    }*/
+    }
 }

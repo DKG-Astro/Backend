@@ -1423,7 +1423,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         }
         return transitionDto;
     }
-    /*
+
     public List<ApprovedIndentsDto> getApprovedIndents() {
         List<String> approvedIndentIds = workflowTransitionRepository.findApprovedIndentRequestIds();
         List<ApprovedIndentsDto> rawResults = indentCreationRepository.findApprovedIndents(approvedIndentIds);
@@ -1444,9 +1444,9 @@ public class WorkflowServiceImpl implements WorkflowService {
 
         return new ArrayList<>(grouped.values());
     }
-*/
 
 
+/*
     public List<ApprovedIndentsDto> getApprovedIndents() {
         // Step 1: Retrieve all the approved indent request IDs
         List<String> approvedIndentIds = workflowTransitionRepository.findApprovedIndentRequestIds();
@@ -1494,7 +1494,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         }
 
         return approvedIndents;
-    }/*
+    }*//*
 public List<ApprovedIndentsDto> getApprovedIndents() {
     List<String> approvedIndentIds = workflowTransitionRepository.findApprovedIndentRequestIds();
 

@@ -7,15 +7,8 @@
     <list default="true" id="ff5636e0-402f-4a63-8653-94f411351cbb" name="Default Changelist" comment="workflow related chnage">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ApprovedIndentsDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/ApprovedIndentsDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/MaterialMasterUtilRequestDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/dto/workflow/MaterialMasterUtilRequestDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/entity/InventoryModule/IsnAssetOhqDtlsDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/entity/InventoryModule/IsnAssetOhqDtlsDto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/IndentCreation/IndentCreationRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/repository/ProcurementModule/IndentCreation/IndentCreationRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/FileProcessingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/FileProcessingServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/InventoryModule/IsnServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/InventoryModule/IsnServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/MaterialMasterUtilServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/MaterialMasterUtilServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/service/impl/WorkflowServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astro/util/CommonUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astro/util/CommonUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/DDL-procurement-INV.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/DDL-procurement-INV.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

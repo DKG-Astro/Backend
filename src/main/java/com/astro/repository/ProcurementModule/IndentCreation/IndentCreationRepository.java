@@ -298,7 +298,9 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation, 
             "WHERE i.indentId IN :indentIds AND i.buyBack = true")
     List<String> findBuyBackAmountsByIndentIds(@Param("indentIds") List<String> indentIds);
 
-   /* @Query("""
+
+
+    @Query("""
     SELECT new com.astro.dto.workflow.ApprovedIndentsDto(
         i.indentId,
         pm.projectNameDescription,
@@ -311,6 +313,6 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation, 
     LEFT JOIN MaterialDetails md ON md.indentCreation.indentId = i.indentId
     WHERE i.indentId IN :approvedIndentIds
 """)
-    List<ApprovedIndentsDto> findApprovedIndents(@Param("approvedIndentIds") List<String> approvedIndentIds);*/
+    List<ApprovedIndentsDto> findApprovedIndents(@Param("approvedIndentIds") List<String> approvedIndentIds);
 
 }
