@@ -53,6 +53,9 @@ public interface TenderRequestRepository extends JpaRepository<TenderRequest, St
 
     List<TenderRequest> findByTenderIdIn(List<String> tenderIds);
 
+    @Query("SELECT tr.modeOfProcurement FROM TenderRequest tr WHERE tr.tenderId = :tenderId")
+    String findModeOfProcurementByTenderId(@Param("tenderId") String tenderId);
+
 
     //  TenderRequest getByTenderId(String tenderId);
 }

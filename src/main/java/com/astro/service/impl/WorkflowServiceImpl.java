@@ -1835,11 +1835,14 @@ public List<ApprovedIndentsDto> getApprovedIndents() {
             // poWithTenderAndIndentResponseDTO po = purchaseOrderService.getPurchaseOrderById(poId);
             PurchaseOrder po = purchaseOrderRepository.findById(poId).orElse(null);
 
+            String mode = tenderRequestRepository.findModeOfProcurementByTenderId(po.getTenderId());
+
             if (po != null) {
 
                 //   queueResponse.setIndentorName("Null");
                 queueResponse.setProjectName(po.getProjectName());
                 queueResponse.setAmount(po.getTotalValueOfPo());
+                queueResponse.setModeOfProcurement(mode);
                 //     queueResponse.setBudgetName();
                 //      queueResponse.setIndentTitle();
                 //   queueResponse.setModeOfProcurement();
