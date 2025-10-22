@@ -1478,8 +1478,14 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
         dto.setDuties(totalDuties.setScale(0, RoundingMode.HALF_UP));
         String fileName = officerSignatureRepository.findSignaturePathByDesignation("Store Purchase");
         dto.setOfficerSignatureFileName(fileName);
-        String base64 = convertImageToBase64(fileName, basePath);
-        dto.setOfficerSignatureBase64(base64);
+      //  String base64 = convertImageToBase64(fileName, basePath);
+       // dto.setOfficerSignatureBase64(base64);
+        if (fileName != null && !fileName.isEmpty()) {
+            String base64 = convertImageToBase64(fileName, basePath);
+            dto.setOfficerSignatureBase64(base64);
+        } else {
+            dto.setOfficerSignatureBase64(null);
+        }
 
 
         return dto;

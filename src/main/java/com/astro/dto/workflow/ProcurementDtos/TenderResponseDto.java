@@ -23,7 +23,7 @@ public class TenderResponseDto {
     // private String consignesAndBillinngAddress;
     private String incoTerms;
     private String paymentTerms;
-    private String ldClause;
+    private Boolean ldClause;
     // private String applicablePerformance;
     private String performanceAndWarrantySecurity;
     private Boolean bidSecurityDeclaration;
@@ -48,4 +48,10 @@ public class TenderResponseDto {
     private List<String> indentIds;
     //private String vendorId;
      // private String quotationFileName;
+    private Boolean buyBack;
+    private String buyBackAmount;
+    private String modelNumber;
+    private String serialNumber;
+    private String dateOfPurchase;
+    private String uploadBuyBackFileNames;
 }

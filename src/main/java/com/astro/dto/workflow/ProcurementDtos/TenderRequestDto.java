@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.Column;
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -24,7 +25,7 @@ public class TenderRequestDto {
     //  private String consignesAndBillinngAddress;
     private String incoTerms;
     private String paymentTerms;
-    private String ldClause;
+    private Boolean ldClause;
     // private String applicablePerformance;
     private String performanceAndWarrantySecurity;
     private Boolean bidSecurityDeclaration;
@@ -49,6 +50,14 @@ public class TenderRequestDto {
     private String updatedBy;
     private Integer createdBy;
     private List<String> indentId; // Updated
+
+    private Boolean buyBack;
+    private String buyBackAmount;
+    private String modelNumber;
+    private String serialNumber;
+    private String dateOfPurchase;
+    private List<String> uploadBuyBackFileNames;
+
 
 
 }

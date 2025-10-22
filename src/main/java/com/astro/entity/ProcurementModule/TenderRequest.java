@@ -50,7 +50,7 @@ public class TenderRequest {
     @Column(name = "payment_terms")
     private String paymentTerms;
     @Column(name = "ld_clause")
-    private String ldClause;
+    private Boolean ldClause;
     // @Column(name = "applicable_performance")
     // private String applicablePerformance;
     @Column(name = "performance_and_warranty_security")
@@ -106,6 +106,13 @@ public class TenderRequest {
     private LocalDateTime createdDate = LocalDateTime.now();
     @Column(name = "updated_date", nullable = false)
     private LocalDateTime updatedDate = LocalDateTime.now();
+
+    private Boolean buyBack;
+    private String buyBackAmount;
+    private String modelNumber;
+    private String serialNumber;
+    private LocalDate dateOfPurchase;
+    private String uploadBuyBackFileNames;
 
 
 }

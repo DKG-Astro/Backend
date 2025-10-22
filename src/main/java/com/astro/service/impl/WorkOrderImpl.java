@@ -282,12 +282,12 @@ public class WorkOrderImpl implements WorkOrderService {
         List<String> indentIds = indentIdRepository.findTenderWithIndent(workOrder.getTenderId());
 
         // Calculate total tender value by summing totalPriceOfAllMaterials of all indents
-        BigDecimal totalTenderValue = indentIds.stream()
+      /*  BigDecimal totalTenderValue = indentIds.stream()
                 .map(indentCreationService::getIndentById) // Fetch Indent data
                 .map(IndentCreationResponseDTO::getTotalPriceOfAllMaterials) // Extract total price
                 .reduce(BigDecimal.ZERO, BigDecimal::add); // Sum up values
-        response.setTotalValue(totalTenderValue);
-        System.out.println("tottalTenderValue"+ totalTenderValue);
+        response.setTotalValue(totalTenderValue);*/
+        //System.out.println("tottalTenderValue"+ totalTenderValue);
         Optional<TenderRequest> tenderRequest = tenderRequestRepository.findByTenderId(workOrder.getTenderId());
 
         String projectName =tenderRequest.map(TenderRequest::getProjectName).orElse(null);

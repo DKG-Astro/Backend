@@ -330,7 +330,17 @@ private boolean canIndentorAct(VendorQuotationAgainstTender vq, String role) {
         }
         List<String> submittedVendorIds = vendorQuotationAgainstTenderRepository.findVendorIdsByTenderId(tenderId);
         allVendorIds.removeAll(submittedVendorIds);
-        return allVendorIds;
+        List<String> result = new ArrayList<>();
+        if (!allVendorIds.isEmpty()) {
+            List<Object[]> vendorDetails = vendorMasterRepository.findVendorIdAndNameByIds(allVendorIds);
+            for (Object[] obj : vendorDetails) {
+                String vendorId = (String) obj[0];
+                String vendorName = (String) obj[1];
+                result.add(vendorId + " - " + vendorName);
+            }
+        }
+
+        return result;
     }
 
     @Override

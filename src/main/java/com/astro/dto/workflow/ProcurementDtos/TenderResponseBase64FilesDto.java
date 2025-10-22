@@ -21,7 +21,7 @@ public class TenderResponseBase64FilesDto {
     // private String consignesAndBillinngAddress;
     private String incoTerms;
     private String paymentTerms;
-    private String ldClause;
+    private Boolean ldClause;
     // private String applicablePerformance;
     private String performanceAndWarrantySecurity;
     private Boolean bidSecurityDeclaration;

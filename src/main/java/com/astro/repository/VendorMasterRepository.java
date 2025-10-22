@@ -19,4 +19,10 @@ public interface VendorMasterRepository extends JpaRepository<VendorMaster, Stri
     boolean existsByPanNoIgnoreCase(String panNo);
     boolean existsByEmailAddressIgnoreCaseAndVendorType(String email, String vendorType);
 
+    @Query("SELECT v.vendorName FROM VendorMaster v WHERE v.vendorId = :vendorId")
+    String findVendorNameByVendorId(@Param("vendorId") String vendorId);
+
+    @Query("SELECT v.vendorId, v.vendorName FROM VendorMaster v WHERE v.vendorId IN :vendorIds")
+    List<Object[]> findVendorIdAndNameByIds(@Param("vendorIds") List<String> vendorIds);
+
 }

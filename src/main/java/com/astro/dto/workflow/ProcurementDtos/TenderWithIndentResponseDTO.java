@@ -25,7 +25,7 @@ public class TenderWithIndentResponseDTO {
     //  private String consignesAndBillinngAddress;
     private String incoTerms;
     private String paymentTerms;
-    private String ldClause;
+    private Boolean ldClause;
     //  private String applicablePerformance;
     private String performanceAndWarrantySecurity;
     private Boolean bidSecurityDeclaration;
@@ -50,5 +50,11 @@ public class TenderWithIndentResponseDTO {
     private String quotationFileName;
     //   private List<IndentIdDto> indentIds;
     private String validityPeriod;
+    private Boolean buyBack;
+    private String buyBackAmount;
+    private String modelNumber;
+    private String serialNumber;
+    private String dateOfPurchase;
+    private String uploadBuyBackFileNames;
 
 }

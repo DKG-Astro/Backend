@@ -88,7 +88,6 @@ public class TenderRequestServiceImpl implements TenderRequestService {
             ErrorDetails errorDetails = new ErrorDetails(400, 1, "Duplicate Tender Request ID", "Tender ID " + tenderRequestDto.getTenderId() + " already exists.");
             throw new InvalidInputException(errorDetails);
         }
-
       */
 
         Integer maxNumber = TRrepo.findMaxTenderNumber();
@@ -148,6 +147,21 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         tenderRequest.setPreBidDisscussions(tenderRequestDto.getPreBidDisscussions());
         tenderRequest.setUpdatedBy(tenderRequestDto.getUpdatedBy());
         tenderRequest.setCreatedBy(tenderRequestDto.getCreatedBy());
+
+        if(tenderRequestDto.getBuyBack()){
+            tenderRequest.setBuyBack(tenderRequestDto.getBuyBack());
+            tenderRequest.setModelNumber(tenderRequestDto.getModelNumber());
+            tenderRequest.setSerialNumber(tenderRequestDto.getSerialNumber());
+            tenderRequest.setDateOfPurchase(CommonUtils.convertStringToDateObject(tenderRequestDto.getDateOfPurchase()));
+            tenderRequest.setBuyBackAmount(tenderRequestDto.getBuyBackAmount());
+            if (tenderRequestDto.getUploadBuyBackFileNames() == null || tenderRequestDto.getUploadBuyBackFileNames().isEmpty()) {
+                tenderRequest.setUploadBuyBackFileNames(null);
+
+            } else {
+                String uploadBuyBack = saveBase64Files(tenderRequestDto.getUploadBuyBackFileNames(), basePath);
+                tenderRequest.setUploadBuyBackFileNames(uploadBuyBack);
+            }
+        }
         //tenderRequest.setUploadTenderDocumentsFileName(tenderRequestDto.getUploadTenderDocuments());
         // tenderRequest.setUploadSpecificTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
         //  tenderRequest.setUploadGeneralTermsAndConditionsFileName(tenderRequestDto.getUploadGeneralTermsAndConditions());
@@ -681,6 +695,12 @@ public class TenderRequestServiceImpl implements TenderRequestService {
         responseDTO.setIndentResponseDTO(indentDataList); //Updated to list
         responseDTO.setTotalTenderValue(totalTenderValue); // Calculated total
        // responseDTO.setTotalTenderValue(totalTenderValue);
+        responseDTO.setBuyBack(tenderRequest.getBuyBack());
+        responseDTO.setModelNumber(tenderRequest.getModelNumber());
+        responseDTO.setSerialNumber(tenderRequest.getSerialNumber());
+        responseDTO.setDateOfPurchase(CommonUtils.convertDateToString(tenderRequest.getDateOfPurchase()));
+        responseDTO.setBuyBackAmount(tenderRequest.getBuyBackAmount());
+        responseDTO.setUploadBuyBackFileNames(tenderRequest.getUploadBuyBackFileNames());
 
         return responseDTO;
 

@@ -1515,3 +1515,18 @@ ALTER TABLE gt_dtl ADD COLUMN po_id VARCHAR(50), ADD COLUMN model_no VARCHAR(100
 ALTER TABLE goods_inspection_master ADD COLUMN po_amount DECIMAL(15,2), ADD COLUMN gprn_amount DECIMAL(15,2);
 
 alter table goods_inspection_consumable_detail Add column reject_reason varchar(100);alter table goods_inspection_consumable_detail Add column reject_reason varchar(100);
+
+
+ALTER TABLE tender_request
+DROP COLUMN ld_clause,
+ADD COLUMN ld_clause BOOLEAN DEFAULT FALSE;
+
+
+ALTER TABLE tender_request
+ADD COLUMN buy_back BOOLEAN,
+ADD COLUMN buy_back_amount VARCHAR(255),
+ADD COLUMN model_number VARCHAR(255),
+ADD COLUMN serial_number VARCHAR(255),
+ADD COLUMN date_of_purchase DATE,
+ADD COLUMN upload_buy_back_file_names VARCHAR(500);
+

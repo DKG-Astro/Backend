@@ -68,6 +68,8 @@ public class IndentCreationServiceImpl implements IndentCreationService {
     private EmployeeDepartmentMasterRepository employeeDepartmentMasterRepository;
     @Autowired
     private UserMasterRepository userMasterRepository;
+    @Autowired
+    private VendorMasterRepository vendorMasterRepository;
     @Value("${filePath}")
     private String bp;
     private final String basePath;
@@ -577,10 +579,7 @@ public class IndentCreationServiceImpl implements IndentCreationService {
                     .map(VendorNamesForJobWorkMaterial::getVendorName)
                     .collect(Collectors.toList());
             System.out.println("material_id" + material.getId());
-
-            System.out.println("VendorNames:" + vendorNames);
-            materialResponse.setVendorNames(vendorNames);
-
+           materialResponse.setVendorNames(vendorNames);
 
             return materialResponse;
         }).collect(Collectors.toList());
@@ -639,10 +638,17 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         List<IndentCreation> indentList = indentCreationRepository.findAll();
         return indentList.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
     }
-
-
     @Transactional
-    private IndentCreationResponseDTO mapToResponseDTO(IndentCreation indentCreation) {
+    public IndentCreationResponseDTO getIndentDataForTenderById(String indentId) throws IOException {
+        IndentCreation indentCreation = indentCreationRepository.findById(indentId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Indent not found for the provided Indent ID.")
+                ));
+        //  return mapToResponseDTO(indentCreation);
         IndentCreationResponseDTO response = new IndentCreationResponseDTO();
         response.setIndentorName(indentCreation.getIndentorName());
         response.setIndentId(indentCreation.getIndentId());
@@ -681,9 +687,16 @@ public class IndentCreationServiceImpl implements IndentCreationService {
         response.setReason(indentCreation.getReason());
         response.setFileType(indentCreation.getFileType());
         response.setBuyBack(indentCreation.getBuyBack());
+        if (indentCreation.getUploadBuyBackFileNames() == null || indentCreation.getUploadBuyBackFileNames().isEmpty()) {
+            response.setUploadBuyBackFile(null);
+        } else {
+            response.setUploadBuyBackFile(convertFilesToBase64(indentCreation.getUploadBuyBackFileNames(), basePath));
+        }
+
         response.setUploadBuyBackFileNames(indentCreation.getUploadBuyBackFileNames());
         response.setSerialNumber(indentCreation.getSerialNumber());
         response.setModelNumber(indentCreation.getModelNumber());
+        response.setBuyBackAmount(indentCreation.getBuyBackAmount());
         response.setCancelStatus(indentCreation.getCancelStatus());
         response.setCancelRemarks(indentCreation.getCancelRemarks());
         LocalDate dateOfPurchase = indentCreation.getDateOfPurchase();
@@ -745,7 +758,175 @@ public class IndentCreationServiceImpl implements IndentCreationService {
             System.out.println("material_id" + material.getId());
 
             System.out.println("VendorNames:" + vendorNames);
-            materialResponse.setVendorNames(vendorNames);
+            // materialResponse.setVendorNames(vendorNames);
+            List<String> vendorIds = vendorNames; // your existing list of vendorIds
+
+            List<String> vendorIdNameList = vendorIds.stream()
+                    .map(vendorId -> {
+                        // Fetch only vendorName using vendorId
+                        String name = vendorMasterRepository.findVendorNameByVendorId(vendorId);
+                        return vendorId + "-" + name;
+                    })
+                    .collect(Collectors.toList());
+
+            materialResponse.setVendorNames(vendorIdNameList);
+
+
+            return materialResponse;
+        }).collect(Collectors.toList());
+
+        // Calculate total price of all materials
+        BigDecimal totalPriceOfAllMaterials = materialDetailsResponse.stream()
+                .map(MaterialDetailsResponseDTO::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        String projectName = indentCreation.getProjectName();// project name is project code
+      /*  BigDecimal allocatedAmount = projectMasterRepository
+                .findByProjectNameDescription(projectName)
+                .map(ProjectMaster::getAllocatedAmount)
+                .orElse(BigDecimal.ZERO);
+        response.setProjectLimit(allocatedAmount);*/
+        // String projectCode = indentCreation.getProjectCode();
+        BigDecimal allocatedAmount = projectMasterRepository
+                .findByProjectCode(projectName)
+                .map(ProjectMaster::getAllocatedAmount)
+                .orElse(BigDecimal.ZERO);
+        response.setProjectLimit(allocatedAmount);
+        if ("Engineering".equals(indentCreation.getEmployeeDepartment())) {
+            response.setEmployeeDepartment(indentCreation.getEmployeeDepartment());
+        } else {
+            response.setEmployeeDepartment("OtherDept");
+        }
+
+
+        System.out.println("allocatedAmount: " + allocatedAmount);
+        response.setTotalPriceOfAllMaterials(totalPriceOfAllMaterials);
+
+        response.setMaterialDetails(materialDetailsResponse);
+
+        return response;
+    }
+
+    @Transactional
+    private IndentCreationResponseDTO mapToResponseDTO(IndentCreation indentCreation) {
+        IndentCreationResponseDTO response = new IndentCreationResponseDTO();
+        response.setIndentorName(indentCreation.getIndentorName());
+        response.setIndentId(indentCreation.getIndentId());
+        response.setIndentorMobileNo(indentCreation.getIndentorMobileNo());
+        response.setIndentorEmailAddress(indentCreation.getIndentorEmailAddress());
+        // response.setConsignesLocation(indentCreation.getConsignesLocation());
+        response.setUploadingPriorApprovalsFileName(indentCreation.getUploadingPriorApprovalsFileName());
+        //  response.setProjectName(indentCreation.getProjectName());
+        response.setProjectName(
+                (indentCreation.getProjectName() != null && !indentCreation.getProjectName().isBlank())
+                        ? indentCreation.getProjectName()
+                        : null
+        );
+        response.setProprietaryAndLimitedDeclaration(indentCreation.getProprietaryAndLimitedDeclaration());
+        response.setIsPreBidMeetingRequired(indentCreation.getIsPreBitMeetingRequired());
+        LocalDate Date = indentCreation.getPreBidMeetingDate();
+        if (Date != null) {
+            response.setPreBidMeetingDate(CommonUtils.convertDateToString(Date));
+        } else {
+            indentCreation.setPreBidMeetingDate(null);
+        }
+        response.setPreBidMeetingVenue(indentCreation.getPreBidMeetingVenue());
+        response.setIsItARateContractIndent(indentCreation.getIsItARateContractIndent());
+        response.setEstimatedRate(indentCreation.getEstimatedRate());
+        response.setPeriodOfContract(indentCreation.getPeriodOfContract());
+        response.setSingleAndMultipleJob(indentCreation.getSingleAndMultipleJob());
+        response.setTechnicalSpecificationsFileName(indentCreation.getTechnicalSpecificationsFileName());
+        response.setDraftEOIOrRFPFileName(indentCreation.getDraftEOIOrRFPFileName());
+        response.setUploadPACOrBrandPACFileName(indentCreation.getUploadPACOrBrandPACFileName());
+        response.setBrandPac(indentCreation.getBrandPac());
+        response.setJustification(indentCreation.getJustification());
+        response.setBrandAndModel(indentCreation.getBrandAndModel());
+        response.setPurpose(indentCreation.getPurpose());
+        response.setQuarter(indentCreation.getQuarter());
+        response.setProprietaryJustification(indentCreation.getProprietaryJustification());
+        response.setReason(indentCreation.getReason());
+        response.setFileType(indentCreation.getFileType());
+        response.setBuyBack(indentCreation.getBuyBack());
+        response.setUploadBuyBackFileNames(indentCreation.getUploadBuyBackFileNames());
+        response.setSerialNumber(indentCreation.getSerialNumber());
+        response.setModelNumber(indentCreation.getModelNumber());
+        response.setBuyBackAmount(indentCreation.getBuyBackAmount());
+        response.setCancelStatus(indentCreation.getCancelStatus());
+        response.setCancelRemarks(indentCreation.getCancelRemarks());
+        response.setEmployeeId(indentCreation.getEmployeeId());
+        response.setEmployeeName(indentCreation.getEmployeeName());
+        response.setEmployeeDept(indentCreation.getEmployeeDepartment());
+        LocalDate dateOfPurchase = indentCreation.getDateOfPurchase();
+        if (dateOfPurchase != null) {
+            response.setDateOfPurchase(CommonUtils.convertDateToString(dateOfPurchase));
+        } else {
+            indentCreation.setDateOfPurchase(null);
+        }
+        response.setCreatedBy(indentCreation.getCreatedBy());
+        response.setUpdatedBy(indentCreation.getUpdatedBy());
+
+
+        String materialSubCategory = indentCreation.getMaterialDetails().stream()
+                .map(MaterialDetails::getMaterialSubCategory)
+                .findFirst()
+                .orElse(null);
+        // Converting "Capital" or "Consumable" to "Normal"
+       /* if ("Capital".equalsIgnoreCase(materialCategory) || "Consumable".equalsIgnoreCase(materialCategory)) {
+            materialCategory = "Normal";
+        } else if ("Computer".equalsIgnoreCase(materialCategory)) {
+            materialCategory = "Computer";
+        }
+        response.setMaterialCategory(materialCategory); */
+        //set material category to indent response
+        if ("Computer & Peripherals".equalsIgnoreCase(materialSubCategory)) {
+            materialSubCategory = "Computer";
+        } else {
+            materialSubCategory = "Normal";
+        }
+        String consignesLocation;
+        if ("BNG".equalsIgnoreCase(indentCreation.getConsignesLocation())) {
+            consignesLocation = "Normal";
+        } else {
+            consignesLocation = "Computer";
+        }
+
+        response.setMaterialCategory(materialSubCategory);  //set material category to indent response
+        response.setConsignesLocation(consignesLocation);
+
+        // Map material details
+        List<MaterialDetailsResponseDTO> materialDetailsResponse = indentCreation.getMaterialDetails().stream().map(material -> {
+            MaterialDetailsResponseDTO materialResponse = new MaterialDetailsResponseDTO();
+            materialResponse.setMaterialCode(material.getMaterialCode());
+            materialResponse.setMaterialDescription(material.getMaterialDescription());
+            materialResponse.setQuantity(material.getQuantity());
+            materialResponse.setUnitPrice(material.getUnitPrice());
+            materialResponse.setUom(material.getUom());
+            materialResponse.setTotalPrice(material.getTotalPrice());
+            materialResponse.setBudgetCode(material.getBudgetCode());
+            materialResponse.setModeOfProcurement(material.getModeOfProcurement());
+            materialResponse.setMaterialCategory(material.getMaterialCategory());
+            materialResponse.setMaterialSubCategory(material.getMaterialSubCategory());
+            materialResponse.setCurrency(material.getCurrency());
+
+            List<String> vendorNames = vendorNameRepository.findByMaterialId(material.getId())
+                    .stream()
+                    .map(VendorNamesForJobWorkMaterial::getVendorName)
+                    .collect(Collectors.toList());
+            System.out.println("material_id" + material.getId());
+
+            System.out.println("VendorNames:" + vendorNames);
+           // materialResponse.setVendorNames(vendorNames);
+            List<String> vendorIds = vendorNames; // your existing list of vendorIds
+
+            List<String> vendorIdNameList = vendorIds.stream()
+                    .map(vendorId -> {
+                        // Fetch only vendorName using vendorId
+                        String name = vendorMasterRepository.findVendorNameByVendorId(vendorId);
+                        return vendorId + "-" + name;
+                    })
+                    .collect(Collectors.toList());
+
+            materialResponse.setVendorNames(vendorIdNameList);
 
 
             return materialResponse;

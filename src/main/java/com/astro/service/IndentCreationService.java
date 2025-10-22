@@ -44,5 +44,6 @@ public interface IndentCreationService {
     public String assignEmployeeToIndent(AssignEmployeeToIndentDto dto);
 
     public String cancelIndent(CancelIndentRequestDto request);
+    public IndentCreationResponseDTO getIndentDataForTenderById(String indentId) throws IOException;
 
-}
+    }

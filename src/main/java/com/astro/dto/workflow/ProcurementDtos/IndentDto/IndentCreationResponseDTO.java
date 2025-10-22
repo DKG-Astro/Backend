@@ -50,6 +50,7 @@ public class IndentCreationResponseDTO {
     private String proprietaryJustification;
     private Boolean proprietaryAndLimitedDeclaration;
     private Boolean buyBack;
+    private String buyBackAmount;
     private String uploadBuyBackFileNames;
     private String employeeDepartment;
     private Integer createdBy;
@@ -57,4 +58,8 @@ public class IndentCreationResponseDTO {
 
     private Boolean cancelStatus;
     private String cancelRemarks;
+    private List<String> uploadBuyBackFile;
+    private String employeeId;
+    private String employeeName;
+    private String employeeDept;
 }
