@@ -1,5 +1,6 @@
 package com.astro.repository;
 
+import com.astro.dto.workflow.VendorIdNameDTO;
 import com.astro.entity.VendorMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -24,5 +25,8 @@ public interface VendorMasterRepository extends JpaRepository<VendorMaster, Stri
 
     @Query("SELECT v.vendorId, v.vendorName FROM VendorMaster v WHERE v.vendorId IN :vendorIds")
     List<Object[]> findVendorIdAndNameByIds(@Param("vendorIds") List<String> vendorIds);
+
+    @Query("SELECT new com.astro.dto.workflow.VendorIdNameDTO(v.vendorId, v.vendorName) FROM VendorMaster v")
+    List<VendorIdNameDTO> findAllVendorIdAndName();
 
 }

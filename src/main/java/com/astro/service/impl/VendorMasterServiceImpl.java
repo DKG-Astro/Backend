@@ -1,12 +1,9 @@
 package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
+import com.astro.dto.workflow.*;
 import com.astro.dto.workflow.ProcurementDtos.AllVendorStatus;
 import com.astro.dto.workflow.ProcurementDtos.approvedTenderIdWithTitle;
-import com.astro.dto.workflow.RegisteredVendorsDataDto;
-import com.astro.dto.workflow.VendorContractReportDTO;
-import com.astro.dto.workflow.VendorMasterRequestDto;
-import com.astro.dto.workflow.VendorMasterResponseDto;
 import com.astro.entity.ProcurementModule.IndentId;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.TenderRequest;
@@ -319,4 +316,64 @@ public class VendorMasterServiceImpl implements VendorMasterService {
     public boolean checkEmailExistsForInternational(String email) {
         return vendorMasterRepository.existsByEmailAddressIgnoreCaseAndVendorType(email, "International");
     }
+
+    @Override
+    public List<VendorIdNameDTO> getAllVendorIdAndName() {
+        return vendorMasterRepository.findAllVendorIdAndName();
+    }
+    public VendorMaster getVendorByVendorId(String vendorId) {
+        return vendorMasterRepository.findById(vendorId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Vendor master not found for the provided vendor id."
+                        )
+                ));
+    }
+
+    @Override
+    public VendorMaster updateVendor(String vendorId, VendorMasterUpdateDto dto){
+        VendorMaster vendor = vendorMasterRepository.findById(vendorId)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "Vendor master not found for the provided vendor id."
+                        )
+                ));
+        // Map DTO fields to entity
+        vendor.setVendorName(dto.getVendorName());
+        vendor.setVendorType(dto.getVendorType());
+        vendor.setContactNo(dto.getContactNo());
+        vendor.setEmailAddress(dto.getEmailAddress());
+        vendor.setRegisteredPlatform(dto.getRegisteredPlatform());
+        vendor.setPfmsVendorCode(dto.getPfmsVendorCode());
+        vendor.setPrimaryBusiness(dto.getPrimaryBusiness());
+        vendor.setAddress(dto.getAddress());
+        vendor.setAlternateEmailOrPhoneNumber(dto.getAlternateEmailOrPhoneNumber());
+        vendor.setPanNo(dto.getPanNo());
+        vendor.setGstNo(dto.getGstNo());
+        vendor.setBankName(dto.getBankName());
+        vendor.setAccountNo(dto.getAccountNo());
+        vendor.setIfscCode(dto.getIfscCode());
+        vendor.setPurchaseHistory(dto.getPurchaseHistory());
+        vendor.setSwiftCode(dto.getSwiftCode());
+        vendor.setBicCode(dto.getBicCode());
+        vendor.setIbanAbaNumber(dto.getIbanAbaNumber());
+        vendor.setSortCode(dto.getSortCode());
+        vendor.setBankRoutingNumber(dto.getBankRoutingNumber());
+        vendor.setBankAddress(dto.getBankAddress());
+        vendor.setCountry(dto.getCountry());
+        vendor.setState(dto.getState());
+        vendor.setPlace(dto.getPlace());
+        vendor.setUpdatedBy(dto.getUpdatedBy());
+        vendor.setUpdatedDate(java.time.LocalDateTime.now());
+
+        return vendorMasterRepository.save(vendor);
+    }
+
+
 }

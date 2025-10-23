@@ -1,10 +1,8 @@
 package com.astro.controller;
 
+import com.astro.dto.workflow.*;
 import com.astro.dto.workflow.ProcurementDtos.approvedTenderIdWithTitle;
-import com.astro.dto.workflow.RegisteredVendorsDataDto;
-import com.astro.dto.workflow.VendorContractReportDTO;
-import com.astro.dto.workflow.VendorMasterRequestDto;
-import com.astro.dto.workflow.VendorMasterResponseDto;
+import com.astro.entity.VendorMaster;
 import com.astro.service.VendorMasterService;
 import com.astro.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +47,7 @@ public class VendorMasterController {
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
     }
 
+
     @DeleteMapping("/{vendorId}")
     public ResponseEntity<String> deleteVendorMaster(@PathVariable String vendorId) {
         vendorMasterService.deleteVendorMaster(vendorId);
@@ -74,9 +73,23 @@ public class VendorMasterController {
         return ResponseEntity.ok(ResponseBuilder.getSuccessResponse(response));
     }
 
+    @GetMapping("/vendorIdVendorName")
+    public ResponseEntity<Object> getAllvendorIdVendorNames() {
+        List<VendorIdNameDTO> response = vendorMasterService.getAllVendorIdAndName();
+        return ResponseEntity.ok(ResponseBuilder.getSuccessResponse(response));
+    }
 
+    @GetMapping("/vendor/{vendorId}")
+    public ResponseEntity<Object> getVendorMasterByVendorId(@PathVariable String vendorId) {
+        VendorMaster responseDTO = vendorMasterService.getVendorByVendorId(vendorId);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(responseDTO), HttpStatus.OK);
+    }
 
-
-
+    @PutMapping("/update/{vendorId}")
+    public ResponseEntity<Object> updateVendor(@PathVariable String vendorId,
+                                                     @RequestBody VendorMasterUpdateDto requestDTO) {
+        VendorMaster response = vendorMasterService.updateVendor(vendorId, requestDTO);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(response), HttpStatus.OK);
+    }
 
 }

@@ -2,11 +2,9 @@ package com.astro.service;
 
 
 
+import com.astro.dto.workflow.*;
 import com.astro.dto.workflow.ProcurementDtos.approvedTenderIdWithTitle;
-import com.astro.dto.workflow.RegisteredVendorsDataDto;
-import com.astro.dto.workflow.VendorContractReportDTO;
-import com.astro.dto.workflow.VendorMasterRequestDto;
-import com.astro.dto.workflow.VendorMasterResponseDto;
+import com.astro.entity.VendorMaster;
 
 import java.util.List;
 
@@ -26,6 +24,9 @@ public interface VendorMasterService {
     public List<approvedTenderIdWithTitle> getTenderIds(String vendorId);
     public boolean checkPanExists(String panNumber);
     public boolean checkEmailExistsForInternational(String email);
+    public List<VendorIdNameDTO> getAllVendorIdAndName();
+    public VendorMaster getVendorByVendorId(String vendorId);
+    public VendorMaster updateVendor(String vendorId, VendorMasterUpdateDto dto);
 
 
  //   List<VendorContractReportDTO> getVendorContracts(String startDate, String endDate);
