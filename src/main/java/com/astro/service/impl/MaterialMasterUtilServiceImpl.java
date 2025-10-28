@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -410,6 +411,65 @@ private void saveMaterialTracking(String materialCode, String status, String act
                                 "material master not found for the provided materialcode.")
                 ));
         return mapToResponse(material);
+    }
+
+    @Override
+    public MaterialMasterUtilResponseDto getMaterialMasterUtilByIdbase(String materialCode) throws IOException {
+
+        MaterialMasterUtil material= materialMasterUtilRepository.findById(materialCode)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "material master not found for the provided materialcode.")
+                ));
+        MaterialMasterUtilResponseDto response = new MaterialMasterUtilResponseDto();
+
+        response.setMaterialCode(material.getMaterialCode());
+        response.setCategory(material.getCategory());
+        response.setSubCategory(material.getSubCategory());
+        response.setDescription(material.getDescription());
+        response.setUom(material.getUom());
+        response.setUnitPrice(material.getUnitPrice());
+        response.setCurrency(material.getCurrency());
+        response.setEstimatedPriceWithCcy(material.getEstimatedPriceWithCcy());
+        response.setUploadImageFileName(material.getUploadImageName());
+        response.setIndigenousOrImported(material.getIndigenousOrImported());
+        response.setApprovalStatus(material.getApprovalStatus().name());
+        response.setComments(material.getComments());
+        response.setBriefDescription(material.getBriefDescription());
+        response.setCreatedBy(material.getCreatedBy());
+        response.setUpdatedBy(material.getUpdatedBy());
+        response.setCreatedDate(material.getCreatedDate());
+        response.setUpdatedDate(material.getUpdatedDate());
+
+        response.setStatus(String.valueOf(material.getApprovalStatus()));
+   //     response.setMaterialFile(material.getUploadImageName());
+        if (material.getUploadImageName() == null || material.getUploadImageName().isEmpty()) {
+            response.setMaterialFile(null);
+        } else {
+            response.setMaterialFile(convertFilesToBase64(material.getUploadImageName(), basePath));
+        }
+        return response;
+
+    }
+    public static List<String> convertFilesToBase64(String fileNames, String basePath) throws IOException {
+        List<String> base64List = new ArrayList<>();
+
+        if (fileNames != null && !fileNames.isEmpty()) {
+            String[] fileNameArray = fileNames.split(",");
+
+            for (String fileName : fileNameArray) {
+                String trimmedFileName = fileName.trim();
+                if (!trimmedFileName.isEmpty()) {
+                    String base64 = CommonUtils.convertImageToBase64(trimmedFileName, basePath);
+                    base64List.add(base64);
+                }
+            }
+        }
+
+        return base64List;
     }
 
     private MaterialTransitionHistory mapToResponseDto(MaterialStatus status) {

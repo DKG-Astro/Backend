@@ -31,4 +31,5 @@ public interface AssetMasterService {
     public List<AssetDisposalReportDto> getAssetDisposalReport(String startDate, String endDate);
     public String disposeMultipleAssets(DisposeAssetRequest request);
     public AssetsAuctionDto searchByAuctionId(String auctionId);
+    public List<Integer> getPendingAuctionIds();
 }

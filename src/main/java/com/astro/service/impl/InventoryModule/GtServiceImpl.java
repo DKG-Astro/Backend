@@ -484,6 +484,10 @@ public class GtServiceImpl implements GtService {
 
         return dto;
     }
+    @Override
+    public List<Long> getPendingInterFiledGtIdsOgp() {
+        return gtmr.findApprovedIdsWithoutOgp();
+    }
 
 
     public GtMasterDto getGtDtls(String processNo){

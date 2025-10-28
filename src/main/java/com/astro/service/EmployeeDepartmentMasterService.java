@@ -2,6 +2,7 @@ package com.astro.service;
 
 import com.astro.dto.workflow.EmployeeDepartmentMasterRequestDto;
 import com.astro.dto.workflow.EmployeeDepartmentMasterResponseDto;
+import com.astro.dto.workflow.EmployeeSearchResponseDto;
 import com.astro.dto.workflow.employeedto;
 
 import java.util.List;
@@ -16,4 +17,5 @@ public interface EmployeeDepartmentMasterService {
     public EmployeeDepartmentMasterResponseDto  getEmployeeDepartmentMasterById(String employeeId);
     public void deleteEmployeeDepartmentMasterr(String employeeId);
 
+    List<EmployeeSearchResponseDto> searchEmployees(String keyword);
 }

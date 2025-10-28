@@ -18,4 +18,6 @@ public interface GtService {
     public void approveGtFromOgp(String gtId);
     public void receiverApproveGt(String gtId);
     public List<withinFieldStationGtDto> getGtReport(String  startDate, String  endDate) ;
+
+    public List<Long> getPendingInterFiledGtIdsOgp();
     }

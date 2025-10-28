@@ -32,4 +32,8 @@ public class MaterialMasterResponseDto {
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
 
+    private List<String> materialFile;
+
+    private String status;
+
 }

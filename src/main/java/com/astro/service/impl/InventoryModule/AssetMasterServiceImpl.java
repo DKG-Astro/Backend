@@ -731,6 +731,10 @@ public List<OhqConsumableStoreStockEntity> getStoreStockOhqConsumableList(){
         }
         return "INV/" +  auction.getAuctionId();
     }
+    @Override
+    public List<Integer> getPendingAuctionIds() {
+        return  disposalMasterRepository.findPendingAuctionIdsWithoutOgp();
+    }
 
     @Override
     public AssetsAuctionDto searchByAuctionId(String auctionId) {

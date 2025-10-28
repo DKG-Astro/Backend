@@ -2,6 +2,7 @@ package com.astro.controller;
 
 import com.astro.dto.workflow.EmployeeDepartmentMasterRequestDto;
 import com.astro.dto.workflow.EmployeeDepartmentMasterResponseDto;
+import com.astro.dto.workflow.EmployeeSearchResponseDto;
 import com.astro.dto.workflow.employeedto;
 import com.astro.service.EmployeeDepartmentMasterService;
 import com.astro.util.ResponseBuilder;
@@ -54,5 +55,10 @@ public class EmployeeDepartmentMasterController {
     }
 
 
+    @GetMapping("/employeeSearch")
+    public ResponseEntity<Object> searchEmployees(@RequestParam("keyword") String keyword) {
+        List<EmployeeSearchResponseDto> results = employeeService.searchEmployees(keyword);
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(results), HttpStatus.OK);
+    }
 
 }

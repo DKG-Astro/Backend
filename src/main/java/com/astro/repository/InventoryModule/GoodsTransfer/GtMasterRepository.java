@@ -27,5 +27,15 @@ public interface GtMasterRepository extends JpaRepository<GtMasterEntity,Long> {
             "WHERE gm.create_date BETWEEN :startDate AND :endDate " +
             "GROUP BY gm.id", nativeQuery = true)
     List<Object[]> getGtReport(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    @Query(value = "SELECT g.id FROM gt_master g " +
+            "WHERE TRIM(UPPER(g.status)) = 'APPROVED' " +
+            "AND g.sender_location_id <> g.receiver_location_id " +
+            "AND NOT EXISTS (SELECT 1 FROM ogp_gt_master o WHERE o.gt_id = g.id)",
+            nativeQuery = true)
+    List<Long> findApprovedIdsWithoutOgp();
+
+
+
 }
 

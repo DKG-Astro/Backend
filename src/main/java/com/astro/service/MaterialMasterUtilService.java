@@ -3,6 +3,7 @@ package com.astro.service;
 import com.astro.dto.workflow.*;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -24,5 +25,6 @@ public interface MaterialMasterUtilService{
     public MaterialMasterUtilResponseDto getMaterialMasterUtilById(String materialCode);
 
 
+    public MaterialMasterUtilResponseDto getMaterialMasterUtilByIdbase(String materialCode) throws IOException;
 
 }

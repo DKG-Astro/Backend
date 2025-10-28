@@ -616,6 +616,7 @@ public class ProcessController {
         res.put("processNo", id);
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
+
     @GetMapping("/pendingOgpAssetDisposal")
     public ResponseEntity<Object> getAllPendingassetDisposal() {
         List<AssetsAuctionDto> res = ogpAssetDisposalService.getPendingApprovals();
@@ -720,6 +721,16 @@ public class ProcessController {
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
 
+    @GetMapping("/pendingAuctionIds")
+    public ResponseEntity<Object> getPendingAuctionIds() {
+        List<Integer> res = assetMasterService.getPendingAuctionIds();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
 
+    @GetMapping("/getPendingInterFieldGtIds")
+    public ResponseEntity<Object> getPendingInterFieldGtIds() {
+        List<Long> id = gtService.getPendingInterFiledGtIdsOgp();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(id), HttpStatus.OK);
+    }
 
 }

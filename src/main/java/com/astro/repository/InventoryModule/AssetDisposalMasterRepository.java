@@ -126,4 +126,11 @@ public interface AssetDisposalMasterRepository extends JpaRepository<AssetDispos
 
 
     List<AssetDisposalMasterEntity> findByDisposalIdIn(List<Integer> disposalIds);
+
+
+    @Query(value = "SELECT a.auction_id FROM asset_disposal_auction a " +
+            "WHERE a.auction_id NOT IN (SELECT o.auction_id FROM ogp_asset_disposal o)",
+            nativeQuery = true)
+    List<Integer> findPendingAuctionIdsWithoutOgp();
+
 }

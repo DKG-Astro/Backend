@@ -79,6 +79,7 @@ public class ogpAssetServiceImpl implements ogpAssetService {
     }
 
 
+
     public List<AssetsAuctionDto> getPendingApprovals() {
         List<OgpAssetDisposal> pendingList = ogpAssetDisposalRepository.findByStatus("Awaiting For Approval");
 

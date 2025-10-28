@@ -1522,3 +1522,8 @@ ALTER TABLE tender_request DROP COLUMN ld_clause,ADD COLUMN ld_clause BOOLEAN DE
 
 ALTER TABLE tender_request ADD COLUMN buy_back BOOLEAN, ADD COLUMN buy_back_amount VARCHAR(255), ADD COLUMN model_number VARCHAR(255), ADD COLUMN serial_number VARCHAR(255), ADD COLUMN date_of_purchase DATE, ADD COLUMN upload_buy_back_file_names VARCHAR(500);
 
+
+CREATE TABLE employee_id_sequence (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    employee_id INT
+);

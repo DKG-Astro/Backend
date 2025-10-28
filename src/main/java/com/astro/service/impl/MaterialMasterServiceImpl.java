@@ -3,22 +3,29 @@ package com.astro.service.impl;
 import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.MaterialMasterRequestDto;
 import com.astro.dto.workflow.MaterialMasterResponseDto;
+import com.astro.dto.workflow.MaterialSearchResponseDto;
 import com.astro.entity.MaterialMaster;
+import com.astro.entity.MaterialMasterUtil;
 import com.astro.entity.ProcurementModule.IndentCreation;
 import com.astro.entity.VendorNamesForJobWorkMaterial;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.MaterialMasterRepository;
+import com.astro.repository.MaterialMasterUtilRepository;
 import com.astro.repository.VendorNamesForJobWorkMaterialRepository;
 import com.astro.service.MaterialMasterService;
+import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -28,7 +35,18 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
     @Autowired
     private MaterialMasterRepository materialMasterRepository;
     @Autowired
+    private MaterialMasterUtilRepository materialMasterUtilRepository;
+
+    @Autowired
     private VendorNamesForJobWorkMaterialRepository vendorNameRepository;
+    @Value("${filePath}")
+    private String bp;
+    private final String basePath;
+
+    public MaterialMasterServiceImpl(@Value("${filePath}") String bp) {
+        this.basePath = bp + "/Material";
+    }
+
     @Override
     public MaterialMasterResponseDto createMaterialMaster(MaterialMasterRequestDto materialMasterRequestDto) {
         // Check if the indentorId already exists
@@ -145,6 +163,137 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
                 ));
         return mapToResponseDTO(materialMaster);
     }
+    /*
+    @Override
+    public MaterialMasterResponseDto getMaterialMasterByIdBase64(String materialCode) throws IOException {
+        MaterialMaster materialMaster= materialMasterRepository.findById(materialCode)
+                .orElseThrow(() -> new BusinessException(
+                        new ErrorDetails(
+                                AppConstant.ERROR_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                                AppConstant.ERROR_TYPE_RESOURCE,
+                                "material master not found for the provided materialcode.")
+                ));
+        MaterialMasterResponseDto materialMasterResponseDto = new MaterialMasterResponseDto();
+        materialMasterResponseDto.setMaterialCode(materialMaster.getMaterialCode());
+        materialMasterResponseDto.setCategory(materialMaster.getCategory());
+        materialMasterResponseDto.setSubCategory(materialMaster.getSubCategory());
+        materialMasterResponseDto.setDescription(materialMaster.getDescription());
+        materialMasterResponseDto.setUom(materialMaster.getUom());
+        //  materialMasterResponseDto.setEndOfLife(materialMaster.getEndOfLife());
+        //   materialMasterResponseDto.setModeOfProcurement(materialMaster.getModeOfProcurement());
+        materialMasterResponseDto.setCurrency(materialMaster.getCurrency());
+        materialMasterResponseDto.setUnitPrice(materialMaster.getUnitPrice());
+        //  materialMasterResponseDto.setDepreciationRate(materialMaster.getDepreciationRate());
+        //  materialMasterResponseDto.setStockLevels(materialMaster.getStockLevels());
+        //  materialMasterResponseDto.setConditionOfGoods(materialMaster.getConditionOfGoods());
+        // materialMasterResponseDto.setShelfLife(materialMaster.getShelfLife());
+        materialMasterResponseDto.setUploadImageFileName(materialMaster.getUploadImageName());
+        materialMasterResponseDto.setIndigenousOrImported(materialMaster.getIndigenousOrImported());
+        materialMasterResponseDto.setEstimatedPriceWithCcy(materialMaster.getEstimatedPriceWithCcy());
+        materialMasterResponseDto.setCreatedBy(materialMaster.getCreatedBy());
+        materialMasterResponseDto.setUpdatedBy(materialMaster.getUpdatedBy());
+        materialMasterResponseDto.setCreatedDate(materialMaster.getCreatedDate());
+        materialMasterResponseDto.setUpdatedDate(materialMaster.getUpdatedDate());
+        if (materialMaster.getUploadImageName() == null || materialMaster.getUploadImageName().isEmpty()) {
+            materialMasterResponseDto.setMaterialFile(null);
+        } else {
+            materialMasterResponseDto.setMaterialFile(
+                    convertFilesToBase64(materialMaster.getUploadImageName(), basePath));
+        }
+        materialMasterResponseDto.setStatus(materialMaster.getStatus());
+/*
+        List<String> vendorNames= vendorNameRepository.findByMaterialCode(materialMaster.getMaterialCode())
+                .stream()
+                .map(VendorNamesForJobWorkMaterial::getVendorName)
+                .collect(Collectors.toList());
+        materialMasterResponseDto.setVendorNames(vendorNames);
+
+ */
+     /*   return materialMasterResponseDto;
+
+    }*/
+    @Override
+    public MaterialMasterResponseDto getMaterialMasterByIdBase64(String materialCode) throws IOException {
+        // Try fetching from main material master first
+        Optional<MaterialMaster> materialOpt = materialMasterRepository.findById(materialCode);
+
+        if (materialOpt.isPresent()) {
+            MaterialMaster materialMaster = materialOpt.get();
+            return buildMaterialResponseFromMaster(materialMaster);
+        }
+        Optional<MaterialMasterUtil> materialUtilOpt = materialMasterUtilRepository.findById(materialCode);
+
+        if (materialUtilOpt.isPresent()) {
+            MaterialMasterUtil util = materialUtilOpt.get();
+            MaterialMasterResponseDto dto = new MaterialMasterResponseDto();
+
+            dto.setMaterialCode(util.getMaterialCode());
+            dto.setCategory(util.getCategory());
+            dto.setSubCategory(util.getSubCategory());
+            dto.setDescription(util.getDescription());
+            dto.setUom(util.getUom());
+            dto.setUnitPrice(util.getUnitPrice());
+            dto.setCurrency(util.getCurrency());
+            dto.setEstimatedPriceWithCcy(util.getEstimatedPriceWithCcy());
+            dto.setUploadImageFileName(util.getUploadImageName());
+            dto.setIndigenousOrImported(util.getIndigenousOrImported());
+            dto.setCreatedBy(util.getCreatedBy());
+            dto.setUpdatedBy(util.getUpdatedBy());
+            dto.setCreatedDate(util.getCreatedDate());
+            dto.setUpdatedDate(util.getUpdatedDate());
+            dto.setBriefDescription(util.getBriefDescription());
+            dto.setStatus(util.getApprovalStatus() != null ? util.getApprovalStatus().name() : null);
+
+            // Handle file conversion to base64 (if available)
+            if (util.getUploadImageName() == null || util.getUploadImageName().isEmpty()) {
+                dto.setMaterialFile(null);
+            } else {
+                dto.setMaterialFile(convertFilesToBase64(util.getUploadImageName(), basePath));
+            }
+
+            return dto;
+        }
+
+
+        throw new BusinessException(
+                new ErrorDetails(
+                        AppConstant.ERROR_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_RESOURCE,
+                        "Material not found in MaterialMaster or MaterialMasterUtil for code: " + materialCode
+                )
+        );
+    }
+    private MaterialMasterResponseDto buildMaterialResponseFromMaster(MaterialMaster materialMaster) throws IOException {
+        MaterialMasterResponseDto dto = new MaterialMasterResponseDto();
+
+        dto.setMaterialCode(materialMaster.getMaterialCode());
+        dto.setCategory(materialMaster.getCategory());
+        dto.setSubCategory(materialMaster.getSubCategory());
+        dto.setDescription(materialMaster.getDescription());
+        dto.setUom(materialMaster.getUom());
+        dto.setUnitPrice(materialMaster.getUnitPrice());
+        dto.setCurrency(materialMaster.getCurrency());
+        dto.setEstimatedPriceWithCcy(materialMaster.getEstimatedPriceWithCcy());
+        dto.setUploadImageFileName(materialMaster.getUploadImageName());
+        dto.setIndigenousOrImported(materialMaster.getIndigenousOrImported());
+        dto.setCreatedBy(materialMaster.getCreatedBy());
+        dto.setUpdatedBy(materialMaster.getUpdatedBy());
+        dto.setCreatedDate(materialMaster.getCreatedDate());
+        dto.setUpdatedDate(materialMaster.getUpdatedDate());
+        dto.setStatus(materialMaster.getStatus());
+        dto.setBriefDescription(materialMaster.getBriefDescription());
+
+        if (materialMaster.getUploadImageName() == null || materialMaster.getUploadImageName().isEmpty()) {
+            dto.setMaterialFile(null);
+        } else {
+            dto.setMaterialFile(convertFilesToBase64(materialMaster.getUploadImageName(), basePath));
+        }
+
+        return dto;
+    }
+
 
     @Override
     public void deleteMaterialMaster(String materialCode) {
@@ -198,6 +347,7 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
         materialMasterResponseDto.setUpdatedBy(materialMaster.getUpdatedBy());
         materialMasterResponseDto.setCreatedDate(materialMaster.getCreatedDate());
         materialMasterResponseDto.setUpdatedDate(materialMaster.getUpdatedDate());
+
 /*
         List<String> vendorNames= vendorNameRepository.findByMaterialCode(materialMaster.getMaterialCode())
                 .stream()
@@ -210,6 +360,36 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
 
 
 
+    }
+    public static List<String> convertFilesToBase64(String fileNames, String basePath) throws IOException {
+        List<String> base64List = new ArrayList<>();
+
+        if (fileNames != null && !fileNames.isEmpty()) {
+            String[] fileNameArray = fileNames.split(",");
+
+            for (String fileName : fileNameArray) {
+                String trimmedFileName = fileName.trim();
+                if (!trimmedFileName.isEmpty()) {
+                    String base64 = CommonUtils.convertImageToBase64(trimmedFileName, basePath);
+                    base64List.add(base64);
+                }
+            }
+        }
+
+        return base64List;
+    }
+
+    @Override
+    public List<MaterialSearchResponseDto> searchMaterials(String keyword) {
+        List<Object[]> results = materialMasterRepository.searchMaterialsForDropdown(keyword);
+
+        return results.stream()
+                .map(obj -> new MaterialSearchResponseDto(
+                        (String) obj[0],
+                        (String) obj[1],
+                        (String) obj[2]
+                ))
+                .collect(Collectors.toList());
     }
 
 

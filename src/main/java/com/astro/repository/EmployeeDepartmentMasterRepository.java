@@ -2,12 +2,26 @@ package com.astro.repository;
 
 import com.astro.entity.EmployeeDepartmentMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 
 @Repository
 public interface EmployeeDepartmentMasterRepository extends JpaRepository<EmployeeDepartmentMaster,String> {
     Optional<EmployeeDepartmentMaster> findByEmployeeId(String employeeId);
+
+    @Query(value = "SELECT e.employee_id, e.employee_name, e.department_name, e.designation " +
+            "FROM employee_department_master e " +
+            "WHERE LOWER(e.employee_id) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "   OR LOWER(e.employee_name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "   OR LOWER(e.department_name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "   OR LOWER(e.designation) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "LIMIT 10",
+            nativeQuery = true)
+    List<Object[]> searchEmployeesForDropdown(@Param("keyword") String keyword);
+
 }

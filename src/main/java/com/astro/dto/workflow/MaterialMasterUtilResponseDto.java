@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class MaterialMasterUtilResponseDto {
@@ -23,6 +24,9 @@ public class MaterialMasterUtilResponseDto {
     private String approvalStatus;
     private String briefDescription;
     private String comments;
+    private String status;
+    private List<String> materialFile;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
 }
+
