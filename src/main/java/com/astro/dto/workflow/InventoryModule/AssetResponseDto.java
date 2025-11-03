@@ -42,4 +42,6 @@ public class AssetResponseDto {
     private LocalDateTime createdDate;
 
     private LocalDateTime updatedDate;
+
+
 }

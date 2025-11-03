@@ -222,6 +222,7 @@ public List<OhqReportDto> getOhqReport() {
         }
 
         dto.setCustodianId(row[9] != null ? (String) row[9] : null);
+        dto.setAssetCode(row[10] != null ? (String) row[10] : null);
         combined.add(dto);
     }
 

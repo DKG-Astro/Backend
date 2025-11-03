@@ -26,4 +26,5 @@ public class GiMaterialDtlDto {
     private BigDecimal acceptedQuantity;
     private BigDecimal rejectedQuantity;
     private String rejectionType;
+    private String assetCode;
 }

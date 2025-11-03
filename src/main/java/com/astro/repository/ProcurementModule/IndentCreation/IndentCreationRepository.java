@@ -300,7 +300,7 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation, 
 
 
 
-    @Query("""
+   /* @Query("""
     SELECT new com.astro.dto.workflow.ApprovedIndentsDto(
         i.indentId,
         pm.projectNameDescription,
@@ -313,6 +313,21 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation, 
     LEFT JOIN MaterialDetails md ON md.indentCreation.indentId = i.indentId
     WHERE i.indentId IN :approvedIndentIds
 """)
-    List<ApprovedIndentsDto> findApprovedIndents(@Param("approvedIndentIds") List<String> approvedIndentIds);
+    List<ApprovedIndentsDto> findApprovedIndents(@Param("approvedIndentIds") List<String> approvedIndentIds);*/
+   @Query("""
+    SELECT new com.astro.dto.workflow.ApprovedIndentsDto(
+        i.indentId,
+        pm.projectNameDescription,
+        i.indentorName,
+        i.createdDate,
+        md.materialDescription
+    )
+    FROM IndentCreation i
+    LEFT JOIN ProjectMaster pm ON pm.projectCode = i.projectName
+    LEFT JOIN MaterialDetails md ON md.indentCreation.indentId = i.indentId
+    WHERE i.indentId IN :approvedIndentIds
+""")
+   List<ApprovedIndentsDto> findApprovedIndents(@Param("approvedIndentIds") List<String> approvedIndentIds);
+
 
 }

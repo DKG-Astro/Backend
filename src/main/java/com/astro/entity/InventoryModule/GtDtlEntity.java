@@ -26,6 +26,7 @@ public class GtDtlEntity {
 
     @Column(name = "asset_id")
     private Integer assetId;
+    private String assetCode;
 
     @Column(name = "asset_desc", length = 500)
     private String assetDesc;

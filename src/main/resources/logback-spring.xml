@@ -1,8 +1,7 @@
 <configuration>
 
     <!-- ====== Define Log Folder for Linux ====== -->
-    <property name="LOG_HOME" value="/home/support/astrologs" />
-
+    <property name="LOG_HOME" value="/home/astro/applicationlogs" />
 
     <!-- ====== Console Log (for debugging and Docker logs) ====== -->
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">

@@ -191,6 +191,7 @@ public class GrnServiceImpl implements GrnService {
                 grnMaterialDtl.setGrnProcessId(grnMaster.getGrnProcessId());
                 grnMaterialDtl.setGiSubProcessId(Integer.parseInt(req.getGiNo().split("/")[1]));
                 grnMaterialDtl.setGrnSubProcessId(grnMaster.getGrnSubProcessId());
+                grnMaterialDtl.setAssetCode(materialDtl.getAssetCode());
                 grnMaterialDtlList.add(grnMaterialDtl);
 
                 updateAssetAndOhq(materialDtl, req.getCustodianId());
@@ -376,6 +377,7 @@ public class GrnServiceImpl implements GrnService {
             ohq = new OhqMasterEntity();
             ohq.setCustodianId(custodianId);
             ohq.setAssetId(materialDtl.getAssetId());
+            ohq.setAssetCode(materialDtl.getAssetCode());
             ohq.setLocatorId(materialDtl.getLocatorId());
             ohq.setQuantity(materialDtl.getAcceptedQuantity());
 

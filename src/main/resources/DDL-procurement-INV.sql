@@ -1523,7 +1523,41 @@ ALTER TABLE tender_request DROP COLUMN ld_clause,ADD COLUMN ld_clause BOOLEAN DE
 ALTER TABLE tender_request ADD COLUMN buy_back BOOLEAN, ADD COLUMN buy_back_amount VARCHAR(255), ADD COLUMN model_number VARCHAR(255), ADD COLUMN serial_number VARCHAR(255), ADD COLUMN date_of_purchase DATE, ADD COLUMN upload_buy_back_file_names VARCHAR(500);
 
 
-CREATE TABLE employee_id_sequence (
+CREATE TABLE employee_id_sequence (id BIGINT AUTO_INCREMENT PRIMARY KEY,employee_id INT);
+/////////
+ALTER TABLE asset_master ADD COLUMN asset_code VARCHAR(200);
+
+ALTER TABLE goods_inspection_detail ADD COLUMN asset_code VARCHAR(200);
+
+ALTER TABLE grn_material_detail ADD COLUMN asset_code VARCHAR(200);INV1157/158
+/////ALTER TABLE grn_material_detail ADD COLUMN ohq_master VARCHAR(200);
+
+ALTER TABLE ohq_master ADD COLUMN asset_code VARCHAR(200);
+
+
+CREATE TABLE asset_serial (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    employee_id INT
+    asset_id INT NOT NULL,
+    asset_code VARCHAR(100),
+    serial_no VARCHAR(100) NOT NULL,
+    custodian_id VARCHAR(100),
+    locator_id INT,
+    po_id VARCHAR(100),
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_asset_serial_asset
+        FOREIGN KEY (asset_id) REFERENCES asset_master(asset_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
+
+ALTER TABLE gt_dtl ADD COLUMN asset_code VARCHAR(200);
+
+ALTER TABLE ogp_gt_dtl ADD COLUMN asset_code VARCHAR(200);
+ALTER TABLE ogp_gt_dtl ADD COLUMN serial_no VARCHAR(200);
+
+ALTER TABLE asset_disposal_detail ADD COLUMN asset_code VARCHAR(200);
+
+ALTER TABLE asset_serial ADD COLUMN status VARCHAR(200);
+
+ALTER TABLE ogp_asset_disposal_detail ADD COLUMN asset_code VARCHAR(200);
+ALTER TABLE ogp_asset_disposal_detail ADD COLUMN serial_no VARCHAR(200);

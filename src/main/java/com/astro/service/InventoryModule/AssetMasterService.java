@@ -2,6 +2,8 @@ package com.astro.service.InventoryModule;
 
 import java.util.List;
 
+import com.astro.dto.workflow.AssetDataForGtDto;
+import com.astro.dto.workflow.AssetSearchResponseDto;
 import com.astro.dto.workflow.InventoryModule.*;
 import com.astro.dto.workflow.InventoryModule.asset.AssetMasterReportDto;
 import com.astro.dto.workflow.InventoryModule.asset.AssetOhqDisposalDto;
@@ -32,4 +34,14 @@ public interface AssetMasterService {
     public String disposeMultipleAssets(DisposeAssetRequest request);
     public AssetsAuctionDto searchByAuctionId(String auctionId);
     public List<Integer> getPendingAuctionIds();
-}
+
+    List<AssetSearchResponseDto> searchAssetsByKeyword(String keyword);
+    public List<AssetFullResponseDto> getFullAssetDetails( Integer assetId, String assetCode, String custodianId, Integer locatorId);
+    public String updateAssetSerials(AssetSerialUpdateRequestDto req);
+
+    public List<AssetDataForGtDto> getAllFullAssets();
+
+    public SerialCheckResponseDto checkSerials(String assetCode, Integer assetId, String custodianId, Integer locatorId, Integer quantity);
+
+    public String addRemainingSerials(AssetSerialUpdateRequestDto req) ;
+    }

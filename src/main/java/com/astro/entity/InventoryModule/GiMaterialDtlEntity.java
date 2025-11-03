@@ -55,4 +55,6 @@ public class GiMaterialDtlEntity {
     @Column(name = "rejection_type")
     private String rejectionType;
 
+    private String assetCode;
+
 }

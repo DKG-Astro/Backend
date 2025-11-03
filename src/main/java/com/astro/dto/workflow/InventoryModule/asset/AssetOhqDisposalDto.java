@@ -2,6 +2,7 @@ package com.astro.dto.workflow.InventoryModule.asset;
 
 import lombok.Data;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class AssetOhqDisposalDto {
@@ -19,5 +20,8 @@ public class AssetOhqDisposalDto {
     private String gprnDate;
     private String serialNo;
     private String modelNo;
+    private String assetCode;
+
+    private List<String> serialNumbers;
 
 }

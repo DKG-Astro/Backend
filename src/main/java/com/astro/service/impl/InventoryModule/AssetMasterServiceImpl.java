@@ -1,5 +1,7 @@
 package com.astro.service.impl.InventoryModule;
 
+import com.astro.dto.workflow.AssetDataForGtDto;
+import com.astro.dto.workflow.AssetSearchResponseDto;
 import com.astro.dto.workflow.InventoryModule.*;
 import com.astro.dto.workflow.InventoryModule.asset.AssetMasterReportDto;
 import com.astro.dto.workflow.InventoryModule.asset.AssetOhqDisposalDto;
@@ -69,6 +71,8 @@ public class AssetMasterServiceImpl implements AssetMasterService {
     private AssetDisposalAuctionEntityRepository assetDisposalAuctionEntityRepository;
     @Autowired
     private AssetDisposalAuctionDetailEntityRepository assetDisposalAuctionDetailEntityRepository;
+    @Autowired
+    private AssetSerialEntityRepository assetSerialEntityRepository;
 
     public AssetMasterServiceImpl(@Value("${filePath}") String bp) {
         this.basePath = bp + "/INV";
@@ -195,6 +199,7 @@ public class AssetMasterServiceImpl implements AssetMasterService {
             AssetDisposalDetailEntity detail = new AssetDisposalDetailEntity();
             detail.setDisposalId(disposalMaster.getDisposalId());
             detail.setAssetId(detailDto.getAssetId());
+            detail.setAssetCode(detailDto.getAssetCode());
             detail.setAssetDesc(detailDto.getAssetDesc());
             detail.setDisposalQuantity(detailDto.getQuantity());
             detail.setDisposalCategory(detailDto.getDisposalCategory());
@@ -233,6 +238,24 @@ public class AssetMasterServiceImpl implements AssetMasterService {
             // Update OHQ
             ohq.setQuantity(remainingQuantity);
             ohqMasterRepository.save(ohq);
+
+            // Mark serial number as disposed
+            if (detailDto.getSerialNo() != null && !detailDto.getSerialNo().isEmpty()) {
+                AssetSerialEntity serial = assetSerialEntityRepository
+                        .findByAssetIdAndCustodianIdAndLocatorIdAndSerialNo(
+                                detailDto.getAssetId(),
+                                detailDto.getCustodianId(),
+                                detailDto.getLocatorId(),
+                                detailDto.getSerialNo()
+                        )
+                        .orElse(null);
+
+                if (serial != null) {
+                    serial.setStatus("Disposed");
+                    assetSerialEntityRepository.save(serial);
+                }
+            }
+
         }
 
         if (errorFound) {
@@ -269,6 +292,7 @@ public class AssetMasterServiceImpl implements AssetMasterService {
             for (AssetDisposalDetailEntity detail : details) {
                 AssetDisposalDetailDto dDto = new AssetDisposalDetailDto();
                 dDto.setAssetId(detail.getAssetId());
+                dDto.setAssetCode(detail.getAssetCode());
                 dDto.setAssetDesc(detail.getAssetDesc());
                 dDto.setQuantity(detail.getDisposalQuantity());
                 dDto.setDisposalCategory(detail.getDisposalCategory());
@@ -316,6 +340,7 @@ public class AssetMasterServiceImpl implements AssetMasterService {
             for (AssetDisposalDetailEntity detail : details) {
                 AssetDisposalDetailDto dDto = new AssetDisposalDetailDto();
                 dDto.setAssetId(detail.getAssetId());
+                dDto.setAssetCode(detail.getAssetCode());
                 dDto.setAssetDesc(detail.getAssetDesc());
                 dDto.setQuantity(detail.getDisposalQuantity());
                 dDto.setDisposalCategory(detail.getDisposalCategory());
@@ -324,6 +349,7 @@ public class AssetMasterServiceImpl implements AssetMasterService {
                 dDto.setLocatorId(detail.getLocatorId());
                 dDto.setOhqId(detail.getOhqId());
                 dDto.setBookValue(detail.getBookValue());
+                dDto.setSerialNo(detail.getSerialNo());
                 dDto.setDepriciationRate(detail.getDepriciationRate());
                 dDto.setUnitPrice(detail.getUnitPrice());
                 dDto.setCustodianId(detail.getCustodianId());
@@ -481,6 +507,19 @@ public class AssetMasterServiceImpl implements AssetMasterService {
                 // Add back quantity
                 ohq.setQuantity(ohq.getQuantity().add(detail.getDisposalQuantity()));
                 ohqMasterRepository.save(ohq);
+
+                assetSerialEntityRepository
+                        .findByAssetIdAndLocatorIdAndCustodianIdAndSerialNoAndStatus(
+                                detail.getAssetId(),
+                                detail.getLocatorId(),
+                                detail.getCustodianId(),
+                                detail.getSerialNo(),
+                                "Disposed")
+                        .ifPresent(serial -> {
+                            serial.setStatus(null);
+                            assetSerialEntityRepository.save(serial);
+                        });
+
             }
 
             // Update disposal status
@@ -620,9 +659,19 @@ public List<OhqConsumableStoreStockEntity> getStoreStockOhqConsumableList(){
 
            dto.setSerialNo((String) r[12]);
            dto.setModelNo((String) r[13]);
+
+           dto.setAssetCode((String) r[14]);
+           List<String> serials = assetSerialEntityRepository.findSerialNumbers(
+                   dto.getAssetId(),
+                   dto.getAssetCode(),
+                   dto.getLocatorId(),
+                   dto.getCustodianId()
+           );
+           dto.setSerialNumbers(serials);
            dtos.add(dto);
 
        }
+
 
        return dtos;
    }
@@ -767,10 +816,12 @@ public List<OhqConsumableStoreStockEntity> getStoreStockOhqConsumableList(){
             dto.setDisposalDetailId(detail.getDisposalDetailId());
             dto.setDisposalId(master.getDisposalId());
             dto.setAssetId(detail.getAssetId());
+            dto.setAssetCode(detail.getAssetCode());
             dto.setAssetDesc(detail.getAssetDesc());
             dto.setDisposalQuantity(detail.getDisposalQuantity());
             dto.setLocatorId(detail.getLocatorId());
             dto.setBookValue(detail.getBookValue());
+            dto.setSerialNo(detail.getSerialNo());
             dto.setDepriciationRate(detail.getDepriciationRate());
             dto.setUnitPrice(detail.getUnitPrice());
             dto.setCustodianId(detail.getCustodianId());
@@ -786,6 +837,142 @@ public List<OhqConsumableStoreStockEntity> getStoreStockOhqConsumableList(){
         auctionDto.setAssets(assetList);
 
         return auctionDto;
+    }
+
+    @Override
+    public List<AssetSearchResponseDto> searchAssetsByKeyword(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            throw new IllegalArgumentException("Please enter a search keyword.");
+        }
+
+        return ohqMasterRepository.searchAssetsByKeyword(keyword.trim());
+    }
+
+    @Override
+    public List<AssetFullResponseDto> getFullAssetDetails(
+            Integer assetId, String assetCode, String custodianId, Integer locatorId) {
+
+        if ((assetId == null || assetId <= 0) &&
+                (assetCode == null || assetCode.isEmpty()) &&
+                (custodianId == null || custodianId.isEmpty()) &&
+                (locatorId == null)) {
+            throw new IllegalArgumentException("Please provide at least one search parameter.");
+        }
+
+        return assetMasterRepository.findAssetFullDetails(assetId, assetCode, custodianId, locatorId);
+    }
+
+    @Transactional
+    public String updateAssetSerials(AssetSerialUpdateRequestDto req) {
+
+        AssetMasterEntity asset = assetMasterRepository.findById(req.getAssetId())
+                .orElseThrow(() -> new RuntimeException("Asset not found for ID: " + req.getAssetId()));
+
+        // Basic validations
+        if (req.getSerialNumbers() == null || req.getSerialNumbers().isEmpty()) {
+            throw new RuntimeException("Serial number list is empty");
+        }
+
+        if (req.getQuantity() == null || req.getQuantity().intValue() != req.getSerialNumbers().size()) {
+            throw new RuntimeException("Quantity and serial number count do not match");
+        }
+
+        // Update fields in asset master
+        asset.setMaterialCode(req.getMaterialCode());
+        asset.setMaterialDesc(req.getMaterialDesc());
+        asset.setAssetDesc(req.getAssetDesc());
+        asset.setMakeNo(req.getMakeNo());
+        asset.setModelNo(req.getModelNo());
+        asset.setUomId(req.getUomId());
+        asset.setUnitPrice(req.getUnitPrice());
+        asset.setStockLevels(req.getQuantity());
+        asset.setUpdatedDate(LocalDateTime.now());
+
+      AssetMasterEntity as =  assetMasterRepository.save(asset);
+
+        // Save to a separate table (if you track per-unit serials)
+        for (String serial : req.getSerialNumbers()) {
+            AssetSerialEntity serialEntity = new AssetSerialEntity();
+            serialEntity.setAssetId(req.getAssetId());
+            serialEntity.setAssetCode(req.getAssetCode());
+            serialEntity.setSerialNo(serial);
+            serialEntity.setCustodianId(req.getCustodianId());
+            serialEntity.setLocatorId(req.getLocatorId());
+            serialEntity.setPoId(req.getPoId());
+            serialEntity.setCreatedDate(LocalDateTime.now());
+             assetSerialEntityRepository.save(serialEntity);
+        }
+        return as.getAssetCode();
+    }
+
+    public List<AssetDataForGtDto> getAllFullAssets() {
+        List<AssetDataForGtDto> assets = assetMasterRepository.findAllAssetFullDetails();
+
+        // For each asset, fetch serial numbers
+        for (AssetDataForGtDto dto : assets) {
+            List<String> serials = assetSerialEntityRepository.findSerialNumbers(
+                    dto.getAssetId(),
+                    dto.getAssetCode(),
+                    dto.getLocatorId(),
+                    dto.getCustodianId()
+            );
+            dto.setSerialNumbers(serials);
+        }
+
+        return assets;
+    }
+
+    @Override
+    public SerialCheckResponseDto checkSerials(String assetCode, Integer assetId, String custodianId, Integer locatorId, Integer quantity) {
+
+
+        List<String> existingSerials = assetSerialEntityRepository
+                .findSerialNosByAssetIdAndLocatorIdAndCustodianId(assetId, locatorId, custodianId);
+
+        int existingCount = existingSerials.size();
+        int remainingToEnter = quantity - existingCount;
+
+        SerialCheckResponseDto response = new SerialCheckResponseDto();
+        response.setAssetId(assetId);
+        response.setAssetCode(assetCode);
+        response.setCustodianId(custodianId);
+        response.setLocatorId(locatorId);
+        response.setExistingSerials(existingSerials);
+        response.setExistingCount(existingCount);
+        response.setRemainingToEnter(Math.max(remainingToEnter, 0));
+        return response;
+    }
+
+    @Transactional
+    public String addRemainingSerials(AssetSerialUpdateRequestDto req) {
+        AssetMasterEntity asset = assetMasterRepository.findById(req.getAssetId())
+                .orElseThrow(() -> new RuntimeException("Asset not found"));
+
+        List<String> existingSerials = assetSerialEntityRepository
+                .findSerialNosByAssetIdAndLocatorIdAndCustodianId(req.getAssetId(), req.getLocatorId(), req.getCustodianId());
+
+
+        //  Validate duplicates
+        for (String serial : req.getSerialNumbers()) {
+            if (existingSerials.contains(serial)) {
+                throw new RuntimeException("Duplicate serial: " + serial);
+            }
+        }
+
+        //  Save new serials
+        for (String serial : req.getSerialNumbers()) {
+            AssetSerialEntity s = new AssetSerialEntity();
+            s.setAssetId(req.getAssetId());
+            s.setAssetCode(req.getAssetCode());
+            s.setSerialNo(serial);
+            s.setCustodianId(req.getCustodianId());
+            s.setLocatorId(req.getLocatorId());
+            s.setPoId(req.getPoId());
+            s.setCreatedDate(LocalDateTime.now());
+            assetSerialEntityRepository.save(s);
+        }
+
+        return "Successfully added " + req.getSerialNumbers().size() + " serials.";
     }
 
 

@@ -12,6 +12,7 @@ public class AutionAssetsDisposalsDto {
     private Integer disposalDetailId;
     private Integer disposalId;
     private Integer assetId;
+    private String assetCode;
     private String assetDesc;
     private BigDecimal disposalQuantity;
     private Integer locatorId;
@@ -20,6 +21,7 @@ public class AutionAssetsDisposalsDto {
     private BigDecimal unitPrice;
     private String custodianId;
     private BigDecimal poValue;
+    private String serialNo;
 
     private String reasonForDisposal;
 

@@ -15,6 +15,7 @@ import com.astro.service.InventoryModule.ogpAssetService;
 import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.IdentifierSequences;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -57,6 +58,8 @@ public class ogpAssetServiceImpl implements ogpAssetService {
                 detail.setDisposal(ogpMaster); // foreign key to parent table
                 detail.setDisposalId(assetDto.getDisposalId());
                 detail.setAssetId(assetDto.getAssetId());
+                detail.setAssetCode(assetDto.getAssetCode());
+                detail.setSerialNo(assetDto.getSerialNo());
                 detail.setAssetDesc(assetDto.getAssetDesc());
                 detail.setDisposalQuantity(assetDto.getDisposalQuantity());
                 detail.setLocatorId(assetDto.getLocatorId());
@@ -101,6 +104,8 @@ public class ogpAssetServiceImpl implements ogpAssetService {
                 dto.setDisposalDetailId(detail.getOgpDisposalDetailId());
                 dto.setDisposalId(detail.getDisposalId());
                 dto.setAssetId(detail.getAssetId());
+                dto.setSerialNo(detail.getSerialNo());
+                dto.setAssetCode(detail.getAssetCode());
                 dto.setAssetDesc(detail.getAssetDesc());
                 dto.setDisposalQuantity(detail.getDisposalQuantity());
                 dto.setLocatorId(detail.getLocatorId());

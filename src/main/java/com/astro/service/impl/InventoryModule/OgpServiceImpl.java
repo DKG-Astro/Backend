@@ -672,6 +672,8 @@ public class OgpServiceImpl implements OgpService {
             OgpGtDtlEntity gtDtlEntity = new OgpGtDtlEntity();
             gtDtlEntity.setGtId(gtMasterEntity.getId());
             gtDtlEntity.setAssetId(gtDtl.getAssetId());
+            gtDtlEntity.setAssetCode(gtDtl.getAssetCode());
+            gtDtlEntity.setSerialNo(gtDtlEntity.getSerialNo());
             gtDtlEntity.setAssetDesc(gtDtl.getAssetDesc());
             gtDtlEntity.setMaterialCode(gtDtl.getMaterialCode());
             gtDtlEntity.setUnitPrice(gtDtl.getUnitPrice());
@@ -709,6 +711,8 @@ public class OgpServiceImpl implements OgpService {
             for (OgpGtDtlEntity gtDtlEntity : gtDtlEntityList) {
                 GtDtl gtDtl = new GtDtl();
                 gtDtl.setAssetId(gtDtlEntity.getAssetId());
+                gtDtl.setAssetCode(gtDtlEntity.getAssetCode());
+                gtDtl.setSerialNo(gtDtlEntity.getSerialNo());
                 gtDtl.setAssetDesc(gtDtlEntity.getAssetDesc());
                 gtDtl.setMaterialCode(gtDtlEntity.getMaterialCode());
                 gtDtl.setMaterialDesc(gtDtlEntity.getMaterialDesc());
@@ -755,6 +759,8 @@ public class OgpServiceImpl implements OgpService {
                 for (OgpGtDtlEntity gtDtlEntity : gtDtlEntityList) {
                     GtDtl gtDtl = new GtDtl();
                     gtDtl.setAssetId(gtDtlEntity.getAssetId());
+                    gtDtl.setAssetCode(gtDtlEntity.getAssetCode());
+                    gtDtl.setSerialNo(gtDtlEntity.getSerialNo());
                     gtDtl.setAssetDesc(gtDtlEntity.getAssetDesc());
                     gtDtl.setMaterialCode(gtDtlEntity.getMaterialCode());
                     gtDtl.setMaterialDesc(gtDtlEntity.getMaterialDesc());

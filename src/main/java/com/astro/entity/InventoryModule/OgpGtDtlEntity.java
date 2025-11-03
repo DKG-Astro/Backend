@@ -27,6 +27,8 @@ public class OgpGtDtlEntity {
     @Column(name = "asset_id")
     private Integer assetId;
 
+    private String assetCode;
+
     @Column(name = "asset_desc", length = 500)
     private String assetDesc;
 
@@ -47,6 +49,8 @@ public class OgpGtDtlEntity {
 
     @Column(name = "unit_price")
     private BigDecimal unitPrice;
+
+    private String serialNo;
 
     @Column(name = "depriciation_rate")
     private BigDecimal depriciationRate;

@@ -35,4 +35,6 @@ public class OhqMasterEntity {
     @Column(name="custodian_id")
     private String custodianId;
 
+    private String assetCode;
+
 }

@@ -31,6 +31,7 @@ public class GrnMaterialDtlEntity {
     
     @Column(name = "asset_id", nullable = false)
     private Integer assetId;
+    private String assetCode;
     
     @Column(name = "locator_id", nullable = false)
     private Integer locatorId;

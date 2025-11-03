@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class AssetDisposalDetailDto {
     private Integer assetId;
+    private String assetCode;
     private String assetDesc;
     private BigDecimal quantity;
     private String disposalCategory;

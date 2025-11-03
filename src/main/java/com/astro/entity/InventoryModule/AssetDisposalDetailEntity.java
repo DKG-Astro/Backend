@@ -20,6 +20,9 @@ public class AssetDisposalDetailEntity {
     
     @Column(name = "asset_id", nullable = false)
     private Integer assetId;
+
+    @Column(name = "asset_code", nullable = false)
+    private String assetCode;
     
     @Column(name = "asset_desc", nullable = false)
     private String assetDesc;

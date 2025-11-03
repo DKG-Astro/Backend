@@ -17,4 +17,5 @@ public class OhqReportDto {
     private BigDecimal unitPrice;
     private List<OhqLocatorDetailDto> locatorDetails;
     private String custodianId;
+    private String assetCode;
 }

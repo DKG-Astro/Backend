@@ -23,5 +23,7 @@ public interface MaterialDetailsRepository extends JpaRepository<MaterialDetails
     @Query("SELECT DISTINCT m.indentCreation.indentId FROM MaterialDetails m WHERE m.materialCode = :materialCode")
     List<String> findIndentIdsByMaterialCode(@Param("materialCode") String materialCode);
 
+    @Query("SELECT m.materialSubCategory FROM MaterialDetails m WHERE m.materialCode = :materialCode")
+    String findSubCategoryByMaterialCode(String materialCode);
 
 }

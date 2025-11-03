@@ -1426,6 +1426,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     public List<ApprovedIndentsDto> getApprovedIndents() {
         List<String> approvedIndentIds = workflowTransitionRepository.findApprovedIndentRequestIds();
+        System.out.println(approvedIndentIds);
         List<ApprovedIndentsDto> rawResults = indentCreationRepository.findApprovedIndents(approvedIndentIds);
 
         Map<String, ApprovedIndentsDto> grouped = new LinkedHashMap<>();
@@ -1835,9 +1836,10 @@ public List<ApprovedIndentsDto> getApprovedIndents() {
             // poWithTenderAndIndentResponseDTO po = purchaseOrderService.getPurchaseOrderById(poId);
             PurchaseOrder po = purchaseOrderRepository.findById(poId).orElse(null);
 
-            String mode = tenderRequestRepository.findModeOfProcurementByTenderId(po.getTenderId());
 
             if (po != null) {
+                String mode = tenderRequestRepository.findModeOfProcurementByTenderId(po.getTenderId());
+
 
                 //   queueResponse.setIndentorName("Null");
                 queueResponse.setProjectName(po.getProjectName());

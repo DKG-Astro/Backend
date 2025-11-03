@@ -8,6 +8,7 @@ import lombok.Data;
 public class GtDtl {
     private Integer assetId;
     private String assetDesc;
+    private String assetCode;
     private String materialCode;
     private String materialDesc;
     private BigDecimal quantity;

@@ -24,6 +24,8 @@ public class OgpAssetDisposalDetail {
 
     @Column(name = "asset_id")
     private Integer assetId;
+    @Column(name = "asset_code")
+    private String assetCode;
 
     @Column(name = "asset_desc")
     private String assetDesc;
@@ -42,6 +44,8 @@ public class OgpAssetDisposalDetail {
 
     @Column(name = "unit_price")
     private BigDecimal unitPrice;
+    @Column(name = "serial_no")
+    private String serialNo;
 
     @Column(name = "custodian_id")
     private String custodianId;

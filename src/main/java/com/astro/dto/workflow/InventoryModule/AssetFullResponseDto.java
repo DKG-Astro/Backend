@@ -1,27 +1,18 @@
-package com.astro.entity.InventoryModule;
+package com.astro.dto.workflow.InventoryModule;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-@Entity
-@Table(name = "asset_master")
 @Data
-public class AssetMasterEntity {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+@AllArgsConstructor
+public class AssetFullResponseDto {
+
     private Integer assetId;
-    @Column(name = "asset_code", unique = true)
     private String assetCode;
     private String materialCode;
     private String materialDesc;
@@ -34,38 +25,20 @@ public class AssetMasterEntity {
     private Integer componentId;
     private BigDecimal initQuantity;
     private String poId;
-
-    @Column(name = "unit_price")
     private BigDecimal unitPrice;
-
-    @Column(name = "depriciation_rate")
     private BigDecimal depriciationRate;
-
-    @Column(name = "end_of_life")
     private LocalDate endOfLife;
-
-    @Column(name = "stock_levels")
     private BigDecimal stockLevels;
-
-    @Column(name = "condition_of_goods")
     private String conditionOfGoods;
-
-    @Column(name = "shelf_life")
     private String shelfLife;
-
-    @Column(name = "locator_id")
-    private Integer locatorId;
-
-    @Column(name = "create_date", updatable = false)
     private LocalDateTime createDate;
-    
     private Integer createdBy;
-    
-    @Column(name = "updated_date")
     private LocalDateTime updatedDate;
-
-    @Column(name="igp_id")
     private Long igpId;
-    
     private Integer updatedBy;
+
+    // Fields from ohq_master
+    private String custodianId;
+    private Integer locatorId;  // ← from OhqMasterEntity
+    private BigDecimal quantity;
 }

@@ -13,7 +13,9 @@ import com.astro.dto.workflow.InventoryModule.GtDtlDto;
 import com.astro.dto.workflow.InventoryModule.GtMasterResponseDto;
 import com.astro.dto.workflow.InventoryModule.GtReportDtlDto;
 import com.astro.dto.workflow.InventoryModule.withinFieldStationGtDto;
+import com.astro.entity.InventoryModule.*;
 import com.astro.entity.UserMaster;
+import com.astro.repository.InventoryModule.AssetSerialEntityRepository;
 import com.astro.repository.InventoryModule.ogp.OgpGtDtlRepository;
 import com.astro.repository.InventoryModule.ogp.OgpGtMasterRepository;
 import com.astro.repository.UserMasterRepository;
@@ -28,10 +30,6 @@ import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.InventoryModule.GoodsTransfer.GtDtl;
 import com.astro.dto.workflow.InventoryModule.GoodsTransfer.GtMasterDto;
 import com.astro.entity.MaterialMaster;
-import com.astro.entity.InventoryModule.GtDtlEntity;
-import com.astro.entity.InventoryModule.GtMasterEntity;
-import com.astro.entity.InventoryModule.OhqMasterConsumableEntity;
-import com.astro.entity.InventoryModule.OhqMasterEntity;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.repository.MaterialMasterRepository;
@@ -60,6 +58,8 @@ public class GtServiceImpl implements GtService {
     private UserMasterRepository userMasterRepository;
     @Autowired
     private OgpGtMasterRepository ogmr;
+    @Autowired
+    private AssetSerialEntityRepository assetSerialEntityRepository;
 
     @Autowired
     private OgpGtDtlRepository ogdr;
@@ -85,6 +85,7 @@ public class GtServiceImpl implements GtService {
             GtDtlEntity gtDtlEntity = new GtDtlEntity();
             gtDtlEntity.setGtId(gtMasterEntity.getId());
             gtDtlEntity.setAssetId(gtDtl.getAssetId());
+            gtDtlEntity.setAssetCode(gtDtl.getAssetCode());
             gtDtlEntity.setAssetDesc(gtDtl.getAssetDesc());
             gtDtlEntity.setMaterialCode(gtDtl.getMaterialCode());
             gtDtlEntity.setUnitPrice(gtDtl.getUnitPrice());
@@ -156,11 +157,19 @@ public class GtServiceImpl implements GtService {
 
         UserMaster um = userMasterRepository.findByUserId(gtMasterEntity.getSenderCustodianId());
         UserMaster umR = userMasterRepository.findByUserId(gtMasterEntity.getReceiverCustodianId());
-        List<String> recipients = List.of(
-               um.getEmail(),
-                "udaychowdhary743@gmail.com",   //replace mail store preson and store purchase officer
-                "kudaykiran.9949@gmail.com"
-        );
+//        List<String> recipients = List.of(
+//               um.getEmail(),
+//                "udaychowdhary743@gmail.com",   //replace mail store preson and store purchase officer
+//                "kudaykiran.9949@gmail.com"
+//        );
+        List<String> recipients = new ArrayList<>();
+
+        if (um != null && um.getEmail() != null) {
+            recipients.add(um.getEmail());
+        }
+        recipients.add("udaychowdhary743@gmail.com");
+        recipients.add("kudaykiran.9949@gmail.com");
+
 
 
         Context context = new Context();
@@ -249,7 +258,7 @@ public class GtServiceImpl implements GtService {
         }
     }
 
-    private void reduceFromCapital(GtDtlEntity gtDtlEntity, GtMasterEntity gtMasterEntity){
+  /*  private void reduceFromCapital(GtDtlEntity gtDtlEntity, GtMasterEntity gtMasterEntity){
         Optional<OhqMasterEntity> existingOhq = ohqmr.findByAssetIdAndLocatorIdAndCustodianId(
                 gtDtlEntity.getAssetId(),
                 gtDtlEntity.getSenderLocatorId(),
@@ -259,8 +268,121 @@ public class GtServiceImpl implements GtService {
             BigDecimal currentQty = ohq.getQuantity() != null ? ohq.getQuantity() : BigDecimal.ZERO;
             ohq.setQuantity(currentQty.subtract(gtDtlEntity.getQuantity()));
             ohqmr.save(ohq);
+
+            List<AssetSerialEntity> senderSerials = assetSerialEntityRepository.findByAssetIdAndCustodianAndLocator(
+                    gtDtlEntity.getAssetId(),
+                    gtMasterEntity.getSenderCustodianId().toString(),
+                    gtDtlEntity.getSenderLocatorId());
+
+            int transferQty = gtDtlEntity.getQuantity().intValue();
+            List<AssetSerialEntity> toTransfer = senderSerials.stream().limit(transferQty).toList();
+
+            for (AssetSerialEntity serial : toTransfer) {
+                serial.setCustodianId(gtMasterEntity.getReceiverCustodianId().toString());
+                serial.setLocatorId(gtDtlEntity.getReceiverLocatorId());
+                assetSerialEntityRepository.save(serial);
+            }
+        }
+
+    }*/
+ /* private void reduceFromCapital(GtDtlEntity gtDtlEntity, GtMasterEntity gtMasterEntity) {
+      Optional<OhqMasterEntity> existingOhq = ohqmr.findByAssetIdAndLocatorIdAndCustodianId(
+              gtDtlEntity.getAssetId(),
+              gtDtlEntity.getSenderLocatorId(),
+              gtMasterEntity.getSenderCustodianId().toString());
+
+      if (existingOhq.isPresent()) {
+          OhqMasterEntity ohq = existingOhq.get();
+          BigDecimal currentQty = ohq.getQuantity() != null ? ohq.getQuantity() : BigDecimal.ZERO;
+          BigDecimal transferQty = gtDtlEntity.getQuantity();
+          BigDecimal newQty = currentQty.subtract(transferQty);
+
+          // Update quantity for sender
+          ohq.setQuantity(newQty);
+          ohqmr.save(ohq);
+
+          //  Transfer required serial numbers
+          List<AssetSerialEntity> senderSerials = assetSerialEntityRepository.findByAssetIdAndCustodianAndLocator(
+                  gtDtlEntity.getAssetId(),
+                  gtMasterEntity.getSenderCustodianId().toString(),
+                  gtDtlEntity.getSenderLocatorId());
+
+          int transferCount = transferQty.intValue();
+
+          if (senderSerials.size() < transferCount) {
+              throw new RuntimeException("Not enough serial numbers available to transfer for asset ID " + gtDtlEntity.getAssetId());
+          }
+
+          //  Move only limited number of serials
+          List<AssetSerialEntity> toTransfer = senderSerials.stream().limit(transferCount).toList();
+
+          for (AssetSerialEntity serial : toTransfer) {
+              serial.setCustodianId(gtMasterEntity.getReceiverCustodianId().toString());
+              serial.setLocatorId(gtDtlEntity.getReceiverLocatorId());
+              assetSerialEntityRepository.save(serial);
+          }
+      }
+  }
+  */
+
+    private void reduceFromCapital(GtDtlEntity gtDtlEntity, GtMasterEntity gtMasterEntity) {
+        Optional<OhqMasterEntity> existingOhq = ohqmr.findByAssetIdAndLocatorIdAndCustodianId(
+                gtDtlEntity.getAssetId(),
+                gtDtlEntity.getSenderLocatorId(),
+                gtMasterEntity.getSenderCustodianId().toString());
+
+        if (existingOhq.isPresent()) {
+            OhqMasterEntity ohq = existingOhq.get();
+            BigDecimal currentQty = ohq.getQuantity() != null ? ohq.getQuantity() : BigDecimal.ZERO;
+            ohq.setQuantity(currentQty.subtract(gtDtlEntity.getQuantity()));
+            ohqmr.save(ohq);
+
+            // Transfer only the single serial number in this line item
+            String serialNumber = gtDtlEntity.getSerialNo();
+            if (serialNumber != null && !serialNumber.isEmpty()) {
+                AssetSerialEntity serial = assetSerialEntityRepository
+                        .findByAssetIdAndSerialNoAndCustodianIdAndLocatorId(
+                                gtDtlEntity.getAssetId(),
+                                serialNumber,
+                                gtMasterEntity.getSenderCustodianId().toString(),
+                                gtDtlEntity.getSenderLocatorId());
+
+                if (serial != null) {
+                    serial.setCustodianId(gtMasterEntity.getReceiverCustodianId().toString());
+                    serial.setLocatorId(gtDtlEntity.getReceiverLocatorId());
+                    assetSerialEntityRepository.save(serial);
+                }
+            }
         }
     }
+
+
+    private void addToCapitalOhq(GtDtlEntity gtDtlEntity, Integer custodianId) {
+        Optional<OhqMasterEntity> existingOhq = ohqmr.findByAssetIdAndLocatorIdAndCustodianId(
+                gtDtlEntity.getAssetId(),
+                gtDtlEntity.getReceiverLocatorId(),
+                custodianId.toString());
+
+        OhqMasterEntity ohq;
+        if (existingOhq.isPresent()) {
+            System.out.println("EXISTING OHQ PRESENT");
+            ohq = existingOhq.get();
+            BigDecimal currentQty = ohq.getQuantity() != null ? ohq.getQuantity() : BigDecimal.ZERO;
+            ohq.setQuantity(currentQty.add(gtDtlEntity.getQuantity()));
+        } else {
+            ohq = new OhqMasterEntity();
+            ohq.setCustodianId(custodianId.toString());
+            ohq.setAssetId(gtDtlEntity.getAssetId());
+            ohq.setAssetCode(gtDtlEntity.getAssetCode());
+            ohq.setLocatorId(gtDtlEntity.getReceiverLocatorId());
+            ohq.setQuantity(gtDtlEntity.getQuantity());
+            ohq.setBookValue(gtDtlEntity.getBookValue());
+            ohq.setDepriciationRate(gtDtlEntity.getDepriciationRate());
+            ohq.setUnitPrice(gtDtlEntity.getUnitPrice());
+        }
+        ohqmr.save(ohq);
+    }
+
 
     private void addToConsumableOhq(GtDtlEntity gtDtlEntity, Integer custodianId) {
         Optional<OhqMasterConsumableEntity> existingOhq = omcr.findByMaterialCodeAndLocatorIdAndCustodianId(
@@ -284,7 +406,7 @@ public class GtServiceImpl implements GtService {
         omcr.save(ohq);
     }
 
-    private void addToCapitalOhq(GtDtlEntity gtDtlEntity, Integer custodianId) {
+   /* private void addToCapitalOhq(GtDtlEntity gtDtlEntity, Integer custodianId) {
          Optional<OhqMasterEntity> existingOhq = ohqmr.findByAssetIdAndLocatorIdAndCustodianId(
                 gtDtlEntity.getAssetId(),
                 gtDtlEntity.getReceiverLocatorId(),
@@ -308,7 +430,7 @@ public class GtServiceImpl implements GtService {
             ohq.setUnitPrice(gtDtlEntity.getUnitPrice());
         }
         ohqmr.save(ohq);
-    }
+    }*/
 
     @Override
     public List<GtMasterDto> getPendingGt(){
@@ -348,6 +470,7 @@ public class GtServiceImpl implements GtService {
             for (GtDtlEntity gtDtlEntity : gtDtlEntityList) {
                 GtDtl gtDtl = new GtDtl();
                 gtDtl.setAssetId(gtDtlEntity.getAssetId());
+                gtDtl.setAssetCode(gtDtlEntity.getAssetCode());
                 gtDtl.setAssetDesc(gtDtlEntity.getAssetDesc());
                 gtDtl.setMaterialCode(gtDtlEntity.getMaterialCode());
                 gtDtl.setMaterialDesc(gtDtlEntity.getMaterialDesc());
@@ -406,6 +529,7 @@ public class GtServiceImpl implements GtService {
             for (GtDtlEntity gtDtlEntity : gtDtlEntityList) {
                 GtDtl gtDtl = new GtDtl();
                 gtDtl.setAssetId(gtDtlEntity.getAssetId());
+                gtDtl.setAssetCode(gtDtlEntity.getAssetCode());
                 gtDtl.setAssetDesc(gtDtlEntity.getAssetDesc());
                 gtDtl.setMaterialCode(gtDtlEntity.getMaterialCode());
                 gtDtl.setMaterialDesc(gtDtlEntity.getMaterialDesc());
@@ -508,6 +632,7 @@ public class GtServiceImpl implements GtService {
             GtDtl gtDtl = new GtDtl();
             gtDtl.setAssetId(gtde.getAssetId());
             gtDtl.setAssetDesc(gtde.getAssetDesc());
+            gtDtl.setAssetCode(gtde.getAssetCode());
             gtDtl.setMaterialCode(gtde.getMaterialCode());
             gtDtl.setMaterialDesc(gtde.getMaterialDesc());
             gtDtl.setQuantity(gtde.getQuantity());
@@ -516,6 +641,7 @@ public class GtServiceImpl implements GtService {
             gtDtl.setUnitPrice(gtde.getUnitPrice());
             gtDtl.setDepriciationRate(gtde.getDepriciationRate());
             gtDtl.setBookValue(gtde.getBookValue());
+            gtDtl.setSerialNo(gtde.getSerialNo());
             gtDtlList.add(gtDtl);
         }
         GtMasterDto gtMasterDto = new GtMasterDto();

@@ -1,5 +1,7 @@
     package com.astro.repository.InventoryModule;
 
+import com.astro.dto.workflow.AssetDataForGtDto;
+import com.astro.dto.workflow.InventoryModule.AssetFullResponseDto;
 import com.astro.entity.InventoryModule.AssetMasterEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -63,4 +65,73 @@ public interface AssetMasterRepository extends JpaRepository<AssetMasterEntity, 
     List<Integer> findAllAssetIds();
 
     Optional<AssetMasterEntity> findByMaterialCodeAndMaterialDescAndUomIdAndIgpId(String materialCode, String materialDesc, String uomId, Long igpId);
+
+    @Query(value = "SELECT asset_code FROM asset_master " +
+            "WHERE asset_code LIKE CONCAT(:prefix, '%') " +
+            "ORDER BY asset_code DESC LIMIT 1", nativeQuery = true)
+    String findMaxAssetCodeByPrefix(@Param("prefix") String prefix);
+
+    @Query("""
+    SELECT new com.astro.dto.workflow.InventoryModule.AssetFullResponseDto(
+        a.assetId, a.assetCode, a.materialCode, a.materialDesc, a.assetDesc, a.makeNo,
+        a.serialNo, a.modelNo, a.uomId, a.componentName, a.componentId, a.initQuantity,
+        a.poId, a.unitPrice, a.depriciationRate, a.endOfLife, a.stockLevels,
+        a.conditionOfGoods, a.shelfLife, a.createDate, a.createdBy,
+        a.updatedDate, a.igpId, a.updatedBy,
+        o.custodianId, o.locatorId, o.quantity
+    )
+    FROM AssetMasterEntity a
+    JOIN OhqMasterEntity o ON a.assetId = o.assetId
+    WHERE 
+        (:assetId IS NULL OR a.assetId = :assetId)
+        AND (:assetCode IS NULL OR a.assetCode = :assetCode)
+        AND (:custodianId IS NULL OR o.custodianId = :custodianId)
+        AND (:locatorId IS NULL OR o.locatorId = :locatorId)
+""")
+    List<AssetFullResponseDto> findAssetFullDetails(
+            Integer assetId,
+            String assetCode,
+            String custodianId,
+            Integer locatorId);
+
+
+    @Query(value = "SELECT MAX(asset_id) FROM asset_master", nativeQuery = true)
+    Integer findMaxAssetId();
+
+    @Query("""
+    SELECT new com.astro.dto.workflow.AssetDataForGtDto(
+        a.assetId,
+        a.assetCode,
+        a.materialCode,
+        a.materialDesc,
+        a.assetDesc,
+        a.makeNo,
+        a.serialNo,
+        a.modelNo,
+        a.uomId,
+        a.componentName,
+        a.componentId,
+        a.initQuantity,
+        a.poId,
+        a.unitPrice,
+        o.depriciationRate,
+        a.endOfLife,
+        a.stockLevels,
+        a.conditionOfGoods,
+        a.shelfLife,
+        a.createDate,
+        a.createdBy,
+        a.updatedDate,
+        a.igpId,
+        a.updatedBy,
+        o.custodianId,
+        o.locatorId,
+        o.quantity,
+        o.bookValue
+    )
+    FROM AssetMasterEntity a
+    JOIN OhqMasterEntity o ON a.assetId = o.assetId
+""")
+    List<AssetDataForGtDto> findAllAssetFullDetails();
+
 }

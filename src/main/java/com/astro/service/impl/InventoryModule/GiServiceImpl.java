@@ -1,11 +1,14 @@
 package com.astro.service.impl.InventoryModule;
 
+import com.astro.dto.workflow.InventoryModule.AssetResponseDto;
 import com.astro.dto.workflow.InventoryModule.GprnDropdownDto;
 import com.astro.dto.workflow.InventoryModule.GprnPoVendorDto;
+import com.astro.dto.workflow.NewAssetResponseDto;
 import com.astro.repository.InventoryModule.GprnRepository.GprnMasterRepository;
 import com.astro.repository.InventoryModule.GprnRepository.GprnMaterialDtlRepository;
 import com.astro.repository.InventoryModule.isn.IssueNoteMasterRepository;
 import com.astro.repository.InventoryModule.ogp.OgpMasterRejectedGiRepository;
+import com.astro.repository.ProcurementModule.IndentCreation.MaterialDetailsRepository;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;
 
 import org.springframework.stereotype.Service;
@@ -77,6 +80,8 @@ public class GiServiceImpl implements GiService {
     private GprnMaterialDtlRepository gprnMaterialDtlRepository;
     @Autowired
     private OgpMasterRejectedGiRepository ogpMasterRejectedGiRepository;
+    @Autowired
+    private MaterialDetailsRepository materialDetailsRepository;
     private final String basePath;
 
     public GiServiceImpl(@Value("${filePath}") String bp) {
@@ -163,14 +168,18 @@ public class GiServiceImpl implements GiService {
                     continue;
                 }
 
-                Integer assetId = null;
+               // Integer assetId = null;
+                NewAssetResponseDto asset = null;
                 if (gmdd.getAcceptedQuantity().compareTo(BigDecimal.ZERO) > 0) {
-                    assetId = createNewAsset(gmdd, req.getCreatedBy(), gprnDto.getPoId());
+                  //  assetId = createNewAsset(gmdd, req.getCreatedBy(), gprnDto.getPoId());
+                     asset = createNewAsset(gmdd, req.getCreatedBy(), gprnDto.getPoId(), gprnDto.getLocationId());
                 }
 
                 GiMaterialDtlEntity gimde = new GiMaterialDtlEntity();
                 mapper.map(gmdd, gimde);
-                gimde.setAssetId(assetId);
+               // gimde.setAssetId(assetId);
+                gimde.setAssetId(asset.getAssetId());
+                gimde.setAssetCode(asset.getAssetCode());
                 gimde.setInspectionSubProcessId(gime.getInspectionSubProcessId());
                 gimde.setGprnSubProcessId(Integer.parseInt(req.getGprnNo().split("/")[1]));
                 gimde.setGprnProcessId(Integer.parseInt(req.getGprnNo().split("/")[0].substring(3)));
@@ -256,6 +265,7 @@ public class GiServiceImpl implements GiService {
                     gmdd.setAssetId(gimde.getAssetId());
                     gmdd.setRejectReason(gimde.getRejectReason());
 
+                    gmdd.setAssetCode(gimde.getAssetCode());
                     gmdd.setInstallationReportFileName(gimde.getInstallationReportFileName());
                     Optional<AssetMasterEntity> aeOpt = amr.findById(gimde.getAssetId());
                     if (aeOpt.isPresent()) {
@@ -292,7 +302,7 @@ public class GiServiceImpl implements GiService {
         return combinedRes;
     }
 
-    private Integer createNewAsset(GiMaterialDtlDto materialDtl, Integer createdBy, String poId) {
+    private NewAssetResponseDto createNewAsset(GiMaterialDtlDto materialDtl, Integer createdBy, String poId, String locationId) {
         MaterialMaster mme = mmr.findById(materialDtl.getMaterialCode())
                 .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
                         AppConstant.ERROR_CODE_RESOURCE,
@@ -317,12 +327,57 @@ public class GiServiceImpl implements GiService {
             ame.setUpdatedDate(LocalDateTime.now());
             ame.setUnitPrice(mme.getUnitPrice());
             ame.setPoId(poId);
+
+
+            String subCategory = materialDetailsRepository.findSubCategoryByMaterialCode(materialDtl.getMaterialCode());
+
+            String fieldStation = locationId;
+            String subCat = subCategory.substring(0, 3);
+            String assetCode = generateAssetCode(fieldStation, subCat);
+            ame.setAssetCode(assetCode);
+            
             amr.save(ame);
-            return ame.getAssetId();
+            //   return ame.getAssetId();
+            return new NewAssetResponseDto(ame.getAssetId(), ame.getAssetCode());
         }
 
-        return ameOpt.get().getAssetId();
+       // return ameOpt.get().getAssetId();
+        AssetMasterEntity existing = ameOpt.get();
+        return new NewAssetResponseDto(existing.getAssetId(), existing.getAssetCode());
     }
+
+ /*   private String generateAssetCode(String fieldStation, String subCategory) {
+        String financialYear = getFinancialYear();
+        String prefix = fieldStation + subCategory + financialYear + "-";
+
+        String maxAssetCode = amr.findMaxAssetCodeByPrefix(prefix);
+        int nextSeq = 1;
+        if (maxAssetCode != null) {
+            String seqPart = maxAssetCode.substring(maxAssetCode.lastIndexOf('-') + 1);
+            nextSeq = Integer.parseInt(seqPart) + 1;
+        }
+
+        return prefix + String.format("%03d", nextSeq);
+    }*/
+ private String generateAssetCode(String fieldStation, String subCategory) {
+     String financialYear = getFinancialYear();
+     String prefix = (fieldStation + subCategory + financialYear + "-").toUpperCase();
+
+     //  Get the current max asset_id from DB
+     Integer maxAssetId = amr.findMaxAssetId();
+     int nextSeq = (maxAssetId != null ? maxAssetId + 1 : 1);
+
+     return prefix + String.format("%03d", nextSeq);
+ }
+
+
+    private String getFinancialYear() {
+        LocalDate today = LocalDate.now();
+        int startYear = today.getMonthValue() >= 4 ? today.getYear() % 100 : (today.getYear() - 1) % 100;
+        int endYear = (startYear + 1) % 100;
+        return String.format("%02d%02d", startYear, endYear);
+    }
+
 
     @Override
     public void validateGiIsApproved(String processNo) {
@@ -611,7 +666,10 @@ public class GiServiceImpl implements GiService {
 
                 if (gmdd.getAcceptedQuantity().compareTo(BigDecimal.ZERO) > 0 && gimde.getAssetId() == null) {
                     SaveGprnDto gprnDto = gprnService.getGprnDtls(req.getGprnNo());
-                    gimde.setAssetId(createNewAsset(gmdd, req.getCreatedBy(), gprnDto.getPoId()));
+                  //  gimde.setAssetId(createNewAsset(gmdd, req.getCreatedBy(), gprnDto.getPoId()));
+                  NewAssetResponseDto asset =  createNewAsset(gmdd, req.getCreatedBy(), gprnDto.getPoId(), gprnDto.getLocationId());
+                  gimde.setAssetCode(asset.getAssetCode());
+                  gimde.setAssetId(asset.getAssetId());
                 }
 
                 try {
