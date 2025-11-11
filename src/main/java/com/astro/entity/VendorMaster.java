@@ -107,6 +107,9 @@ public class VendorMaster {
     @Column(name = "place")
     private String place;
 
+    private String statusOfVendorActiveOrDebar;
+
+    private String reasonForDebar;
 
     private LocalDateTime createdDate = LocalDateTime.now();
     private LocalDateTime updatedDate = LocalDateTime.now();

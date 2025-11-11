@@ -146,7 +146,8 @@ public class VendorMasterServiceImpl implements VendorMasterService {
 
     @Override
     public List<VendorMasterResponseDto> getAllVendorMasters() {
-        List<VendorMaster> vendorMasters= vendorMasterRepository.findAll();
+       // List<VendorMaster> vendorMasters= vendorMasterRepository.findAll();
+        List<VendorMaster> vendorMasters = vendorMasterRepository.findAllActiveVendors();
         return vendorMasters.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
 
     }
@@ -319,6 +320,7 @@ public class VendorMasterServiceImpl implements VendorMasterService {
 
     @Override
     public List<VendorIdNameDTO> getAllVendorIdAndName() {
+
         return vendorMasterRepository.findAllVendorIdAndName();
     }
     public VendorMaster getVendorByVendorId(String vendorId) {
@@ -369,8 +371,12 @@ public class VendorMasterServiceImpl implements VendorMasterService {
         vendor.setCountry(dto.getCountry());
         vendor.setState(dto.getState());
         vendor.setPlace(dto.getPlace());
+        vendor.setStatusOfVendorActiveOrDebar(dto.getStatus());
         vendor.setUpdatedBy(dto.getUpdatedBy());
         vendor.setUpdatedDate(java.time.LocalDateTime.now());
+
+        vendor.setReasonForDebar(dto.getReasonForDebar());
+
 
         return vendorMasterRepository.save(vendor);
     }

@@ -1535,20 +1535,7 @@ ALTER TABLE grn_material_detail ADD COLUMN asset_code VARCHAR(200);INV1157/158
 ALTER TABLE ohq_master ADD COLUMN asset_code VARCHAR(200);
 
 
-CREATE TABLE asset_serial (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    asset_id INT NOT NULL,
-    asset_code VARCHAR(100),
-    serial_no VARCHAR(100) NOT NULL,
-    custodian_id VARCHAR(100),
-    locator_id INT,
-    po_id VARCHAR(100),
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_asset_serial_asset
-        FOREIGN KEY (asset_id) REFERENCES asset_master(asset_id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-);
+CREATE TABLE asset_serial (id BIGINT AUTO_INCREMENT PRIMARY KEY, asset_id INT NOT NULL, asset_code VARCHAR(100), serial_no VARCHAR(100) NOT NULL, custodian_id VARCHAR(100), locator_id INT, po_id VARCHAR(100),  created_date DATETIME DEFAULT CURRENT_TIMESTAMP, CONSTRAINT fk_asset_serial_asset  FOREIGN KEY (asset_id) REFERENCES asset_master(asset_id) ON DELETE CASCADE  ON UPDATE CASCADE);
 
 ALTER TABLE gt_dtl ADD COLUMN asset_code VARCHAR(200);
 
@@ -1561,3 +1548,9 @@ ALTER TABLE asset_serial ADD COLUMN status VARCHAR(200);
 
 ALTER TABLE ogp_asset_disposal_detail ADD COLUMN asset_code VARCHAR(200);
 ALTER TABLE ogp_asset_disposal_detail ADD COLUMN serial_no VARCHAR(200);
+
+/////////////06/11/25//////////////
+
+ALTER TABLE vendor_master ADD COLUMN status_of_vendor_active_or_debar VARCHAR(200);
+
+ALTER TABLE vendor_master ADD COLUMN reason_for_debar VARCHAR(200);

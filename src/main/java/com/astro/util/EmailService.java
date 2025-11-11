@@ -6,6 +6,7 @@ import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.ServiceOrder;
 import com.astro.entity.UserMaster;
 import com.astro.entity.VendorMaster;
+import com.astro.entity.VendorMasterUtil;
 import com.astro.entity.WorkflowTransition;
 import com.astro.repository.UserMasterRepository;
 import com.astro.repository.VendorMasterRepository;
@@ -18,7 +19,6 @@ import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Attachments;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
-import com.sendgrid.helpers.mail.objects.Personalization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -53,7 +53,7 @@ public class EmailService {
 
         private static final String SENDGRID_API_KEY = ""; // API key(we can change based on email)
 
-        public void sendEmail(String toEmail, String username, String password) throws IOException {
+       /* public void sendEmail(String toEmail, String username, String password) throws IOException {
             //  Email from = new Email("udaychowdhary743@gmail.com"); // must be verified in SendGrid
             Email from = new Email("udaykirandkg@gmail.com");
             String subject = "Welcome to Our IIA";
@@ -82,7 +82,33 @@ public class EmailService {
                 throw ex;
             }
 
-        }
+        } */
+       @Async
+       public void sendEmail(String toEmail, String username, String password, VendorMasterUtil vm)
+               throws MessagingException {
+
+           // Prepare Thymeleaf context
+           Context ctx = new Context();
+           ctx.setVariable("vendorName", vm.getVendorName());
+           ctx.setVariable("vendorId", username);
+           ctx.setVariable("password", password);
+
+           // Render HTML using template
+           String htmlContent = templateEngine.process("vendor-email-template", ctx);
+
+           // Build and send email
+           MimeMessage message = mailSender.createMimeMessage();
+           MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+           helper.setTo(toEmail);
+           helper.setSubject("Welcome to IIA – Vendor Login Details");
+           helper.setText(htmlContent, true);
+           helper.setFrom("iiapdkg@gmail.com");
+
+           mailSender.send(message);
+       }
+
+
 
 
     @Async

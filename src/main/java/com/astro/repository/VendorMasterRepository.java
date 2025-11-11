@@ -26,7 +26,10 @@ public interface VendorMasterRepository extends JpaRepository<VendorMaster, Stri
     @Query("SELECT v.vendorId, v.vendorName FROM VendorMaster v WHERE v.vendorId IN :vendorIds")
     List<Object[]> findVendorIdAndNameByIds(@Param("vendorIds") List<String> vendorIds);
 
-    @Query("SELECT new com.astro.dto.workflow.VendorIdNameDTO(v.vendorId, v.vendorName) FROM VendorMaster v")
+    @Query("SELECT new com.astro.dto.workflow.VendorIdNameDTO(v.vendorId, v.vendorName, v.primaryBusiness) FROM VendorMaster v")
     List<VendorIdNameDTO> findAllVendorIdAndName();
+
+    @Query("SELECT v FROM VendorMaster v WHERE v.statusOfVendorActiveOrDebar IS NULL OR LOWER(v.statusOfVendorActiveOrDebar) <> 'debar'")
+    List<VendorMaster> findAllActiveVendors();
 
 }

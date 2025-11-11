@@ -35,5 +35,7 @@ public class MaterialMasterResponseDto {
     private List<String> materialFile;
 
     private String status;
+    private String materialStatus;
+    private String reasonForDeactive;
 
 }

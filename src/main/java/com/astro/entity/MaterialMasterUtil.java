@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @Data
 public class MaterialMasterUtil {
 
-
     @Id
     @Column(name = "material_code")
     private String materialCode;

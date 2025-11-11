@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class VendorIdNameDTO {
     private String vendorId;
     private String vendorName;
+    private String primaryBusiness;
 }

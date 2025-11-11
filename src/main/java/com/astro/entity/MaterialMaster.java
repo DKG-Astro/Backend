@@ -83,6 +83,10 @@ public class MaterialMaster {
     @Column(name = "updated_by")
     private String updatedBy;
 
+    private String statusOfMaterialActiveOrDeactive;
+
+    private String reasonForDeactive;
+
     private LocalDateTime createdDate = LocalDateTime.now();
     private LocalDateTime updatedDate = LocalDateTime.now();
 

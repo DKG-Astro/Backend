@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Vendor Login Details</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<p>Dear <span th:text="${vendorName}">Vendor</span>,</p>
+
+<p>
+    Welcome to the IIA Vendor Portal.<br/>
+    Below are your login credentials:
+</p>
+
+<p>
+    <strong>Vendor ID:</strong> <span th:text="${vendorId}">VENDOR123</span><br/>
+    <strong>Password:</strong> <span th:text="${password}">password</span>
+</p>
+
+<p>
+    Please use these credentials to access the Vendor portal. Link :
+</p>
+
+<p>
+    If you face any issues while logging in, feel free to contact our support team.
+</p>
+
+<p>
+    Regards,<br/>
+    IIA Group
+</p>
+
+</body>
+</html>

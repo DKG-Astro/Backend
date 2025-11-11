@@ -41,4 +41,13 @@ public interface MaterialMasterRepository extends JpaRepository<MaterialMaster, 
 
     Optional<MaterialMaster> findById(String materialCode);
 
+    @Query(
+            value = "SELECT * FROM material_master m " +
+                    "WHERE m.status_of_material_active_or_deactive IS NULL " +
+                    "   OR LOWER(TRIM(m.status_of_material_active_or_deactive)) <> 'deactive'",
+            nativeQuery = true
+    )
+    List<MaterialMaster> findActiveMaterials();
+
+
 }

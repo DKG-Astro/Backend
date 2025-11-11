@@ -300,6 +300,7 @@ public class MaterialMasterUtilServiceImpl implements MaterialMasterUtilService 
         materialMaster.setRemarks(material.getComments());
         materialMaster.setBriefDescription(material.getBriefDescription());
         materialMaster.setStatus("APPROVED");
+        materialMaster.setStatusOfMaterialActiveOrDeactive("Active");
         materialMaster.setCreatedBy(actionBy);
         materialMaster.setUpdatedBy(material.getUpdatedBy());
         materialMasterRepository.save(materialMaster);

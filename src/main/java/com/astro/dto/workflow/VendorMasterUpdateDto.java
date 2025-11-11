@@ -30,4 +30,7 @@ public class VendorMasterUpdateDto {
     private String state;
     private String place;
     private String updatedBy;
+
+    private String status;
+    private String reasonForDebar;
 }

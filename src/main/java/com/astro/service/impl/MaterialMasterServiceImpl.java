@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -71,7 +72,7 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
      //   materialMaster.setShelfLife(materialMasterRequestDto.getShelfLife());
         materialMaster.setUnitPrice(materialMasterRequestDto.getUnitPrice());
         materialMaster.setCurrency(materialMasterRequestDto.getCurrency());
-        materialMaster.setUploadImageName(materialMasterRequestDto.getUploadImageFileName());
+     //   materialMaster.setUploadImageName(materialMasterRequestDto.getUploadImageFileName());
         materialMaster.setIndigenousOrImported(materialMasterRequestDto.getIndigenousOrImported());
         materialMaster.setEstimatedPriceWithCcy(materialMasterRequestDto.getEstimatedPriceWithCcy());
         materialMaster.setCreatedBy(materialMasterRequestDto.getCreatedBy());
@@ -94,7 +95,7 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
     }
 
 
-    @Override
+   /* @Override
     public MaterialMasterResponseDto updateMaterialMaster(String materialCode, MaterialMasterRequestDto materialMasterRequestDto) {
         MaterialMaster materialMaster = materialMasterRepository.findById(materialCode)
                 .orElseThrow(() -> new BusinessException(
@@ -105,49 +106,193 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
                                 "Materail master not found for the provided Material master ID.")
                 ));
 
-      //  materialMaster.setMaterialCode(materialMasterRequestDto.getMaterialCode());
         materialMaster.setCategory(materialMasterRequestDto.getCategory());
         materialMaster.setSubCategory(materialMasterRequestDto.getSubCategory());
         materialMaster.setDescription(materialMasterRequestDto.getDescription());
         materialMaster.setUom(materialMasterRequestDto.getUom());
-     //   materialMaster.setEndOfLife(materialMasterRequestDto.getEndOfLife());
-      //  materialMaster.setModeOfProcurement(materialMasterRequestDto.getModeOfProcurement());
         materialMaster.setUnitPrice(materialMasterRequestDto.getUnitPrice());
         materialMaster.setCurrency(materialMasterRequestDto.getCurrency());
-      //  materialMaster.setDepreciationRate(materialMasterRequestDto.getDepreciationRate());
-      //  materialMaster.setStockLevels(materialMasterRequestDto.getStockLevels());
-      //  materialMaster.setConditionOfGoods(materialMasterRequestDto.getConditionOfGoods());
-     //   materialMaster.setShelfLife(materialMasterRequestDto.getShelfLife());
         materialMaster.setUnitPrice(materialMasterRequestDto.getUnitPrice());
-        materialMaster.setCurrency(materialMasterRequestDto.getCurrency());
-        materialMaster.setUploadImageName(materialMasterRequestDto.getUploadImageFileName());
+        String existingFiles = materialMaster.getUploadImageName();
+        String newFiles = materialMasterRequestDto.getUploadImageFileName();
+
+        if (existingFiles != null && !existingFiles.isEmpty()) {
+            materialMaster.setUploadImageName(existingFiles + "," + newFiles);
+        } else {
+            materialMaster.setUploadImageName(newFiles);
+        }
         materialMaster.setIndigenousOrImported(materialMasterRequestDto.getIndigenousOrImported());
         materialMaster.setEstimatedPriceWithCcy(materialMasterRequestDto.getEstimatedPriceWithCcy());
         materialMaster.setUpdatedBy(materialMasterRequestDto.getUpdatedBy());
-        materialMaster.setCreatedBy(materialMasterRequestDto.getCreatedBy());
         materialMasterRepository.save(materialMaster);
-      /*  // Saveing Vendornames in different table
-        if (materialMasterRequestDto.getVendorNames() != null && !materialMasterRequestDto.getVendorNames().isEmpty()) {
-            List<VendorNamesForJobWorkMaterial> vendors = materialMasterRequestDto.getVendorNames().stream().map(vendorName -> {
-                VendorNamesForJobWorkMaterial vendor = new VendorNamesForJobWorkMaterial();
-                vendor.setVendorName(vendorName);
-                vendor.setMaterialCode(materialCode);
-                return vendor;
-            }).collect(Collectors.toList());
-
-            vendorNameRepository.saveAll(vendors);
-
-        }
-
-       */
 
         return mapToResponseDTO(materialMaster);
 
+    }*/
+  /* @Override
+   public MaterialMasterResponseDto updateMaterialMaster(
+           String materialCode, MaterialMasterRequestDto materialMasterRequestDto) {
+
+       MaterialMaster materialMaster = materialMasterRepository.findById(materialCode)
+               .orElseThrow(() -> new BusinessException(
+                       new ErrorDetails(
+                               AppConstant.ERROR_CODE_RESOURCE,
+                               AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                               AppConstant.ERROR_TYPE_VALIDATION,
+                               "Material master not found for the provided Material master ID.")
+               ));
+
+       materialMaster.setCategory(materialMasterRequestDto.getCategory());
+       materialMaster.setSubCategory(materialMasterRequestDto.getSubCategory());
+       materialMaster.setDescription(materialMasterRequestDto.getDescription());
+       materialMaster.setUom(materialMasterRequestDto.getUom());
+       materialMaster.setUnitPrice(materialMasterRequestDto.getUnitPrice());
+       materialMaster.setCurrency(materialMasterRequestDto.getCurrency());
+       materialMaster.setIndigenousOrImported(materialMasterRequestDto.getIndigenousOrImported());
+       materialMaster.setEstimatedPriceWithCcy(materialMasterRequestDto.getEstimatedPriceWithCcy());
+       materialMaster.setUpdatedBy(materialMasterRequestDto.getUpdatedBy());
+       materialMaster.setStatusOfMaterialActiveOrDeactive(materialMasterRequestDto.getMaterialStatus());
+
+       materialMaster.setReasonForDeactive(materialMasterRequestDto.getReasonForDeactive());
+       String existingFiles = materialMaster.getUploadImageName();
+
+
+       List<String> newFilesList = materialMasterRequestDto.getUploadImageFileName();
+
+       String uploadedFileNames = null;
+
+
+       if (newFilesList != null && !newFilesList.isEmpty()) {
+           uploadedFileNames = saveBase64Files(newFilesList, basePath); // returns comma-separated file names
+           materialMaster.setUploadImageName(uploadedFileNames);
+       }else{
+           materialMaster.setUploadImageName(existingFiles);
+       }
+
+
+
+       materialMasterRepository.save(materialMaster);
+
+       return mapToResponseDTO(materialMaster);
+   }*/
+   @Override
+   public MaterialMasterResponseDto updateMaterialMaster(
+           String materialCode, MaterialMasterRequestDto materialMasterRequestDto) {
+
+
+       Optional<MaterialMaster> optMain = materialMasterRepository.findById(materialCode);
+
+       if (optMain.isPresent()) {
+           MaterialMaster materialMaster = optMain.get();
+
+           materialMaster.setCategory(materialMasterRequestDto.getCategory());
+           materialMaster.setSubCategory(materialMasterRequestDto.getSubCategory());
+           materialMaster.setDescription(materialMasterRequestDto.getDescription());
+           materialMaster.setUom(materialMasterRequestDto.getUom());
+           materialMaster.setUnitPrice(materialMasterRequestDto.getUnitPrice());
+           materialMaster.setCurrency(materialMasterRequestDto.getCurrency());
+           materialMaster.setIndigenousOrImported(materialMasterRequestDto.getIndigenousOrImported());
+           materialMaster.setEstimatedPriceWithCcy(materialMasterRequestDto.getEstimatedPriceWithCcy());
+           materialMaster.setUpdatedBy(materialMasterRequestDto.getUpdatedBy());
+           materialMaster.setStatusOfMaterialActiveOrDeactive(materialMasterRequestDto.getMaterialStatus());
+           materialMaster.setReasonForDeactive(materialMasterRequestDto.getReasonForDeactive());
+
+           String existingFiles = materialMaster.getUploadImageName();
+           List<String> newFilesList = materialMasterRequestDto.getUploadImageFileName();
+
+           if (newFilesList != null && !newFilesList.isEmpty()) {
+               String uploadedFileNames = saveBase64Files(newFilesList, basePath);
+               materialMaster.setUploadImageName(uploadedFileNames);
+           } else {
+               materialMaster.setUploadImageName(existingFiles);
+           }
+
+           materialMasterRepository.save(materialMaster);
+           return mapToResponseDTO(materialMaster);
+       }
+
+
+       MaterialMasterUtil util = materialMasterUtilRepository.findById(materialCode)
+               .orElseThrow(() -> new BusinessException(
+                       new ErrorDetails(
+                               AppConstant.ERROR_CODE_RESOURCE,
+                               AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                               AppConstant.ERROR_TYPE_VALIDATION,
+                               "Material not found in both main and util tables."
+                       )
+               ));
+
+       util.setCategory(materialMasterRequestDto.getCategory());
+       util.setSubCategory(materialMasterRequestDto.getSubCategory());
+       util.setDescription(materialMasterRequestDto.getDescription());
+       util.setUom(materialMasterRequestDto.getUom());
+       util.setUnitPrice(materialMasterRequestDto.getUnitPrice());
+       util.setCurrency(materialMasterRequestDto.getCurrency());
+       util.setIndigenousOrImported(materialMasterRequestDto.getIndigenousOrImported());
+       util.setEstimatedPriceWithCcy(materialMasterRequestDto.getEstimatedPriceWithCcy());
+       util.setUpdatedBy(materialMasterRequestDto.getUpdatedBy());
+      // util.setComments(materialMasterRequestDto.getComments()); // optional
+
+       util.setApprovalStatus(MaterialMasterUtil.ApprovalStatus.AWAITING_APPROVAL);
+       List<String> newFilesList2 = materialMasterRequestDto.getUploadImageFileName();
+       String existingUtilFiles = util.getUploadImageName();
+
+       if (newFilesList2 != null && !newFilesList2.isEmpty()) {
+           String uploadedFileNames = saveBase64Files(newFilesList2, basePath);
+           util.setUploadImageName(uploadedFileNames);
+       } else {
+           util.setUploadImageName(existingUtilFiles);
+       }
+
+       util.setUpdatedDate(LocalDateTime.now());
+
+       materialMasterUtilRepository.save(util);
+
+
+       return mapUtilToResponseDTO(util);
+   }
+
+    private MaterialMasterResponseDto mapUtilToResponseDTO(MaterialMasterUtil util) {
+        MaterialMasterResponseDto dto = new MaterialMasterResponseDto();
+
+        dto.setMaterialCode(util.getMaterialCode());
+        dto.setCategory(util.getCategory());
+        dto.setSubCategory(util.getSubCategory());
+        dto.setDescription(util.getDescription());
+        dto.setUom(util.getUom());
+        dto.setUnitPrice(util.getUnitPrice());
+        dto.setCurrency(util.getCurrency());
+        dto.setEstimatedPriceWithCcy(util.getEstimatedPriceWithCcy());
+        dto.setIndigenousOrImported(util.getIndigenousOrImported());
+      //  dto.setUploadImageName(util.getUploadImageName());
+      //  dto.setComments(util.getComments());
+        dto.setMaterialStatus(util.getApprovalStatus().name());
+        dto.setUpdatedBy(util.getUpdatedBy());
+
+        return dto;
+    }
+
+
+    public String saveBase64Files(List<String> base64Files, String basePath) {
+        try {
+            List<String> fileNames = new ArrayList<>();
+            for (String base64File : base64Files) {
+                String fileName = CommonUtils.saveBase64Image(base64File, basePath);
+                fileNames.add(fileName);
+            }
+            return String.join(",", fileNames);
+        } catch (Exception e) {
+            throw new InvalidInputException(new ErrorDetails(
+                    AppConstant.FILE_UPLOAD_ERROR,
+                    AppConstant.USER_INVALID_INPUT,
+                    AppConstant.ERROR_TYPE_CORRUPTED,
+                    "Error while uploading files."));
+        }
     }
 
     @Override
     public List<MaterialMasterResponseDto> getAllMaterialMasters() {
-        List<MaterialMaster> materialMasters= materialMasterRepository.findAll();
+        List<MaterialMaster> materialMasters= materialMasterRepository.findActiveMaterials();
         return materialMasters.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
     }
 
@@ -243,6 +388,7 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
             dto.setCreatedDate(util.getCreatedDate());
             dto.setUpdatedDate(util.getUpdatedDate());
             dto.setBriefDescription(util.getBriefDescription());
+
             dto.setStatus(util.getApprovalStatus() != null ? util.getApprovalStatus().name() : null);
 
             // Handle file conversion to base64 (if available)
@@ -283,6 +429,8 @@ public class MaterialMasterServiceImpl implements MaterialMasterService {
         dto.setCreatedDate(materialMaster.getCreatedDate());
         dto.setUpdatedDate(materialMaster.getUpdatedDate());
         dto.setStatus(materialMaster.getStatus());
+        dto.setMaterialStatus(materialMaster.getStatusOfMaterialActiveOrDeactive());
+        dto.setReasonForDeactive(materialMaster.getReasonForDeactive());
         dto.setBriefDescription(materialMaster.getBriefDescription());
 
         if (materialMaster.getUploadImageName() == null || materialMaster.getUploadImageName().isEmpty()) {

@@ -17,6 +17,7 @@ import com.astro.util.PasswordGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import javax.persistence.Column;
 import java.io.IOException;
 import java.util.List;
@@ -90,7 +91,7 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
         String password = PasswordGenerator.generateRandomPassword();
         try {
             //sending email to vendor
-            emailService.sendEmail(vm.getEmailAddress(), vm.getVendorId(), password);
+            emailService.sendEmail(vm.getEmailAddress(), vm.getVendorId(), password, vm);
 
             VendorLoginDetails vendorLoginDetails = new VendorLoginDetails();
             vendorLoginDetails.setVendorId(vm.getVendorId());
@@ -98,7 +99,7 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
             vendorLoginDetails.setPassword(password);
             vendorLoginDetails.setEmailSent(true); //sent mail to vendor
             vendorLoginDetailsRepository.save(vendorLoginDetails);
-        } catch (IOException e) {
+        } catch ( MessagingException e) {
             String errorMessage = "Failed to send email to vendor: " + vm.getEmailAddress();
             VendorLoginDetails vendorLoginDetails = new VendorLoginDetails();
             vendorLoginDetails.setVendorId(vm.getVendorId());

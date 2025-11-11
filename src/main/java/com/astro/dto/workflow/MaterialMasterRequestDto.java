@@ -24,7 +24,8 @@ public class MaterialMasterRequestDto {
   //  private String conditionOfGoods;
    // private String shelfLife;
     private BigDecimal estimatedPriceWithCcy;
-    private String uploadImageFileName;
+ //   private String uploadImageFileName;
+ private List<String> uploadImageFileName;
     private Boolean indigenousOrImported;
     private BigDecimal unitPrice;
     private String currency;
@@ -32,5 +33,8 @@ public class MaterialMasterRequestDto {
   //  private List<String> vendorNames;
     private Integer createdBy;
     private String updatedBy;
+
+    private String materialStatus;
+    private String reasonForDeactive;
 
 }

@@ -329,10 +329,10 @@ public class GiServiceImpl implements GiService {
             ame.setPoId(poId);
 
 
-            String subCategory = materialDetailsRepository.findSubCategoryByMaterialCode(materialDtl.getMaterialCode());
+           // String subCategory = materialDetailsRepository.findSubCategoryByMaterialCode(materialDtl.getMaterialCode());
 
             String fieldStation = locationId;
-            String subCat = subCategory.substring(0, 3);
+            String subCat = mme.getSubCategory().substring(0, 3);
             String assetCode = generateAssetCode(fieldStation, subCat);
             ame.setAssetCode(assetCode);
             
@@ -735,7 +735,7 @@ public class GiServiceImpl implements GiService {
                 ))
                 .collect(Collectors.toList());
     }
-
+/*
     public List<GprnDropdownDto> getPendingRejectedGis() {
 
         List<GprnDropdownDto> normalGis = gimdr.findByRejectionType("replacement")
@@ -786,7 +786,72 @@ public class GiServiceImpl implements GiService {
         normalGis.addAll(consumableGis);
 
         return normalGis;
-    }
+    }*/
+public List<GprnDropdownDto> getPendingRejectedGis() {
+
+    // Fetch replacement + permanent for NORMAL
+    List<GiMaterialDtlEntity> normalEntities = new ArrayList<>();
+    normalEntities.addAll(gimdr.findByRejectionType("replacement"));
+    normalEntities.addAll(gimdr.findByRejectionType("permanent"));
+
+    List<GprnDropdownDto> normalGis = normalEntities.stream()
+            .filter(gi -> {
+                String giNo = "INV" + gi.getGprnProcessId() + "/" + gi.getInspectionSubProcessId();
+                return !ogpMasterRejectedGiRepository.existsByGiId(giNo);
+            })
+            .map(gi -> {
+                String giNo = "INV" + gi.getGprnProcessId() + "/" + gi.getInspectionSubProcessId();
+                List<String> materialList = gimdr
+                        .findMaterialDescriptionsByInspectionSubProcessId(gi.getInspectionSubProcessId());
+
+                GprnPoVendorDto gprnDto = gprnMasterRepository
+                        .findPoIdAndVendorIdBySubProcessId(gi.getGprnSubProcessId());
+
+                return new GprnDropdownDto(
+                        gi.getInspectionSubProcessId(),
+                        giNo,
+                        gprnDto.getPoId(),
+                        gprnDto.getVendorId(),
+                        materialList
+                );
+            }).collect(Collectors.toList());
+
+
+
+    // Fetch replacement + permanent for CONSUMABLE
+    List<GoodsInspectionConsumableDetailEntity> consumableEntities = new ArrayList<>();
+    consumableEntities.addAll(gicdr.findByRejectionType("replacement"));
+    consumableEntities.addAll(gicdr.findByRejectionType("permanent"));
+
+    List<GprnDropdownDto> consumableGis = consumableEntities.stream()
+            .filter(gi -> {
+                String giNo = "INV" + gi.getGprnProcessId() + "/" + gi.getInspectionSubProcessId();
+                return !ogpMasterRejectedGiRepository.existsByGiId(giNo);
+            })
+            .map(gi -> {
+                String giNo = "INV" + gi.getGprnProcessId() + "/" + gi.getInspectionSubProcessId();
+                List<String> materialList = gicdr
+                        .findMaterialDescriptionsByInspectionSubProcessId(gi.getInspectionSubProcessId());
+
+                GprnPoVendorDto gprnDto = gprnMasterRepository
+                        .findPoIdAndVendorIdBySubProcessId(gi.getGprnSubProcessId());
+
+                return new GprnDropdownDto(
+                        gi.getInspectionSubProcessId(),
+                        giNo,
+                        gprnDto.getPoId(),
+                        gprnDto.getVendorId(),
+                        materialList
+                );
+            }).collect(Collectors.toList());
+
+
+    normalGis.addAll(consumableGis);
+
+    return normalGis;
+}
+
+
 
 
 
