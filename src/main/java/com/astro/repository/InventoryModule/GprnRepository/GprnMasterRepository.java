@@ -47,4 +47,56 @@ public interface GprnMasterRepository extends JpaRepository<GprnMasterEntity,Int
     @Query("SELECT new com.astro.dto.workflow.InventoryModule.GprnPoVendorDto(g.poId, g.vendorId) " +
             "FROM GprnMasterEntity g WHERE g.subProcessId = :subProcessId")
     GprnPoVendorDto findPoIdAndVendorIdBySubProcessId(@Param("subProcessId") Integer subProcessId);
+
+    @Query(value = """
+    SELECT 
+        po.po_id,
+        po.vendor_name,
+        po.project_name,
+        po.created_date,
+        ic.indentor_name,              -- Fetch from indent_creation
+
+        poa.material_description,
+        poa.quantity AS order_qty,
+
+        IFNULL(gprn.total_received, 0) AS received_qty,
+
+        (poa.quantity - IFNULL(gprn.total_received, 0)) AS pending_qty
+
+    FROM purchase_order po
+    
+    --  Fetch indent IDs using tender_id
+    LEFT JOIN indent_id ind 
+        ON po.tender_id = ind.tender_id
+
+    -- Fetch indentor_name using indent_id
+    LEFT JOIN indent_creation ic
+        ON ind.indent_id = ic.indent_id
+
+    LEFT JOIN purchase_order_attributes poa 
+        ON po.po_id = poa.po_id
+
+    LEFT JOIN (
+        SELECT 
+            gm.po_id,
+            gmd.material_code,
+            SUM(gmd.received_quantity) AS total_received
+        FROM gprn_master gm
+        JOIN gprn_material_detail gmd 
+            ON gm.sub_process_id = gmd.sub_process_id
+        GROUP BY gm.po_id, gmd.material_code
+    ) gprn 
+        ON po.po_id = gprn.po_id 
+       AND poa.material_code = gprn.material_code
+
+    WHERE 
+        gprn.total_received IS NULL 
+        OR gprn.total_received < poa.quantity
+
+    ORDER BY po.po_id;
+    """, nativeQuery = true)
+    List<Object[]> findPendingGprnDetailedRows();
+
+
+
 }

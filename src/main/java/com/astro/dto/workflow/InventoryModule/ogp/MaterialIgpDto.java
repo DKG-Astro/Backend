@@ -18,6 +18,7 @@ public class MaterialIgpDto {
     private String igpType;
     private Integer createdBy;
     private Integer indentId;
+    private String custodianName;
     private String status;
     private String locationId;
 }

@@ -4,6 +4,7 @@ import com.astro.dto.workflow.InventoryModule.AssetResponseDto;
 import com.astro.dto.workflow.InventoryModule.GprnDropdownDto;
 import com.astro.dto.workflow.InventoryModule.GprnPoVendorDto;
 import com.astro.dto.workflow.NewAssetResponseDto;
+import com.astro.entity.UserMaster;
 import com.astro.repository.InventoryModule.GprnRepository.GprnMasterRepository;
 import com.astro.repository.InventoryModule.GprnRepository.GprnMaterialDtlRepository;
 import com.astro.repository.InventoryModule.isn.IssueNoteMasterRepository;
@@ -11,6 +12,8 @@ import com.astro.repository.InventoryModule.ogp.OgpMasterRejectedGiRepository;
 import com.astro.repository.ProcurementModule.IndentCreation.MaterialDetailsRepository;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;
 
+import com.astro.repository.UserMasterRepository;
+import com.astro.util.EmailService;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -82,6 +85,11 @@ public class GiServiceImpl implements GiService {
     private OgpMasterRejectedGiRepository ogpMasterRejectedGiRepository;
     @Autowired
     private MaterialDetailsRepository materialDetailsRepository;
+    @Autowired
+    private UserMasterRepository userMasterRepository;
+    @Autowired
+    private EmailService emailService;
+
     private final String basePath;
 
     public GiServiceImpl(@Value("${filePath}") String bp) {
@@ -170,16 +178,19 @@ public class GiServiceImpl implements GiService {
 
                // Integer assetId = null;
                 NewAssetResponseDto asset = null;
-                if (gmdd.getAcceptedQuantity().compareTo(BigDecimal.ZERO) > 0) {
+                if (gmdd.getAcceptedQuantity().compareTo(BigDecimal.ZERO) >= 0) {
                   //  assetId = createNewAsset(gmdd, req.getCreatedBy(), gprnDto.getPoId());
                      asset = createNewAsset(gmdd, req.getCreatedBy(), gprnDto.getPoId(), gprnDto.getLocationId());
                 }
 
+                System.out.println(asset);
                 GiMaterialDtlEntity gimde = new GiMaterialDtlEntity();
                 mapper.map(gmdd, gimde);
                // gimde.setAssetId(assetId);
-                gimde.setAssetId(asset.getAssetId());
-                gimde.setAssetCode(asset.getAssetCode());
+                if (asset != null) {
+                    gimde.setAssetId(asset.getAssetId());
+                    gimde.setAssetCode(asset.getAssetCode());
+                }
                 gimde.setInspectionSubProcessId(gime.getInspectionSubProcessId());
                 gimde.setGprnSubProcessId(Integer.parseInt(req.getGprnNo().split("/")[1]));
                 gimde.setGprnProcessId(Integer.parseInt(req.getGprnNo().split("/")[0].substring(3)));
@@ -494,8 +505,55 @@ public class GiServiceImpl implements GiService {
         updateGiStatusAndRemarks(req);
 
         updatePoBasedonRejectionType(req);
+        giMailSender(req.getProcessNo());
+
     }
 
+    public String giMailSender(String processNumber) {
+        try {
+            String[] parts = processNumber.split("/");
+            Integer inspectionSubProcessId = Integer.parseInt(parts[1]);
+
+
+            GiMasterEntity giMaster = gimr.findById(inspectionSubProcessId)
+                    .orElseThrow(() -> new BusinessException(new ErrorDetails(
+                            AppConstant.ERROR_CODE_RESOURCE,
+                            AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                            AppConstant.ERROR_TYPE_RESOURCE,
+                            "GI not found")));
+
+            Integer gprnSubProcessId = giMaster.getGprnSubProcessId();
+
+            GprnMasterEntity gprnMaster = gprnMasterRepository.findById(gprnSubProcessId)
+                    .orElseThrow(() -> new BusinessException(new ErrorDetails(
+                            AppConstant.ERROR_CODE_RESOURCE,
+                            AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                            AppConstant.ERROR_TYPE_RESOURCE,
+                            "Gprn not found")));
+
+
+
+
+         UserMaster um = userMasterRepository.findByUserId(Integer.valueOf(gprnMaster.getReceivedBy()));
+
+            String custodainName= um.getUserName();
+            Integer custodainId= Integer.valueOf(gprnMaster.getReceivedBy());
+            String   emailId = um.getEmail();
+            emailService.sendGiMails(
+                    emailId,
+                    custodainName,
+                    custodainId,
+                    String.valueOf(giMaster.getInspectionSubProcessId()),
+                    giMaster.getGprnProcessId(),
+                    giMaster.getStatus()
+            );
+
+        } catch (Exception e) {
+            return "Invalid process number format.";
+        }
+        return  "";
+    }
+/*
     private void updatePoBasedonRejectionType(GiApprovalDto req){
         String[] processNoSplit = req.getProcessNo().split("/");
         String poId = "PO" + processNoSplit[0].substring(3);
@@ -536,6 +594,68 @@ public class GiServiceImpl implements GiService {
             }
         }
     }
+*/
+private void updatePoBasedonRejectionType(GiApprovalDto req) {
+
+    String[] processNoSplit = req.getProcessNo().split("/");
+    String poId = "PO" + processNoSplit[0].substring(3);
+    Integer inspectionId = Integer.parseInt(processNoSplit[1]);
+
+    List<GiMaterialDtlEntity> gimdeList = gimdr.findByInspectionSubProcessId(inspectionId);
+    List<GoodsInspectionConsumableDetailEntity> gicdeList = gicdr.findByInspectionSubProcessId(inspectionId);
+
+    for (GiMaterialDtlEntity gimde : gimdeList) {
+
+        if ("replacement".equalsIgnoreCase(gimde.getRejectionType())) {
+
+            PurchaseOrderAttributes poa = poar
+                    .findByPurchaseOrder_PoIdAndMaterialCode(poId, gimde.getMaterialCode())
+                    .orElseThrow(() -> new BusinessException(new ErrorDetails(
+                            AppConstant.ERROR_CODE_RESOURCE,
+                            AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                            AppConstant.ERROR_TYPE_RESOURCE,
+                            "Purchase Order not found")));
+
+            BigDecimal receivedQty = poa.getReceivedQuantity() != null
+                    ? poa.getReceivedQuantity()
+                    : BigDecimal.ZERO;
+
+            BigDecimal rejectedQty = gimde.getRejectedQuantity() != null
+                    ? gimde.getRejectedQuantity()
+                    : BigDecimal.ZERO;
+
+            poa.setReceivedQuantity(receivedQty.subtract(rejectedQty));
+
+            poar.save(poa);
+        }
+    }
+
+    for (GoodsInspectionConsumableDetailEntity gicde : gicdeList) {
+
+        if ("replacement".equalsIgnoreCase(gicde.getRejectionType())) {
+
+            PurchaseOrderAttributes poa = poar
+                    .findByPurchaseOrder_PoIdAndMaterialCode(poId, gicde.getMaterialCode())
+                    .orElseThrow(() -> new BusinessException(new ErrorDetails(
+                            AppConstant.ERROR_CODE_RESOURCE,
+                            AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                            AppConstant.ERROR_TYPE_RESOURCE,
+                            "Purchase Order not found")));
+
+            BigDecimal receivedQty = poa.getReceivedQuantity() != null
+                    ? poa.getReceivedQuantity()
+                    : BigDecimal.ZERO;
+
+            BigDecimal rejectedQty = gicde.getRejectedQuantity() != null
+                    ? gicde.getRejectedQuantity()
+                    : BigDecimal.ZERO;
+
+            poa.setReceivedQuantity(receivedQty.subtract(rejectedQty));
+
+            poar.save(poa);
+        }
+    }
+}
 
 
     @Override
@@ -543,6 +663,8 @@ public class GiServiceImpl implements GiService {
     public void rejectGi(GiApprovalDto req) {
         // updateGiStatusAndRemarks(req, "REJECTED");
         updateGiStatusAndRemarks(req);
+
+        giMailSender(req.getProcessNo());
     }
 
     @Override
@@ -550,6 +672,8 @@ public class GiServiceImpl implements GiService {
     public void changeReqGi(GiApprovalDto req) {
         // updateGiStatusAndRemarks(req, "CHANGE REQUEST");
         updateGiStatusAndRemarks(req);
+
+        giMailSender(req.getProcessNo());
     }
 
     private void updateGiStatusAndRemarks(GiApprovalDto req) {

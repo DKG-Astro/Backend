@@ -1554,3 +1554,18 @@ ALTER TABLE ogp_asset_disposal_detail ADD COLUMN serial_no VARCHAR(200);
 ALTER TABLE vendor_master ADD COLUMN status_of_vendor_active_or_debar VARCHAR(200);
 
 ALTER TABLE vendor_master ADD COLUMN reason_for_debar VARCHAR(200);
+
+ALTER TABLE material_master ADD COLUMN status_of_material_active_or_deactive VARCHAR(200);
+ALTER TABLE material_master ADD COLUMN reason_for_deactive VARCHAR(200);
+ALTER TABLE material_master ADD COLUMN reason_for_deactive VARCHAR(200);
+
+
+
+/////////////
+
+
+ALTER TABLE ogp_detail_rejected_gi ADD COLUMN asset_code VARCHAR(200);
+ALTER TABLE payment_voucher
+ADD COLUMN tds_amount DECIMAL(18,2),
+ADD COLUMN payment_voucher_net_amount DECIMAL(18,2);
+

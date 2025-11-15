@@ -27,6 +27,7 @@ public class SaveGprnDto {
     private String warranty;
     private String project;
     private String receivedBy;
+    private String receivedName;
     private String createdBy;
     private String locationId;
     private String indentId;

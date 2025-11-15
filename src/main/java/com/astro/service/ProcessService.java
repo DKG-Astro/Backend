@@ -1,6 +1,7 @@
 package com.astro.service;
 
 import com.astro.dto.workflow.InventoryModule.GprnDto.SaveGprnDto;
+import com.astro.dto.workflow.InventoryModule.PendingGprnPoDto;
 import com.astro.dto.workflow.InventoryModule.grn.GrnDto;
 import com.astro.dto.workflow.InventoryModule.grv.GrvDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpDto;
@@ -40,6 +41,7 @@ public interface ProcessService {
 
     public List<OhqReportDto> getOhqReport();
     public List<String> getPendingGprn();
+    public List<PendingGprnPoDto> getPendingGprnDetails();
 
     public OgpPoResponseDto getPoOgp(String processNo);
 

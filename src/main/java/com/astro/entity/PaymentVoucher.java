@@ -62,6 +62,8 @@ public class PaymentVoucher {
     private BigDecimal partialAmount;
     private BigDecimal advanceAmount;
     private BigDecimal paidAmount;
+    private BigDecimal tdsAmount;
+    private BigDecimal paymentVoucherNetAmount;
 
     private String soId;
 

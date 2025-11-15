@@ -4,6 +4,7 @@ import com.astro.dto.workflow.InventoryModule.GiDto.GiApprovalDto;
 import com.astro.dto.workflow.InventoryModule.GiDto.GiWorkflowStatusDto;
 import com.astro.dto.workflow.InventoryModule.GprnDropdownDto;
 import com.astro.dto.workflow.InventoryModule.GrnDropdownDto;
+import com.astro.dto.workflow.InventoryModule.PoGrnInfoDto;
 import com.astro.dto.workflow.InventoryModule.grn.GrnDto;
 import com.astro.dto.workflow.InventoryModule.grn.GrnMaterialMasterDto;
 import com.astro.dto.workflow.InventoryModule.grn.UpdateGrnDto;
@@ -27,7 +28,7 @@ public interface GrnService {
     public List<GiWorkflowStatusDto> getGrnHistoryByProcessId(String processId, Integer subProcessId);
     public String saveMaterialGrn(GrnMaterialMasterDto req);
 
-    public List<String> getDistinctGrnProcessIdsForGIAndApproved();
+    public List<PoGrnInfoDto> getDistinctGrnProcessIdsForGIAndApproved();
 
 
     public List<String> getApprovedSoIds();

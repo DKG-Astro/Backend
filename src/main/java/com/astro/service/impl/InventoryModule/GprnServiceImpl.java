@@ -1,18 +1,20 @@
 package com.astro.service.impl.InventoryModule;
 
+import com.astro.dto.workflow.InventoryModule.MaterialDto;
+import com.astro.dto.workflow.InventoryModule.PendingGprnPoDto;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderRepository;
+import com.astro.repository.UserMasterRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import javax.transaction.Transactional;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.math.BigDecimal;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.astro.service.InventoryModule.GprnService;
@@ -45,6 +47,8 @@ public class GprnServiceImpl implements GprnService {
     private VendorMasterRepository vmr;
     @Autowired
     private PurchaseOrderAttributesRepository poMaterialRepo;
+    @Autowired
+    private UserMasterRepository userMasterRepository;
 
     private final String basePath;
 
@@ -215,6 +219,9 @@ public class GprnServiceImpl implements GprnService {
         gprnRes.setGprnAmount(totalMaterialAmount);
         gprnRes.setMaterialDtlList(materialDtlListRes);
 
+        String custodainName = userMasterRepository.findUserNameByUserId(Integer.valueOf(gme.getReceivedBy()));
+
+        gprnRes.setReceivedName(custodainName);
         return gprnRes;
     }
 
@@ -223,6 +230,71 @@ public class GprnServiceImpl implements GprnService {
         List<String> pendingGprnList = gmr.findPoIdsWithIncompleteGprn();
         return pendingGprnList;
     }
+    @Override
+    public List<PendingGprnPoDto> getPendingGprnDetails() {
+
+        List<Object[]> rows = gmr.findPendingGprnDetailedRows();
+        Map<String, PendingGprnPoDto> poMap = new HashMap<>();
+
+        for (Object[] r : rows) {
+
+            String poId = (String) r[0];
+            PendingGprnPoDto dto = poMap.getOrDefault(poId, new PendingGprnPoDto());
+
+            dto.setPoId(poId);
+            dto.setVendorName((String) r[1]);
+            dto.setProjectName((String) r[2]);
+
+            // Created Date
+            Object createdDateObj = r[3];
+            if (createdDateObj instanceof Timestamp) {
+                dto.setCreatedDate(((Timestamp) createdDateObj).toLocalDateTime());
+            } else if (createdDateObj instanceof LocalDateTime) {
+                dto.setCreatedDate((LocalDateTime) createdDateObj);
+            }
+
+            // Indent IDs
+            if (dto.getIndentIds() == null) dto.setIndentIds(new ArrayList<>());
+            String indentId = (String) r[4];
+
+            if (indentId != null && !dto.getIndentIds().contains(indentId)) {
+                dto.getIndentIds().add(indentId);
+            }
+
+            // Materials
+            if (dto.getMaterials() == null) dto.setMaterials(new ArrayList<>());
+
+            MaterialDto material = new MaterialDto();
+            material.setMaterialDesc((String) r[5]);
+
+            // Safely convert all quantities using BigDecimal
+            BigDecimal orderQty   = toBigDecimal(r[6]);
+            BigDecimal receivedQty = toBigDecimal(r[7]);
+            BigDecimal pendingQty  = toBigDecimal(r[8]);
+
+            material.setOrderQty(orderQty);
+            material.setReceivedQty(receivedQty);
+            material.setPendingQty(pendingQty);
+
+            dto.getMaterials().add(material);
+
+            poMap.put(poId, dto);
+        }
+
+        return new ArrayList<>(poMap.values());
+    }
+
+    /** --- Utility method to safely convert Object → BigDecimal --- */
+    private BigDecimal toBigDecimal(Object obj) {
+        if (obj == null) return BigDecimal.ZERO;
+        try {
+            return new BigDecimal(obj.toString());
+        } catch (Exception e) {
+            return BigDecimal.ZERO;  // fallback to avoid crash
+        }
+    }
+
+
 
     @Override
     public void validateGprnSubProcessId(String processNo) {

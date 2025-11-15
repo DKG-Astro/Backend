@@ -18,6 +18,7 @@ import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
 import com.astro.exception.InvalidInputException;
 import com.astro.repository.*;
+import com.astro.repository.InventoryModule.PaymentVoucherReposiotry;
 import com.astro.repository.ProcurementModule.ContigencyPurchaseRepository;
 import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
 import com.astro.repository.ProcurementModule.IndentCreation.MaterialDetailsRepository;
@@ -125,6 +126,8 @@ public class WorkflowServiceImpl implements WorkflowService {
     private VendorMasterRepository vendorMasterRepository;
     @Autowired
     private IndentIdRepository indentIdtenderIdsRepository;
+    @Autowired
+    private PaymentVoucherReposiotry paymentVoucherReposiotry;
 
     @Override
     public WorkflowDto workflowByWorkflowName(String workflowName) {
@@ -1762,6 +1765,7 @@ public List<ApprovedIndentsDto> getApprovedIndents() {
 
         String requestId = workflowTransition.getRequestId();
 
+
         // boolean isMatched = false;
 
         if (requestId.startsWith("IND")) {
@@ -1871,6 +1875,30 @@ public List<ApprovedIndentsDto> getApprovedIndents() {
                 //  queueResponse.setIndentTitle(tenderDetails.getTitleOfTender());
                 //  queueResponse.setModeOfProcurement(tenderDetails.getModeOfProcurement());
             }
+
+        }
+        else if(workflowTransition.getWorkflowId()==10){
+            String pvRequestId = workflowTransition.getRequestId();  // "INV/1153/156/15"
+            String[] parts = pvRequestId.split("/");
+
+            Long id = Long.parseLong(parts[parts.length - 1]);
+
+            Optional<PaymentVoucher> pv = paymentVoucherReposiotry.findById(id);
+
+            if(pv.isPresent()){
+                PaymentVoucher p = pv.get();
+                queueResponse.setPaymentType(p.getPaymentVoucherType());
+                if(p.getPaymentVoucherType().equalsIgnoreCase("partial")){
+                    queueResponse.setAmount(p.getPaymentVoucherNetAmount());
+                }else if(p.getPaymentVoucherType().equalsIgnoreCase("Full Payment")){
+                    queueResponse.setAmount(p.getPaymentVoucherNetAmount());
+                }else {
+                    queueResponse.setAmount(p.getPaymentVoucherNetAmount());
+                }
+                queueResponse.setPoNo(p.getPurchaseOrderId());
+                queueResponse.setVendorName(p.getVendorName());
+            }
+
 
         }
         return queueResponse;

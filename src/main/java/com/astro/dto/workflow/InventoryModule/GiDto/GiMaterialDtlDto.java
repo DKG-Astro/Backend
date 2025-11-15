@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 public class GiMaterialDtlDto {
     private String materialCode;
     private Integer assetId;
+
     private String materialDesc;
     private String assetDesc;
     private String category;

@@ -29,4 +29,14 @@ public interface GrnMasterRepository extends JpaRepository<GrnMasterEntity, Inte
 
 
     boolean existsByGiSubProcessId(Integer giSubProcessId);
+
+    @Query("""
+SELECT p.poId, p.vendorName, p.projectName, p.createdDate, a.materialDescription
+FROM GrnMasterEntity g
+JOIN PurchaseOrder p ON p.poId = CONCAT('PO', g.grnProcessId)
+LEFT JOIN p.purchaseOrderAttributes a
+WHERE g.grnType = 'GI' AND g.status = 'Approved'
+""")
+    List<Object[]> findPoDetailsForGIApproved();
+
 }

@@ -174,6 +174,13 @@ public class ProcessController {
         res.put("pendingGprnList", pendingGprnList);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
+    @GetMapping("/getPendingAllPoDataForGprn")
+    public ResponseEntity<Object> getPendingPoIdsGprn() {
+        List<PendingGprnPoDto> pendingGprnList = processService.getPendingGprnDetails();
+        Map<String,  List<PendingGprnPoDto>> res = new HashMap<>();
+        res.put("pendingGprnList", pendingGprnList);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
     @GetMapping("/getPoOgp")
     public ResponseEntity<Object> getPoOgp(@RequestParam String processNo) {
         OgpPoResponseDto res = processService.getPoOgp(processNo);
@@ -651,7 +658,7 @@ public class ProcessController {
 
     @GetMapping("/approvedGrnPoIds")
     public ResponseEntity<Object> getApprovedGrnPoIds() {
-     List<String> res=   grns.getDistinctGrnProcessIdsForGIAndApproved();
+        List<PoGrnInfoDto> res=   grns.getDistinctGrnProcessIdsForGIAndApproved();
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
     @GetMapping("/approvedSoIds")

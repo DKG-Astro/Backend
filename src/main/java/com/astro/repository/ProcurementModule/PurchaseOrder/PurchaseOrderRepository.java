@@ -1,5 +1,6 @@
 package com.astro.repository.ProcurementModule.PurchaseOrder;
 
+import com.astro.dto.workflow.PaymentVoucherPoSearchDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.materialHistoryDto;
 import com.astro.dto.workflow.ProcurementDtos.ProcurementActivityReportResponse;
 import com.astro.dto.workflow.ProcurementDtos.performanceWarrsntySecurityReportDto;
@@ -394,6 +395,18 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, St
             @Param("toDate") LocalDate toDate,
             @Param("userId") Integer userId
     );
+
+    @Query("""
+SELECT new com.astro.dto.workflow.PaymentVoucherPoSearchDto(
+    p.poId, p.vendorId, p.vendorName, p.createdDate,
+    a.materialDescription
+)
+FROM PurchaseOrder p
+LEFT JOIN p.purchaseOrderAttributes a
+WHERE p.poId IN :poIds
+""")
+    List<PaymentVoucherPoSearchDto> findPoDetailsDtoByPoIds(@Param("poIds") List<String> poIds);
+
 
 
 

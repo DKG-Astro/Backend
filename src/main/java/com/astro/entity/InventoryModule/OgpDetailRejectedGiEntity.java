@@ -29,6 +29,9 @@ public class OgpDetailRejectedGiEntity {
     @Column(name = "asset_id")
     private Integer assetId;
 
+    @Column(name = "asset_code")
+    private String assetCode;
+
     @Column(name = "asset_desc", length = 255)
     private String assetDesc;
 

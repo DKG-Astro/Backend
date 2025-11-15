@@ -27,6 +27,9 @@ public class paymentVoucherRequestDto {
    private BigDecimal partialAmount;
    private BigDecimal advanceAmount;
 
+   private BigDecimal tdsAmount;
+   private BigDecimal paymentVoucherNetAmount;
+
 
    private Integer createdBy;
 

@@ -2,6 +2,7 @@ package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
 import com.astro.dto.workflow.InventoryModule.GprnDto.SaveGprnDto;
+import com.astro.dto.workflow.InventoryModule.PendingGprnPoDto;
 import com.astro.dto.workflow.InventoryModule.grn.GrnDto;
 import com.astro.dto.workflow.InventoryModule.grv.GrvDto;
 import com.astro.dto.workflow.InventoryModule.igp.IgpDto;
@@ -154,7 +155,13 @@ public class ProcessServiceImpl implements ProcessService {
     }
     @Override
     public List<String> getPendingGprn() {
+
         return gprnService.getPendingGprn();
+    }
+
+    @Override
+    public List<PendingGprnPoDto> getPendingGprnDetails(){
+        return gprnService.getPendingGprnDetails();
     }
 
     // @Override

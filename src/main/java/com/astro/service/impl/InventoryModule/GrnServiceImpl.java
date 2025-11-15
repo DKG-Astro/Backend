@@ -1,11 +1,9 @@
 package com.astro.service.impl.InventoryModule;
 
+import com.astro.dto.workflow.InventoryModule.*;
 import com.astro.dto.workflow.InventoryModule.GiDto.GiApprovalDto;
 import com.astro.dto.workflow.InventoryModule.GiDto.GiWorkflowStatusDto;
-import com.astro.dto.workflow.InventoryModule.GprnPoVendorDto;
-import com.astro.dto.workflow.InventoryModule.GrnDropdownDto;
-import com.astro.dto.workflow.InventoryModule.paymentVoucherDto;
-import com.astro.dto.workflow.InventoryModule.paymentVoucherMaterials;
+import com.astro.dto.workflow.PaymentVoucherPoSearchDto;
 import com.astro.entity.PaymentVoucher;
 import com.astro.entity.PaymentVoucherMaterials;
 import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
@@ -95,6 +93,8 @@ public class GrnServiceImpl implements GrnService {
     private WorkflowTransitionRepository workflowTransitionRepository;
     @Autowired
     private ServiceOrderRepository serviceOrderRepository;
+    @Autowired
+    private PurchaseOrderRepository purchaseOrderRepository;
 
     @Override
     @Transactional
@@ -918,6 +918,8 @@ public class GrnServiceImpl implements GrnService {
         // grnWorkRepo.save(workflowStatus);
     }
 
+
+
     private void updateAssetAndOhq1(GrnMaterialInDtlDto materialDtl, String custodianId) {
         System.out.println("UPDATE CALLED");
         AssetMasterEntity asset = amr.findById(materialDtl.getAssetId())
@@ -975,10 +977,36 @@ public class GrnServiceImpl implements GrnService {
         ohqmr.save(ohq);
     }
 
-    @Override
-    public List<String> getDistinctGrnProcessIdsForGIAndApproved() {
-        return grnmr.findDistinctGrnProcessIdsForGIAndApproved();
+//    @Override
+//    public List<String> getDistinctGrnProcessIdsForGIAndApproved() {
+//        return grnmr.findDistinctGrnProcessIdsForGIAndApproved();
+//    }
+@Override
+public List<PoGrnInfoDto> getDistinctGrnProcessIdsForGIAndApproved() {
+
+    List<Object[]> rows = grnmr.findPoDetailsForGIApproved();
+
+    Map<String, PoGrnInfoDto> map = new LinkedHashMap<>();
+
+    for (Object[] r : rows) {
+
+        String poId = (String) r[0];
+        String vendorName = (String) r[1];
+        String projectName = (String) r[2];
+        LocalDateTime createdDate = (LocalDateTime) r[3];
+        String materialDesc = (String) r[4];
+
+        map.computeIfAbsent(poId, id ->
+                new PoGrnInfoDto(poId, vendorName, projectName, createdDate, new ArrayList<>())
+        );
+
+        if (materialDesc != null)
+            map.get(poId).getMaterialDescriptions().add(materialDesc);
     }
+
+    return new ArrayList<>(map.values());
+}
+
     @Override
     public List<String> getApprovedSoIds() {
         return workflowTransitionRepository.findApprovedSoIds();
@@ -988,7 +1016,9 @@ public class GrnServiceImpl implements GrnService {
     @Override
     public List<String> getGrnDetailsByProcessId(String grnProcessId) {
         List<String> list = new ArrayList<String>();
-      List<GrnMasterEntity>  grns = grnmr.findByGrn(grnProcessId);
+        String grnId = grnProcessId.replace("PO", "");
+
+      List<GrnMasterEntity>  grns = grnmr.findByGrn(grnId);
       for(GrnMasterEntity grn :grns ){
           String processId = "INV"+grn.getGrnProcessId() +"/"+ grn.getGrnSubProcessId();
           boolean exists = paymentVoucherReposiotry.existsByGrnNumberAndPaymentVoucherType(processId, "Full Payment");
@@ -1210,9 +1240,14 @@ public class GrnServiceImpl implements GrnService {
 
     public List<GrnDropdownDto> getPendingGrns() {
 
+       /* List<GiMasterEntity> pendingGiList = gimr.findAll().stream()
+                .filter(gi -> !grnmr.existsByGiSubProcessId(gi.getInspectionSubProcessId()))
+                .collect(Collectors.toList());*/
         List<GiMasterEntity> pendingGiList = gimr.findAll().stream()
+                .filter(gi -> "APPROVED".equalsIgnoreCase(gi.getStatus()))
                 .filter(gi -> !grnmr.existsByGiSubProcessId(gi.getInspectionSubProcessId()))
                 .collect(Collectors.toList());
+
 
         return pendingGiList.stream()
                 .map(gi -> {

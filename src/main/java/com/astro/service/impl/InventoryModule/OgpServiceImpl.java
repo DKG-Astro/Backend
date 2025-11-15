@@ -564,6 +564,7 @@ public class OgpServiceImpl implements OgpService {
             OgpDetailRejectedGiEntity odrge = new OgpDetailRejectedGiEntity();
             odrge.setAssetDesc(dto.getAssetDesc());
             odrge.setAssetId(dto.getAssetId());
+            odrge.setAssetCode(dto.getAssetCode());
             odrge.setMaterialCode(dto.getMaterialCode());
             odrge.setMaterialDesc(dto.getMaterialDesc());
             odrge.setRejectedQuantity(dto.getRejectedQuantity());
@@ -613,6 +614,7 @@ public class OgpServiceImpl implements OgpService {
             mdto.setMaterialCode(detail.getMaterialCode());
             mdto.setMaterialDesc(detail.getMaterialDesc());
             mdto.setAssetId(detail.getAssetId());
+            mdto.setAssetCode(detail.getAssetCode());
             mdto.setAssetDesc(detail.getAssetDesc());
             mdto.setRejectedQuantity(detail.getRejectedQuantity());
             mdto.setRejectionType(detail.getRejectionType());

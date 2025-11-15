@@ -596,6 +596,55 @@ private void sendMail(List<String> toEmails, String subject, String htmlContent)
         }
     }
 
+    @Async
+    public void sendGiMails(String emailId,
+                            String custodianName,
+                            Integer custodianId,
+                            String inspectionSubProcessId,
+                            String gprnProcessId,
+                            String status) throws MessagingException {
+
+
+        String statusMessage;
+
+        switch (status) {
+            case "APPROVED":
+                statusMessage = "Your goods inspection has been approved.";
+                break;
+            case "REJECTED":
+                statusMessage = "Your goods inspection has been rejected.";
+                break;
+            case "CHANGE REQUEST":
+                statusMessage = "A change request has been raised for your goods inspection.";
+                break;
+            default:
+                statusMessage = "Your goods inspection status has been updated.";
+        }
+
+
+        Context ctx = new Context();
+        ctx.setVariable("custodianName", custodianName);
+        ctx.setVariable("custodianId", custodianId);
+        ctx.setVariable("inspectionId", inspectionSubProcessId);
+        ctx.setVariable("gprnProcessId", gprnProcessId);
+        ctx.setVariable("status", status);
+        ctx.setVariable("statusMessage", statusMessage);
+
+        String htmlContent = templateEngine.process("gi-email-template", ctx);
+
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setTo(emailId);
+        helper.setSubject("GI Inspection Status Update – IIA");
+        helper.setText(htmlContent, true);
+        helper.setFrom("iiapdkg@gmail.com");
+
+
+        mailSender.send(message);
+    }
+
 }
 
 

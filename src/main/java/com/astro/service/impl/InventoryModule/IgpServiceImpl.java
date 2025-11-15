@@ -1,5 +1,6 @@
 package com.astro.service.impl.InventoryModule;
 
+import com.astro.repository.UserMasterRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import javax.transaction.Transactional;
@@ -70,7 +71,8 @@ public class IgpServiceImpl implements IgpService {
 
     @Autowired
     private MaterialMasterRepository mmr;
-
+    @Autowired
+    private UserMasterRepository userMasterRepository;
 
     @Override
     @Transactional
@@ -604,7 +606,9 @@ public List<IgpMaterialInReportDto> getIgpMaterialInReport(String startDate, Str
         materialIgpDto.setStatus(igpMaterialMasterEntity.getStatus());
         materialIgpDto.setLocationId(igpMaterialMasterEntity.getLocationId());
 
+       String custodianName = userMasterRepository.findUserNameByUserId(igpMaterialMasterEntity.getIndentId());
 
+       materialIgpDto.setCustodianName(custodianName);
         List<IgpMaterialDtlEntity> igpMaterialDtlEntityList = imdr.findByIgpId(id);
         List<IgpMaterialDetailDto> igpMaterialDetailDtoList = new ArrayList<>();
         for (IgpMaterialDtlEntity igpMaterialDtlEntity : igpMaterialDtlEntityList) {
@@ -628,6 +632,7 @@ public List<IgpMaterialInReportDto> getIgpMaterialInReport(String startDate, Str
             igpMaterialDetailDtoList.add(igpMaterialDetailDto);
         }
         materialIgpDto.setMaterialDtlList(igpMaterialDetailDtoList);
+
 
         return materialIgpDto;
     }

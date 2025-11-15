@@ -42,6 +42,13 @@ public class QueueResponse {
     private Date modificationDate;
     private Date createdDate;
 
+   // private BigDecimal amount;
+    private String poNo;
+    private String vendorName;
+    private String paymentType;
+
+
+
 
 
 

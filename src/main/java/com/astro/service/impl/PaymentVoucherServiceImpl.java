@@ -53,6 +53,8 @@ public class PaymentVoucherServiceImpl implements PaymentVoucherService {
         voucher.setAdvanceAmount(dto.getAdvanceAmount());
         voucher.setSoId(dto.getServiceOrderDetails());
         voucher.setCreatedBy(dto.getCreatedBy());
+        voucher.setTdsAmount(dto.getTdsAmount());
+        voucher.setPaymentVoucherNetAmount(dto.getPaymentVoucherNetAmount());
 
         Optional<PaymentVoucher> existingVoucherOpt = paymentVoucherReposiotry.findTopByGrnNumberOrderByIdDesc(dto.getGrnNumber());
 
@@ -134,6 +136,8 @@ public class PaymentVoucherServiceImpl implements PaymentVoucherService {
         dto.setPartialAmount(entity.getPartialAmount());
         dto.setAdvanceAmount(entity.getAdvanceAmount());
         dto.setCreatedBy(entity.getCreatedBy());
+        dto.setPaymentVoucherNetAmount(entity.getPaymentVoucherNetAmount());
+        dto.setTdsAmount(entity.getTdsAmount());
 
         // Map materials
         if (entity.getMaterialsList() != null) {
