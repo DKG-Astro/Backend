@@ -30,10 +30,13 @@ public interface GrnService {
 
     public List<PoGrnInfoDto> getDistinctGrnProcessIdsForGIAndApproved();
 
+    public List<PoGrnInfoDto> getPosWithoutGRN();
 
     public List<String> getApprovedSoIds();
     public List<String> getGrnDetailsByProcessId(String grnProcessId);
     public paymentVoucherDto getPaymentVoucherData(String grnProcessId);
+
+    public paymentVoucherDto getPaymentVoucherDataFromPO(String poId);
 
     public paymentVoucherDto getPaymentVoucherDtoBySoId(String soId);
     public List<GrnDropdownDto> getPendingGrns();

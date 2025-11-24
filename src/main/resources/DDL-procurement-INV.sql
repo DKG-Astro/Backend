@@ -1565,7 +1565,8 @@ ALTER TABLE material_master ADD COLUMN reason_for_deactive VARCHAR(200);
 
 
 ALTER TABLE ogp_detail_rejected_gi ADD COLUMN asset_code VARCHAR(200);
-ALTER TABLE payment_voucher
-ADD COLUMN tds_amount DECIMAL(18,2),
-ADD COLUMN payment_voucher_net_amount DECIMAL(18,2);
+ALTER TABLE payment_voucher ADD COLUMN tds_amount DECIMAL(18,2), ADD COLUMN payment_voucher_net_amount DECIMAL(18,2);
 
+////
+ALTER TABLE payment_voucher
+MODIFY vendor_invoice_number VARCHAR(255) NULL;

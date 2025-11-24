@@ -39,4 +39,20 @@ WHERE g.grnType = 'GI' AND g.status = 'Approved'
 """)
     List<Object[]> findPoDetailsForGIApproved();
 
+    @Query("""
+SELECT p.poId,
+       p.vendorName,
+       p.projectName,
+       p.createdDate,
+       a.materialDescription
+FROM PurchaseOrder p
+LEFT JOIN p.purchaseOrderAttributes a
+WHERE p.poId NOT IN (
+    SELECT CONCAT('PO', g.grnProcessId) FROM GrnMasterEntity g
+)
+""")
+    List<Object[]> findPoDetailsWhereNoGRN();
+
+
+
 }

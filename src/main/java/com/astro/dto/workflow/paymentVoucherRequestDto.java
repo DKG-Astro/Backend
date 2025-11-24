@@ -35,4 +35,7 @@ public class paymentVoucherRequestDto {
 
     private List<paymentVoucherMaterialRequestDto> materials;
 
+    public BigDecimal advanceAdjustedAmount;
+
+
 }

@@ -6,6 +6,7 @@ import com.astro.dto.workflow.InventoryModule.GiDto.GiWorkflowStatusDto;
 import com.astro.dto.workflow.PaymentVoucherPoSearchDto;
 import com.astro.entity.PaymentVoucher;
 import com.astro.entity.PaymentVoucherMaterials;
+import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
 import com.astro.entity.ProcurementModule.ServiceOrder;
 import com.astro.repository.InventoryModule.*;
@@ -1006,6 +1007,32 @@ public List<PoGrnInfoDto> getDistinctGrnProcessIdsForGIAndApproved() {
 
     return new ArrayList<>(map.values());
 }
+    @Override
+    public List<PoGrnInfoDto> getPosWithoutGRN() {
+
+        List<Object[]> rows = grnmr.findPoDetailsWhereNoGRN();
+
+        Map<String, PoGrnInfoDto> map = new LinkedHashMap<>();
+
+        for (Object[] r : rows) {
+            String poId = (String) r[0];
+            String vendorName = (String) r[1];
+            String projectName = (String) r[2];
+            LocalDateTime createdDate = (LocalDateTime) r[3];
+            String materialDesc = (String) r[4];
+
+            map.computeIfAbsent(poId, id ->
+                    new PoGrnInfoDto(poId, vendorName, projectName, createdDate, new ArrayList<>())
+            );
+
+            if (materialDesc != null) {
+                map.get(poId).getMaterialDescriptions().add(materialDesc);
+            }
+        }
+
+        return new ArrayList<>(map.values());
+    }
+
 
     @Override
     public List<String> getApprovedSoIds() {
@@ -1160,11 +1187,12 @@ public List<PoGrnInfoDto> getDistinctGrnProcessIdsForGIAndApproved() {
 
 
         dto.setTotalAmount(totalAmount);
-
+/*
         Optional<PaymentVoucher> existingVoucherOpt = paymentVoucherReposiotry.findTopByGrnNumberOrderByIdDesc(grnProcessId);
 
         if (existingVoucherOpt.isPresent()) {
             PaymentVoucher existingVoucher = existingVoucherOpt.get();
+
             String type = existingVoucher.getPaymentVoucherType();
 
             if ("Partial".equalsIgnoreCase(type)) {
@@ -1178,9 +1206,124 @@ public List<PoGrnInfoDto> getDistinctGrnProcessIdsForGIAndApproved() {
                 dto.setAdvanceAmountAlreadyPaid(advancePaid);
                 dto.setAdvanceBalanceAmount(totalAmount.subtract(advancePaid));
             }
+        }else{
+            Optional<PaymentVoucher> existingVoucher =
+                    paymentVoucherReposiotry.findTopByPurchaseOrderIdOrderByIdDesc(gprnMaster.getPoId());
+            if(existingVoucher.isPresent()){
+                PaymentVoucher pv = existingVoucher.get();
+                dto.setAdvanceAdjustedAmount(
+                        pv.getAdvanceAdjustedAmount() != null ? pv.getAdvanceAdjustedAmount() : BigDecimal.ZERO
+                );
+                if(pv.getPaymentVoucherType().equalsIgnoreCase("Advance")){
+                    BigDecimal advancePaid = pv.getPaidAmount() != null ? pv.getPaidAmount() : BigDecimal.ZERO;
+                    dto.setPaymentVoucherType("Advance");
+                    dto.setAdvanceAmountAlreadyPaid(advancePaid);
+                    dto.setAdvanceBalanceAmount(totalAmount.subtract(advancePaid));
+                }
+            }
+        }*/
+
+
+
+        BigDecimal totalAdvancePaid =
+                paymentVoucherReposiotry.getTotalAdvancePaid(gprnMaster.getPoId());
+
+
+        BigDecimal totalAdvanceAdjusted =
+                paymentVoucherReposiotry.getTotalAdvanceAdjusted(gprnMaster.getPoId());
+
+        BigDecimal remainingAdvance = totalAdvancePaid.subtract(totalAdvanceAdjusted);
+
+        dto.setAdvanceAmountAlreadyPaid(totalAdvancePaid);
+        dto.setAdvanceBalanceAmount(remainingAdvance);
+
+        BigDecimal advanceAppliedToThisGrn =
+                paymentVoucherReposiotry.getAdvanceAppliedForGrn(grnProcessId);
+
+        dto.setAdvanceAdjustedAmount(
+                advanceAppliedToThisGrn != null ? advanceAppliedToThisGrn : BigDecimal.ZERO
+        );
+
+        BigDecimal partialPaidForGrn = paymentVoucherReposiotry.getTotalPartialPaidForGrn(grnProcessId);
+
+        if (partialPaidForGrn.compareTo(BigDecimal.ZERO) > 0) {
+            dto.setPaymentVoucherType("Partial");
+            dto.setPartialAmountAlreadypaid(partialPaidForGrn);
+           // dto.setPartialBalanceAmount(totalAmount.subtract(partialPaidForGrn));
+            BigDecimal balance = totalAmount
+                    .subtract(advanceAppliedToThisGrn != null ? advanceAppliedToThisGrn : BigDecimal.ZERO)
+                    .subtract(partialPaidForGrn);
+
+            dto.setPartialBalanceAmount(balance);
         }
+
+       // BigDecimal advanceAppliedToThisGrn = paymentVoucherReposiotry.getAdvanceAppliedForGrn(grnProcessId);
+
+        dto.setAdvanceAdjustedAmount(advanceAppliedToThisGrn != null ? advanceAppliedToThisGrn : BigDecimal.ZERO);
+
         return dto;
     }
+
+
+    public paymentVoucherDto getPaymentVoucherDataFromPO(String poId) {
+
+
+        PurchaseOrder po = purchaseOrderRepository.findById(poId)
+                .orElseThrow(() -> new RuntimeException("Purchase Order not found: " + poId));
+
+        // Prepare DTO
+        paymentVoucherDto dto = new paymentVoucherDto();
+
+        dto.setVendorName(po.getVendorName());
+
+        // Convert material attributes
+        List<paymentVoucherMaterials> materials = po.getPurchaseOrderAttributes()
+                .stream()
+                .map(attr -> {
+                    paymentVoucherMaterials mat = new paymentVoucherMaterials();
+                    mat.setMaterialCode(attr.getMaterialCode());
+                    mat.setMaterialDescription(attr.getMaterialDescription());
+                    mat.setQuantity(attr.getQuantity());
+                    mat.setUnitPrice(attr.getRate());
+                    mat.setCurrency(attr.getCurrency());
+                    mat.setExchangeRate(
+                            attr.getExchangeRate() != null ? attr.getExchangeRate() : BigDecimal.ONE
+                    );
+                    mat.setGst(attr.getGst());
+                    mat.setAmount(attr.getQuantity().multiply(attr.getRate()));
+                    return mat;
+                })
+                .collect(Collectors.toList());
+
+        dto.setMaterialsList(materials);
+
+        // Calculate total amount (with GST)
+        BigDecimal totalAmount = materials.stream()
+                .map(m -> {
+                    BigDecimal amount = m.getAmount() != null ? m.getAmount() : BigDecimal.ZERO;
+                    BigDecimal gst = m.getGst() != null ? m.getGst() : BigDecimal.ZERO;
+                    BigDecimal gstAmount = amount.multiply(gst).divide(BigDecimal.valueOf(100));
+                    return amount.add(gstAmount);
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        dto.setTotalAmount(totalAmount);
+
+        Optional<PaymentVoucher> existingVoucherOpt =
+                paymentVoucherReposiotry.findTopByPurchaseOrderIdOrderByIdDesc(poId);
+        if(existingVoucherOpt.isPresent()){
+            PaymentVoucher pv = existingVoucherOpt.get();
+            if(pv.getPaymentVoucherType().equalsIgnoreCase("Advance")){
+                BigDecimal advancePaid = pv.getPaidAmount() != null ? pv.getPaidAmount() : BigDecimal.ZERO;
+                dto.setPaymentVoucherType("Advance");
+                dto.setAdvanceAmountAlreadyPaid(advancePaid);
+                dto.setAdvanceBalanceAmount(totalAmount.subtract(advancePaid));
+            }
+        }
+
+        return dto;
+    }
+
 
 
     public paymentVoucherDto getPaymentVoucherDtoBySoId(String soId) {

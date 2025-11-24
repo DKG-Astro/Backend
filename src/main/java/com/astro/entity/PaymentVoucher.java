@@ -70,6 +70,10 @@ public class PaymentVoucher {
     private Integer createdBy;
     private LocalDateTime createdDate = LocalDateTime.now();
 
+    @Column(name = "advance_adjusted_amount")
+    private BigDecimal advanceAdjustedAmount = BigDecimal.ZERO;
+
+
     @OneToMany(mappedBy = "paymentVoucher", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PaymentVoucherMaterials> materialsList;
 

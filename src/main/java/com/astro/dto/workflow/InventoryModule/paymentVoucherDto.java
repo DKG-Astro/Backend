@@ -19,7 +19,6 @@ public class paymentVoucherDto {
     private BigDecimal advanceAmountAlreadyPaid;
     private BigDecimal advanceBalanceAmount;
 
-
-
+   private BigDecimal advanceAdjustedAmount;
 
 }
