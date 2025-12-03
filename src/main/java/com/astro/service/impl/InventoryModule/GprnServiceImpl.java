@@ -230,6 +230,7 @@ public class GprnServiceImpl implements GprnService {
         List<String> pendingGprnList = gmr.findPoIdsWithIncompleteGprn();
         return pendingGprnList;
     }
+    /*
     @Override
     public List<PendingGprnPoDto> getPendingGprnDetails() {
 
@@ -282,9 +283,62 @@ public class GprnServiceImpl implements GprnService {
         }
 
         return new ArrayList<>(poMap.values());
+    }*/
+    @Override
+    public List<PendingGprnPoDto> getPendingGprnDetails(String keyword) {
+
+        List<Object[]> rows = gmr.findPendingGprnDetailedRows(keyword);
+        Map<String, PendingGprnPoDto> poMap = new HashMap<>();
+
+        for (Object[] r : rows) {
+
+            String poId = (String) r[0];
+            PendingGprnPoDto dto = poMap.getOrDefault(poId, new PendingGprnPoDto());
+
+            dto.setPoId(poId);
+            dto.setVendorName((String) r[1]);
+            dto.setProjectName((String) r[2]);
+
+            // Created Date
+            Object createdDateObj = r[3];
+            if (createdDateObj instanceof Timestamp) {
+                dto.setCreatedDate(((Timestamp) createdDateObj).toLocalDateTime());
+            } else if (createdDateObj instanceof LocalDateTime) {
+                dto.setCreatedDate((LocalDateTime) createdDateObj);
+            }
+
+            // Indent IDs
+            if (dto.getIndentIds() == null) dto.setIndentIds(new ArrayList<>());
+            String indentId = (String) r[4];
+
+            if (indentId != null && !dto.getIndentIds().contains(indentId)) {
+                dto.getIndentIds().add(indentId);
+            }
+
+            // Materials
+            if (dto.getMaterials() == null) dto.setMaterials(new ArrayList<>());
+
+            MaterialDto material = new MaterialDto();
+            material.setMaterialDesc((String) r[5]);
+
+            // Safely convert quantities
+            BigDecimal orderQty   = toBigDecimal(r[6]);
+            BigDecimal receivedQty = toBigDecimal(r[7]);
+            BigDecimal pendingQty  = toBigDecimal(r[8]);
+
+            material.setOrderQty(orderQty);
+            material.setReceivedQty(receivedQty);
+            material.setPendingQty(pendingQty);
+
+            dto.getMaterials().add(material);
+
+            poMap.put(poId, dto);
+        }
+
+        return new ArrayList<>(poMap.values());
     }
 
-    /** --- Utility method to safely convert Object → BigDecimal --- */
+
     private BigDecimal toBigDecimal(Object obj) {
         if (obj == null) return BigDecimal.ZERO;
         try {

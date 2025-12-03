@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 public class AssetSearchResponseDto {
     private String assetCode;
     private Integer assetId;
+    private String assetDesc;
     private String poId;
     private String custodianId;
     private Integer locatorId;

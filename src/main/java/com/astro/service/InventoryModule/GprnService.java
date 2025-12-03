@@ -11,7 +11,7 @@ public interface GprnService {
     void validateGprnSubProcessId(String processNo);
 
     public List<String> getPendingGprn();
-    public List<PendingGprnPoDto> getPendingGprnDetails();
+    public List<PendingGprnPoDto> getPendingGprnDetails(String keyword);
     public void rejectGprn(String processNo);
     public void approveGprn(String processNo);
     public void changeReqGprn(String processNo);

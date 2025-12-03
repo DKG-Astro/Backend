@@ -407,6 +407,19 @@ WHERE p.poId IN :poIds
 """)
     List<PaymentVoucherPoSearchDto> findPoDetailsDtoByPoIds(@Param("poIds") List<String> poIds);
 
+    @Query("SELECT DISTINCT po.poId FROM PurchaseOrder po " +
+            "JOIN po.purchaseOrderAttributes attr " +
+            "LEFT JOIN MaterialMaster mm ON mm.materialCode = attr.materialCode " +
+            "LEFT JOIN VendorMaster vm ON vm.vendorId = po.vendorId " +
+            "WHERE (mm.indigenousOrImported = false) " +
+            "OR (vm.vendorType = 'International')")
+    List<String> getPOsForImportedOrInternational();
+
+    @Query("SELECT po FROM PurchaseOrder po " +
+            "LEFT JOIN FETCH po.purchaseOrderAttributes attr " +
+            "WHERE po.poId = :poId")
+    PurchaseOrder findPurchaseOrderWithAttributes(@Param("poId") String poId);
+
 
 
 

@@ -57,6 +57,7 @@ public class GrnMasterEntity {
     private String status;
 
     private Integer custodianId;
+    private String custodianName;
 
 
 }

@@ -160,8 +160,8 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public List<PendingGprnPoDto> getPendingGprnDetails(){
-        return gprnService.getPendingGprnDetails();
+    public List<PendingGprnPoDto> getPendingGprnDetails(String keyword){
+        return gprnService.getPendingGprnDetails(keyword);
     }
 
     // @Override

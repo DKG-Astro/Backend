@@ -3,16 +3,13 @@ package com.astro.service.impl;
 
 import com.astro.constant.AppConstant;
 
-import com.astro.dto.workflow.MaterialTransitionHistory;
+import com.astro.dto.workflow.*;
 import com.astro.dto.workflow.ProcurementDtos.*;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.IndentCreationResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.MaterialDetailsResponseDTO;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.SearchIndentIdDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.materialHistoryDto;
 import com.astro.dto.workflow.ProcurementDtos.purchaseOrder.*;
-import com.astro.dto.workflow.VendorContractReportDTO;
-import com.astro.dto.workflow.WorkflowTransitionDto;
-import com.astro.dto.workflow.poMaterialHistoryDto;
 import com.astro.entity.*;
 import com.astro.entity.ProcurementModule.MaterialDetails;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
@@ -1505,6 +1502,43 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
 
 
 
+    public List<String> getAllImportedPOIds() {
+        return purchaseOrderRepository.getPOsForImportedOrInternational();
+    }
+
+    public  PoImportPaymentVoucherDto getPoDetails(String poId) {
+
+        PurchaseOrder po = purchaseOrderRepository.findPurchaseOrderWithAttributes(poId);
+
+        if (po == null) {
+            throw new RuntimeException("Purchase Order not found with ID: " + poId);
+        }
+
+        PoImportPaymentVoucherDto response = new PoImportPaymentVoucherDto();
+        response.setPoId(po.getPoId());
+        response.setVendorId(po.getVendorId());
+        response.setVendorName(po.getVendorName());
+        response.setPoValue(po.getTotalValueOfPo());
+
+        List<PurchaseOrderAttributesDTO> materials = po.getPurchaseOrderAttributes()
+                .stream()
+                .map(attr -> {
+                    PurchaseOrderAttributesDTO dto = new PurchaseOrderAttributesDTO();
+                    dto.setMaterialCode(attr.getMaterialCode());
+                    dto.setMaterialDescription(attr.getMaterialDescription());
+                    dto.setQuantity(attr.getQuantity());
+                    dto.setRate(attr.getRate());
+                    dto.setCurrency(attr.getCurrency());
+                    dto.setExchangeRate(attr.getExchangeRate());
+                    dto.setGst(attr.getGst());
+                    return dto;
+                })
+                .toList();
+
+        response.setMaterials(materials);
+
+        return response;
+    }
 
 }
 

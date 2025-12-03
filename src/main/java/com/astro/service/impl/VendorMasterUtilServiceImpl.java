@@ -48,7 +48,10 @@ public class VendorMasterUtilServiceImpl implements VendorMasterUtilService {
         Integer maxNumber = vendorIdSequenceRepository.findMaxVendorId();
         int nextNumber = (maxNumber == null) ? 1001 : maxNumber + 1;
 
-        String vendorId = "V" + nextNumber;
+        String primaryBusiness = dto.getPrimaryBusiness();
+        String prefix = primaryBusiness.substring(0, Math.min(primaryBusiness.length(), 4)).toUpperCase();
+
+        String vendorId = "V" + prefix + nextNumber;
 
      // String vendorId = "V" + System.currentTimeMillis();
         VendorIdSequence vendorIdSequence = new VendorIdSequence();

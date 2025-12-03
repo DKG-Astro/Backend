@@ -840,7 +840,16 @@ public String createPaymentVoucher(paymentVoucherRequestDto dto) {
                 ));
 
             // Store only current partial
+          //  voucher.setPaidAmount(partial);
+            BigDecimal tds = dto.getTdsAmount() != null ? dto.getTdsAmount() : BigDecimal.ZERO;
+
+            BigDecimal net = partial.subtract(tds);
+            if (net.compareTo(BigDecimal.ZERO) < 0)
+                net = BigDecimal.ZERO;
+
             voucher.setPaidAmount(partial);
+            voucher.setTdsAmount(tds);
+            voucher.setPaymentVoucherNetAmount(net);
         }
 
         else if ("Full Payment".equalsIgnoreCase(type)) {
@@ -865,7 +874,23 @@ public String createPaymentVoucher(paymentVoucherRequestDto dto) {
             BigDecimal adv = dto.getAdvanceAmount() != null ? dto.getAdvanceAmount() : BigDecimal.ZERO;
 
             // Save only current advance
+          //  voucher.setPaidAmount(adv);
+
+            // Advance should not adjust any GRN
+          //  voucher.setAdvanceAdjustedAmount(BigDecimal.ZERO);
+
+            BigDecimal tds = dto.getTdsAmount() != null ? dto.getTdsAmount() : BigDecimal.ZERO;
+
+            BigDecimal net = adv.subtract(tds);
+            if (net.compareTo(BigDecimal.ZERO) < 0)
+                net = BigDecimal.ZERO;
+
+            // Save Gross Advance
             voucher.setPaidAmount(adv);
+
+            // Save TDS & Net Advance Amount
+            voucher.setTdsAmount(tds);
+            voucher.setPaymentVoucherNetAmount(net);
 
             // Advance should not adjust any GRN
             voucher.setAdvanceAdjustedAmount(BigDecimal.ZERO);
@@ -936,7 +961,8 @@ public String createPaymentVoucher(paymentVoucherRequestDto dto) {
         dto.setCreatedBy(entity.getCreatedBy());
         dto.setPaymentVoucherNetAmount(entity.getPaymentVoucherNetAmount());
         dto.setTdsAmount(entity.getTdsAmount());
-
+        dto.setAdvanceAdjustedAmount(entity.getAdvanceAdjustedAmount());
+        dto.setPaidAmount(entity.getPaidAmount());
         // Map materials
         if (entity.getMaterialsList() != null) {
             dto.setMaterials(entity.getMaterialsList().stream().map(this::mapMaterial).collect(Collectors.toList()));
@@ -1004,7 +1030,9 @@ public String createPaymentVoucher(paymentVoucherRequestDto dto) {
             dto.setPartialAmount(voucher.getPartialAmount());
             dto.setAdvanceAmount(voucher.getAdvanceAmount());
             dto.setPaidAmount(voucher.getPaidAmount());
-
+            dto.setTdsAmount(voucher.getTdsAmount());
+            dto.setAdvanceAdjustedAmount(voucher.getAdvanceAdjustedAmount());
+            dto.setPaymentVoucherNetAmount(voucher.getPaymentVoucherNetAmount());
             dto.setCreatedBy(voucher.getCreatedBy());
             dto.setCreatedDate(voucher.getCreatedDate());
 

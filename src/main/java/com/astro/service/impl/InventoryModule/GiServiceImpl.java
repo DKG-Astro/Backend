@@ -845,6 +845,46 @@ private void updatePoBasedonRejectionType(GiApprovalDto req) {
             return dto;
         }).toList();
     }
+    public List<GprnIdsWithCreateByForGi> getPendingGprnsForGIWithCreatedBy()   {
+
+        List<Object[]> rows = gprnMasterRepository.findPendingGprnWithIndentorDetails();
+
+        Map<Integer,GprnIdsWithCreateByForGi> map = new HashMap<>();
+
+        for (Object[] r : rows) {
+
+            Integer subProcessId = (Integer) r[0];
+            String processId = (String) r[1];
+            String poId = (String) r[2];
+            String vendorId = (String) r[3];
+            String materialDesc = (String) r[4];
+            String indentId = (String) r[5];
+            Integer createdBy = (Integer) r[6];
+
+            map.computeIfAbsent(subProcessId, id ->
+                    new GprnIdsWithCreateByForGi(
+                            subProcessId,
+                            "INV" + processId + "/" + subProcessId,
+                            poId,
+                            vendorId,
+                            new HashSet<>(),
+                            new HashSet<>(),   // materials
+                            new HashSet<>()    // createdBy (indentors)
+                    )
+            );
+
+            // Add material
+            if (materialDesc != null)
+                map.get(subProcessId).getMaterialDescriptions().add(materialDesc);
+
+            // Add createdBy (indentor)
+            if (createdBy != null)
+                map.get(subProcessId).getIndentIds().add(createdBy);
+        }
+
+        return new ArrayList<>(map.values());
+    }
+
 
     public List<GprnDropdownDto> getPendingGprnsForGI() {
         List<GprnMasterEntity> pendingGprns = gprnMasterRepository.findPendingGprnsWithMaterial();

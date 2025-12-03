@@ -113,6 +113,7 @@ public class GrnServiceImpl implements GrnService {
         GrnMasterEntity grnMaster = new GrnMasterEntity();
         grnMaster.setCustodianId(Integer.valueOf(req.getCustodianId()));
 
+        grnMaster.setCustodianName(req.getCustodianName());
         // Handle dates with null checks
         if (req.getGrnDate() != null && !req.getGrnDate().trim().isEmpty()) {
             grnMaster.setGrnDate(CommonUtils.convertStringToDateObject(req.getGrnDate()));
@@ -1260,6 +1261,10 @@ public List<PoGrnInfoDto> getDistinctGrnProcessIdsForGIAndApproved() {
        // BigDecimal advanceAppliedToThisGrn = paymentVoucherReposiotry.getAdvanceAppliedForGrn(grnProcessId);
 
         dto.setAdvanceAdjustedAmount(advanceAppliedToThisGrn != null ? advanceAppliedToThisGrn : BigDecimal.ZERO);
+
+        if (dto.getPaymentVoucherType() == null || dto.getPaymentVoucherType().trim().isEmpty()) {
+            dto.setPaymentVoucherType("Partial");
+        }
 
         return dto;
     }

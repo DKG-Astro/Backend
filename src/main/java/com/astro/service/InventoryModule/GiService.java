@@ -2,6 +2,7 @@ package com.astro.service.InventoryModule;
 
 import com.astro.dto.workflow.InventoryModule.GiDto.GiApprovalDto;
 import com.astro.dto.workflow.InventoryModule.GiDto.GiWorkflowStatusDto;
+import com.astro.dto.workflow.InventoryModule.GiDto.GprnIdsWithCreateByForGi;
 import com.astro.dto.workflow.InventoryModule.GiDto.SaveGiDto;
 import com.astro.dto.workflow.InventoryModule.GprnDropdownDto;
 import com.astro.dto.workflow.InventoryModule.gprn.GprnPendingInspectionDto;
@@ -28,6 +29,7 @@ public interface GiService {
     public List<GiWorkflowStatusDto> getGiHistoryByProcessId(String processId, Integer subProcessId);
 
     public List<GprnDropdownDto> getPendingGprnsForGI();
+    public List<GprnIdsWithCreateByForGi> getPendingGprnsForGIWithCreatedBy();
     public List<GprnDropdownDto> getPendingRejectedGis();
 
 }

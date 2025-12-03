@@ -3,6 +3,7 @@ package com.astro.controller.InventoryModule;
 import com.astro.dto.workflow.InventoryModule.*;
 import com.astro.dto.workflow.InventoryModule.GiDto.GiApprovalDto;
 import com.astro.dto.workflow.InventoryModule.GiDto.GiWorkflowStatusDto;
+import com.astro.dto.workflow.InventoryModule.GiDto.GprnIdsWithCreateByForGi;
 import com.astro.dto.workflow.InventoryModule.GiDto.SaveGiDto;
 import com.astro.dto.workflow.InventoryModule.GoodsTransfer.GtIdDto;
 import com.astro.dto.workflow.InventoryModule.GoodsTransfer.GtMasterDto;
@@ -174,9 +175,9 @@ public class ProcessController {
         res.put("pendingGprnList", pendingGprnList);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
-    @GetMapping("/getPendingAllPoDataForGprn")
-    public ResponseEntity<Object> getPendingPoIdsGprn() {
-        List<PendingGprnPoDto> pendingGprnList = processService.getPendingGprnDetails();
+    @GetMapping("/getPendingAllPoDataForGprn/search")
+    public ResponseEntity<Object> getPendingPoIdsGprn(@RequestParam String keyword) {
+        List<PendingGprnPoDto> pendingGprnList = processService.getPendingGprnDetails(keyword);
         Map<String,  List<PendingGprnPoDto>> res = new HashMap<>();
         res.put("pendingGprnList", pendingGprnList);
         return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
@@ -727,7 +728,11 @@ public class ProcessController {
        List<GprnDropdownDto> res = gis.getPendingGprnsForGI();
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
-
+    @GetMapping("/pendingGprnsForGiwithIndentId")
+    public ResponseEntity<Object> getPendingGprnsForGICreatedBy() {
+        List<GprnIdsWithCreateByForGi> res = gis.getPendingGprnsForGIWithCreatedBy();
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
     @GetMapping("/getPendingGrns")
     public ResponseEntity<Object> getgetPendingGrns() {
         List<GrnDropdownDto> res = grns.getPendingGrns();

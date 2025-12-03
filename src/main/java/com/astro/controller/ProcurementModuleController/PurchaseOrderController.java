@@ -2,6 +2,7 @@ package com.astro.controller.ProcurementModuleController;
 
 
 
+import com.astro.dto.workflow.PoImportPaymentVoucherDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.SearchIndentIdDto;
 import com.astro.dto.workflow.ProcurementDtos.IndentDto.materialHistoryDto;
 import com.astro.dto.workflow.ProcurementDtos.PoFormateDto;
@@ -114,6 +115,19 @@ public class PurchaseOrderController {
 
     }
 
+    @GetMapping("/import-po-ids")
+    public ResponseEntity<Object> getImportPOIds() {
+        // return ResponseEntity.ok(poService.getAllImportedPOIds());
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(poService.getAllImportedPOIds()), HttpStatus.OK);
+
+    }
+
+    @GetMapping("/PoImportOrderdetails/{poId}")
+    public ResponseEntity<Object> getPoImportOrderDetails(@PathVariable String poId) {
+        PoImportPaymentVoucherDto po = poService.getPoDetails(poId);
+        return new ResponseEntity<Object>(ResponseBuilder.getSuccessResponse(po), HttpStatus.OK);
+
+    }
 
 
 }

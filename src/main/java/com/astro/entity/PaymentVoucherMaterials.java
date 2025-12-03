@@ -37,4 +37,6 @@ public class PaymentVoucherMaterials {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_voucher_id")
     private PaymentVoucher paymentVoucher;
+
+
 }

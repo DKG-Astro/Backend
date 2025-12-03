@@ -41,7 +41,7 @@ public interface ProcessService {
 
     public List<OhqReportDto> getOhqReport();
     public List<String> getPendingGprn();
-    public List<PendingGprnPoDto> getPendingGprnDetails();
+    public List<PendingGprnPoDto> getPendingGprnDetails(String keyword);
 
     public OgpPoResponseDto getPoOgp(String processNo);
 

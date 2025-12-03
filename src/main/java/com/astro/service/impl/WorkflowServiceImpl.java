@@ -1889,7 +1889,7 @@ public List<ApprovedIndentsDto> getApprovedIndents() {
                 PaymentVoucher p = pv.get();
                 queueResponse.setPaymentType(p.getPaymentVoucherType());
                 if(p.getPaymentVoucherType().equalsIgnoreCase("partial")){
-                    queueResponse.setAmount(p.getPaidAmount());
+                    queueResponse.setAmount(p.getPaymentVoucherNetAmount());
                 }else if(p.getPaymentVoucherType().equalsIgnoreCase("Full Payment")){
                     queueResponse.setAmount(p.getPaymentVoucherNetAmount());
                 }else {

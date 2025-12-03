@@ -44,10 +44,35 @@ public interface GprnMasterRepository extends JpaRepository<GprnMasterEntity,Int
             "WHERE gi.gprnSubProcessId IS NULL")
     List<GprnMasterEntity> findPendingGprnsWithMaterial();
 
+    @Query("""
+SELECT DISTINCT 
+    g.subProcessId,
+    g.processId,
+    g.poId,
+    g.vendorId,
+    m.materialDesc,
+    i.indentId,
+    c.createdBy
+FROM GprnMasterEntity g
+LEFT JOIN GprnMaterialDtlEntity m 
+       ON g.subProcessId = m.subProcessId
+LEFT JOIN GiMasterEntity gi 
+       ON g.subProcessId = gi.gprnSubProcessId
+LEFT JOIN PurchaseOrder p 
+       ON g.poId = p.poId
+LEFT JOIN IndentId i 
+       ON p.tenderId = i.tenderRequest.tenderId
+LEFT JOIN IndentCreation c
+       ON i.indentId = c.indentId
+WHERE gi.gprnSubProcessId IS NULL
+""")
+    List<Object[]> findPendingGprnWithIndentorDetails();
+
+
     @Query("SELECT new com.astro.dto.workflow.InventoryModule.GprnPoVendorDto(g.poId, g.vendorId) " +
             "FROM GprnMasterEntity g WHERE g.subProcessId = :subProcessId")
     GprnPoVendorDto findPoIdAndVendorIdBySubProcessId(@Param("subProcessId") Integer subProcessId);
-
+/*
     @Query(value = """
     SELECT 
         po.po_id,
@@ -97,6 +122,61 @@ public interface GprnMasterRepository extends JpaRepository<GprnMasterEntity,Int
     """, nativeQuery = true)
     List<Object[]> findPendingGprnDetailedRows();
 
+*/
+@Query(value = """
+    SELECT 
+        po.po_id,
+        po.vendor_name,
+        po.project_name,
+        po.created_date,
+        ic.indentor_name,
+
+        poa.material_description,
+        poa.quantity AS order_qty,
+
+        IFNULL(gprn.total_received, 0) AS received_qty,
+
+        (poa.quantity - IFNULL(gprn.total_received, 0)) AS pending_qty
+
+    FROM purchase_order po
+    
+    LEFT JOIN indent_id ind 
+        ON po.tender_id = ind.tender_id
+
+    LEFT JOIN indent_creation ic
+        ON ind.indent_id = ic.indent_id
+
+    LEFT JOIN purchase_order_attributes poa 
+        ON po.po_id = poa.po_id
+
+    LEFT JOIN (
+        SELECT 
+            gm.po_id,
+            gmd.material_code,
+            SUM(gmd.received_quantity) AS total_received
+        FROM gprn_master gm
+        JOIN gprn_material_detail gmd 
+            ON gm.sub_process_id = gmd.sub_process_id
+        GROUP BY gm.po_id, gmd.material_code
+    ) gprn 
+        ON po.po_id = gprn.po_id 
+       AND poa.material_code = gprn.material_code
+
+    WHERE 
+        (gprn.total_received IS NULL OR gprn.total_received < poa.quantity)
+        
+        AND (
+            :keyword IS NULL OR :keyword = '' 
+            OR LOWER(po.po_id) LIKE LOWER(CONCAT('%', :keyword, '%'))
+            OR LOWER(po.vendor_name) LIKE LOWER(CONCAT('%', :keyword, '%'))
+            OR LOWER(po.project_name) LIKE LOWER(CONCAT('%', :keyword, '%'))
+            OR LOWER(ic.indentor_name) LIKE LOWER(CONCAT('%', :keyword, '%'))
+            OR LOWER(poa.material_description) LIKE LOWER(CONCAT('%', :keyword, '%'))
+        )
+
+    ORDER BY po.po_id;
+    """, nativeQuery = true)
+List<Object[]> findPendingGprnDetailedRows(String keyword);
 
 
 }
