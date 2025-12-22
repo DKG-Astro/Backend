@@ -689,6 +689,12 @@ public class ProcessController {
 
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
+    @GetMapping("/multipleGrnsPaymentVoucherData")
+    public ResponseEntity<Object> getPaymentVoucherDetails( @RequestParam("processNo") List<String> processNo) {
+        paymentVoucherDto res=   grns.getPaymentVoucherDataForMultipleGrns(processNo);
+
+        return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
+    }
     @GetMapping("/paymentVoucherPoDataForAdvance")
     public ResponseEntity<Object> getPaymentVoucherDetailsOfPo( @RequestParam("processNo") String processNo) {
         paymentVoucherDto res=   grns.getPaymentVoucherDataFromPO(processNo);

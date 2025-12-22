@@ -66,7 +66,6 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
 
     @Autowired
     private PurchaseOrderRepository purchaseOrderRepository;
-
     @Autowired
     private PurchaseOrderAttributesRepository purchaseOrderAttributesRepository;
     @Autowired

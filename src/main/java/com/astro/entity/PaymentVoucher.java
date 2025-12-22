@@ -77,4 +77,7 @@ public class PaymentVoucher {
     @OneToMany(mappedBy = "paymentVoucher", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PaymentVoucherMaterials> materialsList;
 
+    @OneToMany(mappedBy = "paymentVoucher", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PaymentVoucherGrn> grnList;
+
 }

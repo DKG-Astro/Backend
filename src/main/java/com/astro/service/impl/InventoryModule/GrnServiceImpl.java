@@ -13,6 +13,7 @@ import com.astro.repository.InventoryModule.*;
 import com.astro.repository.InventoryModule.GiRepository.GiMasterRepository;
 import com.astro.repository.InventoryModule.GprnRepository.GprnMasterRepository;
 import com.astro.repository.InventoryModule.GprnRepository.GprnMaterialDtlRepository;
+import com.astro.repository.PaymentVoucherGrnRepositoy;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderRepository;
 import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrderRepository;
@@ -96,6 +97,8 @@ public class GrnServiceImpl implements GrnService {
     private ServiceOrderRepository serviceOrderRepository;
     @Autowired
     private PurchaseOrderRepository purchaseOrderRepository;
+    @Autowired
+    private PaymentVoucherGrnRepositoy paymentVoucherGrnRepositoy;
 
     @Override
     @Transactional
@@ -1049,11 +1052,14 @@ public List<PoGrnInfoDto> getDistinctGrnProcessIdsForGIAndApproved() {
       List<GrnMasterEntity>  grns = grnmr.findByGrn(grnId);
       for(GrnMasterEntity grn :grns ){
           String processId = "INV"+grn.getGrnProcessId() +"/"+ grn.getGrnSubProcessId();
-          boolean exists = paymentVoucherReposiotry.existsByGrnNumberAndPaymentVoucherType(processId, "Full Payment");
+   //       boolean exists = paymentVoucherReposiotry.existsByGrnNumberAndPaymentVoucherType(processId, "Full Payment");
+          boolean exists =  paymentVoucherGrnRepositoy.existsByGrnNumberAndPaymentVouchertype(processId, "Full Payment");
           if(!exists) {
               list.add(processId);
           }
       }
+
+      System.out.print(list);
 
       return list;
     }
@@ -1108,9 +1114,6 @@ public List<PoGrnInfoDto> getDistinctGrnProcessIdsForGIAndApproved() {
                 GrnMaterialDtlEntity mat = new GrnMaterialDtlEntity();
              //   mat.setMaterialCode(consumable.getMaterialCode());
                 mat.setQuantity(consumable.getQuantity());
-             //   mat.setUomId(consumable.getLocatorId()); // map appropriately
-             //   mat.setUnitPrice(consumable.getBookValue()); // default or book value
-              //  mat.setDepriciationRate(consumable.getDepriciationRate());
                 return mat;
             }).collect(Collectors.toList());
         }
@@ -1127,27 +1130,11 @@ public List<PoGrnInfoDto> getDistinctGrnProcessIdsForGIAndApproved() {
                     mat.setMaterialDescription(gprn.getMaterialDesc());
                     String grnNumber="INV"+grn.getGrnProcessId()+"/"+grn.getGrnSubProcessId();
                     System.out.println("ufahkl"+ grnNumber);
-                   /* PaymentVoucher pv = paymentVoucherReposiotry.findByGrnNumber(grnNumber);
-                    if(pv!= null) {
 
-                        PaymentVoucherMaterials m = paymentVoucherMaterialsRepository
-                                .findByMaterialCodeAndPaymentVoucherId(gprn.getMaterialCode(), pv.getId());
-                        BigDecimal finalQuantity = (m != null && m.getQuantity() != null)
-                                ? grns.getQuantity().subtract(m.getQuantity())
-                                : grns.getQuantity();
-                        mat.setQuantity(finalQuantity);
-                    }else{
-                        mat.setQuantity(grns.getQuantity());
-                    }*/
+                    mat.setGrnNumber(grnNumber);
+
                     //  String grnNumber = "INV" + grn.getGrnProcessId() + "/" + grn.getGrnSubProcessId();
                     System.out.println("GRN Number: " + grnNumber);
-
-
-                  //  BigDecimal totalReceivedQty = paymentVoucherMaterialsRepository
-                           // .getTotalReceivedQuantity(grnNumber, gprn.getMaterialCode());
-
-                  //  BigDecimal finalQuantity = grns.getQuantity().subtract(totalReceivedQty);
-                   // mat.setQuantity(finalQuantity);
 
 
                     BigDecimal gst = purchaseOrderAttributesRepo
@@ -1166,7 +1153,18 @@ public List<PoGrnInfoDto> getDistinctGrnProcessIdsForGIAndApproved() {
                         mat.setExchangeRate(exchangeRate != null ? exchangeRate : BigDecimal.ONE);
                         mat.setGst(gst);
                         mat.setQuantity(grns.getQuantity());
-                        BigDecimal amount = grns.getQuantity().multiply(gprn.getUnitPrice());
+                      //  BigDecimal amount = grns.getQuantity().multiply(gprn.getUnitPrice());
+                      //  mat.setAmount(amount);
+                        BigDecimal unitPrice = gprn.getUnitPrice();
+                        BigDecimal quantity = grns.getQuantity();
+                        BigDecimal exRate = exchangeRate != null ? exchangeRate : BigDecimal.ONE;
+
+                        BigDecimal rateInInr =
+                                "INR".equalsIgnoreCase(currency)
+                                        ? unitPrice
+                                        : unitPrice.multiply(exRate);
+
+                        BigDecimal amount = quantity.multiply(rateInInr);
                         mat.setAmount(amount);
                     }
                     return mat;
@@ -1188,41 +1186,6 @@ public List<PoGrnInfoDto> getDistinctGrnProcessIdsForGIAndApproved() {
 
 
         dto.setTotalAmount(totalAmount);
-/*
-        Optional<PaymentVoucher> existingVoucherOpt = paymentVoucherReposiotry.findTopByGrnNumberOrderByIdDesc(grnProcessId);
-
-        if (existingVoucherOpt.isPresent()) {
-            PaymentVoucher existingVoucher = existingVoucherOpt.get();
-
-            String type = existingVoucher.getPaymentVoucherType();
-
-            if ("Partial".equalsIgnoreCase(type)) {
-                BigDecimal partialPaid = existingVoucher.getPaidAmount() != null ? existingVoucher.getPaidAmount() : BigDecimal.ZERO;
-                dto.setPaymentVoucherType("Partial");
-                dto.setPartialAmountAlreadypaid(partialPaid);
-                dto.setPartialBalanceAmount(totalAmount.subtract(partialPaid));
-            } else if ("Advance".equalsIgnoreCase(type)) {
-                BigDecimal advancePaid = existingVoucher.getPaidAmount() != null ? existingVoucher.getPaidAmount() : BigDecimal.ZERO;
-                dto.setPaymentVoucherType("Advance");
-                dto.setAdvanceAmountAlreadyPaid(advancePaid);
-                dto.setAdvanceBalanceAmount(totalAmount.subtract(advancePaid));
-            }
-        }else{
-            Optional<PaymentVoucher> existingVoucher =
-                    paymentVoucherReposiotry.findTopByPurchaseOrderIdOrderByIdDesc(gprnMaster.getPoId());
-            if(existingVoucher.isPresent()){
-                PaymentVoucher pv = existingVoucher.get();
-                dto.setAdvanceAdjustedAmount(
-                        pv.getAdvanceAdjustedAmount() != null ? pv.getAdvanceAdjustedAmount() : BigDecimal.ZERO
-                );
-                if(pv.getPaymentVoucherType().equalsIgnoreCase("Advance")){
-                    BigDecimal advancePaid = pv.getPaidAmount() != null ? pv.getPaidAmount() : BigDecimal.ZERO;
-                    dto.setPaymentVoucherType("Advance");
-                    dto.setAdvanceAmountAlreadyPaid(advancePaid);
-                    dto.setAdvanceBalanceAmount(totalAmount.subtract(advancePaid));
-                }
-            }
-        }*/
 
 
 
@@ -1241,12 +1204,13 @@ public List<PoGrnInfoDto> getDistinctGrnProcessIdsForGIAndApproved() {
         BigDecimal advanceAppliedToThisGrn =
                 paymentVoucherReposiotry.getAdvanceAppliedForGrn(grnProcessId);
 
-        dto.setAdvanceAdjustedAmount(
-                advanceAppliedToThisGrn != null ? advanceAppliedToThisGrn : BigDecimal.ZERO
-        );
+//        dto.setAdvanceAdjustedAmount(
+//                advanceAppliedToThisGrn != null ? advanceAppliedToThisGrn : BigDecimal.ZERO
+//        );
 
-        BigDecimal partialPaidForGrn = paymentVoucherReposiotry.getTotalPartialPaidForGrn(grnProcessId);
-
+      //  BigDecimal partialPaidForGrn = paymentVoucherReposiotry.getTotalPartialPaidForGrn(grnProcessId);
+        BigDecimal partialPaidForGrn =
+                paymentVoucherGrnRepositoy.getTotalPaidForGrns(Collections.singletonList(grnProcessId));
         if (partialPaidForGrn.compareTo(BigDecimal.ZERO) > 0) {
             dto.setPaymentVoucherType("Partial");
             dto.setPartialAmountAlreadypaid(partialPaidForGrn);
@@ -1268,6 +1232,79 @@ public List<PoGrnInfoDto> getDistinctGrnProcessIdsForGIAndApproved() {
 
         return dto;
     }
+    public paymentVoucherDto getPaymentVoucherDataForMultipleGrns(List<String> grnProcessIds) {
+
+        if (grnProcessIds == null || grnProcessIds.isEmpty()) {
+            throw new RuntimeException("GRN list is empty");
+        }
+
+        paymentVoucherDto finalDto = new paymentVoucherDto();
+        List<paymentVoucherMaterials> mergedMaterials = new ArrayList<>();
+
+        BigDecimal totalAmount = BigDecimal.ZERO;
+
+        String vendorName = null;
+        String vendorInvoiceName = null;
+        String vendorInvoiceDate = null;
+
+
+        for (String grnProcessId : grnProcessIds) {
+
+            paymentVoucherDto dto = getPaymentVoucherData(grnProcessId);
+
+            if (vendorName == null) {
+                vendorName = dto.getVendorName();
+                vendorInvoiceName = dto.getVendorInvoiceName();
+                vendorInvoiceDate = dto.getVendorInvoiceDate();
+            }
+
+            if (dto.getMaterialsList() != null) {
+                mergedMaterials.addAll(dto.getMaterialsList());
+            }
+
+            if (dto.getTotalAmount() != null) {
+                totalAmount = totalAmount.add(dto.getTotalAmount());
+            }
+            finalDto.setAdvanceAmountAlreadyPaid(dto.getAdvanceAmountAlreadyPaid());
+            finalDto.setAdvanceBalanceAmount(dto.getAdvanceBalanceAmount());
+        }
+
+        // SET COMMON DATA
+        finalDto.setVendorName(vendorName);
+        finalDto.setVendorInvoiceName(vendorInvoiceName);
+        finalDto.setVendorInvoiceDate(vendorInvoiceDate);
+        finalDto.setMaterialsList(mergedMaterials);
+        finalDto.setTotalAmount(totalAmount);
+
+        //  FETCH GRN-WISE VALUES ONCE (CORRECT PLACE)
+        BigDecimal totalPartialPaid =
+                paymentVoucherGrnRepositoy.getTotalPaidForGrns(grnProcessIds);
+
+        BigDecimal totalAdvanceAdjusted = paymentVoucherGrnRepositoy.getTotalAdvanceAdjustedForGrns(grnProcessIds);
+
+        finalDto.setPartialAmountAlreadypaid(
+                totalPartialPaid != null ? totalPartialPaid : BigDecimal.ZERO
+        );
+
+        finalDto.setAdvanceAdjustedAmount(
+                totalAdvanceAdjusted != null ? totalAdvanceAdjusted : BigDecimal.ZERO
+        );
+
+
+
+        BigDecimal balance = totalAmount
+                .subtract(finalDto.getAdvanceAdjustedAmount())
+                .subtract(finalDto.getPartialAmountAlreadypaid());
+
+        finalDto.setPartialBalanceAmount(balance);
+        if (finalDto.getPaymentVoucherType() == null || finalDto.getPaymentVoucherType().trim().isEmpty()) {
+            finalDto.setPaymentVoucherType("Partial");
+        }
+
+        return finalDto;
+    }
+
+
 
 
     public paymentVoucherDto getPaymentVoucherDataFromPO(String poId) {
@@ -1295,15 +1332,25 @@ public List<PoGrnInfoDto> getDistinctGrnProcessIdsForGIAndApproved() {
                             attr.getExchangeRate() != null ? attr.getExchangeRate() : BigDecimal.ONE
                     );
                     mat.setGst(attr.getGst());
-                    mat.setAmount(attr.getQuantity().multiply(attr.getRate()));
+                  //  mat.setAmount(attr.getQuantity().multiply(attr.getRate()));
+                    BigDecimal unitPrice = attr.getRate();
+                    BigDecimal quantity = attr.getQuantity();
+                    BigDecimal exRate = attr.getExchangeRate() != null ? attr.getExchangeRate() : BigDecimal.ONE;
+
+                    BigDecimal rateInInr =
+                            "INR".equalsIgnoreCase(attr.getCurrency())
+                                    ? unitPrice
+                                    : unitPrice.multiply(exRate);
+
+                    BigDecimal amount = quantity.multiply(rateInInr);
+                    mat.setAmount(amount);
                     return mat;
                 })
                 .collect(Collectors.toList());
 
         dto.setMaterialsList(materials);
 
-        // Calculate total amount (with GST)
-        BigDecimal totalAmount = materials.stream()
+        BigDecimal totalAmount = dto.getMaterialsList().stream()
                 .map(m -> {
                     BigDecimal amount = m.getAmount() != null ? m.getAmount() : BigDecimal.ZERO;
                     BigDecimal gst = m.getGst() != null ? m.getGst() : BigDecimal.ZERO;

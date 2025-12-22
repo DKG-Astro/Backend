@@ -1568,7 +1568,6 @@ ALTER TABLE ogp_detail_rejected_gi ADD COLUMN asset_code VARCHAR(200);
 ALTER TABLE payment_voucher ADD COLUMN tds_amount DECIMAL(18,2), ADD COLUMN payment_voucher_net_amount DECIMAL(18,2);
 
 ////
-ALTER TABLE payment_voucher
-MODIFY vendor_invoice_number VARCHAR(255) NULL;
+ALTER TABLE payment_voucher MODIFY vendor_invoice_number VARCHAR(255) NULL;
 
 ALTER TABLE grn_master ADD COLUMN custodian_name VARCHAR(200);

@@ -13,7 +13,6 @@ public class WorkflowTransition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "WORKFLOWTRANSITIONID")
-  //  @Column(name = "workflowTransitionId")
     private Integer workflowTransitionId;
 
     @Column(name = "WORKFLOWID")

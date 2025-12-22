@@ -13,7 +13,8 @@ public class paymentVoucherRequestDto {
     private String paymentVoucherDate;
     private String paymentVoucherIsFor;
     private String purchaseOrderId;
-    private String grnNumber;
+  //  private String grnNumber;
+    private List<String> grnNumbers;
     private String serviceOrderDetails;
     private String paymentVoucherType;
     private String vendorName;

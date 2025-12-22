@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 @Data
 public class paymentVoucherMaterials {
 
+    private String grnNumber;
     private String materialCode;
     private String materialDescription;
     private BigDecimal quantity;
