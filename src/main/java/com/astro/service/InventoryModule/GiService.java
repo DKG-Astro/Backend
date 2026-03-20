@@ -28,7 +28,8 @@ public interface GiService {
     public void validateGiIsApproved(String processNo);
     public List<GiWorkflowStatusDto> getGiHistoryByProcessId(String processId, Integer subProcessId);
 
-    public List<GprnDropdownDto> getPendingGprnsForGI();
+   // public List<GprnDropdownDto> getPendingGprnsForGI(int userId);
+    public List<GprnDropdownDto> getPendingGprnsForGI(Integer userId);
     public List<GprnIdsWithCreateByForGi> getPendingGprnsForGIWithCreatedBy();
     public List<GprnDropdownDto> getPendingRejectedGis();
 

@@ -28,4 +28,7 @@ public class GiMaterialDtlDto {
     private BigDecimal rejectedQuantity;
     private String rejectionType;
     private String assetCode;
+    private String unitPrice;
+
+    private String indentId;
 }

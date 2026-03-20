@@ -400,11 +400,25 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
 
         // Fetch related Tender & Indent
         TenderWithIndentResponseDTO tenderWithIndent = tenderRequestService.getTenderRequestById(purchaseOrder.getTenderId());
-        Map<String, MaterialDetailsResponseDTO> indentMaterialMap = new HashMap<>();
+      //  Map<String, MaterialDetailsResponseDTO> indentMaterialMap = new HashMap<>();
 
+        Map<String, Queue<MaterialDetailsResponseDTO>> indentMaterialMap = new HashMap<>();
+/*
         for (IndentCreationResponseDTO indent : tenderWithIndent.getIndentResponseDTO()) {
             for (MaterialDetailsResponseDTO material : indent.getMaterialDetails()) {
                 indentMaterialMap.put(material.getMaterialCode(), material);
+            }
+        } */
+        for (IndentCreationResponseDTO indent : tenderWithIndent.getIndentResponseDTO()) {
+            for (MaterialDetailsResponseDTO material : indent.getMaterialDetails()) {
+
+                // 🔥 attach indentId
+                material.setIndentId(indent.getIndentId());
+
+                // 🔥 store multiple entries
+                indentMaterialMap
+                        .computeIfAbsent(material.getMaterialCode(), k -> new LinkedList<>())
+                        .add(material);
             }
         }
 
@@ -482,10 +496,25 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                     attributeDTO.setDuties(attribute.getDuties());
                     attributeDTO.setFreightCharge(attribute.getFreightCharge());
                     attributeDTO.setBudgetCode(attribute.getBudgetCode());
-                    MaterialDetailsResponseDTO indentMaterial = indentMaterialMap.get(attribute.getMaterialCode());
-                    attributeDTO.setUnitPrice(indentMaterial.getUnitPrice());
-                    attributeDTO.setUom(indentMaterial.getUom());
-                    attributeDTO.setCategory(indentMaterial.getMaterialCategory());
+                   // MaterialDetailsResponseDTO indentMaterial = indentMaterialMap.get(attribute.getMaterialCode());
+                    Queue<MaterialDetailsResponseDTO> queue =
+                            indentMaterialMap.get(attribute.getMaterialCode());
+
+                    if (queue != null && !queue.isEmpty()) {
+
+                        MaterialDetailsResponseDTO indentMaterial = queue.poll(); // ✅ one-by-one mapping
+
+                        attributeDTO.setUnitPrice(indentMaterial.getUnitPrice());
+                        attributeDTO.setUom(indentMaterial.getUom());
+                        attributeDTO.setCategory(indentMaterial.getMaterialCategory());
+
+                        // 🔥 ADD THIS LINE (your main requirement)
+                        attributeDTO.setIndentId(indentMaterial.getIndentId());
+
+                    }
+                  //  attributeDTO.setUnitPrice(indentMaterial.getUnitPrice());
+                  //  attributeDTO.setUom(indentMaterial.getUom());
+                  //  attributeDTO.setCategory(indentMaterial.getMaterialCategory());
                     return attributeDTO;
                 })
                 .collect(Collectors.toList()));

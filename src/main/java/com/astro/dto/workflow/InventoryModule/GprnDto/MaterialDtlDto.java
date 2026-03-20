@@ -23,6 +23,9 @@ public class MaterialDtlDto {
    private String warrantyTerms;
    private String note;
    private List<String> imageBase64;
+
+   private int indentorUserId;
+   private String indentId;
 }
 
 

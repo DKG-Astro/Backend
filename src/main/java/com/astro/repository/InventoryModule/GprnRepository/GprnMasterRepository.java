@@ -179,4 +179,29 @@ WHERE gi.gprnSubProcessId IS NULL
 List<Object[]> findPendingGprnDetailedRows(String keyword);
 
 
+ /*   @Query("""
+        SELECT DISTINCT g 
+        FROM GprnMasterEntity g
+JOIN GprnMaterialDtlEntity m ON g.subProcessId = m.subProcessId
+JOIN IndentCreation i ON m.indentId = i.indentId
+LEFT JOIN GiMasterEntity gi ON g.subProcessId = gi.gprnSubProcessId
+WHERE gi.gprnSubProcessId IS NULL
+AND i.createdBy = :userId
+""")
+    List<GprnMasterEntity> findPendingGprnsForUser(@Param("userId") Integer userId); */
+ @Query("""
+SELECT DISTINCT g 
+FROM GprnMasterEntity g
+JOIN GprnMaterialDtlEntity m ON g.subProcessId = m.subProcessId
+
+WHERE m.indentorUserId = :userId
+
+AND NOT EXISTS (
+    SELECT 1 FROM GiMaterialDtlEntity gi
+    WHERE gi.gprnSubProcessId = g.subProcessId
+    AND gi.materialCode = m.materialCode
+    AND gi.indentId = m.indentId
+)
+""")
+ List<GprnMasterEntity> findPendingGprnsForUser(@Param("userId") Long userId);
 }

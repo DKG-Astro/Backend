@@ -31,6 +31,7 @@ public class SaveGprnDto {
     private String createdBy;
     private String locationId;
     private String indentId;
+    private String indentorUserId;
     private List<MaterialDtlDto> materialDtlList;
     private BigDecimal gprnAmount;
     private BigDecimal poAmount;

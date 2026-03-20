@@ -24,8 +24,20 @@ public interface PurchaseOrderAttributesRepository extends JpaRepository<Purchas
 
 
    // Optional<PurchaseOrderAttributes> findByPoIdAndMaterialCode(String poId, String materialCode);
-   Optional<PurchaseOrderAttributes> findByPurchaseOrder_PoIdAndMaterialCode(String poId, String materialCode);
+ //  Optional<PurchaseOrderAttributes> findByPurchaseOrder_PoIdAndMaterialCode(String poId, String materialCode);
 
+   @Query("""
+SELECT p 
+FROM PurchaseOrderAttributes p 
+WHERE p.purchaseOrder.poId = :poId
+AND p.materialCode = :materialCode
+AND p.indentId = :indentId
+""")
+   Optional<PurchaseOrderAttributes> findPoMaterialWithIndent(
+           @Param("poId") String poId,
+           @Param("materialCode") String materialCode,
+           @Param("indentId") String indentId
+   );
    @Query("""
         SELECT new com.astro.dto.workflow.poMaterialHistoryDto(
             po.poId,

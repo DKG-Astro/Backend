@@ -126,4 +126,6 @@ public interface GiMasterRepository extends JpaRepository<GiMasterEntity, Intege
     Optional<GiMasterEntity> findByGprnProcessIdAndInspectionSubProcessId(String processId, Integer subProcessId);
 
     Optional<GiMasterEntity> findByInspectionSubProcessId(Integer giSubProcessId);
+
+    Optional<GiMasterEntity> findByGprnSubProcessIdAndIndentId(int i, String indentId);
 }

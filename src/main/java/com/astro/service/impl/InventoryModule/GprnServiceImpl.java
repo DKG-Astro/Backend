@@ -4,6 +4,7 @@ import com.astro.dto.workflow.InventoryModule.MaterialDto;
 import com.astro.dto.workflow.InventoryModule.PendingGprnPoDto;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
+import com.astro.repository.ProcurementModule.IndentCreation.IndentCreationRepository;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderRepository;
 import com.astro.repository.UserMasterRepository;
@@ -49,6 +50,8 @@ public class GprnServiceImpl implements GprnService {
     private PurchaseOrderAttributesRepository poMaterialRepo;
     @Autowired
     private UserMasterRepository userMasterRepository;
+    @Autowired
+    private IndentCreationRepository indentCreationRepository;
 
     private final String basePath;
 
@@ -101,7 +104,10 @@ public class GprnServiceImpl implements GprnService {
             gmde.setProcessId(gme.getProcessId());
             gmde.setPoId(gme.getPoId());
             gmde.setSubProcessId(gme.getSubProcessId());
-            
+            gmde.setIndentId(dtl.getIndentId());
+            Integer indentorUserId = indentCreationRepository.findCreatedByByIndentId(dtl.getIndentId());
+
+            gmde.setIndentorUserId(Long.valueOf(indentorUserId));
             try {
                 List<String> imageFileNames = new ArrayList<>();
                 for (String base64Image : dtl.getImageBase64()) {
@@ -118,7 +124,7 @@ public class GprnServiceImpl implements GprnService {
             }
     
             saveDtlEntityList.add(gmde);
-            Optional<PurchaseOrderAttributes> poMaterial = poMaterialRepo.findByPurchaseOrder_PoIdAndMaterialCode(gme.getPoId(), dtl.getMaterialCode());
+            Optional<PurchaseOrderAttributes> poMaterial = poMaterialRepo.findPoMaterialWithIndent(gme.getPoId(), dtl.getMaterialCode(), dtl.getIndentId());
 
             if (poMaterial.isPresent()) {
                 PurchaseOrderAttributes pom = poMaterial.get();
@@ -520,8 +526,8 @@ public class GprnServiceImpl implements GprnService {
                 GprnMaterialDtlEntity existingGprnMaterial = existingGprnMaterials.get(0);
                 
                 // Find the corresponding PO material
-                Optional<PurchaseOrderAttributes> poMaterialOpt = poMaterialRepo.findByPurchaseOrder_PoIdAndMaterialCode(
-                    gprnMaster.getPoId(), updatedMaterial.getMaterialCode());
+                Optional<PurchaseOrderAttributes> poMaterialOpt = poMaterialRepo.findPoMaterialWithIndent(
+                    gprnMaster.getPoId(), updatedMaterial.getMaterialCode(), updatedMaterial.getIndentId());
                 
                 if (!poMaterialOpt.isPresent()) {
                     errorMessage.append("Material code ").append(updatedMaterial.getMaterialCode())

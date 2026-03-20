@@ -730,8 +730,8 @@ public class ProcessController {
     }
 
     @GetMapping("/pendingGprnsForGi")
-    public ResponseEntity<Object> getPendingGprnsForGI() {
-       List<GprnDropdownDto> res = gis.getPendingGprnsForGI();
+    public ResponseEntity<Object> getPendingGprnsForGI(@RequestParam Integer userId) {
+       List<GprnDropdownDto> res = gis.getPendingGprnsForGI(userId);
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(res), HttpStatus.OK);
     }
     @GetMapping("/pendingGprnsForGiwithIndentId")

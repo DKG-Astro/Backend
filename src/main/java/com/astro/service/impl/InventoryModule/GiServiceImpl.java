@@ -114,7 +114,26 @@ public class GiServiceImpl implements GiService {
         gime.setStatus("AWAITING APPROVAL");
         gime.setGprnAmount(req.getGprnAmount());
         gime.setPoAmount(req.getPoAmount());
+      //  gime.setGrnAmount(req.getGrnAmount());
 
+        gime.setIndentId(req.getIndentId());
+
+        // ADD THIS BEFORE gimr.save(gime)
+
+        Optional<GiMasterEntity> existingGi =
+                gimr.findByGprnSubProcessIdAndIndentId(
+                        Integer.parseInt(req.getGprnNo().split("/")[1]),
+                        req.getIndentId()
+                );
+
+        if (existingGi.isPresent()) {
+            throw new InvalidInputException(new ErrorDetails(
+                    AppConstant.USER_INVALID_INPUT,
+                    AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION,
+                    "GI already raised for this indent"
+            ));
+        }
         gime = gimr.save(gime);
 
         List<GiMaterialDtlEntity> gimdeList = new ArrayList<>();
@@ -124,9 +143,18 @@ public class GiServiceImpl implements GiService {
 
         for (GiMaterialDtlDto gmdd : req.getMaterialDtlList()) {
 
+            if (!gmdd.getIndentId().equals(req.getIndentId())) {
+                continue; // skip other indent materials
+            }
+
             if (gmdd.getCategory().equalsIgnoreCase("consumable")) {
-                Optional<GoodsInspectionConsumableDetailEntity> gicdeOpt = gicdr.findByGprnSubProcessIdAndMaterialCode(
-                        Integer.parseInt(req.getGprnNo().split("/")[1]), gmdd.getMaterialCode());
+              //  Optional<GoodsInspectionConsumableDetailEntity> gicdeOpt = gicdr.findByGprnSubProcessIdAndMaterialCode(  Integer.parseInt(req.getGprnNo().split("/")[1]), gmdd.getMaterialCode());
+                Optional<GoodsInspectionConsumableDetailEntity> gicdeOpt = gicdr.findByGprnSubProcessIdAndMaterialCodeAndIndentId(
+                        Integer.parseInt(req.getGprnNo().split("/")[1]),
+                        gmdd.getMaterialCode(),
+                        req.getIndentId()
+                );
+
 
                 if (gicdeOpt.isPresent()) {
                     errorMessage.append("Inspection already done for the provided GPRN No. " + req.getGprnNo()
@@ -144,6 +172,7 @@ public class GiServiceImpl implements GiService {
 
                 GoodsInspectionConsumableDetailEntity gicde = new GoodsInspectionConsumableDetailEntity();
                 mapper.map(gmdd, gicde);
+                gicde.setIndentId(req.getIndentId());
 
                 gicde.setInspectionSubProcessId(gime.getInspectionSubProcessId());
                 gicde.setGprnSubProcessId(Integer.parseInt(req.getGprnNo().split("/")[1]));
@@ -159,9 +188,12 @@ public class GiServiceImpl implements GiService {
 
                 gicdeList.add(gicde);
             } else {
-                Optional<GiMaterialDtlEntity> gimdeOpt = gimdr.findByGprnSubProcessIdAndMaterialCode(
-                        Integer.parseInt(req.getGprnNo().split("/")[1]), gmdd.getMaterialCode());
-
+              //  Optional<GiMaterialDtlEntity> gimdeOpt = gimdr.findByGprnSubProcessIdAndMaterialCode(Integer.parseInt(req.getGprnNo().split("/")[1]), gmdd.getMaterialCode());
+                Optional<GiMaterialDtlEntity> gimdeOpt =    gimdr.findByGprnSubProcessIdAndMaterialCodeAndIndentId(
+                        Integer.parseInt(req.getGprnNo().split("/")[1]),
+                        gmdd.getMaterialCode(),
+                        req.getIndentId()
+                );
                 if (gimdeOpt.isPresent()) {
                     errorMessage.append("Inspection already done for the provided GPRN No. " + req.getGprnNo()
                             + " and Material Code " + gmdd.getMaterialCode());
@@ -186,6 +218,7 @@ public class GiServiceImpl implements GiService {
                 System.out.println(asset);
                 GiMaterialDtlEntity gimde = new GiMaterialDtlEntity();
                 mapper.map(gmdd, gimde);
+                gimde.setIndentId(req.getIndentId());
                // gimde.setAssetId(assetId);
                 if (asset != null) {
                     gimde.setAssetId(asset.getAssetId());
@@ -609,7 +642,7 @@ private void updatePoBasedonRejectionType(GiApprovalDto req) {
         if ("replacement".equalsIgnoreCase(gimde.getRejectionType())) {
 
             PurchaseOrderAttributes poa = poar
-                    .findByPurchaseOrder_PoIdAndMaterialCode(poId, gimde.getMaterialCode())
+                    .findPoMaterialWithIndent(poId, gimde.getMaterialCode(), gimde.getIndentId())
                     .orElseThrow(() -> new BusinessException(new ErrorDetails(
                             AppConstant.ERROR_CODE_RESOURCE,
                             AppConstant.ERROR_TYPE_CODE_RESOURCE,
@@ -635,7 +668,7 @@ private void updatePoBasedonRejectionType(GiApprovalDto req) {
         if ("replacement".equalsIgnoreCase(gicde.getRejectionType())) {
 
             PurchaseOrderAttributes poa = poar
-                    .findByPurchaseOrder_PoIdAndMaterialCode(poId, gicde.getMaterialCode())
+                    .findPoMaterialWithIndent(poId, gicde.getMaterialCode(),gicde.getIndentId())
                     .orElseThrow(() -> new BusinessException(new ErrorDetails(
                             AppConstant.ERROR_CODE_RESOURCE,
                             AppConstant.ERROR_TYPE_CODE_RESOURCE,
@@ -885,7 +918,7 @@ private void updatePoBasedonRejectionType(GiApprovalDto req) {
         return new ArrayList<>(map.values());
     }
 
-
+/*
     public List<GprnDropdownDto> getPendingGprnsForGI() {
         List<GprnMasterEntity> pendingGprns = gprnMasterRepository.findPendingGprnsWithMaterial();
 
@@ -899,6 +932,23 @@ private void updatePoBasedonRejectionType(GiApprovalDto req) {
                 ))
                 .collect(Collectors.toList());
     }
+    */
+public List<GprnDropdownDto> getPendingGprnsForGI(Integer userId) {
+
+    List<GprnMasterEntity> pendingGprns =
+            gprnMasterRepository.findPendingGprnsForUser(Long.valueOf(userId));
+
+    return pendingGprns.stream()
+            .map(g -> new GprnDropdownDto(
+                    g.getSubProcessId(),
+                    "INV" + g.getProcessId() + "/" + g.getSubProcessId(),
+                    g.getPoId(),
+                    g.getVendorId(),
+                    gprnMaterialDtlRepository
+                            .findMaterialDescriptionsBySubProcessId(g.getSubProcessId())
+            ))
+            .collect(Collectors.toList());
+}
 /*
     public List<GprnDropdownDto> getPendingRejectedGis() {
 

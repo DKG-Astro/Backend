@@ -48,4 +48,6 @@ public class GoodsInspectionConsumableDetailEntity {
     private String rejectionType;
     @Column(name = "reject_reason")
     private String rejectReason;
+
+    private String indentId;
 }

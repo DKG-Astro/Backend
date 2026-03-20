@@ -19,5 +19,8 @@ public class SaveGiDto {
     private String locationId;
     private Integer createdBy;
     private BigDecimal gprnAmount;
+    private BigDecimal grnAmount;
     private BigDecimal poAmount;
+
+    private String indentId;
 }

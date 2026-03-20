@@ -9,6 +9,7 @@ import com.astro.entity.PaymentVoucherMaterials;
 import com.astro.entity.ProcurementModule.PurchaseOrder;
 import com.astro.entity.ProcurementModule.PurchaseOrderAttributes;
 import com.astro.entity.ProcurementModule.ServiceOrder;
+import com.astro.entity.VendorMaster;
 import com.astro.repository.InventoryModule.*;
 import com.astro.repository.InventoryModule.GiRepository.GiMasterRepository;
 import com.astro.repository.InventoryModule.GprnRepository.GprnMasterRepository;
@@ -17,6 +18,7 @@ import com.astro.repository.PaymentVoucherGrnRepositoy;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderAttributesRepository;
 import com.astro.repository.ProcurementModule.PurchaseOrder.PurchaseOrderRepository;
 import com.astro.repository.ProcurementModule.ServiceOrderRepository.ServiceOrderRepository;
+import com.astro.repository.VendorMasterRepository;
 import com.astro.repository.WorkflowTransitionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,8 @@ import com.astro.constant.AppConstant;
 import com.astro.util.CommonUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.util.StringUtils;
+
+import static java.util.Arrays.stream;
 
 @Service
 public class GrnServiceImpl implements GrnService {
@@ -99,7 +103,8 @@ public class GrnServiceImpl implements GrnService {
     private PurchaseOrderRepository purchaseOrderRepository;
     @Autowired
     private PaymentVoucherGrnRepositoy paymentVoucherGrnRepositoy;
-
+    @Autowired
+    private VendorMasterRepository vendorMasterRepository;
     @Override
     @Transactional
     public String saveGrn(GrnDto req) {
@@ -108,7 +113,10 @@ public class GrnServiceImpl implements GrnService {
         }
         if ("GI".equalsIgnoreCase(req.getGrnType())) {
           //  giService.validateGiSubProcessId(req.getGiNo());
-            giService.validateGiIsApproved(req.getGiNo());
+          //  giService.validateGiIsApproved(req.getGiNo());
+            for (String giNo : req.getGiNos()) {
+                giService.validateGiIsApproved(giNo);
+            }
 
         }
 
@@ -128,9 +136,13 @@ public class GrnServiceImpl implements GrnService {
         grnMaster.setLocationId(req.getLocationId());
         grnMaster.setGrnType(req.getGrnType());
         grnMaster.setStatus("APPROVED");
-        if(!req.getGrnType().equalsIgnoreCase("MATERIAL_IN")){
-            grnMaster.setGrnProcessId(req.getGiNo().split("/")[0].substring(3));
-        }
+        grnMaster.setGrnAmount(req.getGrnAmount());
+//        if(!req.getGrnType().equalsIgnoreCase("MATERIAL_IN")){
+//          //  grnMaster.setGrnProcessId(req.getGiNo().split("/")[0].substring(3));
+//            String firstGi = req.getGiNos().get(0);
+//
+//            grnMaster.setGrnProcessId(firstGi.split("/")[0].substring(3));
+//        }
 
         if ("GI".equalsIgnoreCase(req.getGrnType())) {
             if (req.getInstallationDate() != null && !req.getInstallationDate().trim().isEmpty()) {
@@ -139,8 +151,11 @@ public class GrnServiceImpl implements GrnService {
             if (req.getCommissioningDate() != null && !req.getCommissioningDate().trim().isEmpty()) {
                 grnMaster.setCommissioningDate(CommonUtils.convertStringToDateObject(req.getCommissioningDate()));
             }
-            grnMaster.setGiProcessId(req.getGiNo().split("/")[0].substring(3));
-            grnMaster.setGiSubProcessId(Integer.parseInt(req.getGiNo().split("/")[1]));
+            String firstGi = req.getGiNos().get(0);
+
+            grnMaster.setGrnProcessId(firstGi.split("/")[0].substring(3));
+         //   grnMaster.setGiProcessId(req.getGiNo().split("/")[0].substring(3));
+         //   grnMaster.setGiSubProcessId(Integer.parseInt(req.getGiNo().split("/")[1]));z
         } else {
             // grnMaster.setIgpProcessId(req.getGiNo().split("/")[0].substring(3));
             grnMaster.setIgpProcessId(req.getIgpId());
@@ -156,11 +171,19 @@ public class GrnServiceImpl implements GrnService {
 
         if ("GI".equalsIgnoreCase(req.getGrnType())) {
             // GI validation logic
-            List<GiMaterialDtlEntity> giMaterialList = gimdr.findByInspectionSubProcessId(
-                    Integer.parseInt(req.getGiNo().split("/")[1]));
-            List<GoodsInspectionConsumableDetailEntity> giConsumableList = gicdr.findByInspectionSubProcessId(Integer.parseInt(req.getGiNo().split("/")[1]));
+//            List<GiMaterialDtlEntity> giMaterialList = gimdr.findByInspectionSubProcessId(
+//                    Integer.parseInt(req.getGiNo().split("/")[1]));
+//            List<GoodsInspectionConsumableDetailEntity> giConsumableList = gicdr.findByInspectionSubProcessId(Integer.parseInt(req.getGiNo().split("/")[1]));
 
             for (GrnMaterialDtlDto materialDtl : req.getMaterialDtlList()) {
+                Integer giSubProcessId = Integer.parseInt(materialDtl.getGiNo().split("/")[1]);
+
+                // Fetch GI data for that material
+                List<GiMaterialDtlEntity> giMaterialList =
+                        gimdr.findByInspectionSubProcessId(giSubProcessId);
+
+                List<GoodsInspectionConsumableDetailEntity> giConsumableList =
+                        gicdr.findByInspectionSubProcessId(giSubProcessId);
                 if(Objects.nonNull(materialDtl.getAssetId())){
 
 
@@ -174,9 +197,11 @@ public class GrnServiceImpl implements GrnService {
                     continue;
                 }
 
-                BigDecimal previouslyReceivedQty = grnmdr.findByGiSubProcessIdAndAssetId(
-                        Integer.parseInt(req.getGiNo().split("/")[1]),
-                        materialDtl.getAssetId())
+             //   BigDecimal previouslyReceivedQty = grnmdr.findByGiSubProcessIdAndAssetId(
+                 //       Integer.parseInt(req.getGiNo().split("/")[1]),
+                    BigDecimal previouslyReceivedQty = grnmdr.findByGiSubProcessIdAndAssetId(
+                            giSubProcessId,
+                            materialDtl.getAssetId())
                         .stream()
                         .map(GrnMaterialDtlEntity::getQuantity)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -194,8 +219,10 @@ public class GrnServiceImpl implements GrnService {
                 mapper.map(materialDtl, grnMaterialDtl);
                 grnMaterialDtl.setQuantity(materialDtl.getAcceptedQuantity());
                 grnMaterialDtl.setGrnProcessId(grnMaster.getGrnProcessId());
-                grnMaterialDtl.setGiSubProcessId(Integer.parseInt(req.getGiNo().split("/")[1]));
+              //  grnMaterialDtl.setGiSubProcessId(Integer.parseInt(req.getGiNo().split("/")[1]));
                 grnMaterialDtl.setGrnSubProcessId(grnMaster.getGrnSubProcessId());
+                    grnMaterialDtl.setGiSubProcessId(giSubProcessId);
+
                 grnMaterialDtl.setAssetCode(materialDtl.getAssetCode());
                 grnMaterialDtlList.add(grnMaterialDtl);
 
@@ -213,9 +240,11 @@ public class GrnServiceImpl implements GrnService {
                         errorFound = true;
                         continue;
                     }
+                  //  BigDecimal prevRecQuant = gcdr.findByGiSubProcessIdAndMaterialCode(
+                                 //   Integer.parseInt(req.getGiNo().split("/")[1]),
+                                 //   materialDtl.getMaterialCode())
                     BigDecimal prevRecQuant = gcdr.findByGiSubProcessIdAndMaterialCode(
-                                    Integer.parseInt(req.getGiNo().split("/")[1]),
-                                    materialDtl.getMaterialCode())
+                                    giSubProcessId,   materialDtl.getMaterialCode())
                             .stream()
                             .map(GrnConsumableDtlEntity::getQuantity)
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -233,7 +262,8 @@ public class GrnServiceImpl implements GrnService {
                     mapper.map(materialDtl, gcde);  // Change from mapping giConsumable to mapping materialDtl
                     gcde.setQuantity(materialDtl.getAcceptedQuantity());
                     gcde.setGrnProcessId(grnMaster.getGrnProcessId());
-                    gcde.setGiSubProcessId(Integer.parseInt(req.getGiNo().split("/")[1]));
+                 //   gcde.setGiSubProcessId(Integer.parseInt(req.getGiNo().split("/")[1]));
+                    gcde.setGiSubProcessId(giSubProcessId);
                     gcde.setGrnSubProcessId(grnMaster.getGrnSubProcessId());
                     gcde.setBookValue(materialDtl.getBookValue());         // Set book value
                     gcde.setDepriciationRate(materialDtl.getDepriciationRate()); // Set depreciation rate
@@ -401,9 +431,9 @@ public class GrnServiceImpl implements GrnService {
         }
         ohqmr.save(ohq);
     }
-
     @Override
     public Map<String, Object> getGrnDtls(String processNo) {
+
         ModelMapper mapper = new ModelMapper();
         String[] processNoSplit = processNo.split("/");
 
@@ -424,11 +454,121 @@ public class GrnServiceImpl implements GrnService {
                         AppConstant.ERROR_TYPE_RESOURCE,
                         "GRN not found for the provided process ID.")));
 
+        List<GrnMaterialDtlEntity> grnMaterialList =
+                grnmdr.findByGrnSubProcessId(grnMaster.getGrnSubProcessId());
+
+        // ================= MATERIAL MAPPING =================
+        List<GrnMaterialDtlDto> materialDtlListRes;
+
+        if (grnMaterialList.isEmpty()) {
+
+            // Consumable case
+            List<GrnConsumableDtlEntity> consumableList =
+                    gcdr.findByGrnSubProcessId(grnSubProcessId);
+
+            materialDtlListRes = consumableList.stream()
+                    .map(consumable -> {
+                        GrnMaterialDtlDto dto = new GrnMaterialDtlDto();
+                        dto.setMaterialCode(consumable.getMaterialCode());
+                        dto.setReceivedQuantity(consumable.getQuantity());
+                        dto.setAcceptedQuantity(consumable.getQuantity());
+                        dto.setLocatorId(consumable.getLocatorId());
+                        dto.setBookValue(consumable.getBookValue());
+                        dto.setDepriciationRate(consumable.getDepriciationRate());
+                        return dto;
+                    })
+                    .collect(Collectors.toList());
+
+        } else {
+
+            // Material case
+            materialDtlListRes = grnMaterialList.stream()
+                    .map(material -> mapper.map(material, GrnMaterialDtlDto.class))
+                    .collect(Collectors.toList());
+        }
+
+        // ================= GRN HEADER =================
+        GrnDto grnRes = new GrnDto();
+        grnRes.setGrnNo(processNo);
+
+
+        // grnRes.setGiNo(...);
+
+        grnRes.setGrnDate(CommonUtils.convertDateToString(grnMaster.getGrnDate()));
+        grnRes.setInstallationDate(CommonUtils.convertDateToString(grnMaster.getInstallationDate()));
+        grnRes.setCommissioningDate(CommonUtils.convertDateToString(grnMaster.getCommissioningDate()));
+        grnRes.setCreatedBy(grnMaster.getCreatedBy());
+        grnRes.setSystemCreatedBy(grnMaster.getSystemCreatedBy());
+        grnRes.setLocationId(grnMaster.getLocationId());
+        grnRes.setCustodianId(String.valueOf(grnMaster.getCustodianId()));
+        grnRes.setMaterialDtlList(materialDtlListRes);
+
+        // ================= MULTI GI LOGIC =================
+
+        // Get GI SubProcess IDs from materials
+        Set<Integer> giSubProcessIds = grnMaterialList.stream()
+                .map(GrnMaterialDtlEntity::getGiSubProcessId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        List<Map<String, Object>> giDetailsList = new ArrayList<>();
+        List<Object> gprnDetailsList = new ArrayList<>();
+
+        for (Integer giSubId : giSubProcessIds) {
+
+            String giNo = "INV" + grnMaster.getGrnProcessId() + "/" + giSubId;
+
+            Map<String, Object> giDetails = giService.getGiDtls(giNo);
+
+            if (giDetails != null) {
+
+                Map<String, Object> giDtlsMap =
+                        (Map<String, Object>) giDetails.get("giDtls");
+
+                Map<String, Object> gprnDtlsMap =
+                        (Map<String, Object>) giDetails.get("gprnDtls");
+
+                giDetailsList.add(giDtlsMap);
+                gprnDetailsList.add(gprnDtlsMap);
+            }
+        }
+
+        // ================= FINAL RESPONSE =================
+        Map<String, Object> combinedRes = new HashMap<>();
+        combinedRes.put("grnDtls", grnRes);
+        combinedRes.put("giDtls", giDetailsList);
+        combinedRes.put("gprnDtls", gprnDetailsList);
+
+        return combinedRes;
+    }
+/*
+   @Override
+    public Map<String, Object> getGrnDtls(String processNo) {
+        ModelMapper mapper = new ModelMapper();
+        String[] processNoSplit = processNo.split("/");
+
+        if (processNoSplit.length != 2) {
+            throw new InvalidInputException(new ErrorDetails(
+                     AppConstant.USER_INVALID_INPUT,
+                    AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                    AppConstant.ERROR_TYPE_VALIDATION,
+                    "Invalid process ID"));
+        }
+
+        Integer grnSubProcessId = Integer.parseInt(processNoSplit[1]);
+
+        GrnMasterEntity grnMaster = grnmr.findById(grnSubProcessId)
+                .orElseThrow(() -> new InvalidInputException(new ErrorDetails(
+                        AppConstant.ERROR_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_CODE_RESOURCE,
+                        AppConstant.ERROR_TYPE_RESOURCE,
+                        "GRN not found for the provided process ID.")));
+
         List<GrnMaterialDtlEntity> grnMaterialList = grnmdr.findByGrnSubProcessId(grnMaster.getGrnSubProcessId());
 
        /* List<GrnMaterialDtlDto> materialDtlListRes = grnMaterialList.stream()
                 .map(material -> mapper.map(material, GrnMaterialDtlDto.class))
-                .collect(Collectors.toList());*/
+                .collect(Collectors.toList());*//*
         List<GrnMaterialDtlDto> materialDtlListRes;
         if (grnMaterialList.isEmpty()) {
             // If no materials, fetch from consumable details
@@ -453,7 +593,7 @@ public class GrnServiceImpl implements GrnService {
 
         GrnDto grnRes = new GrnDto();
         grnRes.setGrnNo(processNo);
-        grnRes.setGiNo("INV" + grnMaster.getGiProcessId() + "/" + grnMaster.getGiSubProcessId());
+       // grnRes.setGiNo("INV" + grnMaster.getGiProcessId() + "/" + grnMaster.getGiSubProcessId());
         grnRes.setGrnDate(CommonUtils.convertDateToString(grnMaster.getGrnDate()));
         grnRes.setInstallationDate(CommonUtils.convertDateToString(grnMaster.getInstallationDate()));
         grnRes.setCommissioningDate(CommonUtils.convertDateToString(grnMaster.getCommissioningDate()));
@@ -472,7 +612,7 @@ public class GrnServiceImpl implements GrnService {
         combinedRes.put("gprnDtls", giDetails.get("gprnDtls"));
 
         return combinedRes;
-    }
+    }*/
 
     // private void validateIgp(String processNo) {
     //     String[] processNoSplit = processNo.split("/");
@@ -1095,10 +1235,18 @@ public List<PoGrnInfoDto> getDistinctGrnProcessIdsForGIAndApproved() {
             throw new RuntimeException("GPRN Master not found for processId: " + gi.getGprnProcessId());
         }
 
-
         // Prepare DTO
         paymentVoucherDto dto = new paymentVoucherDto();
-        dto.setVendorName(gprnMaster.getVendorId());
+
+        Optional<VendorMaster> vm = vendorMasterRepository.findByVendorId(gprnMaster.getVendorId());
+
+        if(vm.isPresent()){
+            VendorMaster v = vm.get();
+            dto.setVendorName(v.getVendorName());
+        }else{
+            dto.setVendorName(gprnMaster.getVendorId());
+        }
+
         dto.setVendorInvoiceName(gprnMaster.getChallanNo());
         dto.setVendorInvoiceDate(CommonUtils.convertDateToString(gprnMaster.getDate()));
         System.out.print(grn.getGrnSubProcessId());
@@ -1246,7 +1394,6 @@ public List<PoGrnInfoDto> getDistinctGrnProcessIdsForGIAndApproved() {
         String vendorName = null;
         String vendorInvoiceName = null;
         String vendorInvoiceDate = null;
-
 
         for (String grnProcessId : grnProcessIds) {
 

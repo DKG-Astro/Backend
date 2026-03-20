@@ -1571,3 +1571,24 @@ ALTER TABLE payment_voucher ADD COLUMN tds_amount DECIMAL(18,2), ADD COLUMN paym
 ALTER TABLE payment_voucher MODIFY vendor_invoice_number VARCHAR(255) NULL;
 
 ALTER TABLE grn_master ADD COLUMN custodian_name VARCHAR(200);
+
+
+
+
+////-before
+CREATE TABLE `payment_voucher_grn` (`id` bigint NOT NULL AUTO_INCREMENT,`grn_number` varchar(100) NOT NULL,`payment_voucher_id` bigint NOT NULL,`paid_amount` decimal(18,2) DEFAULT '0.00',`advance_adjusted` decimal(18,2) DEFAULT '0.00',`payment_voucher_type` varchar(20) DEFAULT NULL,PRIMARY KEY (`id`),KEY `idx_pv_grn_grn_number` (`grn_number`),KEY `idx_pv_grn_voucher_id` (`payment_voucher_id`),CONSTRAINT `fk_pv_grn_payment_voucher` FOREIGN KEY (`payment_voucher_id`) REFERENCES `payment_voucher` (`id`) ON DELETE CASCADE);
+
+
+
+//////new issues
+
+
+ALTER TABLE gprn_material_detail
+ADD COLUMN indent_id VARCHAR(50),
+ADD COLUMN indentor_user_id BIGINT;
+
+
+
+ALTER TABLE purchase_order_attributes
+ADD COLUMN indent_id VARCHAR(50);
+

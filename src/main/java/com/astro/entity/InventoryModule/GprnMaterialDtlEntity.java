@@ -68,4 +68,7 @@ public class GprnMaterialDtlEntity {
 
     @Column(name = "photo_path")
     private String fileName;
+
+    private String indentId;
+    private Long indentorUserId;
 }

@@ -18,4 +18,6 @@ public class GrnMaterialDtlDto {
     private BigDecimal quantity;  // Add this field to match the entity
 
     private String assetCode;
+
+    private String giNo;
 }

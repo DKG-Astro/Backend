@@ -328,6 +328,6 @@ public interface IndentCreationRepository extends JpaRepository<IndentCreation, 
     WHERE i.indentId IN :approvedIndentIds
 """)
    List<ApprovedIndentsDto> findApprovedIndents(@Param("approvedIndentIds") List<String> approvedIndentIds);
-
-
+    @Query("SELECT i.createdBy FROM IndentCreation i WHERE i.indentId = :indentId")
+    Integer findCreatedByByIndentId(@Param("indentId") String indentId);
 }

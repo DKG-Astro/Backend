@@ -21,4 +21,6 @@ public class MaterialDetailsResponseDTO {
     private String modeOfProcurement;
     private String currency;
     private List<String> vendorNames;
+
+    private String indentId;
 }

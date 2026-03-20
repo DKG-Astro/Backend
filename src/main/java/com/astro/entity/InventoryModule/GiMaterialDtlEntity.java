@@ -57,4 +57,5 @@ public class GiMaterialDtlEntity {
 
     private String assetCode;
 
+    private String indentId;
 }

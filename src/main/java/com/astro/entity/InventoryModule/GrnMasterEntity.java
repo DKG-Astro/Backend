@@ -2,6 +2,7 @@ package com.astro.entity.InventoryModule;
 
 import lombok.Data;
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -58,6 +59,7 @@ public class GrnMasterEntity {
 
     private Integer custodianId;
     private String custodianName;
+    private BigDecimal grnAmount;
 
 
 }

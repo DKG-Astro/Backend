@@ -47,4 +47,6 @@ public class PurchaseOrderAttributes {
    @ManyToOne
    @JoinColumn(name = "po_id", referencedColumnName = "po_id")
    private PurchaseOrder purchaseOrder;
+
+   private String indentId;
 }

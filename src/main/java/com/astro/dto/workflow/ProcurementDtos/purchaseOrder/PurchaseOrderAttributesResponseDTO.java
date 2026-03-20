@@ -22,4 +22,6 @@ public class PurchaseOrderAttributesResponseDTO {
     private String category;
     private BigDecimal receivedQuantity;
     private BigDecimal totalQuantity;
+
+    private String indentId;
 }
