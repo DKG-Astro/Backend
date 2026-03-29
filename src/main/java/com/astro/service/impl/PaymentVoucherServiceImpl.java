@@ -12,6 +12,7 @@ import com.astro.entity.PaymentVoucherGrn;
 import com.astro.entity.PaymentVoucherMaterials;
 import com.astro.exception.BusinessException;
 import com.astro.exception.ErrorDetails;
+import com.astro.exception.InvalidInputException;
 import com.astro.repository.InventoryModule.PaymentVoucherMaterialsRepository;
 import com.astro.repository.InventoryModule.PaymentVoucherReposiotry;
 import com.astro.repository.InventoryModule.grn.GrnConsumableDtlRepository;
@@ -20,6 +21,7 @@ import com.astro.repository.PaymentVoucherGrnRepositoy;
 import com.astro.service.PaymentVoucherService;
 import com.astro.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -32,6 +34,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class PaymentVoucherServiceImpl implements PaymentVoucherService {
+    @Value("${filePath}")
+    private String bp;
     @Autowired
     private PaymentVoucherReposiotry paymentVoucherReposiotry;
     @Autowired
@@ -42,6 +46,12 @@ public class PaymentVoucherServiceImpl implements PaymentVoucherService {
     private GrnConsumableDtlRepository grnConsumableDtlRepository;
     @Autowired
     private PaymentVoucherGrnRepositoy paymentVoucherGrnRepositoy;
+    private final String basePath;
+
+    public PaymentVoucherServiceImpl(@Value("${filePath}") String bp) {
+        this.basePath = bp + "/INV";
+    }
+
 
 
 
@@ -96,6 +106,45 @@ public class PaymentVoucherServiceImpl implements PaymentVoucherService {
         voucher.setCreatedBy(dto.getCreatedBy());
         voucher.setTdsAmount(BigDecimal.ZERO);
         voucher.setPaymentVoucherNetAmount(BigDecimal.ZERO);
+
+        voucher.setIncomeTdsAmount(dto.getIncomeTdsAmount());
+        voucher.setGstTdsAmount(dto.getGstTdsAmount());
+
+        voucher.setIncomeTdsRemarks(dto.getIncomeTdsRemarks());
+        voucher.setGstTdsRemarks(dto.getGstTdsRemarks());
+
+
+
+
+
+        try {
+            if (dto.getAttachments() != null && !dto.getAttachments().isEmpty()) {
+
+                List<String> fileNames = new ArrayList<>();
+
+                for (String base64File : dto.getAttachments()) {
+
+                    if (base64File == null || base64File.isEmpty()) continue;
+
+                    String fileName = CommonUtils.saveBase64Image(base64File, basePath);
+
+                    fileNames.add(fileName);
+
+
+                }
+
+
+                voucher.setAttachmentFileNames(String.join(",", fileNames));
+            }
+
+        } catch (Exception e) {
+            throw new InvalidInputException(new ErrorDetails(
+                    AppConstant.FILE_UPLOAD_ERROR,
+                    AppConstant.USER_INVALID_INPUT,
+                    AppConstant.ERROR_TYPE_CORRUPTED,
+                    "Error while uploading attachments."
+            ));
+        }
 
 
 
@@ -188,7 +237,12 @@ public class PaymentVoucherServiceImpl implements PaymentVoucherService {
 
             // Store only current partial
           //  voucher.setPaidAmount(partial);
-            BigDecimal tds = dto.getTdsAmount() != null ? dto.getTdsAmount() : BigDecimal.ZERO;
+       //     BigDecimal tds = dto.getTdsAmount() != null ? dto.getTdsAmount() : BigDecimal.ZERO;
+
+            BigDecimal incomeTds = dto.getIncomeTdsAmount() != null ? dto.getIncomeTdsAmount() : BigDecimal.ZERO;
+            BigDecimal gstTds = dto.getGstTdsAmount() != null ? dto.getGstTdsAmount() : BigDecimal.ZERO;
+
+            BigDecimal tds = incomeTds.add(gstTds);
 
             BigDecimal net = partial.subtract(tds);
             if (net.compareTo(BigDecimal.ZERO) < 0)
@@ -248,7 +302,12 @@ public class PaymentVoucherServiceImpl implements PaymentVoucherService {
 
 
 
-            BigDecimal tds = dto.getTdsAmount() != null ? dto.getTdsAmount() : BigDecimal.ZERO;
+         //   BigDecimal tds = dto.getTdsAmount() != null ? dto.getTdsAmount() : BigDecimal.ZERO;
+
+            BigDecimal incomeTds = dto.getIncomeTdsAmount() != null ? dto.getIncomeTdsAmount() : BigDecimal.ZERO;
+            BigDecimal gstTds = dto.getGstTdsAmount() != null ? dto.getGstTdsAmount() : BigDecimal.ZERO;
+
+            BigDecimal tds = incomeTds.add(gstTds);
 
             BigDecimal net = adv.subtract(tds);
             if (net.compareTo(BigDecimal.ZERO) < 0)
@@ -280,7 +339,12 @@ public class PaymentVoucherServiceImpl implements PaymentVoucherService {
 
 
 
-            BigDecimal tds = dto.getTdsAmount() != null ? dto.getTdsAmount() : BigDecimal.ZERO;
+          //  BigDecimal tds = dto.getTdsAmount() != null ? dto.getTdsAmount() : BigDecimal.ZERO;
+
+            BigDecimal incomeTds = dto.getIncomeTdsAmount() != null ? dto.getIncomeTdsAmount() : BigDecimal.ZERO;
+            BigDecimal gstTds = dto.getGstTdsAmount() != null ? dto.getGstTdsAmount() : BigDecimal.ZERO;
+
+            BigDecimal tds = incomeTds.add(gstTds);
 
             BigDecimal net = adv.subtract(tds);
             if (net.compareTo(BigDecimal.ZERO) < 0)
@@ -456,7 +520,7 @@ public class PaymentVoucherServiceImpl implements PaymentVoucherService {
     }
 
 
-
+/*
     public paymentVoucherRequestDto getVoucherByProcessNo(String processNo) {
 
         String[] parts = processNo.split("/");
@@ -496,7 +560,84 @@ public class PaymentVoucherServiceImpl implements PaymentVoucherService {
         }
 
         return dto;
+    }*/
+// ================== GET PV BY PROCESS NO ==================
+@Override
+public paymentVoucherRequestDto getVoucherByProcessNo(String processNo) {
+
+    // Extract ID from processNo (INV/123 → 123)
+    String[] parts = processNo.split("/");
+    Long id = Long.parseLong(parts[parts.length - 1]);
+
+    PaymentVoucher entity = paymentVoucherReposiotry.findById(id)
+            .orElseThrow(() -> new RuntimeException("Payment Voucher not found"));
+
+    paymentVoucherRequestDto dto = new paymentVoucherRequestDto();
+
+    dto.setPaymentVoucherDate(entity.getPaymentVoucherDate());
+    dto.setPaymentVoucherIsFor(entity.getPaymentVoucherIsFor());
+    dto.setPurchaseOrderId(entity.getPurchaseOrderId());
+    dto.setServiceOrderDetails(entity.getServiceOrderDetails());
+    dto.setPaymentVoucherType(entity.getPaymentVoucherType());
+    dto.setVendorName(entity.getVendorName());
+    dto.setVendorInvoiceNumber(entity.getVendorInvoiceNumber());
+    dto.setVendorInvoiceDate(entity.getVendorInvoiceDate());
+    dto.setCurrency(entity.getCurrency());
+    dto.setExchangeRate(entity.getExchangeRate());
+    dto.setStatus(entity.getStatus());
+    dto.setRemarks(entity.getRemarks());
+
+    dto.setTotalAmount(entity.getTotalAmount());
+    dto.setPartialAmount(entity.getPartialAmount());
+    dto.setAdvanceAmount(entity.getAdvanceAmount());
+    dto.setPaidAmount(entity.getPaidAmount());
+    dto.setAdvanceAdjustedAmount(entity.getAdvanceAdjustedAmount());
+
+    dto.setTdsAmount(entity.getTdsAmount());
+    dto.setPaymentVoucherNetAmount(entity.getPaymentVoucherNetAmount());
+
+    dto.setIncomeTdsAmount(entity.getIncomeTdsAmount());
+    dto.setGstTdsAmount(entity.getGstTdsAmount());
+    dto.setIncomeTdsRemarks(entity.getIncomeTdsRemarks());
+    dto.setGstTdsRemarks(entity.getGstTdsRemarks());
+
+    try {
+        List<String> attachmentBase64List = new ArrayList<>();
+
+        if (entity.getAttachmentFileNames() != null) {
+
+            String[] fileNames = entity.getAttachmentFileNames().split(",");
+
+            for (String fileName : fileNames) {
+
+                if (fileName == null || fileName.trim().isEmpty()) continue;
+
+                String base64 = CommonUtils.convertImageToBase64(fileName.trim(), basePath);
+
+                attachmentBase64List.add(base64);
+            }
+        }
+
+        dto.setAttachments(attachmentBase64List);
+
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+
+
+
+    if (entity.getMaterialsList() != null) {
+        dto.setMaterials(
+                entity.getMaterialsList()
+                        .stream()
+                        .map(this::mapMaterial)
+                        .collect(Collectors.toList())
+        );
+    }
+
+    return dto;
+}
+
 
     private paymentVoucherMaterialRequestDto mapMaterial(PaymentVoucherMaterials m) {
         paymentVoucherMaterialRequestDto dto = new paymentVoucherMaterialRequestDto();
@@ -584,6 +725,20 @@ public class PaymentVoucherServiceImpl implements PaymentVoucherService {
 
         return reportList;
     }
+
+
+
+    @Override
+    public List<String> getAllPoIdsWithPV() {
+        return paymentVoucherReposiotry.getAllPoIdsWithPV();
+    }
+
+
+    @Override
+    public List<String> getVoucherIdsByPo(String poId) {
+        return paymentVoucherReposiotry.getVoucherIdsByPo(poId);
+    }
+
 
 
 

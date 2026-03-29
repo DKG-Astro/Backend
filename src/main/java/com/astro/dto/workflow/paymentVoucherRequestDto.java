@@ -39,4 +39,17 @@ public class paymentVoucherRequestDto {
     public BigDecimal advanceAdjustedAmount;
 
 
+    private BigDecimal incomeTdsAmount;
+    private BigDecimal gstTdsAmount;
+
+    private BigDecimal incomeTdsPercentage;
+    private BigDecimal gstTdsPercentage;
+
+    private String incomeTdsRemarks;
+    private String gstTdsRemarks;
+
+    private List<String> attachments;
+
+
+
 }

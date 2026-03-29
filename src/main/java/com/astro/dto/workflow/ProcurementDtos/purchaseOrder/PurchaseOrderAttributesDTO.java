@@ -18,4 +18,7 @@ public class PurchaseOrderAttributesDTO {
     private BigDecimal freightCharge;
     private String budgetCode;
 
+    private String indentId;
+
+
 }

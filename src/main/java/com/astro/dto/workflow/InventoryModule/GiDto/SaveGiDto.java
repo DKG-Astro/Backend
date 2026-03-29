@@ -23,4 +23,5 @@ public class SaveGiDto {
     private BigDecimal poAmount;
 
     private String indentId;
+    private String status;
 }

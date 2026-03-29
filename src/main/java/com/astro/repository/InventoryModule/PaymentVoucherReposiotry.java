@@ -28,8 +28,17 @@ public interface PaymentVoucherReposiotry extends JpaRepository<PaymentVoucher, 
 
     Optional<PaymentVoucher> findTopByPurchaseOrderIdOrderByIdDesc(String poId);
 
-    @Query("SELECT COALESCE(SUM(p.paidAmount),0) FROM PaymentVoucher p WHERE p.purchaseOrderId = :poId AND p.paymentVoucherType = 'Advance'")
-    BigDecimal getTotalAdvancePaid(@Param("poId") String poId);
+ /*   @Query("SELECT COALESCE(SUM(p.paidAmount),0) FROM PaymentVoucher p WHERE p.purchaseOrderId = :poId AND p.paymentVoucherType = 'Advance'")
+    BigDecimal getTotalAdvancePaid(@Param("poId") String poId);*/
+
+ @Query("""
+SELECT COALESCE(SUM(p.paidAmount), 0)
+FROM PaymentVoucher p
+WHERE p.purchaseOrderId = :poId
+AND p.paymentVoucherType = 'Advance'
+""")
+ BigDecimal getTotalAdvancePaid(@Param("poId") String poId);
+
 
 //    @Query("SELECT COALESCE(SUM(p.advanceAdjustedAmount),0) FROM PaymentVoucher p WHERE p.purchaseOrderId = :poId AND p.paymentVoucherType <> 'Full Payment'")
 //    BigDecimal getUsedAdvance(@Param("poId") String poId);
@@ -111,5 +120,11 @@ AND g.paymentVouchertype = 'Partial'
 """)
     BigDecimal getTotalAdvanceAppliedForGrns(@Param("grns") List<String> grns);
 
+
+    @Query("SELECT DISTINCT p.purchaseOrderId FROM PaymentVoucher p")
+    List<String> getAllPoIdsWithPV();
+
+    @Query("SELECT p.id FROM PaymentVoucher p WHERE p.purchaseOrderId = :poId")
+    List<String> getVoucherIdsByPo(@Param("poId") String poId);
 
 }

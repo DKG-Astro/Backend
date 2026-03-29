@@ -762,4 +762,25 @@ public class ProcessController {
         return new ResponseEntity<>(ResponseBuilder.getSuccessResponse(id), HttpStatus.OK);
     }
 
+    @GetMapping("/paymentVoucherPoIds")
+    public ResponseEntity<Object> getPoIds() {
+
+        List<String> poIds = paymentVoucherService.getAllPoIdsWithPV();
+
+        return ResponseEntity.ok(
+                ResponseBuilder.getSuccessResponse(poIds)
+        );
+    }
+
+    @GetMapping("/paymentVoucherIdsByPo")
+    public ResponseEntity<Object> getVoucherIds(@RequestParam String poId) {
+
+        List<String> pvIds = paymentVoucherService.getVoucherIdsByPo(poId);
+
+        return ResponseEntity.ok(
+                ResponseBuilder.getSuccessResponse(pvIds)
+        );
+    }
+
+
 }

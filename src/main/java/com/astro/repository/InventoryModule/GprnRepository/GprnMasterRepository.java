@@ -189,7 +189,7 @@ WHERE gi.gprnSubProcessId IS NULL
 AND i.createdBy = :userId
 """)
     List<GprnMasterEntity> findPendingGprnsForUser(@Param("userId") Integer userId); */
- @Query("""
+ /*@Query("""
 SELECT DISTINCT g 
 FROM GprnMasterEntity g
 JOIN GprnMaterialDtlEntity m ON g.subProcessId = m.subProcessId
@@ -201,6 +201,23 @@ AND NOT EXISTS (
     WHERE gi.gprnSubProcessId = g.subProcessId
     AND gi.materialCode = m.materialCode
     AND gi.indentId = m.indentId
+)
+""")
+ List<GprnMasterEntity> findPendingGprnsForUser(@Param("userId") Long userId);*/
+ @Query("""
+SELECT DISTINCT g 
+FROM GprnMasterEntity g
+JOIN GprnMaterialDtlEntity m ON g.subProcessId = m.subProcessId
+
+WHERE m.indentorUserId = :userId
+
+AND NOT EXISTS (
+    SELECT 1 FROM GiMaterialDtlEntity gi
+    JOIN GiMasterEntity gm ON gm.inspectionSubProcessId = gi.inspectionSubProcessId
+    WHERE gi.gprnSubProcessId = g.subProcessId
+    AND gi.materialCode = m.materialCode
+    AND gi.indentId = m.indentId
+    AND gm.status <> 'CANCELLED'
 )
 """)
  List<GprnMasterEntity> findPendingGprnsForUser(@Param("userId") Long userId);

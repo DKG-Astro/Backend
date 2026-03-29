@@ -80,4 +80,14 @@ public class PaymentVoucher {
     @OneToMany(mappedBy = "paymentVoucher", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PaymentVoucherGrn> grnList;
 
+
+    private BigDecimal incomeTdsAmount;
+    private BigDecimal gstTdsAmount;
+
+    private String incomeTdsRemarks;
+    private String gstTdsRemarks;
+
+    private String attachmentFileNames;
+
+
 }

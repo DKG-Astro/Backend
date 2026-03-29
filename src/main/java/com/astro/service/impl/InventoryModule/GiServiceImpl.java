@@ -126,13 +126,25 @@ public class GiServiceImpl implements GiService {
                         req.getIndentId()
                 );
 
-        if (existingGi.isPresent()) {
+     /*   if (existingGi.isPresent()) {
             throw new InvalidInputException(new ErrorDetails(
                     AppConstant.USER_INVALID_INPUT,
                     AppConstant.ERROR_TYPE_CODE_VALIDATION,
                     AppConstant.ERROR_TYPE_VALIDATION,
                     "GI already raised for this indent"
             ));
+        }*/
+        if (existingGi.isPresent()) {
+            if (!"CANCELLED".equalsIgnoreCase(existingGi.get().getStatus())) {
+                throw new InvalidInputException(
+                        new ErrorDetails(
+                                AppConstant.USER_INVALID_INPUT,
+                                AppConstant.ERROR_TYPE_CODE_VALIDATION,
+                                AppConstant.ERROR_TYPE_VALIDATION,
+                                "GI already raised for this indent"
+                        )
+                );
+            }
         }
         gime = gimr.save(gime);
 
@@ -156,12 +168,26 @@ public class GiServiceImpl implements GiService {
                 );
 
 
-                if (gicdeOpt.isPresent()) {
+              /*  if (gicdeOpt.isPresent()) {
                     errorMessage.append("Inspection already done for the provided GPRN No. " + req.getGprnNo()
                             + " and Material Code " + gmdd.getMaterialCode());
                     errorFound = true;
                     continue;
-                } else if (!gicdeOpt.isPresent()
+                }*/
+                if (gicdeOpt.isPresent()) {
+
+                    GoodsInspectionConsumableDetailEntity existing = gicdeOpt.get();
+
+                    GiMasterEntity giMaster = gimr.findById(existing.getInspectionSubProcessId())
+                            .orElse(null);
+
+                    if (giMaster != null && !"CANCELLED".equalsIgnoreCase(giMaster.getStatus())) {
+                        errorMessage.append("Inspection already done for the provided GPRN No. "
+                                + req.getGprnNo() + " and Material Code " + gmdd.getMaterialCode());
+                        errorFound = true;
+                        continue;
+                    }
+                }else if (!gicdeOpt.isPresent()
                         && (gmdd.getReceivedQuantity()
                                 .compareTo(gmdd.getAcceptedQuantity().add(gmdd.getRejectedQuantity())) != 0)) {
                     errorMessage.append("Total received quantity for " + gmdd.getMaterialCode()
@@ -194,12 +220,26 @@ public class GiServiceImpl implements GiService {
                         gmdd.getMaterialCode(),
                         req.getIndentId()
                 );
-                if (gimdeOpt.isPresent()) {
+               /* if (gimdeOpt.isPresent()) {
                     errorMessage.append("Inspection already done for the provided GPRN No. " + req.getGprnNo()
                             + " and Material Code " + gmdd.getMaterialCode());
                     errorFound = true;
                     continue;
-                } else if (!gimdeOpt.isPresent()
+                } */
+                if (gimdeOpt.isPresent()) {
+
+                    GiMaterialDtlEntity existing = gimdeOpt.get();
+
+                    GiMasterEntity giMaster = gimr.findById(existing.getInspectionSubProcessId())
+                            .orElse(null);
+
+                    if (giMaster != null && !"CANCELLED".equalsIgnoreCase(giMaster.getStatus())) {
+                        errorMessage.append("Inspection already done for the provided GPRN No. "
+                                + req.getGprnNo() + " and Material Code " + gmdd.getMaterialCode());
+                        errorFound = true;
+                        continue;
+                    }
+                }else if (!gimdeOpt.isPresent()
                         && (gmdd.getReceivedQuantity()
                                 .compareTo(gmdd.getAcceptedQuantity().add(gmdd.getRejectedQuantity())) != 0)) {
                     errorMessage.append("Total received quantity for " + gmdd.getMaterialCode()
@@ -335,6 +375,7 @@ public class GiServiceImpl implements GiService {
         giRes.setCommissioningDate(CommonUtils.convertDateToString(gime.getCommissioningDate()));
         giRes.setGprnAmount(gime.getGprnAmount());
         giRes.setPoAmount(gime.getPoAmount());
+        giRes.setStatus(gime.getStatus());
         materialDtlListRes.addAll(materialDtlListRes1);
         giRes.setMaterialDtlList(materialDtlListRes);
 
@@ -531,7 +572,7 @@ public class GiServiceImpl implements GiService {
         }).collect(Collectors.toList());
     }
 
-    @Override
+ /*   @Override
     @Transactional
     public void approveGi(GiApprovalDto req) {
         // updateGiStatusAndRemarks(req, "APPROVED");
@@ -540,7 +581,33 @@ public class GiServiceImpl implements GiService {
         updatePoBasedonRejectionType(req);
         giMailSender(req.getProcessNo());
 
-    }
+    }*/
+ @Override
+ @Transactional
+ public void approveGi(GiApprovalDto req) {
+
+     String status = req.getStatus();
+
+     if ("APPROVED".equalsIgnoreCase(status)) {
+
+         updateGiStatusAndRemarks(req);
+         updatePoBasedonRejectionType(req);
+         giMailSender(req.getProcessNo());
+
+     } else if ("CANCEL REQUEST".equalsIgnoreCase(status)) {
+
+         // Indentor cancel request
+         updateGiStatusAndRemarks(req);
+
+     } else if ("CANCELLED".equalsIgnoreCase(status)) {
+
+         // Store officer approves cancel
+         updateGiStatusAndRemarks(req);
+
+     } else {
+         throw new RuntimeException("Invalid status");
+     }
+ }
 
     public String giMailSender(String processNumber) {
         try {
@@ -742,7 +809,7 @@ private void updatePoBasedonRejectionType(GiApprovalDto req) {
     }
 
     public List<GiMasterEntity> getGiByStatuses() {
-        List<String> statuses = Arrays.asList("AWAITING APPROVAL");
+        List<String> statuses = Arrays.asList("AWAITING APPROVAL", "CANCEL REQUEST");
         return gimr.findByStatusIn(statuses);
     }
 

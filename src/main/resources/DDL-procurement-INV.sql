@@ -1580,7 +1580,7 @@ CREATE TABLE `payment_voucher_grn` (`id` bigint NOT NULL AUTO_INCREMENT,`grn_num
 
 
 
-//////new issues
+//////new issues 11/03//
 
 
 ALTER TABLE gprn_material_detail
@@ -1591,4 +1591,30 @@ ADD COLUMN indentor_user_id BIGINT;
 
 ALTER TABLE purchase_order_attributes
 ADD COLUMN indent_id VARCHAR(50);
+
+
+ALTER TABLE goods_inspection_master
+ADD COLUMN indent_id VARCHAR(50);
+
+ALTER TABLE goods_inspection_detail
+ADD COLUMN indent_id VARCHAR(50);
+
+ALTER TABLE goods_inspection_consumable_detail
+ADD COLUMN indent_id VARCHAR(50);
+
+
+ALTER TABLE gprn_material_detail
+ADD COLUMN indent_id VARCHAR(50);
+
+ALTER TABLE gprn_material_detail
+ADD COLUMN indentor_user_id BIGINT;
+
+ALTER TABLE grn_master
+ADD COLUMN grn_amount;
+
+ALTER TABLE purchase_order_attributes
+ADD COLUMN indent_id VARCHAR(50);
+
+ALTER TABLE payment_voucher
+ADD COLUMN attachment_file_names TEXT;
 

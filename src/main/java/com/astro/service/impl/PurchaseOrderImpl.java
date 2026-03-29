@@ -197,6 +197,7 @@ public class PurchaseOrderImpl implements PurchaseOrderService {
                     attribute.setDuties(dto.getDuties());
                     attribute.setFreightCharge(dto.getFreightCharge());
                     attribute.setBudgetCode(dto.getBudgetCode());
+                    attribute.setIndentId(dto.getIndentId());
                     BigDecimal total = calculateTotalPriceInInr(
                             dto.getRate(),
                             dto.getExchangeRate(),

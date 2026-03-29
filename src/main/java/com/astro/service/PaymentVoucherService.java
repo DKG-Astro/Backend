@@ -14,4 +14,8 @@ public interface PaymentVoucherService {
 
     public paymentVoucherRequestDto getVoucherByProcessNo(String processNo);
     public List<PaymentVoucherReportDto> getPaymentVoucherReport(String startDate, String endDate);
+
+    public List<String> getAllPoIdsWithPV();
+
+    public List<String> getVoucherIdsByPo(String poId);
 }

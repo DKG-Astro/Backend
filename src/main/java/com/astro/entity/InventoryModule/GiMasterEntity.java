@@ -45,6 +45,5 @@ public class GiMasterEntity {
     private BigDecimal poAmount;
     private BigDecimal gprnAmount;
 
-
     private String indentId;
 }
